@@ -1,3 +1,3 @@
-# Not Google Photos
+# Photos Storage Server
 
-Not Google Photos. Nope. Definetly not a personal clone of Google Photos for my own use.
+Basically a NAS for storing photos and videos. Hopefully will become what is essentially a clone of Google Photos for my own purposes.
