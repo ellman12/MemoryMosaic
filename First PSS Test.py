@@ -19,7 +19,7 @@ folderDialog = Tk()
 folderDialog.withdraw() # Hide useless extra window.
 
 # Used for timestamps.
-dateTimeObj = datetime.now()
+currentTime = datetime.now()
 
 # Get the directories to use. If either are blank quit the program.
 dirToSort = filedialog.askdirectory(title="Select directory to sort")
@@ -30,20 +30,20 @@ mainSortedDir = filedialog.askdirectory(title="Where should the sorted files go?
 if (mainSortedDir == ""):
     quit()
 
+# Walk through the unsorted dir, and sort and copy files to the new dir, and also add them to the DB.
 for dirPath, _, files in os.walk(dirToSort):
     for file in files:
 
         destinationPath = mainSortedDir + '/' + "test"
         newFileDir = destinationPath + '/' + file
 
-        timestampStr = dateTimeObj.strftime("%Y-%m-%d %H:%M:%S")
+        timestampStr = currentTime.strftime("%Y-%m-%d %H:%M:%S")
         photosDBCursor.execute("INSERT INTO photos VALUES (%s, %s, %s, %s)", (newFileDir, timestampStr, timestampStr, 69))
 
         photosDB.commit() # Apply changes.
 
+        # Fetches and prints all the rows in the DB.
         photosDBCursor.execute("SELECT * FROM photos")
-
-        myresult = photosDBCursor.fetchall() # Fetches all the rows in the DB.
-
-        for x in myresult:
-            print(x)
+        rows = photosDBCursor.fetchall()
+        for row in rows:
+            print(row)
