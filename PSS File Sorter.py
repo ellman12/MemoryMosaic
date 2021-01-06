@@ -80,5 +80,6 @@ for subDir, _, files in os.walk(unsortedDir):
 
         elif (".mp4" in file) or (".mkv" in file):
             logging.info(str(datetime.now()) + f' Examining video "{file}"')
+            
 
             printNewLogLine()

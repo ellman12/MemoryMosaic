@@ -43,12 +43,12 @@ def stripAndFormatTimestamp(filename):
         logging.info(str(datetime.now()) + f' "{filename}" was taken on {timestamp}')
         return timestamp
 
-    elif ("Saved Clip" in filename) and (".png" in filename): # The Screen Clipper script generates these. E.g., 'Saved Clip 20201014103055.png'
-        logging.info(str(datetime.now()) + f' "{filename}" appears to be a Screen Clip. Formatting...')
-        timestamp = filename[11:25] # Keep what we need.
-        timestamp = datetime.strptime(timestamp,'%Y%m%d%H%M%S')
-        logging.info(str(datetime.now()) + f' "{filename}" was taken on {timestamp}')
-        return timestamp
+    # elif ("Saved Clip" in filename) and (".png" in filename): # The Screen Clipper script generates these. E.g., 'Saved Clip 20201014103055.png'
+    #     logging.info(str(datetime.now()) + f' "{filename}" appears to be a Screen Clip. Formatting...')
+    #     timestamp = filename[11:25] # Keep what we need.
+    #     timestamp = datetime.strptime(timestamp,'%Y%m%d%H%M%S')
+    #     logging.info(str(datetime.now()) + f' "{filename}" was taken on {timestamp}')
+    #     return timestamp
 
     elif ("Screenshot " in filename) and (".png" in filename): # Snip & Sketch generates these filenames. E.g., 'Screenshot 2020-11-17 104051.png'
         logging.info(str(datetime.now()) + f' "{filename}" appears to be a Screen Clip. Formatting...')
