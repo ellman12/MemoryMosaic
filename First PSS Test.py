@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import PIL.Image
 from tkinter import filedialog
 from tkinter import *
