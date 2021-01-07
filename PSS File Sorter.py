@@ -45,15 +45,15 @@ if (destinationDir == ""):
 
 for subDir, _, files in os.walk(unsortedDir):
     for file in files:
-        originalFilePath = subDir + "/" + file
-        newFilePath = destinationDir + "/" + file
+        originalFilePath = subDir + '/' + file
+        newFilePath = destinationDir + '/' + file
 
         if (".jpg" in file) or (".jpeg" in file) or (".png" in file):
             logging.info(str(datetime.now()) + f' Examining picture "{file}"')
             currentImage = PIL.Image.open(originalFilePath)
 
-            if (".png" in file): # Only needed for .png files. Not sure if this actually works or not. https://stackoverflow.com/a/62456315
-                currentImage.load()
+            # if (".png" in file): # Only needed for .png files. Not sure if this actually works or not. https://stackoverflow.com/a/62456315
+                # currentImage.load()
 
             exifData = currentImage._getexif() # Returns an array of data about this image. We only want the EXIF_DATETIME_TAG.
 
@@ -80,6 +80,6 @@ for subDir, _, files in os.walk(unsortedDir):
 
         elif (".mp4" in file) or (".mkv" in file):
             logging.info(str(datetime.now()) + f' Examining video "{file}"')
-            
+
 
             printNewLogLine()
