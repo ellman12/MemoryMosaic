@@ -81,5 +81,6 @@ for subDir, _, files in os.walk(unsortedDir):
         elif (".mp4" in file) or (".mkv" in file):
             logging.info(str(datetime.now()) + f' Examining video "{file}"')
 
+            # Get date using that command, then generate its new dir
 
             printNewLogLine()

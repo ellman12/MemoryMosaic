@@ -1,0 +1,6 @@
+create a file with your requirements in it like
+    python-dateutil
+    Pillow
+    mysql
+then do "pip3 install -r requirements.txt"
+

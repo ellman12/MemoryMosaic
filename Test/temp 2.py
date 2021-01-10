@@ -2,7 +2,6 @@ from PIL import Image
 from PIL.Tags import Tags
 import re
 
-
 FILENAME = "C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/Capture 2020-12-26 21_00_56.png"
 
 image = Image.open(FILENAME)
