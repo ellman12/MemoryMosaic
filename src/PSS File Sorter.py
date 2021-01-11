@@ -16,9 +16,12 @@ from tkinter import filedialog
 import PIL.Image
 from datetime import datetime
 import logging
+import subprocess
 
-from LogOutput import *
-from stripAndFormat import *
+# Functions, etc. that I've made for this main script.
+from Functions.LogOutput import *
+from Functions.readVideoMetadata import *
+from Functions.stripAndFormat import *
 
 open('src/PSS File Sorter.log', 'w').close() # TODO: Temp reset of this file on startup.
 
@@ -83,5 +86,8 @@ for subDir, _, files in os.walk(unsortedDir):
 
             # Get date using that command, then generate its new dir
 
+            fileTakenDate = readVideoMetadata(file)
+            if (fileTakenDate == None):
+                logError(f'No taken date found in file "{file}"')
 
             printNewLogLine()
