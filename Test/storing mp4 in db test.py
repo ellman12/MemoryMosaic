@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter import *
 import shutil
 import os.path
-import mysql.connector
+from mysql import connector
 import dateutil.parser
 import subprocess
 
@@ -12,7 +12,7 @@ import subprocess
 EXIF_DATETIME_TAG = 36867
 
 # Connect to the database.
-photosDB = mysql.connector.connect(host="localhost", user="root", password="Ph0t0s_Server", database="photos_storage_server")
+photosDB = connector.connect(host="localhost", user="root", password="Ph0t0s_Server", database="photos_storage_server")
 photosDBCursor = photosDB.cursor()
 
 # Used for getting 2 folder choices.
