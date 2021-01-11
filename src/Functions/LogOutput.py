@@ -17,6 +17,6 @@ def logError(text: str):
     logging.error(str(datetime.now()) +  " " + text)
 
 def printNewLogLine(): # Helps improve readability by adding a newline in the log file when needed.
-    logFile = open("PSS File Sorter.log", 'a')
+    logFile = open("src/PSS File Sorter.log", 'a')
     logFile.write("\n")
     logFile.close()
