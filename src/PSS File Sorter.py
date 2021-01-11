@@ -35,7 +35,7 @@ folderDialog = Tk()
 folderDialog.withdraw() # Hide useless extra window.
 unsortedDir = filedialog.askdirectory(title="Select directory to sort")
 if (unsortedDir == ""):
-    logging.info("Cancelling unsortedDir selection...")
+    logInfo("Cancelling unsortedDir selection...")
     exit()
 
 destinationDir = filedialog.askdirectory(title="Where should the sorted files go?")
