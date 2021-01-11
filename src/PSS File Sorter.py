@@ -18,7 +18,7 @@ from datetime import datetime
 import logging
 
 from LogOutput import *
-import stripAndFormat
+from stripAndFormat import *
 
 open('src/PSS File Sorter.log', 'w').close() # TODO: Temp reset of this file on startup.
 
@@ -59,7 +59,7 @@ for subDir, _, files in os.walk(unsortedDir):
 
             if (exifData == None): # If no "date taken" data embedded in the file, look at the filename for a timestamp. If can't read or can't find, default to the time right now.
                 logError(f' No date taken data detected for "{file}."')
-                fileTakenDate = stripAndFormat.stripAndFormatTimestamp(file)
+                fileTakenDate = stripAndFormatTimestamp(file)
                 if (fileTakenDate == -1):
                     logInfo(f' Unable to find date taken for "{file}". Using current time.')
                     fileTakenDate = datetime.now()
@@ -71,7 +71,7 @@ for subDir, _, files in os.walk(unsortedDir):
 
             else:
                 logError(f' "{file}" caused an error or something idk.')
-                fileTakenDate = stripAndFormat.stripAndFormatTimestamp(file)
+                fileTakenDate = stripAndFormatTimestamp(file)
                 if (fileTakenDate == -1):
                     logInfo(f' Unable to find date taken for "{file}". Using current time.')
                     fileTakenDate = datetime.now()
