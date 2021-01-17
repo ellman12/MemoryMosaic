@@ -16,7 +16,7 @@ def logWarning(text: str):
 def logError(text: str):
     logging.error(str(datetime.now()) +  " " + text)
 
-def printNewLogLine(): # Helps improve readability by adding a newline in the log file when needed.
-    logFile = open("src/PSS File Sorter.log", 'a')
+def printNewLogLine(fileDir): # Helps improve readability by adding a newline in the log file when needed.
+    logFile = open(fileDir, 'a')
     logFile.write("\n")
     logFile.close()
