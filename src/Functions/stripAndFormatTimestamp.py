@@ -31,10 +31,18 @@ def stripAndFormatTimestamp(filename):
         logInfo(f'"{filename}" was taken on {timestamp}')
         return timestamp
 
-    # elif (filename[8] == '_'): # A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones.
-    #     logInfo(f'"{filename}" has a timestamp in the filename. Formatting...')
-    #     timestamp = filename[0:8] + filename[9:15]
-    #     timestamp = datetime.strptime(timestamp,'%Y%m%d%H%M%S')
+    elif (filename[8] == '_'): # A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones.
+        logInfo(f'"{filename}" has a timestamp in the filename. Formatting...')
+        timestamp = filename[0:8] + filename[9:15]
+        timestamp = datetime.strptime(timestamp,'%Y%m%d%H%M%S')
+        logInfo(f'"{filename}" was taken on {timestamp}')
+        return timestamp
+
+    # elif ("_s" in filename): # A Nintendo Switch screenshot/video clip: '2018022016403700_s.mp4'.
+    #     logInfo(f'"{filename}" appears to be a Switch picture or video. Formatting...')
+    #     fileTakenDate = readVideoMetadata(originalFileLocation)
+    #     logInfo(f"Original Taken Date: ")
+    #     timestamp = filename[0:15]
     #     logInfo(f'"{filename}" was taken on {timestamp}')
     #     return timestamp
 

@@ -7,6 +7,7 @@
 #######################################################################
 
 # TODO:
+# try sorting mkv and png files
 # better png support
 # SQL stuff
 
