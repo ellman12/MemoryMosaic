@@ -39,7 +39,7 @@ def stripAndFormatTimestamp(filename):
         return timestamp
 
     # elif ("_s" in filename): # A Nintendo Switch screenshot/video clip: '2018022016403700_s.mp4'.
-    #     logInfo(f'"{filename}" appears to be a Switch picture or video. Formatting...')
+        # logInfo(f'"{filename}" appears to be a Switch picture or video file. Formatting...')
     #     fileTakenDate = readVideoMetadata(originalFileLocation)
     #     logInfo(f"Original Taken Date: ")
     #     timestamp = filename[0:15]
