@@ -70,5 +70,5 @@ def stripAndFormatTimestamp(filename):
         return timestamp
 
     else:
-        logError(f" Unknown timestamp-filename format for {filename}. Returning -1")
-        return -1
+        logError(f" Unknown timestamp-filename format for {filename}. Returning current time.")
+        return datetime.now()
