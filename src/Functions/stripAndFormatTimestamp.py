@@ -6,8 +6,18 @@ from Functions.LogOutput import *
 # and this function will try and turn that into a standard timestamp like this: '2021-01-05 20:28:49'.
 # This is used for determining when the pic/vid was taken.
 # This function is basically necessary for PNG files as they don't really work with exif I think?? Also helpful for .jpgs that might not have that embedded data.
+
+MIN_FILENAME_LENGTH = 14 # Filenames have to be at least this many chars long or else it throws an error.
+
 def stripAndFormatTimestamp(filename):
     logInfo(f'Attempting to strip "{filename}"')
+    print(len(filename))
+
+    if (len(filename) < MIN_FILENAME_LENGTH):
+        logError(f'"{filename}" is too short for stripAndFormatTimestamp()! Please enter a new date and time.')
+        # TODO: implement this
+        # return what the user entered?
+        return
 
     if ("Screenshot_" in filename): # If Android screenshot. E.g., 'Screenshot_20201028-141626_Messages.jpg'
         logInfo(f'"{filename}" is an Android screenshot. Stripping...')
@@ -70,4 +80,4 @@ def stripAndFormatTimestamp(filename):
 
     else:
         logError(f" Unknown timestamp-filename format for {filename}. Please enter a new date and time.")
-        return datetime.now()
+        # TODO: implement this
