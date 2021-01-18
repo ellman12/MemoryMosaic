@@ -6,11 +6,6 @@
 # Also adds them to the SQL database.
 #######################################################################
 
-# TODO:
-# try sorting mkv and png files
-# better png support
-# SQL stuff
-
 import os
 import shutil
 from tkinter import *
@@ -34,6 +29,9 @@ def createDirAndCopyItem():
     # If this dir doesn't exist, make it and then copy the item there.
     if not os.path.exists(newFileFolderPath):
         os.makedirs(newFileFolderPath)
+
+    # This has been known to throw errors from time to time.
+    # try:
     shutil.copyfile(originalFileLocation, newFileLocation)
 
     logInfo(f'"{file}" copied from "{originalFileLocation}" to "{newFileLocation}"')
@@ -57,7 +55,7 @@ if (unsortedDir == ""):
     logInfo("Cancelling unsortedDir selection...")
     exit()
 
-destinationDir = filedialog.askdirectory(title="Where should the sorted files go?")
+destinationDir = filedialog.askdirectory(title="Where should the sorted files go?") # This is the main dir. The sorted month folders go inside this dir.
 if (destinationDir == ""):
     logInfo("Cancelling destinationDir selection...")
     exit()
@@ -69,18 +67,11 @@ for subDir, _, files in os.walk(unsortedDir):
         if (".jpg" in file) or (".jpeg" in file) or (".png" in file):
             logInfo(f'Examining picture "{file}"')
             currentImage = PIL.Image.open(originalFileLocation)
-
-            # if (".png" in file): # Only needed for .png files. Not sure if this actually works or not. https://stackoverflow.com/a/62456315
-                # currentImage.load()
-
             exifData = currentImage._getexif() # Returns an array of data about this image. We only want the EXIF_DATETIME_TAG.
 
             if (exifData == None): # If no "date taken" data embedded in the file, look at the filename for a timestamp. If can't read or can't find, default to the time right now.
                 logWarning(f'No date taken data detected for "{file}."')
                 fileTakenDate = stripAndFormatTimestamp(file)
-                if (fileTakenDate == -1):
-                    logWarning(f'Unable to find date taken for "{file}". Using current time.')
-                    fileTakenDate = datetime.now()
 
             elif (exifData != None) and (EXIF_DATETIME_TAG in exifData): # If the file does have "date taken" data embedded in the file.
                 logInfo(f'"{file}" date taken data found.')
@@ -88,30 +79,32 @@ for subDir, _, files in os.walk(unsortedDir):
                 logInfo(f'"{file}" was taken on {fileTakenDate}')
 
             else:
-                logError(f'"{file}" caused an error or something idk.')
+                logError(f'Something happened while analyzing "{file}"') # I'm not sure why some files wouldn't fall under either of those 2 categories, so I guess this else clause is needed???
                 fileTakenDate = stripAndFormatTimestamp(file)
-                if (fileTakenDate == -1):
-                    logWarning(f'Unable to find date taken for "{file}". Using current time.')
-                    fileTakenDate = datetime.now()
 
             createDirAndCopyItem()
-            printNewLogLine()
 
-        elif (".mp4" in file) or (".mkv" in file):
+        elif (".mp4" in file):
             logInfo(f'Examining video "{file}"')
-
-            # Get date using that command, then generate its new dir
-
             fileTakenDate = readVideoMetadata(originalFileLocation)
-            if (fileTakenDate == None):
-                logWarning(f'No taken date found in file "{file}". Searching in filename.')
 
+            if (fileTakenDate == None): # If can't find/doesn't have this data.
+                logWarning(f'No taken date found in file "{file}". Searching in filename.')
                 fileTakenDate = stripAndFormatTimestamp(file)
-                if (fileTakenDate == -1):
-                    logWarning(f'Unable to find date taken for "{file}". Using current time.')
-                    fileTakenDate = datetime.now()
-            else:
+            elif (fileTakenDate != None):
                 logInfo(f'"{file}" was taken on {fileTakenDate}.')
+            else:
+                logError(f'Something happened while analyzing "{file}"')
+                fileTakenDate = stripAndFormatTimestamp(file)
 
             createDirAndCopyItem()
-            printNewLogLine()
+
+        elif (".mkv" in file): # Unfortunately, I don't think it's possible to use readVideoMetadata() for MKV files. So, we can just use the filenames instead, since they really only come from OBS and they follow a common format.
+            logInfo(f'Examining video "{file}"')
+            fileTakenDate = stripAndFormatTimestamp(file)
+            createDirAndCopyItem()
+
+        else:
+            logInfo(f"Ignoring {file}...")
+
+        printNewLogLine("src/PSS File Sorter.log")
