@@ -1,3 +1,4 @@
 python-dateutil
 Pillow
-mysql.connector
+# mysql.connector
+mysql-connector-python
