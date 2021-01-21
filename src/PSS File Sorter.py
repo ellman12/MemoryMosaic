@@ -122,6 +122,6 @@ for subDir, _, files in os.walk(unsortedDir):
             sortAndAddToDB()
 
         else:
-            logInfo(f"Ignoring {file}...")
+            logWarning(f"Ignoring {file}...")
 
         printNewLogLine("src/PSS File Sorter.log")
