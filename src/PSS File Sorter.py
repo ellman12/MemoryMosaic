@@ -47,8 +47,7 @@ def sortAndAddToDB():
 
 open('src/PSS File Sorter.log', 'w').close() # TODO: Temp reset of this file on startup.
 
-# Connect to the database.
-# https://stackoverflow.com/a/53561512
+# Connect to the database https://stackoverflow.com/a/53561512
 photosDB = mysql.connector.connect(host="localhost", user="root", password="Ph0t0s_Server", database="photos_storage_server")
 photosDBCursor = photosDB.cursor()
 
