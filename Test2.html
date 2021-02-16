@@ -1,0 +1,36 @@
+<!-- https://www.w3schools.com/howto/howto_js_collapse_sidebar.asp -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 4 stuff -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link href="Test2.css" rel="stylesheet">
+    <script src="Test2.js"></script>
+</head>
+
+<body>
+    <div id="mySidebar" class="sidebar">
+        <a href="#Main Library"> <span class="glyphicon glyphicon-home"></span>Main Library</a>
+        <a style="margin-left: -2px;" href="#All Photos"> <i class="material-icons">image</i>All Photos</a>
+        <a style="margin-left: -2.3px;" href="#Albums"> <i class="material-icons">photo_album</i>Albums</a>
+        <a style="margin-left: -2.3px;" href="#Archive"><i class="material-icons">archive</i>Archive</a>
+        <a style="margin-left: -2.3px;" href="#Trash"><i class="material-icons">delete</i>Trash</a>
+    </div>
+
+    <div id="main">
+        <button class="openbtn" onclick="toggleNav()">☰ Open Sidebar</button>
+        <!-- <img style="position: flex;" class="img-fluid" src="Photos from gphotos for testing/20200620_133243.jpg" , alt="Cat" , width="300"> -->
+    </div>
+
+</html>

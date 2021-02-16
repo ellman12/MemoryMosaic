@@ -4,6 +4,7 @@ body {
 
 img {
   margin: 0.2%;
+  position: flex;
 }
 
 .material-icons {
@@ -11,7 +12,8 @@ img {
   margin-bottom: 0.6%;
 }
 
-i {
+/* i and span are for icons */
+i { 
   margin-right: 5px;
 }
 
@@ -20,28 +22,19 @@ span {
 }
 
 /* The sidebar menu https://www.w3schools.com/howto/howto_css_fixed_sidebar.asp */
-
 .sidebar {
   height: 100%;
-  /* Full-height: remove this if you want "auto" height */
   width: 160px;
-  /* Set the width of the sidebar */
-  position: fixed;
-  /* Fixed Sidebar (stay in place on scroll) */
+  position: flex;
   z-index: 1;
-  /* Stay on top */
   top: 0;
-  /* Stay at the top */
   left: 0;
   background-color: #111;
-  /* Black */
   overflow-x: hidden;
-  /* Disable horizontal scroll */
   padding-top: 20px;
 }
 
 /* The navigation menu links */
-
 .sidebar a {
   padding: 6px 8px 6px 16px;
   text-decoration: none;
@@ -52,6 +45,7 @@ span {
 
 /* When you mouse over the navigation links, change their color */
 .sidebar a:hover {
+  text-decoration: none; /* No underline */
   color: #f1f1f1;
 }
 
@@ -63,7 +57,6 @@ span {
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
-
 @media screen and (max-height: 450px) {
   .sidebar {
     padding-top: 15px;
