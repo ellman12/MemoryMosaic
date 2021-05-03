@@ -1,7 +1,0 @@
-Sunday, January 10, 2021
-    create a file with your requirements in it like
-        python-dateutil
-        Pillow
-        mysql
-    then do "pip3 install -r requirements.txt"
-
