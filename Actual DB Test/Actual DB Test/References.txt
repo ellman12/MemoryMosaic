@@ -1,0 +1,3 @@
+﻿https://stackoverflow.com/questions/21618015/how-to-connect-to-mysql-database
+https://www.codeproject.com/Articles/43438/Connect-C-to-MySQL
+https://stackoverflow.com/questions/15246182/sql-update-statement-in-c-sharp
