@@ -10,6 +10,18 @@ namespace PSS_Photo_Sorter
 {
     static class PSSPhotoSorter
     {
+        //Take a timestamps string like '20210501193042' and make it into a DateTime object.
+        static DateTime ToDateTime(string dateString)
+        {
+            int year = Int32.Parse(dateString.Substring(0, 4));
+            int month = Int32.Parse(dateString.Substring(4, 2));
+            int day = Int32.Parse(dateString.Substring(6, 2));
+            int hour = Int32.Parse(dateString.Substring(8, 2));
+            int minute = Int32.Parse(dateString.Substring(10, 2));
+            int second = Int32.Parse(dateString.Substring(12, 2));
+            return new DateTime(year, month, day, hour, minute, second);
+        }
+
         //Uses ffprobe shell command to get video date.
         public static DateTime GetVidDate(string dir)
         {
@@ -36,8 +48,7 @@ namespace PSS_Photo_Sorter
         }
 
         //Used if program can't find date/time metadata in the file.
-        //TODO: get them as strings, THEN figure out datetime conversion
-        public static string GetFilenameTimestamp(string dir, string filename)
+        public static DateTime GetFilenameTimestamp(string dir, string filename)
         {
             string timestamp = "";
             if (filename.Contains("Screenshot_")) //If Android screenshot. E.g., 'Screenshot_20201028-141626_Messages.jpg'
@@ -83,8 +94,7 @@ namespace PSS_Photo_Sorter
             {
                 Console.WriteLine("Date could not be determined");
             }
-            //return DateTime.Now;
-            return timestamp;
+            return ToDateTime(timestamp);
         }
 
         static void PhotoSorter()

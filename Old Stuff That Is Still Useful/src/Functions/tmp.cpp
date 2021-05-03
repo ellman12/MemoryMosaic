@@ -1,0 +1,1 @@
+DateTime date = new DateTime(long.Parse(dateString.Substring(0, 4)), dateString.Substring(4, 2));
