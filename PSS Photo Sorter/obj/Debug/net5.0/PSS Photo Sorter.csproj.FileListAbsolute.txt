@@ -1,0 +1,16 @@
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\bin\Debug\net5.0\PSS Photo Sorter.exe
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\bin\Debug\net5.0\PSS Photo Sorter.deps.json
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\bin\Debug\net5.0\PSS Photo Sorter.runtimeconfig.json
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\bin\Debug\net5.0\PSS Photo Sorter.runtimeconfig.dev.json
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\bin\Debug\net5.0\PSS Photo Sorter.dll
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\bin\Debug\net5.0\ref\PSS Photo Sorter.dll
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\bin\Debug\net5.0\PSS Photo Sorter.pdb
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\PSS Photo Sorter.csprojAssemblyReference.cache
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\PSS Photo Sorter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\PSS Photo Sorter.AssemblyInfoInputs.cache
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\PSS Photo Sorter.AssemblyInfo.cs
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\PSS Photo Sorter.csproj.CoreCompileInputs.cache
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\PSS Photo Sorter.dll
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\ref\PSS Photo Sorter.dll
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\PSS Photo Sorter.pdb
+C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\PSS Photo Sorter\obj\Debug\net5.0\PSS Photo Sorter.genruntimeconfig.cache
