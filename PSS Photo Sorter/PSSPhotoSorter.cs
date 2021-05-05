@@ -13,6 +13,13 @@ namespace PSS_Photo_Sorter
         //Take a timestamps string like '20210501193042' and make it into a DateTime object.
         static DateTime ToDateTime(string dateString)
         {
+            if (dateString.Length < 13)
+            {
+                // throw new Exception("The specified dateString is too small")
+                Console.WriteLine("The specified dateString is too small");
+                return; //??????????????
+            }
+
             int year = Int32.Parse(dateString.Substring(0, 4));
             int month = Int32.Parse(dateString.Substring(4, 2));
             int day = Int32.Parse(dateString.Substring(6, 2));
