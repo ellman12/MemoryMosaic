@@ -7,8 +7,19 @@ namespace PSS_Photo_Sorter
     {
         static void Main()
         {
-            DateTime yes = PSSPhotoSorter.GetFilenameTimestamp("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/Pics and Vids/Test Vids/", "Screenshot_20210416-075337_Outlook.jpg");
-            Console.WriteLine(yes);
+            try
+            {
+                string filename = "Screenshot_20210416-075337_Outlook.jpg";
+                if (filename.Length > PSSPhotoSorter.MIN_LENGTH)
+                {
+                    DateTime yes = PSSPhotoSorter.GetFilenameTimestamp("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/Pics and Vids/Test Vids/", filename);
+                    Console.WriteLine(yes);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

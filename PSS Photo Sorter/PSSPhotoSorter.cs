@@ -10,23 +10,24 @@ namespace PSS_Photo_Sorter
 {
     static class PSSPhotoSorter
     {
+        public const int MIN_LENGTH = 13; //Min length of string for ToDateTime(). Won't work if less than this.
+
         //Take a timestamps string like '20210501193042' and make it into a DateTime object.
+        //Raises exception if < 13 (too short).
         static DateTime ToDateTime(string dateString)
         {
             if (dateString.Length < 13)
+                throw new Exception("The specified dateString is too small");
+            else
             {
-                // throw new Exception("The specified dateString is too small")
-                Console.WriteLine("The specified dateString is too small");
-                return; //??????????????
+                int year = Int32.Parse(dateString.Substring(0, 4));
+                int month = Int32.Parse(dateString.Substring(4, 2));
+                int day = Int32.Parse(dateString.Substring(6, 2));
+                int hour = Int32.Parse(dateString.Substring(8, 2));
+                int minute = Int32.Parse(dateString.Substring(10, 2));
+                int second = Int32.Parse(dateString.Substring(12, 2));
+                return new DateTime(year, month, day, hour, minute, second);
             }
-
-            int year = Int32.Parse(dateString.Substring(0, 4));
-            int month = Int32.Parse(dateString.Substring(4, 2));
-            int day = Int32.Parse(dateString.Substring(6, 2));
-            int hour = Int32.Parse(dateString.Substring(8, 2));
-            int minute = Int32.Parse(dateString.Substring(10, 2));
-            int second = Int32.Parse(dateString.Substring(12, 2));
-            return new DateTime(year, month, day, hour, minute, second);
         }
 
         //Uses ffprobe shell command to get video date.
