@@ -27,6 +27,11 @@ namespace PSS_Photo_Sorter
                 throw new Exception("An error happened in ToDateTime()");
         }
 
+        //TODO
+        // static DateTime GetPicDate(string dir)
+        // {
+        // }
+
         //Uses ffprobe shell command to get video date from file metadata.
         public static DateTime GetVidDate(string dir)
         {

@@ -1,14 +1,34 @@
 PhotoSorter Steps
 -----------------
-For each dir to add
-If in DB
+For each dir to add:
     Check if in DB. Some kind of select statement?
-    DBMS should throw an error since dir is primary key. //TODO: try this
-    Might need to handle this manually
+        DBMS should throw an error since dir is primary key. //TODO: try this
+        Might need to handle this manually
+        Regardless, skip to next dir if duplicate
 
-If not in DB
-    Sort
-        Get when the thing was taken
-        Generate sorted dir
-        Move there
-        Add this to the DB. Add dir, date added, date taken, etc.
+    If not in DB
+        Sort
+            Create List<> of photos that need user's attention. //Probably list of strings
+
+            Get when the thing was taken
+            if cannot determine when taken:
+                Add to list of ones needing attention
+
+            if can:
+                Generate new dir; move there
+                Add this to the DB. Add dir, date added, date taken, etc.
+
+        If there is any thing in that list:
+            Generate another list to track what user checked
+            Generate pop-up or something. At the top, add a date/time picker, and a confirm button.
+            Add this in the pop-up for each item:
+                Place checkbox and the name of the photo next to the checkbox. Also a smol preview of each and/or the ability to view the whole image next to each.
+
+            While first list is not empty:
+                Ask user to check items to fix
+                    Ask user to enter new date/time (probs don't modify metadata, just store the user-supplied date in DB). Default the date picker to DateTime.Now. After pressing confirm, reset to .Now()
+
+                For each item in checked list:
+                    Generate new dir; move there
+                    Add this to the DB. Add dir, date added, date taken, etc.
+                    Remove item from both lists
