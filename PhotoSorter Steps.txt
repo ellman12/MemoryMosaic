@@ -1,0 +1,14 @@
+PhotoSorter Steps
+-----------------
+For each dir to add
+If in DB
+    Check if in DB. Some kind of select statement?
+    DBMS should throw an error since dir is primary key. //TODO: try this
+    Might need to handle this manually
+
+If not in DB
+    Sort
+        Get when the thing was taken
+        Generate sorted dir
+        Move there
+        Add this to the DB. Add dir, date added, date taken, etc.
