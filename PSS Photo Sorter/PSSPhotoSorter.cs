@@ -1,24 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
-using System.IO;
 
 namespace PSS_Photo_Sorter
 {
     static class PSSPhotoSorter
     {
-        public const int MIN_LENGTH = 13; //Min length of string for ToDateTime(). Won't work if less than this.
-
-        //Take a timestamps string like '20210501193042' and make it into a DateTime object.
-        //Raises exception if < 13 (too short).
-        static DateTime ToDateTime(string dateString)
+        //Take a timestamp string like '20210501193042' (typically from a filename) and make it into a DateTime object.
+        //The dateString needs to be exactly 14 characters long.
+        public static DateTime ToDateTime(string dateString)
         {
-            if (dateString.Length < 13)
-                throw new Exception("The specified dateString is too small");
-            else
+            if (dateString.Length < 14)
+                throw new ArgumentException("The specified dateString is too short. It needs to be exactly 14 characters long. The string given was " + dateString.Length + " characters long.");
+            else if (dateString.Length > 14)
+                throw new ArgumentException("The specified dateString is too long. It needs to be exactly 14 characters long. The string given was " + dateString.Length + " characters long.");
+            else if (dateString.Length == 14)
             {
                 int year = Int32.Parse(dateString.Substring(0, 4));
                 int month = Int32.Parse(dateString.Substring(4, 2));
@@ -28,12 +23,19 @@ namespace PSS_Photo_Sorter
                 int second = Int32.Parse(dateString.Substring(12, 2));
                 return new DateTime(year, month, day, hour, minute, second);
             }
+            else
+                throw new Exception("An error happened in ToDateTime()");
         }
 
-        //Uses ffprobe shell command to get video date.
+        //TODO
+        // static DateTime GetPicDate(string dir)
+        // {
+        // }
+
+        //Uses ffprobe shell command to get video date from file metadata.
         public static DateTime GetVidDate(string dir)
         {
-            string date = "";
+            string date = ""; //The output of the ffprobe command.
             ProcessStartInfo ffprobeInfo = new ProcessStartInfo();
             ffprobeInfo.CreateNoWindow = true;
             ffprobeInfo.UseShellExecute = false;
@@ -45,20 +47,23 @@ namespace PSS_Photo_Sorter
             try
             {
                 Process ffprobeProcess = Process.Start(ffprobeInfo);
-                date = ffprobeProcess.StandardOutput.ReadLine();
+                date = ffprobeProcess.StandardOutput.ReadLine(); //The command should only return a single line. //TODO: what does it return on error or something?
                 ffprobeProcess.WaitForExit();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Something happened in GetVidDate()\n" + ex.Message);
+                Console.WriteLine("Something happened in GetVidDate() while running the ffprobe command\n" + ex.Message);
             }
             return Convert.ToDateTime(date);
         }
 
-        //Used if program can't find date/time metadata in the file.
-        public static DateTime GetFilenameTimestamp(string dir, string filename)
+        //Used if program can't find date/time metadata in the file. Often, filenames will have a timestamp in them.
+        //E.g., the Nintendo Switch generates pics/vids filenames like: 2018022016403700_s.mp4. This can be stripped and
+        //converted into an actual DateTime object. It's stripped in here and converted in ToDateTime() and returned here.
+        public static DateTime GetFilenameTimestamp(string filename)
         {
-            string timestamp = "";
+            string timestamp = ""; //The actual timestamp in the filename, without the extra chars we don't want. Converted to DateTime at the end.
+
             if (filename.Contains("Screenshot_")) //If Android screenshot. E.g., 'Screenshot_20201028-141626_Messages.jpg'
             {
                 Console.WriteLine("Screenshot");
@@ -76,12 +81,12 @@ namespace PSS_Photo_Sorter
                 timestamp = filename.Substring(0, timestamp.Length - 4); //Remove extension https://stackoverflow.com/questions/15564944/remove-the-last-three-characters-from-a-string
                 timestamp = timestamp.Replace("-", "").Replace(" ", "");
             }
-            else if (filename[8] == '_') //A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones.
+            else if (filename[8] == '_') //A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones. Not 100% sure.
             {
                 Console.WriteLine("Android _");
                 timestamp = filename.Substring(0, 8) + filename.Substring(9, 6);
             }
-            else if (filename.Contains("_s")) //A Nintendo Switch screenshot/video clip: '2018022016403700_s.mp4'.
+            else if (filename.Contains("_s")) //A Nintendo Switch screenshot/video clip, like '2018022016403700_s.mp4'.
             {
                 Console.WriteLine("Switch");
                 timestamp = filename.Substring(0, 14);
@@ -99,12 +104,12 @@ namespace PSS_Photo_Sorter
                 timestamp = timestamp.Replace("-", "").Replace(" ", "");
             }
             else
-            {
-                Console.WriteLine("Date could not be determined");
-            }
+                throw new ArgumentException("Could not determine date/time from provided filename: " + filename);
+
             return ToDateTime(timestamp);
         }
 
+        //Sort items and add them to the DB
         static void PhotoSorter()
         {
 

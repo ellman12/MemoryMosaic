@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 
 namespace PSS_Photo_Sorter
 {
@@ -7,19 +6,17 @@ namespace PSS_Photo_Sorter
     {
         static void Main()
         {
-            try
-            {
-                string filename = "Screenshot_20210416-075337_Outlook.jpg";
-                if (filename.Length > PSSPhotoSorter.MIN_LENGTH)
-                {
-                    DateTime yes = PSSPhotoSorter.GetFilenameTimestamp("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/Pics and Vids/Test Vids/", filename);
-                    Console.WriteLine(yes);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            // try
+            // {
+            string filename = "Screenshot_20210416-075337_Outlook.jpg";
+            DateTime yes = PSSPhotoSorter.GetFilenameTimestamp(filename);
+            //     DateTime yes = PSSPhotoSorter.ToDateTime(filename);
+            //     Console.WriteLine(yes);
+            // }
+            // catch (ArgumentException)
+            // {
+            //     Console.WriteLine("error lmao");
+            // }
         }
     }
 }
