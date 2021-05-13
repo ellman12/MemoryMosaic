@@ -4,11 +4,12 @@ namespace Actual_DB_Test
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            Console.WriteLine("Hello World!");
-            var connection = new PSSDBConnection();
-            connection.InsertPhoto("test6", DateTime.Now, "0");
+            PSSDBConnection connection = new();
+            //connection.InsertMedia("h8887", DateTime.Now);
+            //connection.CreateAlbum("vacay");
+            connection.AddToAlbum("path1", 3);
         }
     }
 }

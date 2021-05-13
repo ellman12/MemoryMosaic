@@ -8,11 +8,11 @@ namespace Actual_DB_Test
 {
     public class PSSDBConnection
     {
-        private MySqlConnection connection;
-        private string server;
-        private string database;
-        private string username;
-        private string password;
+        private readonly MySqlConnection connection;
+        private readonly string server;
+        private readonly string database;
+        private readonly string username;
+        private readonly string password;
 
         //Constructor
         public PSSDBConnection()
@@ -21,8 +21,7 @@ namespace Actual_DB_Test
             database = "photos_storage_server";
             username = "root";
             password = "Ph0t0s_Server";
-            string connectionString = "SERVER=" + server + ";" + "DATABASE=" + database + ";" + "username=" + username + ";" + "PASSWORD=" + password + ";";
-            connection = new MySqlConnection(connectionString);
+            connection = new MySqlConnection("SERVER=" + server + ";" + "DATABASE=" + database + ";" + "username=" + username + ";" + "PASSWORD=" + password + ";");
         }
 
         public bool OpenConnection()
@@ -32,23 +31,27 @@ namespace Actual_DB_Test
                 connection.Open();
                 return true;
             }
-            catch (MySqlException ex)
+            catch (MySqlException e)
             {
-                //When handling errors, you can your application's response based 
-                //on the error number.
-                //The two most common error numbers when connecting are as follows:
-                //0: Cannot connect to server.
-                //1045: Invalid user name and/or password.
-                switch (ex.Number)
+                switch (e.Number)
                 {
                     case 0:
+                        //TODO: make these throw exceptions and catch these when trying to connect
                         Console.WriteLine("Cannot connect to server.  Contact administrator");
                         break;
 
                     case 1045:
                         Console.WriteLine("Invalid username/password, please try again");
                         break;
+
+                    default:
+                        Console.WriteLine("Something happened. Error code: " + e.Number);
+                        break;
                 }
+                return false;
+            }
+            catch (Exception)
+            {
                 return false;
             }
         }
@@ -60,80 +63,105 @@ namespace Actual_DB_Test
                 connection.Close();
                 return true;
             }
-            catch (MySqlException ex)
+            catch (MySqlException e)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(e.Message);
                 return false;
             }
         }
 
-        public void InsertPhoto(string dir, DateTime dateTaken, string albumsList)
+        //For inserting a photo or video into the media table (the main table).
+        public void InsertMedia(string path, DateTime dateTaken)
         {
             if (OpenConnection())
             {
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO photos VALUES (@dir, @dateAdded, @dateTaken)", connection);
-                cmd.Parameters.AddWithValue("@dir", dir);
+                MySqlCommand cmd = new MySqlCommand("INSERT INTO media VALUES (@path, @dateAdded, @dateTaken)", connection);
+                cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateAdded", DateTime.Now);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
-                cmd.ExecuteNonQuery();
-                CloseConnection();
+
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    switch (e.Number)
+                    {
+                        case 1062:
+                            Console.WriteLine('"' + path + "\" is already in the database. Error code: " + e.Number);
+                            break;
+
+                        default:
+                            Console.WriteLine("Something happened. Error code: " + e.Number);
+                            break;
+                    }
+                }
+                finally
+                {
+                    CloseConnection();
+                }
             }
         }
 
-        //public void UpdatePhoto(string dir, DateTime dateTaken, string albumsList)
-        //{This needs some work. https://stackoverflow.com/questions/7505808/why-do-we-always-prefer-using-parameters-in-sql-statements/7505842???
+        //Add a new album to the table of Album names and IDs
+        public void CreateAlbum(string name)
+        {
+            if (OpenConnection())
+            {
+                try
+                {
+                    //TODO: INJECTION!!!!!!!!!!!!!
+                    MySqlCommand cmd = new MySqlCommand("INSERT INTO albums (Name) VALUES (\"" + name + "\")", connection);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("Something happened. Error code: " + e.Number);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+        }
+
+        //TODO: array of ints? Variadic???
+        //MAYBE JUST ADD TO SINGLE ALBUM?
+        //TODO: prevent adding a path to the same album twice
+        //e.g., path1 can't be in album 3 more than once
+        public void AddToAlbum(string path, int albumID)
+        {
+            if (OpenConnection())
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand("INSERT INTO album_entries VALUES (@path, @albumID, @date_added_to_album)", connection);
+                    cmd.Parameters.AddWithValue("@path", path);
+                    cmd.Parameters.AddWithValue("@albumID", albumID);
+                    cmd.Parameters.AddWithValue("@date_added_to_album", DateTime.Now);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("Something happened. Error code: " + e.Number);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+        }
+
+        //public void DeletePhoto(string path)
+        //{
         //    if (OpenConnection())
         //    {
-        //        string query = "UPDATE photos SET Directory = dir, Date_Added = @dateAdded, Date_Taken = @dateTaken";
-        //        MySqlCommand cmd = new MySqlCommand(query, connection);
-        //        cmd.Parameters.AddWithValue("@dir", dir);
-        //        cmd.Parameters.AddWithValue("@dateAdded", DateTime.Now);
-        //        cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+        //        MySqlCommand cmd = new MySqlCommand("DELETE FROM photos WHERE Directory = @path", connection);
+        //        cmd.Parameters.AddWithValue("@path", path);
         //        cmd.ExecuteNonQuery();
         //        CloseConnection();
         //    }
-        //}
-
-        public void DeletePhoto(string dir)
-        {
-            if (OpenConnection())
-            {
-                MySqlCommand cmd = new MySqlCommand("DELETE FROM photos WHERE Directory = @dir", connection);
-                cmd.Parameters.AddWithValue("@dir", dir);
-                cmd.ExecuteNonQuery();
-                CloseConnection();
-            }
-        }
-
-        //public List<string>[] Select()
-        //{
-        //    string query = "SELECT Directory, Date_Added, Date_Taken, FROM photos";
-
-        //    //Create a list to store the result
-        //    List<string>[] list = new List<string>[3];
-        //    list[0] = new List<string>();
-        //    list[1] = new List<string>();
-        //    list[2] = new List<string>();
-
-        //    if (OpenConnection())
-        //    {
-        //        MySqlCommand cmd = new MySqlCommand(query, connection);
-        //        MySqlDataReader dataReader = cmd.ExecuteReader();
-
-        //        //Read the data and store them in the list
-        //        while (dataReader.Read())
-        //        {
-        //            list[0].Add(dataReader["Directory"] + "");
-        //            list[1].Add(dataReader["Date_Added"] + "");
-        //            list[2].Add(dataReader["Date_Taken"] + "");
-        //        }
-
-        //        dataReader.Close();
-        //        CloseConnection();
-        //        return list;
-        //    }
-        //    else
-        //        return list;
         //}
     }
 }
