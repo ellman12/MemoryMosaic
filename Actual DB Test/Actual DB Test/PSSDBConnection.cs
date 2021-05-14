@@ -126,17 +126,14 @@ namespace Actual_DB_Test
             }
         }
 
-        //TODO: array of ints? Variadic???
-        //MAYBE JUST ADD TO SINGLE ALBUM?
-        //TODO: prevent adding a path to the same album twice
-        //e.g., path1 can't be in album 3 more than once
         public void AddToAlbum(string path, int albumID)
         {
             if (OpenConnection())
             {
                 try
                 {
-                    MySqlCommand cmd = new MySqlCommand("INSERT INTO album_entries VALUES (@path, @albumID, @date_added_to_album)", connection);
+                    //Will IGNORE (not throw error) if there is a duplicate.
+                    MySqlCommand cmd = new MySqlCommand("INSERT IGNORE INTO album_entries VALUES (@path, @albumID, @date_added_to_album)", connection);
                     cmd.Parameters.AddWithValue("@path", path);
                     cmd.Parameters.AddWithValue("@albumID", albumID);
                     cmd.Parameters.AddWithValue("@date_added_to_album", DateTime.Now);
