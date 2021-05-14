@@ -135,10 +135,28 @@ namespace Actual_DB_Test
             }
         }
 
-        // public void DeleteAlbum(string name)
-        // {
+        //Remove an album from the 'albums' table.
+        public void DeleteAlbum(string name)
+        {
+            if (OpenConnection())
+            {
+                try
+                {
 
-        // }
+                    MySqlCommand cmd = new MySqlCommand("DELETE FROM albums WHERE name = (@name)", connection);
+                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+        }
 
         //Add a single path to an album in album_entries.
         public void AddToAlbum(string path, int albumID)
