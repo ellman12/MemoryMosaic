@@ -135,17 +135,31 @@ namespace Actual_DB_Test
             }
         }
 
-        //Remove an album from the 'albums' table.
+        //Deletes items in the album from album_entries, then from the albums table.
         public void DeleteAlbum(string name)
         {
             if (OpenConnection())
             {
                 try
                 {
+                    //Find the ID of the album to delete, then use that to delete every item in that album from album_entries.
+                    MySqlCommand selectCmd = new MySqlCommand("SELECT id FROM albums WHERE name = @name", connection);
+                    selectCmd.Parameters.AddWithValue("@name", name);
+                    selectCmd.ExecuteNonQuery();
+                    MySqlDataReader reader = selectCmd.ExecuteReader();
+                    reader.Read(); //There should only be 1 line to read.
+                    int delID = reader.GetInt32(0); //First and only column
+                    reader.Close();
 
-                    MySqlCommand cmd = new MySqlCommand("DELETE FROM albums WHERE name = (@name)", connection);
-                    cmd.Parameters.AddWithValue("@name", name);
-                    cmd.ExecuteNonQuery();
+                    //Remove all corresponding items from album_entries table.
+                    MySqlCommand delCmd = new MySqlCommand("DELETE FROM album_entries WHERE album_id = @id", connection);
+                    delCmd.Parameters.AddWithValue("@id", delID);
+                    delCmd.ExecuteNonQuery();
+
+                    //Finally, remove from albums table.
+                    delCmd.CommandText = "DELETE FROM albums WHERE name = @name";
+                    delCmd.Parameters.AddWithValue("@name", name);
+                    delCmd.ExecuteNonQuery();
                 }
                 catch (MySqlException e)
                 {
