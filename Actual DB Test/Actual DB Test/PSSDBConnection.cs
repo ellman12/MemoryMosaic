@@ -45,7 +45,7 @@ namespace Actual_DB_Test
                         break;
 
                     default:
-                        Console.WriteLine("Something happened. Error code: " + e.Number);
+                        Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
                         break;
                 }
                 return false;
@@ -93,7 +93,7 @@ namespace Actual_DB_Test
                             break;
 
                         default:
-                            Console.WriteLine("Something happened. Error code: " + e.Number);
+                            Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
                             break;
                     }
                 }
@@ -117,7 +117,16 @@ namespace Actual_DB_Test
                 }
                 catch (MySqlException e)
                 {
-                    Console.WriteLine("Something happened. Error code: " + e.Number);
+                    switch (e.Number)
+                    {
+                        case 1062:
+                            Console.WriteLine("Album \"" + name + "\" already exists. Error code: " + e.Number);
+                            break;
+
+                        default:
+                            Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
+                            break;
+                    }
                 }
                 finally
                 {
@@ -125,6 +134,11 @@ namespace Actual_DB_Test
                 }
             }
         }
+
+        // public void DeleteAlbum(string name)
+        // {
+
+        // }
 
         //Add a single path to an album in album_entries.
         public void AddToAlbum(string path, int albumID)
@@ -142,7 +156,7 @@ namespace Actual_DB_Test
                 }
                 catch (MySqlException e)
                 {
-                    Console.WriteLine("Something happened. Error code: " + e.Number);
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
                 }
                 finally
                 {
@@ -150,7 +164,7 @@ namespace Actual_DB_Test
                 }
             }
         }
-        
+
         //public void DeletePhoto(string path)
         //{
         //    if (OpenConnection())
