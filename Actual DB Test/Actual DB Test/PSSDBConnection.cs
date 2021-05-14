@@ -104,15 +104,15 @@ namespace Actual_DB_Test
             }
         }
 
-        //Add a new album to the table of Album names and IDs
+        //Add a new album to the table of Album names and IDs. ID is auto incrementing.
         public void CreateAlbum(string name)
         {
             if (OpenConnection())
             {
                 try
                 {
-                    //TODO: INJECTION!!!!!!!!!!!!!
-                    MySqlCommand cmd = new MySqlCommand("INSERT INTO albums (Name) VALUES (\"" + name + "\")", connection);
+                    MySqlCommand cmd = new MySqlCommand("INSERT INTO albums (Name) VALUES (@name)", connection);
+                    cmd.Parameters.AddWithValue("@name", name);
                     cmd.ExecuteNonQuery();
                 }
                 catch (MySqlException e)
@@ -126,6 +126,7 @@ namespace Actual_DB_Test
             }
         }
 
+        //Add a single path to an album in album_entries.
         public void AddToAlbum(string path, int albumID)
         {
             if (OpenConnection())
@@ -149,7 +150,7 @@ namespace Actual_DB_Test
                 }
             }
         }
-
+        
         //public void DeletePhoto(string path)
         //{
         //    if (OpenConnection())
