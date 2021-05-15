@@ -36,41 +36,30 @@ namespace Actual_DB_Test
                 switch (e.Number)
                 {
                     case 0:
-                        //TODO: make these throw exceptions and catch these when trying to connect
-                        Console.WriteLine("Cannot connect to server.");
-                        break;
+                        throw new ApplicationException("Cannot connect to server.");
 
                     case 1045:
-                        Console.WriteLine("Invalid username/password, please try again");
-                        break;
+                        throw new ApplicationException("Invalid username/password, please try again");
 
                     default:
-                        Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
-                        break;
+                        throw new ApplicationException("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
                 }
-                return false;
-            }
-            catch (Exception)
-            {
-                return false;
             }
         }
 
-        public bool CloseConnection()
+        public void CloseConnection()
         {
             try
             {
                 connection.Close();
-                return true;
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e.Message);
-                return false;
+                throw new ApplicationException("An error occurred when trying to close the connection. Error code: " + e.Number + " Message: " + e.Message);
             }
         }
 
-        //For inserting a photo or video into the media table (the main table).
+        //For inserting a photo or video into the media table (the main table). Will not insert duplicates.
         public void InsertMedia(string path, DateTime dateTaken)
         {
             if (OpenConnection())
@@ -101,7 +90,7 @@ namespace Actual_DB_Test
             }
         }
 
-        //Add a new album to the table of Album names and IDs. ID is auto incrementing.
+        //Create a new album and add it to the table of album names and IDs. ID is auto incrementing.
         public void CreateAlbum(string name)
         {
             if (OpenConnection())
@@ -133,7 +122,7 @@ namespace Actual_DB_Test
         }
 
         //Deletes items in the album from album_entries, then from the albums table.
-        //THIS CANNOT BE UNDONE!
+        //THIS CANNOT BE UNDONE! This also does not delete the path from main, so you can safely delete an album without losing the actual photos.
         public void DeleteAlbum(string name)
         {
             if (OpenConnection())
