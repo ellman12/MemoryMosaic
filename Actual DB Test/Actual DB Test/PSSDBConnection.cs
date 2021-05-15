@@ -140,7 +140,7 @@ namespace Actual_DB_Test
                 try
                 {
                     //Find the ID of the album to delete, then use that to delete every item in that album from album_entries.
-                    MySqlCommand selectCmd = new MySqlCommand("SELECT id FROM albums WHERE name = @name", connection);
+                    MySqlCommand selectCmd = new MySqlCommand("SELECT id FROM albums WHERE name=@name", connection);
                     selectCmd.Parameters.AddWithValue("@name", name);
                     selectCmd.ExecuteNonQuery();
                     MySqlDataReader reader = selectCmd.ExecuteReader();
@@ -152,12 +152,12 @@ namespace Actual_DB_Test
                         reader.Close();
 
                         //Remove all corresponding items from album_entries table.
-                        MySqlCommand delCmd = new MySqlCommand("DELETE FROM album_entries WHERE album_id = @id", connection);
+                        MySqlCommand delCmd = new MySqlCommand("DELETE FROM album_entries WHERE album_id=@id", connection);
                         delCmd.Parameters.AddWithValue("@id", delID);
                         delCmd.ExecuteNonQuery();
 
                         //Finally, remove from albums table.
-                        delCmd.CommandText = "DELETE FROM albums WHERE name = @name";
+                        delCmd.CommandText = "DELETE FROM albums WHERE name=@name";
                         delCmd.Parameters.AddWithValue("@name", name);
                         delCmd.ExecuteNonQuery();
                     }
@@ -202,23 +202,55 @@ namespace Actual_DB_Test
             }
         }
 
-        //Add an item to media and an album.
+        //Add an item to media (main table) and an album.
         public void MediaAndAlbumInsert(string path, int albumID, DateTime dateTaken)
         {
             InsertMedia(path, dateTaken);
             AddToAlbum(path, albumID);
         }
 
-        // public void DeletePhonto(string path)
-        // {
-        //    if (OpenConnection())
-        //    {
-        //        MySqlCommand cmd = new MySqlCommand("DELETE FROM media WHERE path = @path", connection);
-        //        cmd.Parameters.AddWithValue("@path", path);
-        //        cmd.ExecuteNonQuery();
-        //        cmd.CommandText = "DELETE from album_entries"
-        //        CloseConnection();
-        //    }
-        // }
+        //Moves an item from media and album_entries (if applicable) into the 2 trash albums.
+        public void DeleteItem(string path)
+        {
+            if (OpenConnection())
+            {
+                try
+                {
+                    //Copy item from media to trash
+                    MySqlCommand mediaCopyCmd = new("INSERT INTO media_trash SELECT * FROM media WHERE path=@path", connection);
+                    mediaCopyCmd.Parameters.AddWithValue("@path", path);
+                    mediaCopyCmd.ExecuteNonQuery();
+
+                    //Remove from media
+                    MySqlCommand mediaDelCmd = new("DELETE FROM media WHERE path=@path", connection);
+                    mediaDelCmd.Parameters.AddWithValue("@path", path);
+                    mediaDelCmd.ExecuteNonQuery();
+
+                    //Copy item(s) from album_entries to trash
+                    MySqlCommand entriesCopyCmd = new("INSERT INTO album_entries_trash SELECT * FROM album_entries WHERE path=@path", connection);
+                    entriesCopyCmd.Parameters.AddWithValue("@path", path);
+                    entriesCopyCmd.ExecuteNonQuery();
+
+                    //Remove from album_entries
+                    MySqlCommand entriesDelCmd = new("DELETE FROM album_entries WHERE path=@path", connection);
+                    entriesDelCmd.Parameters.AddWithValue("@path", path);
+                    entriesDelCmd.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+        }
+
+        //Restore an item from the trash.
+        public void RestoreItem(string path)
+        {
+
+        }
     }
 }
