@@ -133,6 +133,7 @@ namespace Actual_DB_Test
         }
 
         //Deletes items in the album from album_entries, then from the albums table.
+        //THIS CANNOT BE UNDONE!
         public void DeleteAlbum(string name)
         {
             if (OpenConnection())
@@ -247,10 +248,42 @@ namespace Actual_DB_Test
             }
         }
 
-        //Restore an item from the trash.
+        //Undos a call to DeleteItem().
         public void RestoreItem(string path)
         {
+            if (OpenConnection())
+            {
+                try
+                {
+                    //Copy item from media to trash
+                    MySqlCommand mediaCopyCmd = new("INSERT INTO media SELECT * FROM media_trash WHERE path=@path", connection);
+                    mediaCopyCmd.Parameters.AddWithValue("@path", path);
+                    mediaCopyCmd.ExecuteNonQuery();
 
+                    //Remove from media
+                    MySqlCommand mediaDelCmd = new("DELETE FROM media_trash WHERE path=@path", connection);
+                    mediaDelCmd.Parameters.AddWithValue("@path", path);
+                    mediaDelCmd.ExecuteNonQuery();
+
+                    //Copy item(s) from album_entries to trash
+                    MySqlCommand entriesCopyCmd = new("INSERT INTO album_entries SELECT * FROM album_entries_trash WHERE path=@path", connection);
+                    entriesCopyCmd.Parameters.AddWithValue("@path", path);
+                    entriesCopyCmd.ExecuteNonQuery();
+
+                    //Remove from album_entries
+                    MySqlCommand entriesDelCmd = new("DELETE FROM album_entries_trash WHERE path=@path", connection);
+                    entriesDelCmd.Parameters.AddWithValue("@path", path);
+                    entriesDelCmd.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
         }
     }
 }
