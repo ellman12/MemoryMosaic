@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,7 +45,7 @@ namespace Actual_DB_Test
                         break;
 
                     default:
-                        Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
+                        Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
                         break;
                 }
                 return false;
@@ -93,7 +93,7 @@ namespace Actual_DB_Test
                             break;
 
                         default:
-                            Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
+                            Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
                             break;
                     }
                 }
@@ -124,7 +124,7 @@ namespace Actual_DB_Test
                             break;
 
                         default:
-                            Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
+                            Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
                             break;
                     }
                 }
@@ -171,7 +171,7 @@ namespace Actual_DB_Test
                 }
                 catch (MySqlException e)
                 {
-                    Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
                 }
                 finally
                 {
@@ -196,7 +196,7 @@ namespace Actual_DB_Test
                 }
                 catch (MySqlException e)
                 {
-                    Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
                 }
                 finally
                 {
