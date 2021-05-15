@@ -37,7 +37,7 @@ namespace Actual_DB_Test
                 {
                     case 0:
                         //TODO: make these throw exceptions and catch these when trying to connect
-                        Console.WriteLine("Cannot connect to server.  Contact administrator");
+                        Console.WriteLine("Cannot connect to server.");
                         break;
 
                     case 1045:
@@ -45,7 +45,7 @@ namespace Actual_DB_Test
                         break;
 
                     default:
-                        Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
+                        Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
                         break;
                 }
                 return false;
@@ -93,7 +93,7 @@ namespace Actual_DB_Test
                             break;
 
                         default:
-                            Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
+                            Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
                             break;
                     }
                 }
@@ -124,7 +124,7 @@ namespace Actual_DB_Test
                             break;
 
                         default:
-                            Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
+                            Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
                             break;
                     }
                 }
@@ -147,23 +147,31 @@ namespace Actual_DB_Test
                     selectCmd.Parameters.AddWithValue("@name", name);
                     selectCmd.ExecuteNonQuery();
                     MySqlDataReader reader = selectCmd.ExecuteReader();
-                    reader.Read(); //There should only be 1 line to read.
-                    int delID = reader.GetInt32(0); //First and only column
-                    reader.Close();
 
-                    //Remove all corresponding items from album_entries table.
-                    MySqlCommand delCmd = new MySqlCommand("DELETE FROM album_entries WHERE album_id = @id", connection);
-                    delCmd.Parameters.AddWithValue("@id", delID);
-                    delCmd.ExecuteNonQuery();
+                    if (reader.HasRows) //Check if there is actually a row to read. If reader.Read() is called and there isn't, a nasty exception is raised.
+                    {
+                        reader.Read(); //There should only be 1 line to read.
+                        int delID = reader.GetInt32(0); //First and only column
+                        reader.Close();
 
-                    //Finally, remove from albums table.
-                    delCmd.CommandText = "DELETE FROM albums WHERE name = @name";
-                    delCmd.Parameters.AddWithValue("@name", name);
-                    delCmd.ExecuteNonQuery();
+                        //Remove all corresponding items from album_entries table.
+                        MySqlCommand delCmd = new MySqlCommand("DELETE FROM album_entries WHERE album_id = @id", connection);
+                        delCmd.Parameters.AddWithValue("@id", delID);
+                        delCmd.ExecuteNonQuery();
+
+                        //Finally, remove from albums table.
+                        delCmd.CommandText = "DELETE FROM albums WHERE name = @name";
+                        delCmd.Parameters.AddWithValue("@name", name);
+                        delCmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        throw new ArgumentException("The album " + name + " does not exist!");
+                    }
                 }
                 catch (MySqlException e)
                 {
-                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
+                    Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
                 }
                 finally
                 {
@@ -188,7 +196,7 @@ namespace Actual_DB_Test
                 }
                 catch (MySqlException e)
                 {
-                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number);
+                    Console.WriteLine("An unknown error occurred. Message: " + e.Message + " Error code: " + e.Number);
                 }
                 finally
                 {
