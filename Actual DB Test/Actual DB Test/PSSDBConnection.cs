@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,10 +75,11 @@ namespace Actual_DB_Test
         {
             if (OpenConnection())
             {
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO media VALUES (@path, @dateAdded, @dateTaken)", connection);
+                MySqlCommand cmd = new MySqlCommand("INSERT IGNORE INTO media VALUES (@path, @dateAdded, @dateTaken, @separate)", connection); //Ignores duplicates
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateAdded", DateTime.Now);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+                cmd.Parameters.AddWithValue("@separate", false);
 
                 try
                 {
@@ -88,10 +89,6 @@ namespace Actual_DB_Test
                 {
                     switch (e.Number)
                     {
-                        case 1062:
-                            Console.WriteLine('"' + path + "\" is already in the database. Error code: " + e.Number);
-                            break;
-
                         default:
                             Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
                             break;
@@ -205,15 +202,23 @@ namespace Actual_DB_Test
             }
         }
 
-        //public void DeletePhoto(string path)
-        //{
+        //Add an item to media and an album.
+        public void MediaAndAlbumInsert(string path, int albumID, DateTime dateTaken)
+        {
+            InsertMedia(path, dateTaken);
+            AddToAlbum(path, albumID);
+        }
+
+        // public void DeletePhonto(string path)
+        // {
         //    if (OpenConnection())
         //    {
-        //        MySqlCommand cmd = new MySqlCommand("DELETE FROM photos WHERE Directory = @path", connection);
+        //        MySqlCommand cmd = new MySqlCommand("DELETE FROM media WHERE path = @path", connection);
         //        cmd.Parameters.AddWithValue("@path", path);
         //        cmd.ExecuteNonQuery();
+        //        cmd.CommandText = "DELETE from album_entries"
         //        CloseConnection();
         //    }
-        //}
+        // }
     }
 }

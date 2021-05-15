@@ -6,15 +6,17 @@ namespace Actual_DB_Test
     {
         static void Main()
         {
-            const int id = 37;
-            const string name = "test_album2";
+            const int id = 55;
             PSSDBConnection connection = new();
-            connection.CreateAlbum(name);
-            connection.AddToAlbum("item1", id);
-            connection.AddToAlbum("item2", id);
-            connection.AddToAlbum("item3", id);
-            connection.AddToAlbum("item4", id);
-            connection.DeleteAlbum(name);
+            // connection.CreateAlbum("test_album1");
+            // connection.CreateAlbum("test_album2");
+            // connection.CreateAlbum("test_album3");
+            connection.MediaAndAlbumInsert("item1", 55, DateTime.Now);
+            connection.MediaAndAlbumInsert("item2", 55, DateTime.Now);
+            connection.MediaAndAlbumInsert("item3", 55, DateTime.Now);
+            connection.MediaAndAlbumInsert("item4", 55, DateTime.Now);
+            // connection.
+            // connection.DeleteAlbum(name);
         }
     }
 }
