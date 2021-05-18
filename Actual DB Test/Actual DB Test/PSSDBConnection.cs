@@ -121,6 +121,41 @@ namespace Actual_DB_Test
             }
         }
 
+        //Given an album name, will find its ID in the albums table.
+        //Returns 0 if not found or can't connect. IDs are greater than 0.
+        public int GetAlbumID(string name)
+        {
+            int returnVal = 0;
+            if (OpenConnection())
+            {
+                try
+                {
+                    //Find the album ID using the album name.
+                    MySqlCommand selectCmd = new MySqlCommand("SELECT id FROM albums WHERE name=@name", connection);
+                    selectCmd.Parameters.AddWithValue("@name", name);
+                    selectCmd.ExecuteNonQuery();
+                    MySqlDataReader reader = selectCmd.ExecuteReader();
+
+                    if (reader.HasRows) //Check if there is actually a row to read. If reader.Read() is called and there isn't, a nasty exception is raised.
+                    {
+                        reader.Read(); //There should only be 1 line to read.
+                        returnVal = reader.GetInt32(0); //First and only column.
+                        reader.Close();
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+
+            return returnVal;
+        }
+
         //Deletes items in the album from album_entries, then from the albums table.
         //THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos.
         public void DeleteAlbum(string name)
@@ -273,6 +308,16 @@ namespace Actual_DB_Test
                     CloseConnection();
                 }
             }
+        }
+
+        //Retrieve every path in an album
+        public void SelectAlbum(string name)
+        {
+            var ID = GetAlbumID(name);
+            if (ID == 0)
+                Console.WriteLine("Could not be found.");
+            else
+                Console.WriteLine("ID = " + ID);
         }
     }
 }
