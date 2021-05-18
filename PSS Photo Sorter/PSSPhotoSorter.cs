@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 
 namespace PSS_Photo_Sorter

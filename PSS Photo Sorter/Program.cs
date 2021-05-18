@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace PSS_Photo_Sorter
 {

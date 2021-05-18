@@ -1,0 +1,2 @@
+﻿Just jpeg: https://www.youtube.com/watch?v=xVHGHxdPfv8
+Actually using this: https://stackoverflow.com/questions/180030/how-can-i-find-out-when-a-picture-was-actually-taken-in-c-sharp-running-on-vista

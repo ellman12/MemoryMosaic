@@ -532,3 +532,4 @@ PSS Photo Sorter/obj/project.nuget.cache
 PSS Photo Sorter/bin/Debug/net5.0/PSS Photo Sorter.pdb
 PSS Photo Sorter/bin/Debug/net5.0/PSS Photo Sorter.exe
 PSS Photo Sorter/bin/Debug/net5.0/PSS Photo Sorter.dll
+*.csprojAssemblyReference.cache

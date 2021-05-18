@@ -122,7 +122,7 @@ namespace Actual_DB_Test
         }
 
         //Deletes items in the album from album_entries, then from the albums table.
-        //THIS CANNOT BE UNDONE! This also does not delete the path from main, so you can safely delete an album without losing the actual photos.
+        //THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos.
         public void DeleteAlbum(string name)
         {
             if (OpenConnection())
@@ -237,7 +237,7 @@ namespace Actual_DB_Test
             }
         }
 
-        //Undos a call to DeleteItem().
+        //Undos a call to DeleteItem(). Will restore albums it was in, as well as re-adding it to the media table.
         public void RestoreItem(string path)
         {
             if (OpenConnection())
