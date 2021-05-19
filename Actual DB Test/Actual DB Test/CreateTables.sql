@@ -16,7 +16,7 @@ CREATE TABLE `album_entries_trash` (
 CREATE TABLE `albums` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(600) NOT NULL,
-  `album_cover` varchar(600), -- TODO: Probably should make this NOT NULL!
+  `album_cover` varchar(600),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),
   UNIQUE KEY `id_UNIQUE` (`id`)
