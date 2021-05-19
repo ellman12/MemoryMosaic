@@ -139,7 +139,8 @@ namespace Actual_DB_Test
 
         //Give an album a thumbnail (cover).
         //Albums don't necessarily need to have an album cover.
-        public void AssignAlbumCover(string albumName, string path)
+        //Used to either give an album a cover if it doesn't have a cover, or update an existing cover.
+        public void UpdateAlbumCover(string albumName, string path)
         {
             var ID = GetAlbumID(albumName); //Find ID of the album
 
