@@ -137,9 +137,9 @@ namespace Actual_DB_Test
             }
         }
 
-        //Give an album a thumbnail (cover).
+        //This has 3 different use cases: give an album a cover if it doesn't have a cover,
+        //update an existing cover, or remove an album cover (supply 'null' as path).
         //Albums don't necessarily need to have an album cover.
-        //Used to either give an album a cover if it doesn't have a cover, or update an existing cover.
         public void UpdateAlbumCover(string albumName, string path)
         {
             var ID = GetAlbumID(albumName); //Find ID of the album
@@ -163,6 +163,7 @@ namespace Actual_DB_Test
                 }
             }
         }
+
         //Given an album name, will find its ID in the albums table.
         //Returns 0 if not found or can't connect. IDs are greater than 0.
         public int GetAlbumID(string name)
