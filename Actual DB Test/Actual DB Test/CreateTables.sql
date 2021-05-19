@@ -1,3 +1,4 @@
+-- Used when first initializing PSS; creates all the necessary tables.
 CREATE TABLE `album_entries` (
   `path` varchar(600) NOT NULL,
   `album_id` int unsigned NOT NULL,
