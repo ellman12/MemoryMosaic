@@ -18,9 +18,9 @@ namespace Actual_DB_Test
         //Used in SelectAlbum().
         public struct Media
         {
-            public string path;
-            public DateTime dateTaken;
-            public DateTime dateAdded;
+            public readonly string path;
+            public readonly DateTime dateTaken;
+            public readonly DateTime dateAdded;
 
             public Media(string p, DateTime dt, DateTime da)
             {
