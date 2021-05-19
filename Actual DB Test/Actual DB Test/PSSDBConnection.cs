@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -137,6 +137,31 @@ namespace Actual_DB_Test
             }
         }
 
+        //Give an album a thumbnail (cover).
+        //Albums don't necessarily need to have an album cover.
+        public void AssignAlbumCover(string albumName, string path)
+        {
+            var ID = GetAlbumID(albumName); //Find ID of the album
+
+            if (OpenConnection())
+            {
+                try
+                {
+                    MySqlCommand cmd = new("UPDATE albums SET album_cover=@path WHERE id=@ID", connection);
+                    cmd.Parameters.AddWithValue("@path", path);
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+        }
         //Given an album name, will find its ID in the albums table.
         //Returns 0 if not found or can't connect. IDs are greater than 0.
         public int GetAlbumID(string name)

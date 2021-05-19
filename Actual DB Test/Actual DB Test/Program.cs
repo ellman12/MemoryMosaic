@@ -17,6 +17,7 @@ namespace Actual_DB_Test
             connection.MediaAndAlbumInsert("item2_album2", 2, DateTime.Now);
             connection.MediaAndAlbumInsert("item3_album2", 2, DateTime.Now);
             connection.MediaAndAlbumInsert("item4_album2", 2, DateTime.Now);
+            connection.AssignAlbumCover("new album", "album comver");
         }
     }
 }
