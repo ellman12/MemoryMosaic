@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/PSS Photo Sorter/PSS Photo Sorter.csproj",
+                "${workspaceFolder}/Metadata Test/Metadata Test.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/PSS Photo Sorter/PSS Photo Sorter.csproj",
+                "${workspaceFolder}/Metadata Test/Metadata Test.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/PSS Photo Sorter/PSS Photo Sorter.csproj",
+                "${workspaceFolder}/Metadata Test/Metadata Test.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
