@@ -386,5 +386,33 @@ namespace Actual_DB_Test
 
             return media;
         }
+
+        //Updates a oldPath's DateTaken in the media and album_entries tables with newPath.
+        public void UpdateDateTaken(string oldPath, string newPath)
+        {
+            if (OpenConnection())
+            {
+                try
+                {
+                    MySqlCommand updateMediaCmd = new("UPDATE media SET path=@newPath WHERE path=@oldPath", connection);
+                    updateMediaCmd.Parameters.AddWithValue("@newPath", newPath);
+                    updateMediaCmd.Parameters.AddWithValue("@oldPath", oldPath);
+                    updateMediaCmd.ExecuteNonQuery();
+
+                    MySqlCommand updateAlbumEntriesCmd = new("UPDATE album_entries SET path=@newPath WHERE path=@oldPath", connection);
+                    updateAlbumEntriesCmd.Parameters.AddWithValue("@newPath", newPath);
+                    updateAlbumEntriesCmd.Parameters.AddWithValue("@oldPath", oldPath);
+                    updateAlbumEntriesCmd.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+        }
     }
 }
