@@ -387,7 +387,7 @@ namespace Actual_DB_Test
             return media;
         }
 
-        //Updates a oldPath's DateTaken in the media and album_entries tables with newPath.
+        //Updates oldPath's DateTaken in the media and album_entries tables with newPath.
         public void UpdateDateTaken(string oldPath, string newPath)
         {
             if (OpenConnection())
