@@ -6,7 +6,7 @@ using MySql.Data.MySqlClient;
 
 namespace Actual_DB_Test
 {
-    public class PSSDBConnection
+    public class Connection
     {
         private readonly MySqlConnection connection;
         private readonly string server;
@@ -30,8 +30,7 @@ namespace Actual_DB_Test
             }
         }
 
-        //Constructor
-        public PSSDBConnection()
+        public Connection()
         {
             server = "localhost";
             database = "photos_storage_server";
