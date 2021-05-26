@@ -361,7 +361,7 @@ namespace Actual_DB_Test
             {
                 try
                 {
-                    MySqlCommand cmd = new("SELECT * FROM media WHERE separate=0", connection); //Skips stuff in folders.
+                    MySqlCommand cmd = new("SELECT * FROM media WHERE separate=0 ORDER BY date_taken DESC", connection); //Skips stuff in folders.
                     cmd.ExecuteNonQuery();
                     MySqlDataReader reader = cmd.ExecuteReader();
 
