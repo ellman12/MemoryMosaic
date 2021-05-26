@@ -21,3 +21,6 @@ SELECT a.path, m.date_taken, a.date_added_to_album FROM media AS m
 INNER JOIN album_entries AS a
 ON m.path = a.path
 WHERE album_id=1;
+
+-- Select only items from media that have 0 (false)
+select * from media where Separate = "0";

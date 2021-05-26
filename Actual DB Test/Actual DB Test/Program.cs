@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Actual_DB_Test
 {
@@ -6,12 +7,19 @@ namespace Actual_DB_Test
     {
         static void Main()
         {
-            PSSDBConnection connection = new();
-            connection.MediaAndAlbumInsert("item1_old", 2, DateTime.Now);
-            connection.MediaAndAlbumInsert("item2_old", 2, DateTime.Now);
-            connection.MediaAndAlbumInsert("item3_old", 2, DateTime.Now);
-            connection.MediaAndAlbumInsert("item4_old", 2, DateTime.Now);
-            connection.UpdateDateTaken("item3_old", "item3_new");
+            PSSDBConnection c = new();
+            List<PSSDBConnection.Media> yes = new();
+            c.InsertMedia("item1", DateTime.Now);
+            c.InsertMedia("item2", DateTime.Now);
+            c.InsertMedia("item3", DateTime.Now);
+            c.InsertMedia("item4", DateTime.Now);
+            c.InsertMedia("item5", DateTime.Now);
+            yes = c.LoadMediaTable();
+
+            foreach (var y in yes)
+            {
+                Console.WriteLine(y.path + '\t' + y.dateAdded + '\t' + y.dateTaken);
+            }
         }
     }
 }

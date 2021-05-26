@@ -353,6 +353,33 @@ namespace Actual_DB_Test
             }
         }
 
+        //Loads everything in the media table that is not in a folder.
+        public List<Media> LoadMediaTable()
+        {
+            List<Media> media = new(); //Stores every row retrieved; returned later.
+            if (OpenConnection())
+            {
+                try
+                {
+                    MySqlCommand cmd = new("SELECT * FROM media WHERE separate=0", connection); //Skips stuff in folders.
+                    cmd.ExecuteNonQuery();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                        media.Add(new(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2)));
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+            return media;
+        }
+
         //Returns every path in an album
         public List<Media> SelectAlbum(string name)
         {
