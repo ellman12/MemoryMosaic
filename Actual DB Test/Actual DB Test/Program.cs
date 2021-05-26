@@ -7,8 +7,8 @@ namespace Actual_DB_Test
     {
         static void Main()
         {
-            PSSDBConnection c = new();
-            List<PSSDBConnection.Media> yes = new();
+            Connection c = new();
+            List<Connection.Media> yes = new();
             c.InsertMedia("item1", DateTime.Now);
             c.InsertMedia("item2", DateTime.Now);
             c.InsertMedia("item3", DateTime.Now);
