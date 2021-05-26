@@ -353,7 +353,7 @@ namespace Actual_DB_Test
             }
         }
 
-        //Loads everything in the media table that is not in a folder.
+        //Loads everything in the media table in descending order that is not in a folder.
         public List<Media> LoadMediaTable()
         {
             List<Media> media = new(); //Stores every row retrieved; returned later.
