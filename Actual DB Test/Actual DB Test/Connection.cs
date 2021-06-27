@@ -96,10 +96,6 @@ namespace Actual_DB_Test
                         break;
                 }
             }
-            finally
-            {
-                CloseConnection();
-            }
         }
 
         //Create a new album and add it to the table of album names and IDs. ID is auto incrementing.
@@ -124,10 +120,6 @@ namespace Actual_DB_Test
                         break;
                 }
             }
-            finally
-            {
-                CloseConnection();
-            }
         }
 
         //This has 3 different use cases: give an album a cover if it doesn't have a cover,
@@ -146,10 +138,6 @@ namespace Actual_DB_Test
             catch (MySqlException e)
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
-            }
-            finally
-            {
-                CloseConnection();
             }
         }
 
@@ -177,10 +165,7 @@ namespace Actual_DB_Test
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
             }
-            finally
-            {
-                CloseConnection();
-            }
+
             return returnVal;
         }
 
@@ -221,10 +206,6 @@ namespace Actual_DB_Test
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
             }
-            finally
-            {
-                CloseConnection();
-            }
         }
 
         //Add a single path to an album in album_entries.
@@ -243,10 +224,6 @@ namespace Actual_DB_Test
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
             }
-            finally
-            {
-                CloseConnection();
-            }
         }
 
         //Remove a single path from an album.
@@ -262,10 +239,6 @@ namespace Actual_DB_Test
             catch (MySqlException e)
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
-            }
-            finally
-            {
-                CloseConnection();
             }
         }
 
@@ -305,10 +278,6 @@ namespace Actual_DB_Test
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
             }
-            finally
-            {
-                CloseConnection();
-            }
         }
 
         //Undoes a call to DeleteItem(). Will restore albums it was in, as well as re-adding it to the media table.
@@ -340,10 +309,6 @@ namespace Actual_DB_Test
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
             }
-            finally
-            {
-                CloseConnection();
-            }
         }
 
         //Loads everything in the media table in descending order.
@@ -362,10 +327,6 @@ namespace Actual_DB_Test
             catch (MySqlException e)
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
-            }
-            finally
-            {
-                CloseConnection();
             }
             return media;
         }
@@ -393,11 +354,6 @@ namespace Actual_DB_Test
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
             }
-            finally
-            {
-                CloseConnection();
-            }
-
             return media;
         }
 
@@ -419,10 +375,6 @@ namespace Actual_DB_Test
             catch (MySqlException e)
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
-            }
-            finally
-            {
-                CloseConnection();
             }
         }
     }
