@@ -194,7 +194,6 @@ namespace Actual_DB_Test
                     CloseConnection();
                 }
             }
-
             return returnVal;
         }
 
@@ -251,7 +250,7 @@ namespace Actual_DB_Test
             {
                 try
                 {
-                    //Will IGNORE (not throw error) if there is a duplicate.
+                    //Will IGNORE (not throw error) if there is a duplicate. This is how Google Photos does it.
                     MySqlCommand cmd = new MySqlCommand("INSERT IGNORE INTO album_entries VALUES (@path, @albumID, @date_added_to_album)", connection);
                     cmd.Parameters.AddWithValue("@path", path);
                     cmd.Parameters.AddWithValue("@albumID", albumID);
