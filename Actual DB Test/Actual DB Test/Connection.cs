@@ -77,11 +77,10 @@ namespace Actual_DB_Test
         //For inserting a photo or video into the media table (the main table). Will not insert duplicates.
         public void InsertMedia(string path, DateTime dateTaken)
         {
-            MySqlCommand cmd = new MySqlCommand("INSERT IGNORE INTO media VALUES (@path, @dateAdded, @dateTaken, @separate)", connection); //Ignores duplicates
+            MySqlCommand cmd = new("INSERT IGNORE INTO media VALUES (@path, @dateAdded, @dateTaken)", connection);
             cmd.Parameters.AddWithValue("@path", path);
             cmd.Parameters.AddWithValue("@dateAdded", DateTime.Now);
             cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
-            cmd.Parameters.AddWithValue("@separate", false);
 
             try
             {
@@ -255,24 +254,21 @@ namespace Actual_DB_Test
             try
             {
                 //Copy item from media to trash
-                MySqlCommand mediaCopyCmd = new("INSERT INTO media_trash SELECT * FROM media WHERE path=@path", connection);
-                mediaCopyCmd.Parameters.AddWithValue("@path", path);
-                mediaCopyCmd.ExecuteNonQuery();
+                MySqlCommand cmd = new("INSERT INTO media_trash SELECT * FROM media WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
 
                 //Remove from media
-                MySqlCommand mediaDelCmd = new("DELETE FROM media WHERE path=@path", connection);
-                mediaDelCmd.Parameters.AddWithValue("@path", path);
-                mediaDelCmd.ExecuteNonQuery();
+                cmd.CommandText = "DELETE FROM media WHERE path=@path";
+                cmd.ExecuteNonQuery();
 
                 //Copy item(s) from album_entries to trash
-                MySqlCommand entriesCopyCmd = new("INSERT INTO album_entries_trash SELECT * FROM album_entries WHERE path=@path", connection);
-                entriesCopyCmd.Parameters.AddWithValue("@path", path);
-                entriesCopyCmd.ExecuteNonQuery();
+                cmd.CommandText = "INSERT INTO album_entries_trash SELECT * FROM album_entries WHERE path=@path";
+                cmd.ExecuteNonQuery();
 
                 //Remove from album_entries
-                MySqlCommand entriesDelCmd = new("DELETE FROM album_entries WHERE path=@path", connection);
-                entriesDelCmd.Parameters.AddWithValue("@path", path);
-                entriesDelCmd.ExecuteNonQuery();
+                cmd.CommandText = "DELETE FROM album_entries WHERE path=@path";
+                cmd.ExecuteNonQuery();
             }
             catch (MySqlException e)
             {
