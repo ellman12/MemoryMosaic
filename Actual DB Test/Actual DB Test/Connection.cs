@@ -371,7 +371,7 @@ namespace Actual_DB_Test
             }
         }
 
-        //Loads everything in the media table in descending order that is not in a folder.
+        //Loads everything in the media table in descending order.
         public List<Media> LoadMediaTable()
         {
             List<Media> media = new(); //Stores every row retrieved; returned later.
@@ -379,7 +379,7 @@ namespace Actual_DB_Test
             {
                 try
                 {
-                    MySqlCommand cmd = new("SELECT * FROM media WHERE separate=0 ORDER BY date_taken DESC", connection); //Skips stuff in folders.
+                    MySqlCommand cmd = new("SELECT * FROM media ORDER BY date_taken DESC", connection);
                     cmd.ExecuteNonQuery();
                     MySqlDataReader reader = cmd.ExecuteReader();
 
