@@ -268,6 +268,26 @@ namespace Actual_DB_Test
             }
         }
 
+        //Remove a single path from an album.
+        public void RemoveFromAlbum(string path, int albumID)
+        {
+            try
+            {
+                MySqlCommand cmd = new("DELETE FROM album_entries WHERE album_id=@albumID AND path=@path", connection);
+                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
         //Add an item to media (main table) and an album.
         public void MediaAndAlbumInsert(string path, int albumID, DateTime dateTaken)
         {

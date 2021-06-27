@@ -24,3 +24,6 @@ WHERE album_id=1;
 
 -- Select only items from media that have 0 (false)
 select * from media where Separate = "0";
+
+-- Removing a single path from an album
+DELETE FROM album_entries WHERE album_id = 4 AND path = "item6";

@@ -8,18 +8,12 @@ namespace Actual_DB_Test
         static void Main()
         {
             Connection c = new();
-            List<Connection.Media> yes = new();
-            c.InsertMedia("item1", DateTime.Now);
-            c.InsertMedia("item2", DateTime.Now);
-            c.InsertMedia("item3", DateTime.Now);
-            c.InsertMedia("item4", DateTime.Now);
-            c.InsertMedia("item5", DateTime.Now);
-            yes = c.LoadMediaTable();
-
-            foreach (var y in yes)
-            {
-                Console.WriteLine(y.path + '\t' + y.dateAdded + '\t' + y.dateTaken);
-            }
+            //c.MediaAndAlbumInsert("new item1", 5, DateTime.Now);
+            //c.MediaAndAlbumInsert("new item2", 5, DateTime.Now);
+            //c.MediaAndAlbumInsert("new item3", 5, DateTime.Now);
+            //c.MediaAndAlbumInsert("new item4", 5, DateTime.Now);
+            c.OpenConnection();
+            c.RemoveFromAlbum("new item2", 5);
         }
     }
 }
