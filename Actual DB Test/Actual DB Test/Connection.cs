@@ -373,5 +373,12 @@ namespace Actual_DB_Test
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
             }
         }
+
+        //For debugging and testing. Clears all tables.
+        public void ClearTables()
+        {
+            MySqlCommand cmd = new("DELETE FROM media; DELETE FROM media_trash; DELETE FROM albums; DELETE FROM album_entries; DELETE FROM album_entries_trash;", connection);
+            cmd.ExecuteNonQuery();
+        }
     }
 }
