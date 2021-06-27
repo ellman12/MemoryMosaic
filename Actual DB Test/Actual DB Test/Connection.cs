@@ -282,24 +282,21 @@ namespace Actual_DB_Test
             try
             {
                 //Copy item from media to trash
-                MySqlCommand mediaCopyCmd = new("INSERT INTO media SELECT * FROM media_trash WHERE path=@path", connection);
-                mediaCopyCmd.Parameters.AddWithValue("@path", path);
-                mediaCopyCmd.ExecuteNonQuery();
+                MySqlCommand cmd = new("INSERT INTO media SELECT * FROM media_trash WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
 
                 //Remove from media
-                MySqlCommand mediaDelCmd = new("DELETE FROM media_trash WHERE path=@path", connection);
-                mediaDelCmd.Parameters.AddWithValue("@path", path);
-                mediaDelCmd.ExecuteNonQuery();
+                cmd.CommandText = "DELETE FROM media_trash WHERE path=@path";
+                cmd.ExecuteNonQuery();
 
                 //Copy item(s) from album_entries to trash
-                MySqlCommand entriesCopyCmd = new("INSERT INTO album_entries SELECT * FROM album_entries_trash WHERE path=@path", connection);
-                entriesCopyCmd.Parameters.AddWithValue("@path", path);
-                entriesCopyCmd.ExecuteNonQuery();
+                cmd.CommandText = "INSERT INTO album_entries SELECT * FROM album_entries_trash WHERE path=@path";
+                cmd.ExecuteNonQuery();
 
                 //Remove from album_entries
-                MySqlCommand entriesDelCmd = new("DELETE FROM album_entries_trash WHERE path=@path", connection);
-                entriesDelCmd.Parameters.AddWithValue("@path", path);
-                entriesDelCmd.ExecuteNonQuery();
+                cmd.CommandText = "DELETE FROM album_entries_trash WHERE path=@path";
+                cmd.ExecuteNonQuery();
             }
             catch (MySqlException e)
             {

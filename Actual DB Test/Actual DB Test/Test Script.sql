@@ -3,6 +3,8 @@ INSERT INTO albums (Name) values ("test_album");
 select * from albums;
 select * from album_entries;
 select * from media;
+select * from album_entries_trash;
+select * from media_trash;
 
 UPDATE albums SET album_cover = "test lol" WHERE id = 2;
 UPDATE albums SET album_cover = null WHERE id = 2;
