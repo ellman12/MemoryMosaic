@@ -6,7 +6,7 @@ using ExifLib;
 
 namespace PSS_Photo_Sorter
 {
-    static class PSSPhotoSorter
+    static class Metadata
     {
         //Take a timestamp string like '20210501193042' (typically from a filename) and make it into a DateTime object.
         //The dateString needs to be exactly 14 characters long.
