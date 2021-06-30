@@ -1,0 +1,5 @@
+﻿File I/O Stuff:
+https://www.c-sharpcorner.com/article/directories-in-c-sharp/
+https://stackoverflow.com/questions/4254339/how-to-loop-through-all-the-files-in-a-directory-in-c-net
+
+Path.GetExtension(): https://docs.microsoft.com/en-us/dotnet/api/system.io.path.getextension?view=net-5.0

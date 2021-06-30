@@ -1,8 +1,21 @@
 {
   "version": 2,
-  "dgSpecHash": "LRkdS34x845FHc26i0QUtxdA9290EiXFZ4XdzixGmTHBpidvoiCsDeDhvYq9LuiwdGZ8CpzOQdkBMmpsJn8ZEA==",
+  "dgSpecHash": "cJ8BIFub3E/01kSyGaUcC2IP1YA4qVZ2SntQ8pz7/wzxq4Y7f7uEdY0jp+jx+NHBKQU5Cq+0X1Rv0sahOiJXrg==",
   "success": true,
   "projectFilePath": "C:\\Users\\Elliott\\Documents\\GitHub\\Photos-Storage-Server\\PSS Photo Sorter\\PSS Photo Sorter.csproj",
-  "expectedPackageFiles": [],
-  "logs": []
+  "expectedPackageFiles": [
+    "C:\\Users\\Elliott\\.nuget\\packages\\exiflib\\1.7.0\\exiflib.1.7.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'ExifLib 1.7.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0'. This package may not be fully compatible with your project.",
+      "libraryId": "ExifLib",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    }
+  ]
 }

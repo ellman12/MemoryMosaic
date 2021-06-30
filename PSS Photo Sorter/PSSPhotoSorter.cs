@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using ExifLib;
 
 namespace PSS_Photo_Sorter
 {
@@ -27,20 +30,54 @@ namespace PSS_Photo_Sorter
                 throw new Exception("An error happened in ToDateTime()");
         }
 
-        //TODO
-        // static DateTime GetPicDate(string dir)
-        // {
-        // }
+        //TODO: this is (probably) incomplete.
+        //Returns the Date Taken for an item, if possible.
+        //Steps:
+        //1. Determine type.
+        //2. Try reading embedded metadata (if the type is even capable of doing so).
+        //3. If no metadata found, try reading filename.
+        //4. If all else fails, flag item so user can fix.
+        public static DateTime GetDateTime(string path)
+        {
+            DateTime dateTime;
+
+            switch (Path.GetExtension(path))
+            {
+                case ".jpg":
+                    dateTime = GetJpgDate(path);
+                    break;
+
+                case ".png":
+                    dateTime = GetFilenameTimestamp(path);
+                    break;
+
+                case ".mp4":
+                    dateTime = GetVidDate(path);
+                    break;
+
+                case ".mkv":
+                    dateTime = GetFilenameTimestamp(path);
+                    break;
+            }
+            return new DateTime();
+        }
+
+        public static DateTime GetJpgDate(string path)
+        {
+            ExifReader reader = new ExifReader(path);
+            reader.GetTagValue(ExifTags.DateTimeDigitized, out DateTime datetime);
+            return datetime;
+        }
 
         //Uses ffprobe shell command to get video date from file metadata.
-        public static DateTime GetVidDate(string dir)
+        public static DateTime GetVidDate(string path)
         {
             string date = ""; //The output of the ffprobe command.
             ProcessStartInfo ffprobeInfo = new ProcessStartInfo();
             ffprobeInfo.CreateNoWindow = true;
             ffprobeInfo.UseShellExecute = false;
             ffprobeInfo.FileName = "ffprobe";
-            ffprobeInfo.Arguments = "-v 0 -print_format compact=print_section=0:nk=1 -show_entries format_tags=creation_time \"" + dir + '"';
+            ffprobeInfo.Arguments = "-v 0 -print_format compact=print_section=0:nk=1 -show_entries format_tags=creation_time \"" + path + '"';
             ffprobeInfo.RedirectStandardOutput = true;
             ffprobeInfo.RedirectStandardError = true;
 

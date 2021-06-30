@@ -1,4 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ExifLib;
 
 namespace PSS_Photo_Sorter
 {
@@ -6,17 +10,9 @@ namespace PSS_Photo_Sorter
     {
         static void Main()
         {
-            // try
-            // {
-            string filename = "Screenshot_20210416-075337_Outlook.jpg";
-            DateTime yes = PSSPhotoSorter.GetFilenameTimestamp(filename);
-            //     DateTime yes = PSSPhotoSorter.ToDateTime(filename);
-            //     Console.WriteLine(yes);
-            // }
-            // catch (ArgumentException)
-            // {
-            //     Console.WriteLine("error lmao");
-            // }
+            Console.WriteLine(
+                PSSPhotoSorter.GetDateTime("C:/Users/Elliott/Pictures/413150_20210121203734_1.png")
+                );
         }
     }
 }

@@ -7,8 +7,19 @@
   "targets": {
     ".NETCoreApp,Version=v5.0": {
       "PSS Photo Sorter/1.0.0": {
+        "dependencies": {
+          "ExifLib": "1.7.0"
+        },
         "runtime": {
           "PSS Photo Sorter.dll": {}
+        }
+      },
+      "ExifLib/1.7.0": {
+        "runtime": {
+          "lib/net45/ExifLib.dll": {
+            "assemblyVersion": "1.7.0.0",
+            "fileVersion": "1.7.0.0"
+          }
         }
       }
     }
@@ -18,6 +29,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "ExifLib/1.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-E+Ca3FPt0ylhmbRQqSB3DtV9v8a/cC5HRPs261jxbBxMGmWuoBMfsQVv+Qp/jLxngaHE3mhNhx0Ev998hVDwPA==",
+      "path": "exiflib/1.7.0",
+      "hashPath": "exiflib.1.7.0.nupkg.sha512"
     }
   }
 }

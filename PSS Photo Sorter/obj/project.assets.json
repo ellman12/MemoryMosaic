@@ -1,11 +1,48 @@
 {
   "version": 3,
   "targets": {
-    "net5.0": {}
+    "net5.0": {
+      "ExifLib/1.7.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/ExifLib.dll": {}
+        },
+        "runtime": {
+          "lib/net45/ExifLib.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "ExifLib/1.7.0": {
+      "sha512": "E+Ca3FPt0ylhmbRQqSB3DtV9v8a/cC5HRPs261jxbBxMGmWuoBMfsQVv+Qp/jLxngaHE3mhNhx0Ev998hVDwPA==",
+      "type": "package",
+      "path": "exiflib/1.7.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NuGet.exe",
+        "exiflib.1.7.0.nupkg.sha512",
+        "exiflib.nuspec",
+        "lib/net20/ExifLib.dll",
+        "lib/net40/ExifLib.dll",
+        "lib/net45/ExifLib.dll",
+        "lib/portable-win81+wpa81/ExifLib.dll",
+        "lib/portable-win81+wpa81/ExifLib.pri",
+        "lib/portable-windows8+net45/ExifLib.dll",
+        "lib/portable-windows8+net45/ExifLib.pri",
+        "lib/sl3-wp/ExifLib.dll",
+        "lib/sl3/ExifLib.dll",
+        "lib/sl4/ExifLib.dll",
+        "lib/sl5/ExifLib.dll",
+        "lib/windowsphone8/ExifLib.dll"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    "net5.0": []
+    "net5.0": [
+      "ExifLib >= 1.7.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Elliott\\.nuget\\packages\\": {}
@@ -45,6 +82,12 @@
     "frameworks": {
       "net5.0": {
         "targetAlias": "net5.0",
+        "dependencies": {
+          "ExifLib": {
+            "target": "Package",
+            "version": "[1.7.0, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
@@ -60,8 +103,20 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'ExifLib 1.7.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0'. This package may not be fully compatible with your project.",
+      "libraryId": "ExifLib",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    }
+  ]
 }

@@ -6,4 +6,8 @@
     <RootNamespace>PSS_Photo_Sorter</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ExifLib" Version="1.7.0" />
+  </ItemGroup>
+
 </Project>
