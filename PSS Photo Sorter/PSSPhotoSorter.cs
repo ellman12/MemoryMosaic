@@ -12,22 +12,23 @@ namespace PSS_Photo_Sorter
         //The dateString needs to be exactly 14 characters long.
         public static DateTime ToDateTime(string dateString)
         {
-            if (dateString.Length < 14)
-                throw new ArgumentException("The specified dateString is too short. It needs to be exactly 14 characters long. The string given was " + dateString.Length + " characters long.");
-            else if (dateString.Length > 14)
-                throw new ArgumentException("The specified dateString is too long. It needs to be exactly 14 characters long. The string given was " + dateString.Length + " characters long.");
-            else if (dateString.Length == 14)
+            switch (dateString.Length)
             {
-                int year = Int32.Parse(dateString.Substring(0, 4));
-                int month = Int32.Parse(dateString.Substring(4, 2));
-                int day = Int32.Parse(dateString.Substring(6, 2));
-                int hour = Int32.Parse(dateString.Substring(8, 2));
-                int minute = Int32.Parse(dateString.Substring(10, 2));
-                int second = Int32.Parse(dateString.Substring(12, 2));
-                return new DateTime(year, month, day, hour, minute, second);
+                case < 14:
+                    throw new ArgumentException("The specified dateString is too short. It needs to be exactly 14 characters long. The string given was " + dateString.Length + " characters long.");
+                case > 14:
+                    throw new ArgumentException("The specified dateString is too long. It needs to be exactly 14 characters long. The string given was " + dateString.Length + " characters long.");
+                case 14:
+                {
+                    int year = Int32.Parse(dateString.Substring(0, 4));
+                    int month = Int32.Parse(dateString.Substring(4, 2));
+                    int day = Int32.Parse(dateString.Substring(6, 2));
+                    int hour = Int32.Parse(dateString.Substring(8, 2));
+                    int minute = Int32.Parse(dateString.Substring(10, 2));
+                    int second = Int32.Parse(dateString.Substring(12, 2));
+                    return new DateTime(year, month, day, hour, minute, second);
+                }
             }
-            else
-                throw new Exception("An error happened in ToDateTime()");
         }
 
         //TODO: this is (probably) incomplete.
