@@ -1,11 +1,11 @@
 ﻿//TODO
 //Get list of items to sort [done]
-//for each item to sort:
-//get date taken
-//generate dir if not present
-//copy or move the item there
-//add this new path to the DB
-//rinse and repeat
+//For each item to sort:
+//Get date taken
+//Generate dir if not present
+//Copy or move the item there
+//Add this new path to the DB
+//Rinse and repeat
 
 using System;
 using System.Collections.Generic;
@@ -18,6 +18,7 @@ namespace PSS_Photo_Sorter
     {
         public static void UploadItems()
         {
+            //TODO: add this to a config file that is read every time this thing is ran.
             const string root = @"C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\Pics and Vids\";
 
             List<string> files = new();
@@ -29,7 +30,7 @@ namespace PSS_Photo_Sorter
 
             foreach (var file in files)
             {
-                
+
             }
         }
     }
