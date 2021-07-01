@@ -8,11 +8,9 @@ namespace Actual_DB_Test
 {
     public class Connection
     {
-        //private readonly MySqlConnection connection;
         private readonly MySqlConnection connection = new("SERVER=localhost;DATABASE=photos_storage_server;username=root;PASSWORD=Ph0t0s_Server;");
 
-        //Represents a row in the media and album_entries tables.
-        //Used in SelectAlbum().
+        //Represents a row in the media and album_entries tables. Used in SelectAlbum().
         public struct Media
         {
             public readonly string path;
