@@ -8,11 +8,8 @@ namespace Actual_DB_Test
 {
     public class Connection
     {
-        private readonly MySqlConnection connection;
-        private readonly string server;
-        private readonly string database;
-        private readonly string username;
-        private readonly string password;
+        //private readonly MySqlConnection connection;
+        private readonly MySqlConnection connection = new("SERVER=localhost;DATABASE=photos_storage_server;username=root;PASSWORD=Ph0t0s_Server;");
 
         //Represents a row in the media and album_entries tables.
         //Used in SelectAlbum().
@@ -28,15 +25,6 @@ namespace Actual_DB_Test
                 dateTaken = dt;
                 dateAdded = da;
             }
-        }
-
-        public Connection()
-        {
-            server = "localhost";
-            database = "photos_storage_server";
-            username = "root";
-            password = "Ph0t0s_Server";
-            connection = new MySqlConnection("SERVER=" + server + ";" + "DATABASE=" + database + ";" + "username=" + username + ";" + "PASSWORD=" + password + ";");
         }
 
         public bool OpenConnection()
