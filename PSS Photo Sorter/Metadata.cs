@@ -19,15 +19,15 @@ namespace PSS_Photo_Sorter
                 case > 14:
                     throw new ArgumentException("The specified dateString is too long. It needs to be exactly 14 characters long. The string given was " + dateString.Length + " characters long.");
                 case 14:
-                {
-                    int year = Int32.Parse(dateString.Substring(0, 4));
-                    int month = Int32.Parse(dateString.Substring(4, 2));
-                    int day = Int32.Parse(dateString.Substring(6, 2));
-                    int hour = Int32.Parse(dateString.Substring(8, 2));
-                    int minute = Int32.Parse(dateString.Substring(10, 2));
-                    int second = Int32.Parse(dateString.Substring(12, 2));
-                    return new DateTime(year, month, day, hour, minute, second);
-                }
+                    {
+                        int year = Int32.Parse(dateString.Substring(0, 4));
+                        int month = Int32.Parse(dateString.Substring(4, 2));
+                        int day = Int32.Parse(dateString.Substring(6, 2));
+                        int hour = Int32.Parse(dateString.Substring(8, 2));
+                        int minute = Int32.Parse(dateString.Substring(10, 2));
+                        int second = Int32.Parse(dateString.Substring(12, 2));
+                        return new DateTime(year, month, day, hour, minute, second);
+                    }
             }
         }
 
@@ -40,7 +40,7 @@ namespace PSS_Photo_Sorter
         //4. If all else fails, flag item so user can fix.
         public static DateTime GetDateTime(string path)
         {
-            DateTime dateTime;
+            DateTime dateTime = new();
 
             switch (Path.GetExtension(path))
             {
@@ -60,14 +60,33 @@ namespace PSS_Photo_Sorter
                     dateTime = GetFilenameTimestamp(path);
                     break;
             }
-            return new DateTime();
+            return dateTime;
         }
 
+        //Try and examine JPG metadata. If necessary, it analyzes filename.
+        //If still can't determine datetime, have user take a look.
         public static DateTime GetJpgDate(string path)
         {
-            ExifReader reader = new ExifReader(path);
-            reader.GetTagValue(ExifTags.DateTimeDigitized, out DateTime datetime);
-            return datetime;
+            DateTime dateTaken;
+
+            try
+            {
+                ExifReader reader = new(path);
+                reader.GetTagValue(ExifTags.DateTimeDigitized, out dateTaken);
+            }
+            catch (ExifLibException e) //No metadata in file.
+            {
+                try
+                {
+                    dateTaken = GetFilenameTimestamp(path);
+                }
+                catch (ArgumentException exception)
+                {
+                    dateTaken = DateTime.MinValue; //Represents "error" that user needs to fix manually in the UI.
+                }
+            }
+
+            return dateTaken;
         }
 
         //Uses ffprobe shell command to get video date from file metadata.
@@ -145,12 +164,6 @@ namespace PSS_Photo_Sorter
                 throw new ArgumentException("Could not determine date/time from provided filename: " + filename);
 
             return ToDateTime(timestamp);
-        }
-
-        //Sort items and add them to the DB
-        static void PhotoSorter()
-        {
-
         }
     }
 }
