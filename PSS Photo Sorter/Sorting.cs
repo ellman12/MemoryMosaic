@@ -2,22 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using Actual_DB_Test;
 
 namespace PSS_Photo_Sorter
 {
     class Sorting
     {
-        //TODO
-        //Get list of items to sort [done]
-        //For each item to sort:
-        //  Get date taken
-        //  Generate dir if not present
-        //  Copy or move the item there
-        //  Add this new path to the DB
-        //  Rinse and repeat
-        //TODO: sending files to pi
         public static void UploadItems()
         {
             List<string> missingDate = new(); //Stores paths without date taken data, which need the user to fix them.
@@ -37,20 +27,17 @@ namespace PSS_Photo_Sorter
 
             Connection c = new();
             c.OpenConnection();
-            c.ClearTables(); //TODO
 
-            //TODO: present to user so they can inspect and have ability to fix, before being added to database and moved to new location.
             foreach (var path in paths)
             {
                 DateTime dateTaken = Metadata.GetDateTime(path);
 
                 if (dateTaken == DateTime.MinValue) //Represents "error" showing that program couldn't find date taken in metadata or filename. Also shows that user needs to fix this manually in the UI.
                 {
-                    Console.Write("Please manually fix the date taken.");
                     missingDate.Add(path);
                     continue;
                 }
-
+                
                 //Add new path to the database and List
                 string newPath = Path.Join(sortedDir, dateTaken.Year.ToString(), dateTaken.Month + " " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month), dateTaken.Day.ToString(), Path.GetFileName(path));
                 c.InsertMedia(newPath, dateTaken);
@@ -61,13 +48,23 @@ namespace PSS_Photo_Sorter
                 File.Copy(path, newPath);
             }
 
-            //TODO: print list of broken ones
+            Console.WriteLine("BAD");
+            foreach (string badPath in missingDate)
+            {
+                Console.WriteLine(Path.GetFileName(badPath));
+            }
+
+            Console.WriteLine("\nGOOD");
+            foreach (string goodPath in correctDate)
+            {
+                Console.WriteLine(Path.GetFileName(goodPath));
+            }
         }
 
         //Prints a DateTime in a nice, human-readable format: Sat, May 1, 2021 7:30 PM
-        public static void PrintDateTime(DateTime dt)
-        {
-            Console.WriteLine(dt.ToShortDateString() + ", " + dt.Year + " " + dt.ToShortTimeString());
-        }
+        //public static void PrintDateTime(DateTime dt)
+        //{
+            //Console.WriteLine(dt.ToShortDateString() + ", " + dt.Year + " " + dt.ToShortTimeString());
+        //}
     }
 }
