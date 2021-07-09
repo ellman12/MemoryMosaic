@@ -4,7 +4,9 @@ namespace PSS_Photo_Sorter
     {
         private static void Main()
         {
-            Sorting.UploadItems();
+            //Sorting.UploadItems();
+            Sorting.JsonWriteTest();
+            Sorting.JsonReadTest();
         }
     }
 }

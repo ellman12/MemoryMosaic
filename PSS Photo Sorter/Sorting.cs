@@ -1,13 +1,27 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Actual_DB_Test;
+using System.Text.Json;
 
 namespace PSS_Photo_Sorter
 {
     class Sorting
     {
+        public static void JsonReadTest()
+        {
+            string text = File.ReadAllText(@"G:\file.json");
+            string value = JsonSerializer.Deserialize<string>(text);
+            Console.WriteLine(value);
+        }
+
+        public static void JsonWriteTest()
+        {
+            string test = JsonSerializer.Serialize(@"C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\Pics and Vids\Destination\");
+            File.WriteAllText(@"G:\file.json", test);
+        }
+
         public static void UploadItems()
         {
             List<string> missingDate = new(); //Stores paths without date taken data, which need the user to fix them.
@@ -17,7 +31,7 @@ namespace PSS_Photo_Sorter
             const string unsortedDir = @"C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\Pics and Vids\";
             const string sortedDir = @"C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\Pics and Vids\Destination\";
 
-            //Gets the paths of all supported file types and add them to a List.
+            //Gets a List of the paths of all supported file types.
             List<string> paths = new();
             paths.AddRange(Directory.GetFiles(unsortedDir, "*.jpg", SearchOption.AllDirectories));
             paths.AddRange(Directory.GetFiles(unsortedDir, "*.jpeg", SearchOption.AllDirectories));
