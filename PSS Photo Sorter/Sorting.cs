@@ -9,36 +9,19 @@ namespace PSS_Photo_Sorter
 {
     class Sorting
     {
-        public static void JsonReadTest()
-        {
-            string text = File.ReadAllText(@"G:\file.json");
-            string value = JsonSerializer.Deserialize<string>(text);
-            Console.WriteLine(value);
-        }
-
-        public static void JsonWriteTest()
-        {
-            string test = JsonSerializer.Serialize(@"C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\Pics and Vids\Destination\");
-            File.WriteAllText(@"G:\file.json", test);
-        }
-
         public static void UploadItems()
         {
             List<string> missingDate = new(); //Stores paths without date taken data, which need the user to fix them.
             List<string> correctDate = new(); //Stores SORTED paths with correct date taken. Shown to user so can verify everything is good.
-
-            //TODO: add this to a config file that is read every time this thing is ran.
-            const string unsortedDir = @"C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\Pics and Vids\";
-            const string sortedDir = @"C:\Users\Elliott\Documents\GitHub\Photos-Storage-Server\Pics and Vids\Destination\";
-
+            
             //Gets a List of the paths of all supported file types.
             List<string> paths = new();
-            paths.AddRange(Directory.GetFiles(unsortedDir, "*.jpg", SearchOption.AllDirectories));
-            paths.AddRange(Directory.GetFiles(unsortedDir, "*.jpeg", SearchOption.AllDirectories));
-            paths.AddRange(Directory.GetFiles(unsortedDir, "*.png", SearchOption.AllDirectories));
-            paths.AddRange(Directory.GetFiles(unsortedDir, "*.mp4", SearchOption.AllDirectories));
-            paths.AddRange(Directory.GetFiles(unsortedDir, "*.mkv", SearchOption.AllDirectories));
-
+            paths.AddRange(Directory.GetFiles(Config.unsortedDir, "*.jpg", SearchOption.AllDirectories));
+            paths.AddRange(Directory.GetFiles(Config.unsortedDir, "*.jpeg", SearchOption.AllDirectories));
+            paths.AddRange(Directory.GetFiles(Config.unsortedDir, "*.png", SearchOption.AllDirectories));
+            paths.AddRange(Directory.GetFiles(Config.unsortedDir, "*.mp4", SearchOption.AllDirectories));
+            paths.AddRange(Directory.GetFiles(Config.unsortedDir, "*.mkv", SearchOption.AllDirectories));
+            
             Connection c = new();
             c.OpenConnection();
 
@@ -53,7 +36,7 @@ namespace PSS_Photo_Sorter
                 }
                 
                 //Add new path to the database and List
-                string newPath = Path.Join(sortedDir, dateTaken.Year.ToString(), dateTaken.Month + " " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month), dateTaken.Day.ToString(), Path.GetFileName(path));
+                string newPath = Path.Join(Config.sortedDir, dateTaken.Year.ToString(), dateTaken.Month + " " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month), dateTaken.Day.ToString(), Path.GetFileName(path));
                 c.InsertMedia(newPath, dateTaken);
                 correctDate.Add(newPath);
 
