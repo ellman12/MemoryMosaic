@@ -1,6 +1,6 @@
 using System;
 
-namespace FrontendTest.Data
+namespace PSS.Data
 {
     public class WeatherForecast
     {
