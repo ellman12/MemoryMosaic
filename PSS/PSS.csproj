@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\gphotos icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Shared\" />
   </ItemGroup>
 
