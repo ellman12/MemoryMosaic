@@ -39,6 +39,8 @@
     font-weight: 400;
     width: 127px;
     padding-left: 11px;
+    padding-bottom: 11px;
+    padding-top: 11px;
 }
 
 .icon_btn:hover {
