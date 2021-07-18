@@ -1,0 +1,58 @@
+﻿/* This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg */
+@font-face {
+    font-family: 'Product Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2) format('woff2');
+}
+
+.photos-flex {
+    display: flex;
+}
+
+/* Each button with an icon in the side bar has these */
+.material-icons {
+    font-family: 'Material Icons';
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased; /* Support for all WebKit browsers. */
+    text-rendering: optimizeLegibility; /* Support for Safari and Chrome. */
+    -moz-osx-font-smoothing: grayscale; /* Support for Firefox. */
+}
+
+.icon_btn {
+    color: white; /* Icon Color */
+    background-color: black;
+    border: none;
+    border-radius: 4px;
+    display: flex;
+    flex: 1;
+    word-break: break-all;
+    word-break: break-word;
+    word-wrap: break-word;
+    -webkit-box-align: center;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans;
+    font-size: 1rem;
+    font-weight: 400;
+    width: 135px;
+    padding-left: 17px;
+    padding-bottom: 11px;
+    padding-top: 11px;
+}
+
+.icon_btn:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+}
+
+/* Button text */
+.icon_btn_text {
+    padding-left: 11px;
+    color: white;
+    text-decoration: none;
+}
