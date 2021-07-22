@@ -7,7 +7,7 @@
     <title>PSS</title>
     <base href="/" />
     <!--<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />-->  <!--I think this can be deleted-->
-    <!-- This is causing the errors I think -->
+    <!-- This ↓ is causing the errors I think -->
     <link href="css/app.css" rel="stylesheet" />
     <link href="css/PSS.css" rel="stylesheet" />
 
@@ -21,8 +21,9 @@
     <div id="blazor-error-ui">
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
     </div>
+
+    <!--When I remove this ↓ line—despite there being no script—side panel buttons don't appear... 🤔-->
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 
