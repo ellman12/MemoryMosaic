@@ -17,8 +17,13 @@ namespace Actual_DB_Test
             //c.MediaAndAlbumInsert("new item4", 5, DateTime.Now);
             //c.DeleteItem("new item3");
             //c.RestoreItem("new item3");
-            c.InsertMedia("path1", DateTime.MaxValue);
-            c.InsertMedia("path2", DateTime.MinValue);
+            c.InsertMedia("path1", DateTime.Now);
+            c.InsertMedia("path2", DateTime.Now);
+            List<Connection.Media> media = c.LoadMediaTable();
+            foreach (var med in media)
+            {
+                Console.WriteLine(med.path);
+            }
             c.CloseConnection();
         }
     }
