@@ -1,9 +1,20 @@
 ﻿@page "/"
 
-@*TODO: add the flex here*@
 <div style="display: flex">
-    @code
+    @foreach(var media in mediaList)
     {
-        //get items from db, then add here
+        @*<img src=@media.path>*@
+        Console.WriteLine(media.path);
     }
 </div>
+
+@code
+{
+    public readonly List<Connection.Media> mediaList = LoadMediaTable();
+
+    public static List<Connection.Media> LoadMediaTable()
+    {
+        Connection c = new Connection();
+        return c.LoadMediaTable();
+    }
+}
