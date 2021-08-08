@@ -3,7 +3,7 @@
 
 @foreach (var media in mediaList)
 {
-    <img src=@media.path style="max-width: 10%" />
+    <img src=@media.path style="max-width: 10%" alt=""/>
 }
 
 @code {
@@ -12,10 +12,6 @@
     public static List<Connection.Media> LoadMediaTable()
     {
         Connection c = new Connection();
-        List<Connection.Media> l = new();
-        l = c.LoadMediaTable();
-        @*c.InsertMedia("new path", DateTime.Now);*@
-        @*List<Connection.Media> l = c.LoadMediaTable();*@
-        return l;
+        return c.LoadMediaTable();
     }
 }
