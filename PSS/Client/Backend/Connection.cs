@@ -356,11 +356,15 @@ namespace PSS.Client.Backend
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2)));
+                    media.Add(new Media(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2)));
             }
             catch (MySqlException e)
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("LoadMediaTable() Error");
             }
             finally
             {
@@ -387,7 +391,7 @@ namespace PSS.Client.Backend
                 while (reader.Read())
                 {
                     //Add new row
-                    media.Add(new(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2)));
+                    media.Add(new Media(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2)));
                 }
             }
             catch (MySqlException e)
