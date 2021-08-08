@@ -1,16 +1,21 @@
 ﻿@page "/counter"
+@using PSS.Client.Backend
 
-<h1>Counter</h1>
-
-<p>Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+@foreach (var media in mediaList)
+{
+    <img src=@media.path style="max-width: 10%" />
+}
 
 @code {
-    private int currentCount = 0;
+    public List<Connection.Media> mediaList = LoadMediaTable();
 
-    private void IncrementCount()
+    public static List<Connection.Media> LoadMediaTable()
     {
-        currentCount++;
+        Connection c = new Connection();
+        List<Connection.Media> l = new();
+        l = c.LoadMediaTable();
+        @*c.InsertMedia("new path", DateTime.Now);*@
+        @*List<Connection.Media> l = c.LoadMediaTable();*@
+        return l;
     }
 }
