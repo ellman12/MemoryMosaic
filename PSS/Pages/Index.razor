@@ -1,17 +1,14 @@
 ﻿@page "/"
 @using PSS.Backend
 
-@foreach (Connection.Media media in mediaList)
+@foreach (Media media in mediaList)
 {
-    <img src=@media.path style="max-width: 10%; padding: 4px" alt="" />
+    <a href="https://www.Google.com"><img src=@media.path style="max-width: 8.5%; padding: 4px" alt="" /></a>
+}
+
+@{
 }
 
 @code {
-    private readonly List<Connection.Media> mediaList = LoadMediaTable();
-
-    private static List<Connection.Media> LoadMediaTable()
-    {
-        Connection c = new();
-        return c.LoadMediaTable();
-    }
+    private readonly List<Media> mediaList = Connection.LoadMediaTable();
 }

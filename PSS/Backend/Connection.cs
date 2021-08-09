@@ -4,26 +4,26 @@ using MySql.Data.MySqlClient;
 
 namespace PSS.Backend
 {
-    public class Connection
+    //Represents a row in the media and album_entries tables. Used in SelectAlbum().
+    public readonly struct Media
     {
-        public readonly MySqlConnection connection = new("SERVER=localhost;DATABASE=photos_storage_server;username=root;PASSWORD=Ph0t0s_Server;");
+        public readonly string path;
+        public readonly DateTime dateTaken;
+        public readonly DateTime dateAdded;
 
-        //Represents a row in the media and album_entries tables. Used in SelectAlbum().
-        public struct Media
+        public Media(string p, DateTime dt, DateTime da)
         {
-            public readonly string path;
-            public readonly DateTime dateTaken;
-            public readonly DateTime dateAdded;
-
-            public Media(string p, DateTime dt, DateTime da)
-            {
-                path = p;
-                dateTaken = dt;
-                dateAdded = da;
-            }
+            path = p;
+            dateTaken = dt;
+            dateAdded = da;
         }
+    }
 
-        public void OpenConnection()
+    public static class Connection
+    {
+        private static readonly MySqlConnection connection = new("SERVER=localhost;DATABASE=photos_storage_server;username=root;PASSWORD=Ph0t0s_Server;");
+
+        private static void OpenConnection()
         {
             try
             {
@@ -45,7 +45,7 @@ namespace PSS.Backend
             }
         }
 
-        public void CloseConnection()
+        private static void CloseConnection()
         {
             try
             {
@@ -58,7 +58,7 @@ namespace PSS.Backend
         }
 
         //For inserting a photo or video into the media table (the main table). Will not insert duplicates.
-        public void InsertMedia(string path, DateTime dateTaken)
+        public static void InsertMedia(string path, DateTime dateTaken)
         {
             OpenConnection();
 
@@ -87,9 +87,8 @@ namespace PSS.Backend
             }
         }
 
-
         //Create a new album and add it to the table of album names and IDs. ID is auto incrementing.
-        public void CreateAlbum(string name)
+        public static void CreateAlbum(string name)
         {
             OpenConnection();
 
@@ -121,7 +120,7 @@ namespace PSS.Backend
         //This has 3 different use cases: give an album a cover if it doesn't have a cover,
         //update an existing cover, or remove an album cover (supply 'null' as path).
         //Albums don't necessarily need to have an album cover.
-        public void UpdateAlbumCover(string albumName, string path)
+        public static void UpdateAlbumCover(string albumName, string path)
         {
             OpenConnection();
 
@@ -145,7 +144,7 @@ namespace PSS.Backend
 
         //Given an album name, will find its ID in the albums table.
         //Returns 0 if not found or can't connect. IDs are greater than 0.
-        public int GetAlbumID(string name)
+        public static int GetAlbumID(string name)
         {
             OpenConnection();
 
@@ -179,7 +178,7 @@ namespace PSS.Backend
 
         //Deletes items in the album from album_entries, then from the albums table.
         //THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos.
-        public void DeleteAlbum(string name)
+        public static void DeleteAlbum(string name)
         {
             OpenConnection();
 
@@ -223,7 +222,7 @@ namespace PSS.Backend
         }
 
         //Add a single path to an album in album_entries.
-        public void AddToAlbum(string path, int albumID)
+        public static void AddToAlbum(string path, int albumID)
         {
             OpenConnection();
 
@@ -247,7 +246,7 @@ namespace PSS.Backend
         }
 
         //Remove a single path from an album.
-        public void RemoveFromAlbum(string path, int albumID)
+        public static void RemoveFromAlbum(string path, int albumID)
         {
             OpenConnection();
 
@@ -269,14 +268,14 @@ namespace PSS.Backend
         }
 
         //Add an item to media (main table) and an album.
-        public void MediaAndAlbumInsert(string path, int albumID, DateTime dateTaken)
+        public static void MediaAndAlbumInsert(string path, int albumID, DateTime dateTaken)
         {
             InsertMedia(path, dateTaken);
             AddToAlbum(path, albumID);
         }
 
         //Moves an item from media and album_entries (if applicable) into the 2 trash albums.
-        public void DeleteItem(string path)
+        public static void DeleteItem(string path)
         {
             OpenConnection();
 
@@ -310,7 +309,7 @@ namespace PSS.Backend
         }
 
         //Undoes a call to DeleteItem(). Will restore albums it was in, as well as re-adding it to the media table.
-        public void RestoreItem(string path)
+        public static void RestoreItem(string path)
         {
             OpenConnection();
 
@@ -344,7 +343,7 @@ namespace PSS.Backend
         }
 
         //Loads everything in the media table in descending order.
-        public List<Media> LoadMediaTable()
+        public static List<Media> LoadMediaTable()
         {
             OpenConnection();
 
@@ -374,12 +373,12 @@ namespace PSS.Backend
         }
 
         //Returns every path in an album
-        public List<Media> SelectAlbum(string name)
+        public static List<Media> SelectAlbum(string name)
         {
             OpenConnection();
 
             List<Media> media = new(); //Stores every row retrieved; returned later.
-            var ID = GetAlbumID(name); //Find the album to work with.
+            int ID = GetAlbumID(name); //Find the album to work with.
 
             try
             {
@@ -406,7 +405,7 @@ namespace PSS.Backend
         }
 
         //Updates oldPath's DateTaken in the media and album_entries tables with newPath.
-        public void UpdateDateTaken(string oldPath, string newPath)
+        public static void UpdateDateTaken(string oldPath, string newPath)
         {
             OpenConnection();
 
@@ -433,7 +432,7 @@ namespace PSS.Backend
         }
 
         //For debugging and testing. Clears all tables.
-        public void ClearTables()
+        public static void ClearTables()
         {
             OpenConnection();
             MySqlCommand cmd = new("DELETE FROM media; DELETE FROM media_trash; DELETE FROM albums; DELETE FROM album_entries; DELETE FROM album_entries_trash;", connection);
