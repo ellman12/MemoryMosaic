@@ -1,10 +1,16 @@
 ﻿@page "/"
 @using PSS.Backend
 
-@foreach (Media media in mediaList)
-{
-    <a href="https://www.Google.com"><img src=@media.path style="max-width: 8.5%; padding: 4px" alt="" /></a>
-}
+<div style="display: flex">
+    @foreach (Media media in mediaList)
+    {
+        <img onclick="document.querySelector('img').style = " src=@media.path class="thumbnail" alt="" />
+    }
+</div>
+
+@*<div style="visibility: hidden">
+
+</div>*@
 
 @{
 }

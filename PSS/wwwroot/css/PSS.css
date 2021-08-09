@@ -20,6 +20,29 @@
     -moz-osx-font-smoothing: grayscale; /* Support for Firefox. */
 }
 
+/*Styling for the thumbnails for photos and videos*/
+.thumbnail {
+    /*    max-width: 8.5%;*/
+    /*    padding: 4px;*/
+    max-width: 100%;
+    max-height: 100%;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    overflow: auto;
+    position: fixed;
+    right: 0;
+    top: 0;
+    -o-object-fit: contain;
+    object-fit: contain;
+}
+
+/*Checkbox that appears when hovering over a thumbnail*/
+/*.check {*/
+
+/*}*/
+
+/*These 3 are for the side panel buttons*/
 .icon_btn {
     color: white; /* Icon Color */
     background-color: black;
