@@ -20,10 +20,6 @@
     -moz-osx-font-smoothing: grayscale; /* Support for Firefox. */
 }
 
-.photos-flexbox {
-
-}
-
 .icon_btn {
     color: white; /* Icon Color */
     background-color: black;

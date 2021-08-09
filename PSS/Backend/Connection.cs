@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
-namespace PSS.Client.Backend
+namespace PSS.Backend
 {
     public class Connection
     {

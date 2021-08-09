@@ -1,37 +1,9 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">PSS</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
-    </ul>
-</div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+﻿<nav style="align-content: space-between; float: left; margin-right: 5px">
+    <button onclick="location.href='https://www.google.com'" type="button" class="icon_btn"><span class="material-icons">&#xe3f4;</span><span class="icon_btn_text">Photos</span></button>
+    <button onclick="location.href='https://www.google.com'" type="button" class="icon_btn"><span class="material-icons">&#xe411;</span><span class="icon_btn_text">Albums</span></button>
+    <button onclick="location.href='https://www.google.com'" type="button" class="icon_btn"><span class="material-icons">&#xf06f;</span><span class="icon_btn_text">Starred</span></button>
+    <button onclick="location.href='https://www.google.com'" type="button" class="icon_btn"><span class="material-icons">&#xe92e;</span><span class="icon_btn_text">Trash</span></button>
+    <button onclick="location.href='https://www.google.com'" type="button" class="icon_btn"><span class="material-icons">&#xe8b6;</span><span class="icon_btn_text">Search</span></button>
+    <button onclick="location.href='https://www.google.com'" type="button" class="icon_btn"><span class="material-icons">&#xe2c3;</span><span class="icon_btn_text">Upload</span></button>
+    <button onclick="location.href='https://www.google.com'" type="button" class="icon_btn"><span class="material-icons">&#xe8b8;</span><span class="icon_btn_text">Settings</span></button>
+</nav>

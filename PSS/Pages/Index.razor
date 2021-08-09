@@ -1,17 +1,17 @@
 ﻿@page "/"
-@using PSS.Client.Backend
+@using PSS.Backend
 
-@foreach (var media in mediaList)
+@foreach (Connection.Media media in mediaList)
 {
-    <img src=@media.path style="max-width: 10%; padding: 4px" alt=""/>
+    <img src=@media.path style="max-width: 10%; padding: 4px" alt="" />
 }
 
 @code {
-    public List<Connection.Media> mediaList = LoadMediaTable();
+    private readonly List<Connection.Media> mediaList = LoadMediaTable();
 
-    public static List<Connection.Media> LoadMediaTable()
+    private static List<Connection.Media> LoadMediaTable()
     {
-        Connection c = new Connection();
+        Connection c = new();
         return c.LoadMediaTable();
     }
 }
