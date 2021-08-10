@@ -405,6 +405,7 @@ namespace PSS.Backend
         }
 
         //Updates oldPath's DateTaken in the media and album_entries tables with newPath.
+        //TODO: what is going on with this function? IDK if I named it wrong or forgot some args or what.
         public static void UpdateDateTaken(string oldPath, string newPath)
         {
             OpenConnection();
