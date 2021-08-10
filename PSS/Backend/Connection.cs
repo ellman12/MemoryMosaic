@@ -403,9 +403,8 @@ namespace PSS.Backend
             return media;
         }
 
-        //Updates oldPath's DateTaken in the media and album_entries tables with newPath.
-        //TODO: what is going on with this function? IDK if I named it wrong or forgot some args or what.
-        public static void UpdateDateTaken(string oldPath, string newPath)
+        //Update oldPath in the media and album_entries tables with newPath.
+        public static void UpdatePath(string oldPath, string newPath)
         {
             OpenConnection();
 
@@ -424,6 +423,37 @@ namespace PSS.Backend
             catch (MySqlException e)
             {
                 Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+        //Update path's DateTaken in media and album_entries tables.
+        public static void UpdateDateTaken(string path, DateTime newDateTaken)
+        {
+            OpenConnection();
+
+            try
+            {
+                //Update media
+                MySqlCommand cmd = new("UPDATE media SET date_taken=@newDateTaken WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.Parameters.AddWithValue("@newDateTaken", newDateTaken);
+                cmd.ExecuteNonQuery();
+
+                //Update album_entries TODO
+                cmd.CommandText = "UPDATE album_entries SET date_taken=@newDateTaken WHERE path=@path";
+                cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("An UpdateDateTaken() Error");
             }
             finally
             {
