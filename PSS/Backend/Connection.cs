@@ -10,12 +10,14 @@ namespace PSS.Backend
         public readonly string path;
         public readonly DateTime dateTaken;
         public readonly DateTime dateAdded;
+        public readonly string uuid;
 
-        public Media(string p, DateTime dt, DateTime da)
+        public Media(string p, DateTime dt, DateTime da, string uuid)
         {
             path = p;
             dateTaken = dt;
             dateAdded = da;
+            this.uuid = uuid;
         }
     }
 
@@ -62,7 +64,7 @@ namespace PSS.Backend
         {
             OpenConnection();
 
-            MySqlCommand cmd = new("INSERT IGNORE INTO media VALUES (@path, @dateAdded, @dateTaken)", connection);
+            MySqlCommand cmd = new("INSERT IGNORE INTO media VALUES (@path, @dateAdded, @dateTaken, UUID())", connection);
             cmd.Parameters.AddWithValue("@path", path);
             cmd.Parameters.AddWithValue("@dateAdded", DateTime.Now);
             cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
@@ -355,7 +357,7 @@ namespace PSS.Backend
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new Media(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2)));
+                    media.Add(new Media(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetString(3)));
             }
             catch (MySqlException e)
             {
@@ -382,16 +384,13 @@ namespace PSS.Backend
 
             try
             {
-                MySqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@ID", connection);
+                MySqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@ID", connection);
                 cmd.Parameters.AddWithValue("@ID", ID);
                 cmd.ExecuteNonQuery();
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                {
-                    //Add new row
-                    media.Add(new Media(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2)));
-                }
+                    media.Add(new Media(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetString(3)));
             }
             catch (MySqlException e)
             {
@@ -439,6 +438,13 @@ namespace PSS.Backend
             MySqlCommand cmd = new("DELETE FROM media; DELETE FROM media_trash; DELETE FROM albums; DELETE FROM album_entries; DELETE FROM album_entries_trash;", connection);
             cmd.ExecuteNonQuery();
             CloseConnection();
+        }
+
+        //For testing. Generate some "dummy" rows for testing purposes.
+        public static void GenerateDummyData()
+        {
+            InsertMedia("/Pics and Vids/Test Pics/20210502_144212.jpg", DateTime.Now);
+            InsertMedia("/Pics and Vids/Test Pics/20210502_143910.jpg", DateTime.Now);
         }
     }
 }
