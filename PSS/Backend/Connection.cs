@@ -480,6 +480,8 @@ namespace PSS.Backend
                     path = reader.GetString(0); //First and only column.
                     reader.Close();
                 }
+                else
+                    path = "null";
             }
             catch (MySqlException e)
             {
