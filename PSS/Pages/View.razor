@@ -3,7 +3,7 @@
 @using System.IO
 @layout EmptyLayout
 
-<img class="imgView" style="height: 100%" src="@Connection.GetPathFromUuid(id)" />
+<img class="imgView" style="height: 100%" src="@Connection.GetPathFromUuid(id)" alt=""/>
 <input autocomplete="off" type="range" min="100" max="275" value="100" step="5" oninput="document.querySelector('img').style.height = (this.value + '%')" class="range">
 
 @code {
