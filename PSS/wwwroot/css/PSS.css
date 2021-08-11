@@ -41,7 +41,7 @@
 .range {
     width: 200px;
     position: fixed; /*https://stackoverflow.com/a/11399610*/
-    right: 20px;
+    right: 5px;
     top: 80px;
     opacity: 0.3;
 }
