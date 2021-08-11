@@ -461,6 +461,38 @@ namespace PSS.Backend
             }
         }
 
+        //Gets an item's path from its uuid.
+        public static string GetPathFromUuid(string uuid)
+        {
+            OpenConnection();
+            string path = "";
+
+            try
+            {
+                MySqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read(); //There should only be 1 line to read.
+                    path = reader.GetString(0); //First and only column.
+                    reader.Close();
+                }
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+            }
+            finally
+            {
+                CloseConnection();
+            }
+
+            return path;
+        }
+
         //For debugging and testing. Clears all tables.
         public static void ClearTables()
         {

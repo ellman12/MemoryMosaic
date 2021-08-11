@@ -1,0 +1,11 @@
+﻿@page "/view/{id}"
+@using PSS.Backend
+@using System.IO
+@layout EmptyLayout
+
+<img class="bigSize" src="@Connection.GetPathFromUuid(id)" />
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+}
