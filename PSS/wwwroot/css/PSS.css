@@ -84,3 +84,17 @@
     color: white;
     text-decoration: none;
 }
+
+/*Primarily used for the 404 page*/
+.whiteText {
+    color: white;
+    font-family: 'Product Sans';
+}
+
+/*Used for the 404 page*/
+.centeredDiv {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -140px 0 0 -150px;
+}
