@@ -1,12 +1,21 @@
 ﻿@page "/"
 @using PSS.Backend
 
-<div style="display: flex">
-    @foreach (Media media in mediaList)
+@{
+    if (mediaList.Count == 0)
     {
-        <img onclick="location.href='/view/@media.uuid'" id=@media.uuid src=@media.path class="thumbnail" alt="" />
+        <h1 class="centeredWhiteText">Looks empty here...<br />Upload some items to get started.</h1>
     }
-</div>
+    else
+    {
+        <div style="display: flex">
+            @foreach (Media media in mediaList)
+            {
+                <img onclick="location.href = '/view/@media.uuid'" id=@media.uuid src=@media.path class="thumbnail" alt="" />
+            }
+        </div>
+    }
+}
 
 @code {
     private readonly List<Media> mediaList = Connection.LoadMediaTable();
