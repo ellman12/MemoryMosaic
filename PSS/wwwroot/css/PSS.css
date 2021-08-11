@@ -39,7 +39,7 @@
 
 .range {
     width: 200px;
-    position: absolute;
+    position: fixed; /*https://stackoverflow.com/a/11399610*/
     right: 20px;
 }
 
