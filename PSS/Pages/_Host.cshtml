@@ -3,16 +3,6 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
-
-<script>
-    function changeSize(id) {
-        if (document.getElementById(id).getAttribute("class") === "thumbnail")
-            document.getElementById(id).setAttribute("class", "imgView");
-        else
-            document.getElementById(id).setAttribute("class", "thumbnail");
-    }
-</script>
-
 <html lang="en">
 <head>
     <base href="~/" /> @* <-- THIS IS NECESSARY: https://stackoverflow.com/questions/59833137/navigating-to-blazor-page-with-parameter-does-not-render-layout-or-anything*@
