@@ -3,9 +3,20 @@
 @using System.IO
 @layout EmptyLayout
 
-<img class="bigSize" src="@Connection.GetPathFromUuid(id)" />
+    <style>
+        .range {
+            width: 200px;
+            position: absolute;
+            right: 20px;
+        }
+    </style>
 
-@code {
-    [Parameter]
-    public string id { get; set; }
-}
+    <img class="bigSize" style="height: 100%" src="@Connection.GetPathFromUuid(id)" />
+
+    <!-- Slider to control the image width, only to make demo clearer !-->
+    <input type="range" min="100" max="260" value="100" step="5" oninput="document.querySelector('img').style.height = (this.value + '%')" class="range">
+
+    @code {
+        [Parameter]
+        public string id { get; set; }
+    }

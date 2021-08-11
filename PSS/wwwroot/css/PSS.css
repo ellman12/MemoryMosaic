@@ -28,17 +28,19 @@
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
 .bigSize {
-    max-width: 100%;
-    max-height: 100%;
-    bottom: 0;
     left: 0;
     margin: auto;
     overflow: auto;
-    position: fixed;
+    position: absolute;
     right: 0;
-    top: 0;
     -o-object-fit: contain;
     object-fit: contain;
+}
+
+.range {
+    width: 200px;
+    position: absolute;
+    right: 20px;
 }
 
 /*These 3 are for the side panel buttons*/
