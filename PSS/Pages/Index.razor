@@ -4,9 +4,11 @@
 <div style="display: flex">
     @foreach (Media media in mediaList)
     {
-        <img onclick="test()" src=@media.path class="thumbnail" alt="" />
+        <img onclick='changeSize("@media.uuid");' id=@media.uuid src=@media.path class="thumbnail" alt="" />
     }
 </div>
+
+@*TODO: add preview div thing here?*@
 
 @{
 }
