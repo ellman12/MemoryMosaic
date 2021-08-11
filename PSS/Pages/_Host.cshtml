@@ -15,7 +15,8 @@
 
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <base href="~/" /> @* <-- THIS IS NECESSARY: https://stackoverflow.com/questions/59833137/navigating-to-blazor-page-with-parameter-does-not-render-layout-or-anything*@
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>PSS</title>
     <link href="css/PSS.css" rel="stylesheet" />
@@ -23,7 +24,7 @@
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet"> @*https://stackoverflow.com/questions/50303454/how-to-use-the-new-material-design-icon-themes-outlined-rounded-two-tone-and*@
 </head>
 
-<body style="background-color: black; margin-left: 0; margin-top: 0;">
+<body style="background-color: black; margin-right: 5px; margin-left: 0px; margin-top: 0px;">
     <component type="typeof(App)" render-mode="ServerPrerendered" /> @*Whatever this line is/does, removing it causes the app to not work... 🤔*@
 </body>
 </html>
