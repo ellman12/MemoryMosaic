@@ -24,6 +24,7 @@
 .thumbnail {
     max-width: 13%;
     padding: 4px;
+    cursor: pointer;
 }
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
@@ -75,6 +76,7 @@
 
     .icon_btn:hover {
         background-color: rgba(211, 211, 211, 0.1);
+        cursor: pointer;
     }
 
 .icon_btn_text {
