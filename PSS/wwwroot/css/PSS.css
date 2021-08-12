@@ -56,7 +56,6 @@
 /*These 3 are for the side panel buttons*/
 .icon_btn {
     color: white; /* Icon Color */
-    background-color: black;
     border: none;
     border-radius: 4px;
     display: flex;
@@ -89,7 +88,7 @@
 
 .circle_icon_btn {
     color: white; /* Icon Color */
-    background-color: black;
+    background: none;
     border: none;
     position: absolute;
     left: 5px;
