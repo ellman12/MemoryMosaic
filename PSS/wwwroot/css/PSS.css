@@ -45,6 +45,7 @@
     right: 5px;
     top: 80px;
     opacity: 0.3;
+    transition: .4s;
 }
 
     .range:hover {
@@ -84,6 +85,30 @@
     color: white;
     text-decoration: none;
 }
+
+.circle_icon_btn {
+    color: white; /* Icon Color */
+    background-color: black;
+    border: none;
+    position: absolute;
+    left: 0;
+    top: 5px;
+    font-family: Product Sans;
+    text-align: center;
+    width: 80px;
+    height: 80px;
+    line-height: 50%;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    transition: .4s;
+}
+
+    .circle_icon_btn:hover {
+        background-color: rgba(211, 211, 211, 0.1);
+        cursor: pointer;
+    }
 
 /*Used just for Index.razor if media has 0 items*/
 .indexCenteredWhiteText {
