@@ -85,8 +85,8 @@
     text-decoration: none;
 }
 
-/*Used for Index.razor if media has 0 items*/
-.bigCenteredWhiteText {
+/*Used just for Index.razor if media has 0 items*/
+.indexCenteredWhiteText {
     color: white;
     font-family: 'Product Sans';
     text-align: center;
