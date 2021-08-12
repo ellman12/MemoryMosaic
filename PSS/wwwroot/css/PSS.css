@@ -91,12 +91,12 @@
     background-color: black;
     border: none;
     position: absolute;
-    left: 0;
+    left: 5px;
     top: 5px;
     font-family: Product Sans;
     text-align: center;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     line-height: 50%;
     border-radius: 50%;
     text-align: center;
