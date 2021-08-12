@@ -28,7 +28,7 @@
 
 /*Buttons*/
 /*These buttons all have a lot of stuff in common, so in their class="..." thing, I put this class and then the button's actual class*/
-.icon_btn {
+.round_view_icon_btn {
     color: white; /* Icon Color */
     background: none;
     border: none;
@@ -45,7 +45,7 @@
     height: 60px;
 }
 
-    .icon_btn:hover {
+    .round_view_icon_btn:hover {
         background-color: rgba(211, 211, 211, 0.1);
         cursor: pointer;
     }
