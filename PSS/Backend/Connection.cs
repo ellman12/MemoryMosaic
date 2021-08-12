@@ -96,7 +96,7 @@ namespace PSS.Backend
 
             try
             {
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO albums (Name) VALUES (@name)", connection);
+                MySqlCommand cmd = new("INSERT INTO albums (Name) VALUES (@name)", connection);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.ExecuteNonQuery();
             }
@@ -126,7 +126,7 @@ namespace PSS.Backend
         {
             OpenConnection();
 
-            var ID = GetAlbumID(albumName); //Find ID of the album
+            int ID = GetAlbumID(albumName); //Find ID of the album
             try
             {
                 MySqlCommand cmd = new("UPDATE albums SET album_cover=@path WHERE id=@ID", connection);
@@ -154,7 +154,7 @@ namespace PSS.Backend
             try
             {
                 //Find the album ID using the album name.
-                MySqlCommand selectCmd = new MySqlCommand("SELECT id FROM albums WHERE name=@name", connection);
+                MySqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@name", connection);
                 selectCmd.Parameters.AddWithValue("@name", name);
                 selectCmd.ExecuteNonQuery();
                 MySqlDataReader reader = selectCmd.ExecuteReader();
@@ -187,7 +187,7 @@ namespace PSS.Backend
             try
             {
                 //Find the ID of the album to delete, then use that to delete every item in that album from album_entries.
-                MySqlCommand selectCmd = new MySqlCommand("SELECT id FROM albums WHERE name=@name", connection);
+                MySqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@name", connection);
                 selectCmd.Parameters.AddWithValue("@name", name);
                 selectCmd.ExecuteNonQuery();
                 MySqlDataReader reader = selectCmd.ExecuteReader();
@@ -199,7 +199,7 @@ namespace PSS.Backend
                     reader.Close();
 
                     //Remove all corresponding items from album_entries table.
-                    MySqlCommand delCmd = new MySqlCommand("DELETE FROM album_entries WHERE album_id=@id", connection);
+                    MySqlCommand delCmd = new("DELETE FROM album_entries WHERE album_id=@id", connection);
                     delCmd.Parameters.AddWithValue("@id", delID);
                     delCmd.ExecuteNonQuery();
 
@@ -231,7 +231,7 @@ namespace PSS.Backend
             try
             {
                 //Will IGNORE (not throw error) if there is a duplicate. This is how Google Photos does it.
-                MySqlCommand cmd = new MySqlCommand("INSERT IGNORE INTO album_entries VALUES (@path, @albumID, @date_added_to_album)", connection);
+                MySqlCommand cmd = new("INSERT IGNORE INTO album_entries VALUES (@path, @albumID, @date_added_to_album)", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.Parameters.AddWithValue("@date_added_to_album", DateTime.Now);
