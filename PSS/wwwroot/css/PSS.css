@@ -86,7 +86,7 @@
 }
 
 /*Used for Index.razor if media has 0 items*/
-.centeredWhiteText {
+.bigCenteredWhiteText {
     color: white;
     font-family: 'Product Sans';
     text-align: center;
@@ -96,10 +96,20 @@
     margin: -100px 0 0 -150px;
 }
 
-/*Primarily used for the 404 page*/
-.whiteText {
+/*Used for the 404 page*/
+.centeredWhiteText {
     color: white;
     font-family: 'Product Sans';
+    text-align: center;
+}
+
+/*Used for "Click me..." URL in 404*/
+.centeredBlueText {
+    font-family: 'Product Sans';
+    color: rgb(2, 97, 255);
+    margin: auto;
+    text-align: center;
+    display: block; /*https://stackoverflow.com/questions/42669981/text-align-center-not-working-on-a-but-does-on-h1*/
 }
 
 /*Used for the 404 page*/
