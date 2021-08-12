@@ -1,4 +1,4 @@
-﻿/* This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg */
+/* This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg */
 /* These 2 are from Google */
 @font-face {
     font-family: 'Product Sans';
@@ -20,7 +20,7 @@
     -moz-osx-font-smoothing: grayscale; /* Support for Firefox. */
 }
 
-/*Styling for the thumbnails for photos and videos*/
+/*Styling for the thumbnails for photos and videos in Index*/
 .thumbnail {
     max-width: 13%;
     padding: 4px;
@@ -28,6 +28,7 @@
 }
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
+/*Used for the img in View.razor*/
 .imgView {
     left: 0;
     margin: auto;
@@ -39,7 +40,7 @@
 }
 
 /*Used for zooming in/out in photo viewer*/
-.range {
+.zoomRange {
     width: 200px;
     position: fixed; /*https://stackoverflow.com/a/11399610*/
     right: 5px;
