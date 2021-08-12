@@ -1,0 +1,27 @@
+﻿/*Stuff for just View.razor*/
+
+/*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
+/*Used for the img in View.razor*/
+.imgView {
+    left: 0;
+    margin: auto;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    -o-object-fit: contain;
+    object-fit: contain;
+}
+
+/*Used for zooming in/out in photo viewer*/
+.zoomRange {
+    width: 200px;
+    position: fixed; /*https://stackoverflow.com/a/11399610*/
+    right: 5px;
+    top: 80px;
+    opacity: 0.3;
+    transition: .4s;
+}
+
+.range:hover {
+    opacity: 0.7;
+}
