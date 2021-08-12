@@ -18,7 +18,7 @@
 }
 
 /*These 3 are for the side panel buttons*/
-.icon_btn {
+.nav_btn {
     color: white; /* Icon Color */
     background-color: black;
     border: none;
@@ -40,12 +40,12 @@
     padding-top: 11px;
 }
 
-.icon_btn:hover {
+.nav_btn:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
-.icon_btn_text {
+.nav_btn_text {
     padding-left: 11px;
     color: white;
     text-decoration: none;
