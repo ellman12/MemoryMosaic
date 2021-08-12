@@ -1,4 +1,4 @@
-﻿/*Stuff for just View.razor*/
+/*Stuff for just View.razor*/
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
 /*Used for the img in View.razor*/
@@ -41,7 +41,6 @@
     overflow: hidden;
     transition: .4s;
     position: absolute;
-    /* ↓ Values that will probably change */
     width: 60px;
     height: 60px;
 }
