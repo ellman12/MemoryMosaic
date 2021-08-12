@@ -25,3 +25,38 @@
 .range:hover {
     opacity: 0.7;
 }
+
+/*Buttons*/
+/*These buttons all have a lot of stuff in common, so in their class="..." thing, I put this class and then the button's actual class*/
+.icon_btn {
+    color: white; /* Icon Color */
+    background: none;
+    border: none;
+    font-family: Product Sans;
+    text-align: center;
+    line-height: 50%;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    transition: .4s;
+    position: absolute;
+    /* ↓ Values that will probably change */
+    width: 60px;
+    height: 60px;
+}
+
+    .icon_btn:hover {
+        background-color: rgba(211, 211, 211, 0.1);
+        cursor: pointer;
+    }
+
+.back_btn {
+    top: 3px;
+    left: 0;
+}
+
+.reset_zoom_btn {
+    right: 200px;
+    top: 65px;
+}

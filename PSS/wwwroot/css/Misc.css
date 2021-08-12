@@ -21,27 +21,3 @@
     text-rendering: optimizeLegibility; /* Support for Safari and Chrome. */
     -moz-osx-font-smoothing: grayscale; /* Support for Firefox. */
 }
-
-.circle_icon_btn {
-    color: white; /* Icon Color */
-    background: none;
-    border: none;
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    font-family: Product Sans;
-    text-align: center;
-    width: 60px;
-    height: 60px;
-    line-height: 50%;
-    border-radius: 50%;
-    text-align: center;
-    vertical-align: middle;
-    overflow: hidden;
-    transition: .4s;
-}
-
-    .circle_icon_btn:hover {
-        background-color: rgba(211, 211, 211, 0.1);
-        cursor: pointer;
-    }
