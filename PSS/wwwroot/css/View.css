@@ -26,17 +26,6 @@
     opacity: 0.7;
 }
 
-/*Div containing all buttons*/
-.view-btns-div {
-    align-items: center;
-    display: inline-flex;
-    width: auto;
-    height: auto;
-    position: absolute;
-    top: 4px;
-    right: 1px;
-}
-
 /*Buttons*/
 /*These buttons all have a lot of stuff in common, so in their class="..." thing, I put this class and then the button's actual class*/
 .round_view_icon_btn {
@@ -74,11 +63,11 @@
 }
 
 .three_dots_btn {
-    right: 0;
-    top: 3px;
+    right: 1px;
+    top: 7px;
 }
 
 .delete_btn {
-    right: 50px;
-    top: 3px;
+    right: 49px;
+    top: 7px;
 }
