@@ -27,6 +27,7 @@
     <None Include="wwwroot\Pics and Vids\Test Vids\20210501_193046.mp4" />
     <None Include="wwwroot\Pics and Vids\Test Vids\VID_20210430_200417.mp4" />
     <None Include="wwwroot\Pics and Vids\Test Vids\VID_20210501_132900_01.mp4" />
+    <None Include="wwwroot\PSS.js" />
   </ItemGroup>
 
 </Project>
