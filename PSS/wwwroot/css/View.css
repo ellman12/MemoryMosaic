@@ -52,11 +52,13 @@
     }
 
 .back_btn {
+    position: fixed;
     top: 3px;
     left: 2px;
 }
 
 .reset_zoom_btn {
+    position: fixed;
     right: 200px;
     top: 68px;
     margin-right: 2px;
@@ -64,23 +66,26 @@
 
 /*This seems pretty terrible but oh well*/
 .delete_btn {
+    position: fixed;
     right: 49px;
     top: 7px;
 }
 
 .star_btn {
+    position: fixed;
     right: 97px;
     top: 7px;
 }
 
 .info_btn {
+    position: fixed;
     right: 145px;
     top: 7px;
 }
 
 /* Dropdown stuff: https://www.w3schools.com/howto/howto_css_dropdown.asp */
 .three_dots_btn {
-    position: absolute;
+    position: fixed;
     right: 1px;
     top: 7px;
 }
