@@ -14,11 +14,12 @@
     }
 
     .dropbtn-icon {
+        margin: 2px;
         margin-right: 6px;
     }
 
     /* Div containing the buttons in the dropdown */
-    .dropdown-content {
+    .dropdownDiv {
         border-radius: 4px;
         display: none;
         position: absolute;
@@ -27,7 +28,7 @@
         height: auto;
     }
 
-        .dropdown-content a {
+        .dropdownDiv a {
             font-family: 'Product Sans';
             color: black;
             padding: 12px 16px;
@@ -41,7 +42,7 @@
             align-items: center;
         }
 
-            .dropdown-content a:hover {
+            .dropdownDiv a:hover {
                 background-color: #ddd;
             }
 
@@ -53,7 +54,7 @@
 
 <button onclick="toggleDropdown()" class="dropbtn">Dropdown</button>
 
-<div id="dropdown" class="dropdown-content">
+<div id="dropdown" class="dropdownDiv">
     <a href="#" style="border-top-right-radius: 4px; border-top-left-radius: 4px;"><span class="material-icons dropbtn-icon">photo_album</span>Add To/Remove From Album</a>
     <a href="#"><span class="material-icons dropbtn-icon">image</span>Use As Album Cover</a>
     <a href="#"><span class="material-icons dropbtn-icon">archive</span>Archive</a>
