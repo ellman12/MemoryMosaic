@@ -90,13 +90,15 @@
     top: 7px;
 }
 
-.dropdown {
+/*Div containing button you hover over and the div with the actual dropdown content*/
+.dots-dropdown {
     display: inline-block;
     width: 252px;
     height: auto;
 }
 
-.dropdown-content {
+/*Div holding the a tags*/
+.dots-dropdown-content {
     right: 0;
     top: 55px;
     display: none;
@@ -105,7 +107,7 @@
     border-radius: 4px;
 }
 
-    .dropdown-content a {
+    .dots-dropdown-content a {
         font-family: 'Product Sans';
         color: black;
         padding: 12px 16px;
@@ -119,18 +121,16 @@
         align-items: center;
     }
 
-        .dropdown-content a:hover {
+        .dots-dropdown-content a:hover {
             background-color: #ddd;
         }
 
-.dropdown:hover .dropdown-content {
+/* Show the dropdown menu on hover */
+.dots-dropdown:hover .dots-dropdown-content {
     display: block;
 }
 
-.dropdown:hover .dropbtn {
-    background-color: #3e8e41;
-}
-
+/* Icons for the a elements */
 .dropbtn-icon {
     margin: 2px;
     margin-right: 6px;
