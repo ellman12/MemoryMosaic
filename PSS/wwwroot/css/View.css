@@ -62,6 +62,7 @@
     margin-right: 2px;
 }
 
+/*This seems pretty terrible but oh well*/
 .three_dots_btn {
     right: 1px;
     top: 7px;
@@ -69,5 +70,15 @@
 
 .delete_btn {
     right: 49px;
+    top: 7px;
+}
+
+.star_btn {
+    right: 97px;
+    top: 7px;
+}
+
+.info_btn {
+    right: 145px;
     top: 7px;
 }
