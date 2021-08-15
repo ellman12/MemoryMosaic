@@ -141,14 +141,14 @@
     fill: #3c4043;
     fill: rgba(0, 0, 0, .54);
     margin-left: 12px;
-    margin-top: 12px;
+    margin-top: 20px;
+    margin-right: 12px;
 }
 
 .info-dropdown-bigtext {
     font-family: 'Product Sans';
     position: absolute;
-    margin-top: 15px;
-    margin-left: 8px;
+    padding-top: 15px;
     letter-spacing: .00625em;
     font-weight: 400;
     color: #3c4043;
@@ -157,12 +157,13 @@
 
 .info-dropdown-smalltext {
     font-family: 'Product Sans';
-    margin-left: 20px;
-    margin-top: 0;
+    position: absolute;
+    margin-top: 15px;
+    padding-top: 20px;
     letter-spacing: .01428571em;
     font-weight: 400;
     color: #5f6368;
-    font-size: .875rem;
+    font-size: .9rem;
 }
 
 .info-dropdown {
