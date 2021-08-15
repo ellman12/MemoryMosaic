@@ -495,6 +495,38 @@ namespace PSS.Backend
             return path;
         }
 
+        //Get the date_taken of an item from the DataBase.
+        public static DateTime GetDateTaken(string uuid)
+        {
+            OpenConnection();
+            DateTime dateTaken = new();
+
+            try
+            {
+                MySqlCommand cmd = new("SELECT date_taken FROM media WHERE uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    dateTaken = reader.GetDateTime(0);
+                    reader.Close();
+                }
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.Number + " Message: " + e.Message);
+            }
+            finally
+            {
+                CloseConnection();
+            }
+
+            return dateTaken;
+        }
+
         //For debugging and testing. Clears all tables.
         public static void ClearTables()
         {

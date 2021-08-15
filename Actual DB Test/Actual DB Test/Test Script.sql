@@ -29,3 +29,6 @@ select * from media where Separate = "0";
 
 -- Removing a single path from an album
 DELETE FROM album_entries WHERE album_id = 4 AND path = "item6";
+
+-- Get date_taken with uuid.
+SELECT date_taken FROM media WHERE uuid="0f9e7603-fde0-11eb-8f8c-1c1b0d0d5ac3";
