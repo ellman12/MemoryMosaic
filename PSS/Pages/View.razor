@@ -17,6 +17,7 @@
         <button onclick="document.querySelector('img').style.height = ('100%'); document.getElementById('zoomRangeId').value = '100';" class="round_view_icon_btn reset_zoom_btn"><span class="material-icons">zoom_out</span></button>
         <input autocomplete="off" type="range" min="100" max="275" value="100" step="5" oninput="document.querySelector('img').style.height = (this.value + '%')" id="zoomRangeId" class="zoomRange">
 
+        @*Some of these dropdown items could be moved to outside of it...*@
         <div class="dots-dropdown">
             <button class="round_view_icon_btn three_dots_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
             <div class="dots-dropdown-content">
@@ -30,7 +31,17 @@
 
         <button onclick="notImplemented();" class="round_view_icon_btn delete_btn"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         <button onclick="notImplemented();" class="round_view_icon_btn star_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></path></svg></button>
-        <button onclick="notImplemented();" class="round_view_icon_btn info_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></button>
+
+        @*Info about the item like filename, etc. Can also change stuff here too.*@
+        <div class="info-dropdown">
+            <button onclick="notImplemented();" class="round_view_icon_btn info_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></button>
+            <div class="info-dropdown-content">
+                <span class="material-icons info-dropdown-icon"><svg width="24px" height="24px"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg></span>
+                <span class="info-dropdown-bigtext">Create a DB function to get the date/time for a single path and use it here lmao</span>
+                @*<span class="nav_btn"><span class="material-icons"></span><span class="nav_btn_text">Settings</span></span>*@
+                @*<p class="info-dropdown-smalltext">Time</p>*@
+            </div>
+        </div>
     }
 }
 

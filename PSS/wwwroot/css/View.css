@@ -77,12 +77,6 @@
     top: 7px;
 }
 
-.info_btn {
-    position: fixed;
-    right: 145px;
-    top: 7px;
-}
-
 /* 3 dots dropdown stuff: https://www.w3schools.com/howto/howto_css_dropdown.asp */
 .three_dots_btn {
     position: fixed;
@@ -134,4 +128,56 @@
 .dropbtn-icon {
     margin: 2px;
     margin-right: 6px;
+}
+
+/* Info button dropdown stuff */
+.info_btn {
+    position: fixed;
+    right: 145px;
+    top: 7px;
+}
+
+.info-dropdown-icon {
+    fill: #3c4043;
+    fill: rgba(0, 0, 0, .54);
+    margin-left: 12px;
+    margin-top: 12px;
+}
+
+.info-dropdown-bigtext {
+    font-family: 'Product Sans';
+    position: absolute;
+    margin-top: 15px;
+    margin-left: 8px;
+    letter-spacing: .00625em;
+    font-weight: 400;
+    color: #3c4043;
+    font-size: 1rem;
+}
+
+.info-dropdown-smalltext {
+    font-family: 'Product Sans';
+    margin-left: 20px;
+    margin-top: 0;
+    letter-spacing: .01428571em;
+    font-weight: 400;
+    color: #5f6368;
+    font-size: .875rem;
+}
+
+.info-dropdown {
+    display: inline-block;
+}
+
+.info-dropdown-content {
+    height: 500px;
+    width: 290px;
+    right: 100px;
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+}
+
+.info-dropdown:hover .info-dropdown-content {
+    display: block;
 }
