@@ -142,11 +142,12 @@
     fill: rgba(0, 0, 0, .54);
     position: absolute;
     padding-left: 12px;
-    padding-top: 20px;
+    padding-top: 21px;
     padding-right: 12px;
 }
 
-.info-dropdown-btn {
+/* Shared stuff between buttons in the info dropdown */
+.info-dropdown-edit-btn {
     color: #3c4043;
     fill: #3c4043;
     background: none;
@@ -162,11 +163,10 @@
     position: absolute;
     width: 50px;
     height: 50px;
-    left: 185px;
-    top: 8px;
+    left: 150px;
 }
 
-    .info-dropdown-btn:hover {
+    .info-dropdown-edit-btn:hover {
         background-color: rgba(211, 211, 211, 0.1);
         cursor: pointer;
     }
