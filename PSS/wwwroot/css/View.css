@@ -173,7 +173,6 @@
 .info-dropdown-bigtext {
     font-family: 'Product Sans';
     position: absolute;
-    padding-top: 15px;
     padding-left: 45px;
     letter-spacing: .00625em;
     font-weight: 400;
@@ -184,7 +183,6 @@
 .info-dropdown-smalltext {
     font-family: 'Product Sans';
     position: absolute;
-    padding-top: 34px;
     padding-left: 45px;
     letter-spacing: .01428571em;
     font-weight: 400;
