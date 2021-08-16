@@ -15,7 +15,7 @@
     {
         DateTime dateTaken = Connection.GetDateTaken(id);
 
-        <img class="imgView" style="height: 100%" src="@Connection.GetPathFromUuid(id)" alt="" />
+        <img class="imgView" style="height: 100%" src="@path" alt="" />
         <button onclick="window.history.back();" class="round_view_icon_btn back_btn"><span class="material-icons">west</span></button>
         <button onclick="document.querySelector('img').style.height = ('100%'); document.getElementById('zoomRangeId').value = '100';" class="round_view_icon_btn reset_zoom_btn"><span class="material-icons">zoom_out</span></button>
         <input autocomplete="off" type="range" min="100" max="275" value="100" step="5" oninput="document.querySelector('img').style.height = (this.value + '%')" id="zoomRangeId" class="zoomRange">
