@@ -195,8 +195,8 @@
 }
 
 .info-dropdown-content {
-    height: 500px;
-    width: 290px;
+    height: 210px;
+    width: 400px;
     right: 100px;
     display: none;
     position: absolute;
@@ -205,4 +205,20 @@
 
 .info-dropdown:hover .info-dropdown-content {
     display: block;
+}
+
+.info-dropdown-textbox {
+    font-family: 'Product Sans';
+    font-size: 1rem;
+    width: 40px;
+    margin-left: 2px;
+    margin-top: 153px;
+}
+
+.info-dropdown-toggle-btn {
+    position: absolute;
+    margin-left: 3px;
+    top: 153px;
+    width: 40px;
+    height: 25px;
 }

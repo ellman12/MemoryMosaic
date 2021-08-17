@@ -47,6 +47,25 @@
                 <span class="material-icons info-dropdown-icon" style="top: 68px"><svg width="24px" height="24px"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg></span>
                 <span class="info-dropdown-bigtext" style="top: 70px">@Path.GetFileName(Connection.GetPathFromUuid(id))</span>
 
+                @*<span class="material-icons info-dropdown-icon" style="top: 110px; color: #5f6368; ">edit_calendar</span>*@
+                <span class="info-dropdown-bigtext" style="top: 112px; padding-left: 5px">Edit Date Taken:</span>
+                <span class="info-dropdown-smalltext" style="top: 134px; left: -40px">Year</span>
+                <span class="info-dropdown-smalltext" style="top: 134px; left: 29px">Month</span>
+                <span class="info-dropdown-smalltext" style="top: 134px; left: 83px">Day</span>
+                <span class="info-dropdown-smalltext" style="top: 134px; left: 145px">Hour</span>
+                <span class="info-dropdown-smalltext" style="top: 134px; left: 204px">Minute</span>
+                <span class="info-dropdown-smalltext" style="top: 134px; left: 263px">Second</span>
+
+                <input type="number" style="margin-left: 4px; width: 55px;" class="info-dropdown-textbox" min="1900">
+                <input type="number" style="" class="info-dropdown-textbox" min="">
+                <input type="number" style="" class="info-dropdown-textbox" min="">
+                <input type="number" style="margin-left: 10px" class="info-dropdown-textbox" min="">
+                <span class="info-dropdown-smalltext" style="top: 151px; right: 155px; font-size: 20px; font-weight: bold; color: black">:</span>
+                <input type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="">
+                <span class="info-dropdown-smalltext" style="top: 151px; right: 96px; font-size: 20px; font-weight: bold; color: black">:</span>
+                <input type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="">
+                <button class="info-dropdown-toggle-btn"></button>
+                @*TODO: button to toggle am/pm*@
             </div>
         </div>
     }
