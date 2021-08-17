@@ -195,8 +195,8 @@
 }
 
 .info-dropdown-content {
-    height: 210px;
-    width: 400px;
+    height: 220px;
+    width: 403px;
     right: 100px;
     display: none;
     position: absolute;
@@ -216,9 +216,16 @@
 }
 
 .info-dropdown-toggle-btn {
+    font-family: 'Product Sans';
     position: absolute;
-    margin-left: 3px;
+    margin-left: 4px;
     top: 153px;
     width: 40px;
     height: 25px;
+}
+
+.info-dropdown-cancel-btn {
+    font-family: 'Product Sans';
+    margin: 4px;
+    margin-top: 6px;
 }
