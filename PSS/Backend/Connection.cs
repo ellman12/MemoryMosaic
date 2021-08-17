@@ -532,9 +532,7 @@ namespace PSS.Backend
         public static string GetPeriod(string uuid)
         {
             //https://stackoverflow.com/a/7875351
-            string period = GetDateTaken(uuid).ToString("tt", CultureInfo.InvariantCulture);
-
-            return period;
+            return GetDateTaken(uuid).ToString("tt", CultureInfo.InvariantCulture);
         }
 
         //For debugging and testing. Clears all tables.
