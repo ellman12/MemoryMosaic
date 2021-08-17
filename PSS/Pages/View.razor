@@ -56,17 +56,17 @@
                 <span class="info-dropdown-smalltext" style="top: 134px; left: 204px">Minute</span>
                 <span class="info-dropdown-smalltext" style="top: 134px; left: 263px">Second</span>
 
-                <input type="number" style="margin-left: 4px; width: 55px;" class="info-dropdown-textbox" min="1900">
-                <input type="number" style="" class="info-dropdown-textbox" min="">
-                <input type="number" style="" class="info-dropdown-textbox" min="">
-                <input type="number" style="margin-left: 10px" class="info-dropdown-textbox" min="">
+                <input type="number" style="margin-left: 4px; width: 55px;" class="info-dropdown-textbox" min="1900" max="9999" disabled value="@dateTaken.Year">
+                <input type="number" style="" class="info-dropdown-textbox" min="1" max="12" disabled value="@dateTaken.Month">
+                <input type="number" style="" class="info-dropdown-textbox" min="1" max="31" disabled value="@dateTaken.Day">
+                <input type="number" style="margin-left: 10px" class="info-dropdown-textbox" min="1" max="12" disabled value="@(((dateTaken.Hour + 11) % 12) + 1)"> @*https://stackoverflow.com/a/1306172*@
                 <span class="info-dropdown-smalltext" style="top: 151px; right: 158px; font-size: 20px; font-weight: bold; color: black">:</span>
-                <input type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="">
+                <input type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="0" max="59" disabled value="@dateTaken.Minute">
                 <span class="info-dropdown-smalltext" style="top: 151px; right: 99px; font-size: 20px; font-weight: bold; color: black">:</span>
-                <input type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="">
-                <button class="info-dropdown-toggle-btn">@Connection.GetPeriod(id)</button>
-                <button class="info-dropdown-cancel-btn">Cancel</button>
-                <button style="margin-top: 6px; font-family: 'Product Sans'">Apply</button>
+                <input type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="0" max="59" disabled value="@dateTaken.Second">
+                <button class="info-dropdown-toggle-btn" disabled>@Connection.GetPeriod(id)</button>
+                <button class="info-dropdown-cancel-btn" disabled>Cancel</button>
+                <button style="margin-top: 6px; font-family: 'Product Sans'" disabled>Apply</button>
             </div>
         </div>
     }
