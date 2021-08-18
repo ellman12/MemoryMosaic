@@ -64,9 +64,9 @@
                 <input autocomplete="off" id="minute-edit" type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="0" max="59" disabled value="@dateTaken.Minute">
                 <span class="info-dropdown-smalltext" style="top: 151px; right: 99px; font-size: 20px; font-weight: bold; color: black">:</span>
                 <input autocomplete="off" id="second-edit" type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="0" max="59" disabled value="@dateTaken.Second">
-                <button id="period-btn" class="info-dropdown-toggle-btn" disabled>@Connection.GetPeriod(id)</button>
-                <button onclick="disableControls()" id="cancel-btn" class="info-dropdown-cancel-btn" disabled>Cancel</button>
-                <button id="apply-btn" style="margin-top: 6px; font-family: 'Product Sans'" disabled>Apply</button>
+                <button autocomplete="off" id="period-btn" class="info-dropdown-toggle-btn" disabled>@Connection.GetPeriod(id)</button>
+                <button autocomplete="off" onclick="disableControls()" id="cancel-btn" class="info-dropdown-cancel-btn" disabled>Cancel</button>
+                <button autocomplete="off" id="apply-btn" style="margin-top: 6px; font-family: 'Product Sans'" disabled>Apply</button>
             </div>
         </div>
     }
