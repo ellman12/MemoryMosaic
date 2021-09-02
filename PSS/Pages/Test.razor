@@ -1,3 +1,31 @@
 @*A blank page just for testing stuff*@
 @page "/test"
+@using PSS.Backend
 @layout EmptyLayout
+
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudDatePicker @ref="picker" @bind-Date="date" Style="Width: 130px" DateFormat="MM\/dd\/yyyy"> @*Escaping the '/' is the only way this would work...*@
+            <PickerActions>
+                <MudButton OnClick="@(() => picker.Clear())">Clear</MudButton>
+                <MudButton OnClick="@(() => picker.Close(false))">Cancel</MudButton>
+                <MudButton Color="Color.Dark" OnClick="@UpdateDate">Ok</MudButton>
+            </PickerActions>
+        </MudDatePicker>
+    </MudItem>
+</MudGrid>
+
+@code {
+    MudDatePicker picker;
+
+    DateTime? date = DateTime.Today;
+}
+
+@functions
+{
+    void UpdateDate()
+    {
+        picker.Close(true);
+        Connection.UpdateDateTaken("/Pics and Vids/Test Pics/20210502_143910.jpg", date);
+    }
+}

@@ -432,7 +432,7 @@ namespace PSS.Backend
         }
 
         //Update path's DateTaken in media and album_entries tables.
-        public static void UpdateDateTaken(string path, DateTime newDateTaken)
+        public static void UpdateDateTaken(string path, DateTime? newDateTaken)
         {
             OpenConnection();
 
