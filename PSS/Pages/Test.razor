@@ -32,7 +32,7 @@
                 <PickerActions>
                     <MudButton OnClick="@(() => picker.Clear())">Clear</MudButton>
                     <MudButton OnClick="@(() => picker.Close(false))">Cancel</MudButton>
-                    <MudButton Color="Color.Dark" OnClick="@UpdateDateTaken">Ok</MudButton>
+                    <MudButton Color="Color.Dark" OnClick="@(() => picker.Close())">Ok</MudButton>
                 </PickerActions>
             </MudDatePicker>
         </MudItem>
@@ -57,9 +57,12 @@
     void UpdateDateTaken()
     {
         picker.Close();
-        DateTime dateTime = (DateTime)newDate + new TimeSpan(Convert.ToInt32(hour), Convert.ToInt32(minute), Convert.ToInt32(second));
 
-        Connection.UpdateDateTaken("/Pics and Vids/Test Pics/20210502_143910.jpg", dateTime);
+        int hour24 = hour;
+        if (period == "PM")
+            hour24 += 12; //Convert to 24 hour time for adding into database.
+
+        Connection.UpdateDateTaken(Connection.GetPathFromUuid(id), new((int)newDate?.Year, (int)newDate?.Month, (int)newDate?.Day, hour24, minute, second));
     }
 }
 
