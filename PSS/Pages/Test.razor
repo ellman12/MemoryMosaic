@@ -2,57 +2,118 @@
 @page "/test/{id}"
 @using PSS.Backend
 @layout EmptyLayout
+@*Escaping the '/' is the only way this would work...*@
+<MudDatePicker @ref="picker" @bind-Date="newDate" Style="Width: 130px" DateFormat="MM\/dd\/yyyy">
+    <PickerActions>
+        <MudButton OnClick="@(() => picker.Clear())">Clear</MudButton>
+        <MudButton OnClick="@(() => picker.Close(false))">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="@(() => picker.Close())">Ok</MudButton>
+    </PickerActions>
+</MudDatePicker>
 
-@code
-{
+<MudItem xs="12" sm="6" md="4">
+    <MudTextField @ref="hourText" @bind-Value="@Hour" Label="@hourLbl" Placeholder="Hour" Variant="Variant.Text" InputMode.numeric></MudTextField>
+</MudItem>
+
+<MudItem xs="12" sm="6" md="4">
+    <MudTextField @ref="minuteText" @bind-Value="@Minute" Label="@minuteLbl" Placeholder="Minute" Variant="Variant.Text" InputMode.numeric></MudTextField>
+</MudItem>
+
+<MudItem xs="12" sm="6" md="4">
+    <MudTextField @ref="secondText" @bind-Value="@Second" Label="@secondLbl" Placeholder="Second" Variant="Variant.Text" InputMode.numeric></MudTextField>
+</MudItem>
+
+<MudButton @ref="periodButton" OnClick="@TogglePeriod" T="string">@period</MudButton>
+
+<MudButton OnClick="@CancelBtnClick">Cancel</MudButton>
+
+<MudButton OnClick="@UpdateDateTaken">Apply</MudButton>
+
+@code {
     [Parameter]
     public string id { get; set; }
 
-    DateTime dateTaken;
+    string hourLbl = "Hour", minuteLbl = "Minute", secondLbl = "Second", period;
+
+    MudDatePicker picker;
+    MudButton periodButton, applyButton;
+    MudTextField<int> hourText, minuteText, secondText;
+
     DateTime? newDate;
     int hour, minute, second;
-    string period;
 
-    protected override void OnInitialized() // = On Page Load https://stackoverflow.com/a/61554490
+    int Hour
     {
-        dateTaken = Connection.GetDateTaken(id);
-        newDate = Connection.GetDateTaken(id);
-        hour = ((dateTaken.Hour + 11) % 12) + 1; //Get 12 hour time: https://stackoverflow.com/a/1306172
-        minute = dateTaken.Minute;
-        second = dateTaken.Second;
-        period = Connection.GetPeriod(id);
+        get => hour;
+        set
+        {
+            if (value is < 1 or > 12)
+            {
+                hourLbl = "Please enter a valid hour value (1-12)";
+            }
+            else
+            {
+                hourLbl = "Hour";
+                hour = value;
+            }
+        }
+    }
+
+    int Minute
+    {
+        get => minute;
+        set
+        {
+            if (value is < 0 or > 59)
+            {
+                minuteLbl = "Please enter a valid minute value (0-59)";
+            }
+            else
+            {
+                minuteLbl = "Minute";
+                minute = value;
+            }
+        }
+    }
+
+    int Second
+    {
+        get => second;
+        set
+        {
+            if (value is < 0 or > 59)
+            {
+                secondLbl = "Please enter a valid second value (0-59)";
+            }
+            else
+            {
+                secondLbl = "Second";
+                second = value;
+            }
+        }
     }
 }
 
-@{
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4">
-            <MudDatePicker @ref="picker" @bind-Date="newDate" Style="Width: 130px" DateFormat="MM\/dd\/yyyy">
-                @*Escaping the '/' is the only way this would work...*@
-                <PickerActions>
-                    <MudButton OnClick="@(() => picker.Clear())">Clear</MudButton>
-                    <MudButton OnClick="@(() => picker.Close(false))">Cancel</MudButton>
-                    <MudButton Color="Color.Dark" OnClick="@(() => picker.Close())">Ok</MudButton>
-                </PickerActions>
-            </MudDatePicker>
-        </MudItem>
-    </MudGrid>
+@functions
+{
+    void TogglePeriod() => period = period == "AM" ? "PM" : "AM";
 
-    <MudItem xs="12" sm="6" md="4">
-        <MudTextField @bind-Value="@hour" Label="Hour" Placeholder="Hour" Variant="Variant.Text"></MudTextField>
-    </MudItem>
+    protected override void OnInitialized() // = On Page Load https://stackoverflow.com/a/61554490
+    {
+        newDate = Connection.GetDateTaken(id);
+        Hour = (int)(((newDate?.Hour + 11) % 12) + 1); //Get 12 hour time: https://stackoverflow.com/a/1306172
+        Minute = (int)newDate?.Minute;
+        Second = (int)newDate?.Second;
+        period = Connection.GetPeriod(id);
+    }
 
-    <MudItem xs="12" sm="6" md="4">
-        <MudTextField @bind-Value="@minute" Label="Minute" Placeholder="Minute" Variant="Variant.Text"></MudTextField>
-    </MudItem>
-
-    <MudItem xs="12" sm="6" md="4">
-        <MudTextField @bind-Value="@second" Label="Second" Placeholder="Second" Variant="Variant.Text"></MudTextField>
-    </MudItem>
-
-    <MudButton @ref="periodButton" OnClick="@TogglePeriod" T="string">@period</MudButton>
-
-    <MudButton OnClick="@UpdateDateTaken">Apply</MudButton>
+    void CancelBtnClick()
+    {
+        newDate = Connection.GetDateTaken(id);
+        Hour = (int)(((newDate?.Hour + 11) % 12) + 1);
+        Minute = (int)newDate?.Minute;
+        Second = (int)newDate?.Second;
+    }
 
     void UpdateDateTaken()
     {
@@ -63,18 +124,5 @@
             hour24 += 12; //Convert to 24 hour time for adding into database.
 
         Connection.UpdateDateTaken(Connection.GetPathFromUuid(id), new((int)newDate?.Year, (int)newDate?.Month, (int)newDate?.Day, hour24, minute, second));
-    }
-}
-
-@code {
-    MudDatePicker picker;
-    MudButton periodButton;
-
-    void TogglePeriod()
-    {
-        if (period == "AM")
-            period = "PM";
-        else
-            period = "AM";
     }
 }
