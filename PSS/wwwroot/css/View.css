@@ -196,11 +196,10 @@
 }
 
 .info-dropdown-content {
-    height: 211px;
-    width: 403px;
+    height: 142px;
+    width: 372px;
     right: 100px;
-/*    display: none; TODO: temp */
-    display: block;
+    display: none;
     position: absolute;
     background-color: #f1f1f1;
 }
@@ -227,9 +226,21 @@
 }
 
 .info-dropdown-cancel-btn {
-    font-family: 'Product Sans';
-    margin: 4px;
-    margin-top: 6px;
+    position: absolute;
+    position: absolute;
+    top: -200px;
+    margin: 0;
+    padding: 0;
+    left: 145px;
+}
+
+.info-dd-apply-btn {
+    position: absolute;
+    position: absolute;
+    top: -200px;
+    margin: 0;
+    padding: 0;
+    left: 150px;
 }
 
 .info-dd-datepicker {

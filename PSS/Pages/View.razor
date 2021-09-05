@@ -41,16 +41,16 @@
             <div class="info-dropdown-content">
                 <span class="material-icons info-dropdown-icon" style="top: 22px"><svg width="24px" height="24px"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg></span>
                 <span class="info-dropdown-bigtext" style="top: 15px">@dateTaken.ToString("MMM d, yyyy")</span>
-                <span class="info-dropdown-smalltext" style="top: 34px">@dateTaken.ToString("ddd, h:m tt")</span>
+                <span class="info-dropdown-smalltext" style="top: 34px">@dateTaken.ToString("ddd, h:mm tt")</span>
 
                 <span class="material-icons info-dropdown-icon" style="top: 68px"><svg width="24px" height="24px"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg></span>
                 <span class="info-dropdown-bigtext" style="top: 70px">@Path.GetFileName(Connection.GetPathFromUuid(id))</span>
 
-                @*<span class="info-dropdown-bigtext" style="top: 110px; padding-left: 14px; margin-left: 0">Edit Date Taken:</span>*@
                 <button @onclick="@EditBtnClick" class="info-dropdown-edit-btn"><svg width="24px" height="24px" viewBox="0 0 24 24"><path d="M20.41 4.94l-1.35-1.35c-.78-.78-2.05-.78-2.83 0L3 16.82V21h4.18L20.41 7.77c.79-.78.79-2.05 0-2.83zm-14 14.12L5 19v-1.36l9.82-9.82 1.41 1.41-9.82 9.83z"></path></svg></button>
+                @*<MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="@EditBtnClick">Edit</MudButton>*@
+
                 <MudDatePicker Class="info-dd-datepicker" @ref="picker" Disabled="@pickerDisabled" @bind-Date="newDate" Style="Width: 130px" DateFormat="MM\/dd\/yyyy">
                     <PickerActions>
-                        <MudButton OnClick="@(() => picker.Clear())">Clear</MudButton>
                         <MudButton OnClick="@(() => picker.Close(false))">Cancel</MudButton>
                         <MudButton Color="Color.Primary" OnClick="@(() => picker.Close())">Ok</MudButton>
                     </PickerActions>
@@ -60,6 +60,8 @@
                 <MudTextField Class="info-dd-edit info-dd-min-edit" @ref="minuteText" Disabled="@minDisabled" @bind-Value="@Minute" Placeholder="Minute" Variant="Variant.Text" InputMode.numeric></MudTextField>
                 <MudTextField Class="info-dd-edit info-dd-sec-edit" @ref="secondText" Disabled="@secDisabled" @bind-Value="@Second" Placeholder="Second" Variant="Variant.Text" InputMode.numeric></MudTextField>
                 <MudButton Class="period-btn" @ref="periodButton" Disabled="@periodDisabled" OnClick="@TogglePeriod">@period</MudButton>
+                <MudButton Class="info-dropdown-cancel-btn" Disabled="@cancelDisabled" OnClick="@CancelBtnClick">Cancel</MudButton>
+                <MudButton Class="info-dd-apply-btn" Disabled="@applyDisabled" OnClick="@UpdateDateTaken">Apply</MudButton>
             </div>
         </div>
     }
