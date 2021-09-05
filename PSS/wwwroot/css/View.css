@@ -198,14 +198,11 @@
 .info-dropdown-content {
     height: 142px;
     width: 372px;
-    right: 100px;
+    right: 70px;
+    top: 60px;
     display: none;
     position: absolute;
     background-color: #f1f1f1;
-}
-
-.info-dropdown:hover .info-dropdown-content {
-    display: block;
 }
 
 .info-dropdown-textbox {
