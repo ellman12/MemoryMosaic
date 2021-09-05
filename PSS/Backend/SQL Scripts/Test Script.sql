@@ -33,7 +33,7 @@ DELETE FROM album_entries WHERE album_id = 4 AND path = "item6";
 SELECT path FROM media WHERE uuid="0d986559-fa29-11eb-93b1-ec79492ad08a";
 
 -- Get date_taken with uuid.
-SELECT date_taken FROM media WHERE uuid="0f9e7603-fde0-11eb-8f8c-1c1b0d0d5ac3";
+SELECT date_taken FROM media WHERE uuid="abcdef";
 
 -- Get path with uuid.
 SELECT path FROM media WHERE uuid="abcdef";

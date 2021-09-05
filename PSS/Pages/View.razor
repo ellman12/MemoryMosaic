@@ -4,6 +4,9 @@
 @using System.IO
 @layout EmptyLayout
 
+@*This was messing up my nav bar styling so I moved it here. It's really only needed here.*@
+<link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+
 @{
     string path = Connection.GetPathFromUuid(id);
     if (path == "null") //If URL contains a UUID that isn't present in the database.
@@ -36,23 +39,153 @@
         <button onclick="notImplemented();" class="round_view_icon_btn star_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></path></svg></button>
 
         @*Info about the item like filename, etc. Can also change stuff here too.*@
-        <div class="info-dropdown">
-            <button onclick="notImplemented();" class="round_view_icon_btn info_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></button>
-            <div class="info-dropdown-content">
+            <button @onclick="@toggleDD" class="round_view_icon_btn info_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></button>
+            <div class="info-dropdown-content" style="display: @ddDisplay">
                 <span class="material-icons info-dropdown-icon" style="top: 22px"><svg width="24px" height="24px"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg></span>
                 <span class="info-dropdown-bigtext" style="top: 15px">@dateTaken.ToString("MMM d, yyyy")</span>
-                <span class="info-dropdown-smalltext" style="top: 34px">@dateTaken.ToString("ddd, h:m tt")</span>
-                <button onclick="notImplemented();" class="info-dropdown-edit-btn" style="top: 7px"><svg width="24px" height="24px" viewBox="0 0 24 24"><path d="M20.41 4.94l-1.35-1.35c-.78-.78-2.05-.78-2.83 0L3 16.82V21h4.18L20.41 7.77c.79-.78.79-2.05 0-2.83zm-14 14.12L5 19v-1.36l9.82-9.82 1.41 1.41-9.82 9.83z"></path></svg></button>
+                <span class="info-dropdown-smalltext" style="top: 34px">@dateTaken.ToString("ddd, h:mm tt")</span>
 
                 <span class="material-icons info-dropdown-icon" style="top: 68px"><svg width="24px" height="24px"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg></span>
                 <span class="info-dropdown-bigtext" style="top: 70px">@Path.GetFileName(Connection.GetPathFromUuid(id))</span>
 
+                <button @onclick="@EditBtnClick" class="info-dropdown-edit-btn"><svg width="24px" height="24px" viewBox="0 0 24 24"><path d="M20.41 4.94l-1.35-1.35c-.78-.78-2.05-.78-2.83 0L3 16.82V21h4.18L20.41 7.77c.79-.78.79-2.05 0-2.83zm-14 14.12L5 19v-1.36l9.82-9.82 1.41 1.41-9.82 9.83z"></path></svg></button>
+                <MudDatePicker Class="info-dd-datepicker" @ref="picker" Disabled="@pickerDisabled" @bind-Date="newDate" Style="Width: 130px" DateFormat="MM\/dd\/yyyy">
+                    <PickerActions>
+                        <MudButton OnClick="@(() => picker.Close(false))">Cancel</MudButton>
+                        <MudButton Color="Color.Primary" OnClick="@(() => picker.Close())">Ok</MudButton>
+                    </PickerActions>
+                </MudDatePicker>
+
+                <MudTextField Class="info-dd-edit info-dd-hour-edit" @ref="hourText" Disabled="@hourDisabled" @bind-Value="@Hour" Placeholder="Hour" Variant="Variant.Text" InputMode.numeric></MudTextField>
+                <MudTextField Class="info-dd-edit info-dd-min-edit" @ref="minuteText" Disabled="@minDisabled" @bind-Value="@Minute" Placeholder="Minute" Variant="Variant.Text" InputMode.numeric></MudTextField>
+                <MudTextField Class="info-dd-edit info-dd-sec-edit" @ref="secondText" Disabled="@secDisabled" @bind-Value="@Second" Placeholder="Second" Variant="Variant.Text" InputMode.numeric></MudTextField>
+                <MudButton Class="period-btn" @ref="periodButton" Disabled="@periodDisabled" OnClick="@TogglePeriod">@period</MudButton>
+                <MudButton Class="info-dropdown-cancel-btn" Disabled="@cancelDisabled" OnClick="@CancelBtnClick">Cancel</MudButton>
+                <MudButton Class="info-dd-apply-btn" Disabled="@applyDisabled" OnClick="@UpdateDateTaken">Apply</MudButton>
             </div>
-        </div>
     }
 }
 
 @code {
     [Parameter]
     public string id { get; set; }
+
+    string ddDisplay = "none";
+
+    string hourLbl = "Hour", minuteLbl = "Minute", secondLbl = "Second", period;
+    bool editDisabled, pickerDisabled = true, hourDisabled = true, minDisabled = true, secDisabled = true, periodDisabled = true, cancelDisabled = true, applyDisabled = true;
+
+    MudDatePicker picker;
+    MudButton periodButton, applyButton;
+    MudTextField<int> hourText, minuteText, secondText;
+
+    DateTime? newDate;
+    int hour, minute, second;
+
+    int Hour
+    {
+        get => hour;
+        set
+        {
+            if (value is < 1 or > 12)
+            {
+                hourLbl = "Please enter a valid hour value (1-12)";
+            }
+            else
+            {
+                hourLbl = "Hour";
+                hour = value;
+            }
+        }
+    }
+
+    int Minute
+    {
+        get => minute;
+        set
+        {
+            if (value is < 0 or > 59)
+            {
+                minuteLbl = "Please enter a valid minute value (0-59)";
+            }
+            else
+            {
+                minuteLbl = "Minute";
+                minute = value;
+            }
+        }
+    }
+
+    int Second
+    {
+        get => second;
+        set
+        {
+            if (value is < 0 or > 59)
+            {
+                secondLbl = "Please enter a valid second value (0-59)";
+            }
+            else
+            {
+                secondLbl = "Second";
+                second = value;
+            }
+        }
+    }
+}
+
+@functions
+{
+    void TogglePeriod() => period = period == "AM" ? "PM" : "AM";
+
+    void toggleDD() => ddDisplay = ddDisplay == "none" ? "block" : "none";
+
+    protected override void OnInitialized() // = On Page Load https://stackoverflow.com/a/61554490
+    {
+        newDate = Connection.GetDateTaken(id);
+        Hour = (int)(((newDate?.Hour + 11) % 12) + 1); //Get 12 hour time: https://stackoverflow.com/a/1306172
+        Minute = (int)newDate?.Minute;
+        Second = (int)newDate?.Second;
+        period = Connection.GetPeriod(id);
+    }
+
+    void EditBtnClick()
+    {
+        editDisabled = true;
+        pickerDisabled = false;
+        hourDisabled = false;
+        minDisabled = false;
+        secDisabled = false;
+        periodDisabled = false;
+        cancelDisabled = false;
+        applyDisabled = false;
+    }
+
+    void CancelBtnClick()
+    {
+        editDisabled = false;
+        pickerDisabled = true;
+        hourDisabled = true;
+        minDisabled = true;
+        secDisabled = true;
+        periodDisabled = true;
+        cancelDisabled = true;
+        applyDisabled = true;
+        newDate = Connection.GetDateTaken(id);
+        Hour = (int)(((newDate?.Hour + 11) % 12) + 1);
+        Minute = (int)newDate?.Minute;
+        Second = (int)newDate?.Second;
+        period = Connection.GetPeriod(id);
+    }
+
+    void UpdateDateTaken()
+    {
+        picker.Close();
+
+        int hour24 = hour;
+        if (period == "PM")
+            hour24 += 12; //Convert to 24 hour time for adding into database. There is probably a better way to do this...
+
+        Connection.UpdateDateTaken(Connection.GetPathFromUuid(id), new((int)newDate?.Year, (int)newDate?.Month, (int)newDate?.Day, hour24, minute, second));
+    }
 }

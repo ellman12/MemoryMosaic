@@ -1,0 +1,26 @@
+﻿@page "/counter"
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<RadzenButton Click="IncrementCount">click me</RadzenButton>
+
+<RadzenDatePicker TValue="DateTime?" ShowTime="true" Change=@(args => OnChange(args, "DatePicker with 12 hour time format", "MM/dd/yyyy h:mm tt")) HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt" />
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+        Console.WriteLine($"{name} value changed to {value?.ToString(format)}");
+    }
+
+}

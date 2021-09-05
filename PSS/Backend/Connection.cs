@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using MySql.Data.MySqlClient;
 
 namespace PSS.Backend
@@ -525,6 +526,13 @@ namespace PSS.Backend
             }
 
             return dateTaken;
+        }
+
+        //Given a uuid, get whether an item was taken in the morning or afternoon: returns "AM" or "PM".
+        public static string GetPeriod(string uuid)
+        {
+            //https://stackoverflow.com/a/7875351
+            return GetDateTaken(uuid).ToString("tt", CultureInfo.InvariantCulture);
         }
 
         //For debugging and testing. Clears all tables.

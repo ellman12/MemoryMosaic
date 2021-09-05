@@ -151,7 +151,7 @@
     fill: #3c4043;
     background: none;
     border: none;
-    font-family: Product Sans;
+    font-family: 'Product Sans';
     text-align: center;
     line-height: 50%;
     border-radius: 50%;
@@ -163,6 +163,7 @@
     width: 50px;
     height: 50px;
     left: 150px;
+    top: 7px;
 }
 
     .info-dropdown-edit-btn:hover {
@@ -195,14 +196,79 @@
 }
 
 .info-dropdown-content {
-    height: 500px;
-    width: 290px;
-    right: 100px;
+    height: 142px;
+    width: 372px;
+    right: 70px;
+    top: 60px;
     display: none;
     position: absolute;
     background-color: #f1f1f1;
 }
 
-.info-dropdown:hover .info-dropdown-content {
-    display: block;
+.info-dropdown-textbox {
+    font-family: 'Product Sans';
+    font-size: 1rem;
+    width: 40px;
+    margin-left: 2px;
+    margin-top: 153px;
+}
+
+.info-dropdown-toggle-btn {
+    font-family: 'Product Sans';
+    position: absolute;
+    margin-left: 4px;
+    top: 153px;
+    width: 40px;
+    height: 25px;
+}
+
+.info-dropdown-cancel-btn {
+    position: absolute;
+    position: absolute;
+    top: -200px;
+    margin: 0;
+    padding: 0;
+    left: 145px;
+}
+
+.info-dd-apply-btn {
+    position: absolute;
+    position: absolute;
+    top: -200px;
+    margin: 0;
+    padding: 0;
+    left: 150px;
+}
+
+.info-dd-datepicker {
+    position: absolute;
+    top: 82px;
+    left: 16px;
+}
+
+.info-dd-edit {
+    position: absolute;
+    top: 28px;
+    width: 36px;
+    margin: 0;
+    padding: 0;
+}
+
+.info-dd-hour-edit {
+    left: 165px
+}
+
+.info-dd-min-edit {
+    left: 215px;
+    top: -26px;
+}
+
+.info-dd-sec-edit {
+    top: -80px;
+    left: 265px;
+}
+
+.period-btn {
+    left: 305px;
+    top: -115px;
 }
