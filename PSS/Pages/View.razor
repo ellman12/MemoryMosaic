@@ -37,36 +37,29 @@
 
         @*Info about the item like filename, etc. Can also change stuff here too.*@
         <div class="info-dropdown">
-            <button onclick="notImplemented();" class="round_view_icon_btn info_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></button>
+            <button class="round_view_icon_btn info_btn"><svg width="24px" height="24px" style="fill: white" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></button>
             <div class="info-dropdown-content">
                 <span class="material-icons info-dropdown-icon" style="top: 22px"><svg width="24px" height="24px"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg></span>
                 <span class="info-dropdown-bigtext" style="top: 15px">@dateTaken.ToString("MMM d, yyyy")</span>
                 <span class="info-dropdown-smalltext" style="top: 34px">@dateTaken.ToString("ddd, h:m tt")</span>
-                <button onclick="enableControls()" class="info-dropdown-edit-btn" style="top: 7px"><svg width="24px" height="24px" viewBox="0 0 24 24"><path d="M20.41 4.94l-1.35-1.35c-.78-.78-2.05-.78-2.83 0L3 16.82V21h4.18L20.41 7.77c.79-.78.79-2.05 0-2.83zm-14 14.12L5 19v-1.36l9.82-9.82 1.41 1.41-9.82 9.83z"></path></svg></button>
 
                 <span class="material-icons info-dropdown-icon" style="top: 68px"><svg width="24px" height="24px"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg></span>
                 <span class="info-dropdown-bigtext" style="top: 70px">@Path.GetFileName(Connection.GetPathFromUuid(id))</span>
 
-                @*<span class="material-icons info-dropdown-icon" style="top: 110px; color: #5f6368; ">edit_calendar</span>*@
-                <span class="info-dropdown-bigtext" style="top: 112px; padding-left: 5px">Edit Date Taken:</span>
-                <span class="info-dropdown-smalltext" style="top: 134px; left: -40px">Year</span>
-                <span class="info-dropdown-smalltext" style="top: 134px; left: 29px">Month</span>
-                <span class="info-dropdown-smalltext" style="top: 134px; left: 83px">Day</span>
-                <span class="info-dropdown-smalltext" style="top: 134px; left: 145px">Hour</span>
-                <span class="info-dropdown-smalltext" style="top: 134px; left: 204px">Minute</span>
-                <span class="info-dropdown-smalltext" style="top: 134px; left: 263px">Second</span>
+                @*<span class="info-dropdown-bigtext" style="top: 110px; padding-left: 14px; margin-left: 0">Edit Date Taken:</span>*@
+                <button @onclick="@EditBtnClick" class="info-dropdown-edit-btn"><svg width="24px" height="24px" viewBox="0 0 24 24"><path d="M20.41 4.94l-1.35-1.35c-.78-.78-2.05-.78-2.83 0L3 16.82V21h4.18L20.41 7.77c.79-.78.79-2.05 0-2.83zm-14 14.12L5 19v-1.36l9.82-9.82 1.41 1.41-9.82 9.83z"></path></svg></button>
+                <MudDatePicker Class="info-dd-datepicker" @ref="picker" Disabled="@pickerDisabled" @bind-Date="newDate" Style="Width: 130px" DateFormat="MM\/dd\/yyyy">
+                    <PickerActions>
+                        <MudButton OnClick="@(() => picker.Clear())">Clear</MudButton>
+                        <MudButton OnClick="@(() => picker.Close(false))">Cancel</MudButton>
+                        <MudButton Color="Color.Primary" OnClick="@(() => picker.Close())">Ok</MudButton>
+                    </PickerActions>
+                </MudDatePicker>
 
-                <input autocomplete="off" id="year-edit" type="number" style="margin-left: 4px; width: 55px;" class="info-dropdown-textbox" min="1900" max="9999" disabled value="@dateTaken.Year">
-                <input autocomplete="off" id="month-edit" type="number" style="" class="info-dropdown-textbox" min="1" max="12" disabled value="@dateTaken.Month">
-                <input autocomplete="off" id="day-edit" type="number" style="" class="info-dropdown-textbox" min="1" max="31" disabled value="@dateTaken.Day">
-                <input autocomplete="off" id="hour-edit" type="number" style="margin-left: 10px" class="info-dropdown-textbox" min="1" max="12" disabled value="@(((dateTaken.Hour + 11) % 12) + 1)"> @*https://stackoverflow.com/a/1306172*@
-                <span class="info-dropdown-smalltext" style="top: 151px; right: 158px; font-size: 20px; font-weight: bold; color: black">:</span>
-                <input autocomplete="off" id="minute-edit" type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="0" max="59" disabled value="@dateTaken.Minute">
-                <span class="info-dropdown-smalltext" style="top: 151px; right: 99px; font-size: 20px; font-weight: bold; color: black">:</span>
-                <input autocomplete="off" id="second-edit" type="number" style="margin-left: 7px" class="info-dropdown-textbox" min="0" max="59" disabled value="@dateTaken.Second">
-                <button autocomplete="off" id="period-btn" class="info-dropdown-toggle-btn" disabled>@Connection.GetPeriod(id)</button>
-                <button autocomplete="off" onclick="disableControls()" id="cancel-btn" class="info-dropdown-cancel-btn" disabled>Cancel</button>
-                <button autocomplete="off" id="apply-btn" style="margin-top: 6px; font-family: 'Product Sans'" disabled>Apply</button>
+                <MudTextField Class="info-dd-edit info-dd-hour-edit" @ref="hourText" Disabled="@hourDisabled" @bind-Value="@Hour" Placeholder="Hour" Variant="Variant.Text" InputMode.numeric></MudTextField>
+                <MudTextField Class="info-dd-edit info-dd-min-edit" @ref="minuteText" Disabled="@minDisabled" @bind-Value="@Minute" Placeholder="Minute" Variant="Variant.Text" InputMode.numeric></MudTextField>
+                <MudTextField Class="info-dd-edit info-dd-sec-edit" @ref="secondText" Disabled="@secDisabled" @bind-Value="@Second" Placeholder="Second" Variant="Variant.Text" InputMode.numeric></MudTextField>
+                <MudButton Class="period-btn" @ref="periodButton" Disabled="@periodDisabled" OnClick="@TogglePeriod">@period</MudButton>
             </div>
         </div>
     }
@@ -75,4 +68,119 @@
 @code {
     [Parameter]
     public string id { get; set; }
+
+    string hourLbl = "Hour", minuteLbl = "Minute", secondLbl = "Second", period;
+    bool editDisabled, pickerDisabled = true, hourDisabled = true, minDisabled = true, secDisabled = true, periodDisabled = true, cancelDisabled = true, applyDisabled = true;
+
+    MudDatePicker picker;
+    MudButton periodButton, applyButton;
+    MudTextField<int> hourText, minuteText, secondText;
+
+    DateTime? newDate;
+    int hour, minute, second;
+
+    int Hour
+    {
+        get => hour;
+        set
+        {
+            if (value is < 1 or > 12)
+            {
+                hourLbl = "Please enter a valid hour value (1-12)";
+            }
+            else
+            {
+                hourLbl = "Hour";
+                hour = value;
+            }
+        }
+    }
+
+    int Minute
+    {
+        get => minute;
+        set
+        {
+            if (value is < 0 or > 59)
+            {
+                minuteLbl = "Please enter a valid minute value (0-59)";
+            }
+            else
+            {
+                minuteLbl = "Minute";
+                minute = value;
+            }
+        }
+    }
+
+    int Second
+    {
+        get => second;
+        set
+        {
+            if (value is < 0 or > 59)
+            {
+                secondLbl = "Please enter a valid second value (0-59)";
+            }
+            else
+            {
+                secondLbl = "Second";
+                second = value;
+            }
+        }
+    }
+}
+
+@functions
+{
+    void TogglePeriod() => period = period == "AM" ? "PM" : "AM";
+
+    protected override void OnInitialized() // = On Page Load https://stackoverflow.com/a/61554490
+    {
+        newDate = Connection.GetDateTaken(id);
+        Hour = (int)(((newDate?.Hour + 11) % 12) + 1); //Get 12 hour time: https://stackoverflow.com/a/1306172
+        Minute = (int)newDate?.Minute;
+        Second = (int)newDate?.Second;
+        period = Connection.GetPeriod(id);
+    }
+
+    void EditBtnClick()
+    {
+        editDisabled = true;
+        pickerDisabled = false;
+        hourDisabled = false;
+        minDisabled = false;
+        secDisabled = false;
+        periodDisabled = false;
+        cancelDisabled = false;
+        applyDisabled = false;
+    }
+
+    void CancelBtnClick()
+    {
+        editDisabled = false;
+        pickerDisabled = true;
+        hourDisabled = true;
+        minDisabled = true;
+        secDisabled = true;
+        periodDisabled = true;
+        cancelDisabled = true;
+        applyDisabled = true;
+        newDate = Connection.GetDateTaken(id);
+        Hour = (int)(((newDate?.Hour + 11) % 12) + 1);
+        Minute = (int)newDate?.Minute;
+        Second = (int)newDate?.Second;
+        period = Connection.GetPeriod(id);
+    }
+
+    void UpdateDateTaken()
+    {
+        picker.Close();
+
+        int hour24 = hour;
+        if (period == "PM")
+            hour24 += 12; //Convert to 24 hour time for adding into database. There is probably a better way to do this...
+
+        Connection.UpdateDateTaken(Connection.GetPathFromUuid(id), new((int)newDate?.Year, (int)newDate?.Month, (int)newDate?.Day, hour24, minute, second));
+    }
 }

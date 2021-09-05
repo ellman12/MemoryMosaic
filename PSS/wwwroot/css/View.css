@@ -151,7 +151,7 @@
     fill: #3c4043;
     background: none;
     border: none;
-    font-family: Product Sans;
+    font-family: 'Product Sans';
     text-align: center;
     line-height: 50%;
     border-radius: 50%;
@@ -163,6 +163,7 @@
     width: 50px;
     height: 50px;
     left: 150px;
+    top: 7px;
 }
 
     .info-dropdown-edit-btn:hover {
@@ -198,7 +199,8 @@
     height: 211px;
     width: 403px;
     right: 100px;
-    display: none;
+/*    display: none; TODO: temp */
+    display: block;
     position: absolute;
     background-color: #f1f1f1;
 }
@@ -228,4 +230,37 @@
     font-family: 'Product Sans';
     margin: 4px;
     margin-top: 6px;
+}
+
+.info-dd-datepicker {
+    position: absolute;
+    top: 82px;
+    left: 16px;
+}
+
+.info-dd-edit {
+    position: absolute;
+    top: 28px;
+    width: 36px;
+    margin: 0;
+    padding: 0;
+}
+
+.info-dd-hour-edit {
+    left: 165px
+}
+
+.info-dd-min-edit {
+    left: 215px;
+    top: -26px;
+}
+
+.info-dd-sec-edit {
+    top: -80px;
+    left: 265px;
+}
+
+.period-btn {
+    left: 305px;
+    top: -115px;
 }

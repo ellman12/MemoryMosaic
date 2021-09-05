@@ -2,7 +2,7 @@
 @page "/test/{id}"
 @using PSS.Backend
 @layout EmptyLayout
-@*Escaping the '/' is the only way this would work...*@
+
 <MudDatePicker @ref="picker" Disabled="@pickerDisabled" @bind-Date="newDate" Style="Width: 130px" DateFormat="MM\/dd\/yyyy">
     <PickerActions>
         <MudButton OnClick="@(() => picker.Clear())">Clear</MudButton>
