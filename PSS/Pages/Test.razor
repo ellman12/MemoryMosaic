@@ -3,7 +3,7 @@
 @using PSS.Backend
 @layout EmptyLayout
 @*Escaping the '/' is the only way this would work...*@
-<MudDatePicker @ref="picker" @bind-Date="newDate" Style="Width: 130px" DateFormat="MM\/dd\/yyyy">
+<MudDatePicker @ref="picker" Disabled="@pickerDisabled" @bind-Date="newDate" Style="Width: 130px" DateFormat="MM\/dd\/yyyy">
     <PickerActions>
         <MudButton OnClick="@(() => picker.Clear())">Clear</MudButton>
         <MudButton OnClick="@(() => picker.Close(false))">Cancel</MudButton>
@@ -12,28 +12,31 @@
 </MudDatePicker>
 
 <MudItem xs="12" sm="6" md="4">
-    <MudTextField @ref="hourText" @bind-Value="@Hour" Label="@hourLbl" Placeholder="Hour" Variant="Variant.Text" InputMode.numeric></MudTextField>
+    <MudTextField @ref="hourText" Disabled="@hourDisabled" @bind-Value="@Hour" Label="@hourLbl" Placeholder="Hour" Variant="Variant.Text" InputMode.numeric></MudTextField>
 </MudItem>
 
 <MudItem xs="12" sm="6" md="4">
-    <MudTextField @ref="minuteText" @bind-Value="@Minute" Label="@minuteLbl" Placeholder="Minute" Variant="Variant.Text" InputMode.numeric></MudTextField>
+    <MudTextField @ref="minuteText" Disabled="@minDisabled" @bind-Value="@Minute" Label="@minuteLbl" Placeholder="Minute" Variant="Variant.Text" InputMode.numeric></MudTextField>
 </MudItem>
 
 <MudItem xs="12" sm="6" md="4">
-    <MudTextField @ref="secondText" @bind-Value="@Second" Label="@secondLbl" Placeholder="Second" Variant="Variant.Text" InputMode.numeric></MudTextField>
+    <MudTextField @ref="secondText" Disabled="@secDisabled" @bind-Value="@Second" Label="@secondLbl" Placeholder="Second" Variant="Variant.Text" InputMode.numeric></MudTextField>
 </MudItem>
 
-<MudButton @ref="periodButton" OnClick="@TogglePeriod" T="string">@period</MudButton>
+<MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="@EditBtnClick">Edit</MudButton>
 
-<MudButton OnClick="@CancelBtnClick">Cancel</MudButton>
+<MudButton @ref="periodButton" Disabled="@periodDisabled" OnClick="@TogglePeriod">@period</MudButton>
 
-<MudButton OnClick="@UpdateDateTaken">Apply</MudButton>
+<MudButton Disabled="@cancelDisabled" OnClick="@CancelBtnClick">Cancel</MudButton>
+
+<MudButton Disabled="@applyDisabled" OnClick="@UpdateDateTaken">Apply</MudButton>
 
 @code {
     [Parameter]
     public string id { get; set; }
 
     string hourLbl = "Hour", minuteLbl = "Minute", secondLbl = "Second", period;
+    bool editDisabled, pickerDisabled = true, hourDisabled = true, minDisabled = true, secDisabled = true, periodDisabled = true, cancelDisabled = true, applyDisabled = true;
 
     MudDatePicker picker;
     MudButton periodButton, applyButton;
@@ -107,12 +110,33 @@
         period = Connection.GetPeriod(id);
     }
 
+    void EditBtnClick()
+    {
+        editDisabled = true;
+        pickerDisabled = false;
+        hourDisabled = false;
+        minDisabled = false;
+        secDisabled = false;
+        periodDisabled = false;
+        cancelDisabled = false;
+        applyDisabled = false;
+    }
+
     void CancelBtnClick()
     {
+        editDisabled = false;
+        pickerDisabled = true;
+        hourDisabled = true;
+        minDisabled = true;
+        secDisabled = true;
+        periodDisabled = true;
+        cancelDisabled = true;
+        applyDisabled = true;
         newDate = Connection.GetDateTaken(id);
         Hour = (int)(((newDate?.Hour + 11) % 12) + 1);
         Minute = (int)newDate?.Minute;
         Second = (int)newDate?.Second;
+        period = Connection.GetPeriod(id);
     }
 
     void UpdateDateTaken()
@@ -121,7 +145,7 @@
 
         int hour24 = hour;
         if (period == "PM")
-            hour24 += 12; //Convert to 24 hour time for adding into database.
+            hour24 += 12; //Convert to 24 hour time for adding into database. There is probably a better way to do this...
 
         Connection.UpdateDateTaken(Connection.GetPathFromUuid(id), new((int)newDate?.Year, (int)newDate?.Month, (int)newDate?.Day, hour24, minute, second));
     }
