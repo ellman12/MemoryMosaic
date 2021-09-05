@@ -20,14 +20,15 @@
     <link rel="icon" href="gphotos icon.png">
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet"> @*https://stackoverflow.com/questions/50303454/how-to-use-the-new-material-design-icon-themes-outlined-rounded-two-tone-and*@
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 </head>
 
 <body style="background-color: black; margin-right: 5px; margin-left: 10px; margin-top: 0px;">
     <component type="typeof(App)" render-mode="ServerPrerendered" /> @*Whatever this line is/does, removing it causes the app to not work... 🤔*@
     <script src="_framework/blazor.server.js"></script> @*This stupid line is needed for some reason*@
+    <div id="components-reconnect-modal"></div> @*https://stackoverflow.com/a/59395390*@
 </body>
 </html>
 

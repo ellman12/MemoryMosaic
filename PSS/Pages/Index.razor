@@ -2,7 +2,7 @@
 @using PSS.Backend
 
 @{
-    @*if (mediaList.Count == 0)
+    if (mediaList.Count == 0)
     {
         <h1 class="indexCenteredWhiteText">Looks empty here...<br />Upload some items to get started.</h1>
     }
@@ -14,8 +14,7 @@
                 <img onclick="location.href = '/view/@media.uuid'" id=@media.uuid src=@media.path class="thumbnail" alt="" />
             }
         </div>
-    }*@
-    <h1><a href="/Test/abcdef">Go to Test/abcdef</a></h1>
+    }
 }
 
 @code {

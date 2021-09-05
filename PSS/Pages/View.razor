@@ -4,6 +4,9 @@
 @using System.IO
 @layout EmptyLayout
 
+@*This was messing up my nav bar styling so I moved it here. It's really only needed here.*@
+<link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+
 @{
     string path = Connection.GetPathFromUuid(id);
     if (path == "null") //If URL contains a UUID that isn't present in the database.
