@@ -6,3 +6,5 @@ It is a server, attached to my home network, that stores and displays my photos 
 It uses MySQL as the DBMS, and C# and Blazor for everything else.<br>
 I actually began working on this in the Summer of 2021, but I have been planning and testing stuff since
 October 2020.
+
+The actual project is located in the PSS/ folder. Everything else if for testing/planning.
