@@ -1,22 +1,25 @@
 ﻿@page "/"
+@using static PSS.Backend.Connection
 @using PSS.Backend
+
+@*TODO?: https://css-tricks.com/snippets/css/complete-guide-grid/*@
 
 @{
     if (mediaList.Count == 0)
     {
-        <h1 class="indexCenteredWhiteText">Looks empty here...<br />Upload some items to get started.</h1>
+        <h1 class="indexCenteredWhiteText">Looks empty here...<br/>Upload some items to get started.</h1>
     }
     else
     {
         <div style="display: flex">
-            @foreach (Media media in mediaList)
+            @foreach (MediaRow media in mediaList)
             {
-                <img onclick="location.href = '/view/@media.uuid'" id=@media.uuid src=@media.path class="thumbnail" alt="" />
+                <img onclick="location.href = '/view/@media.uuid'" id=@media.uuid src=@media.path class="thumbnail" alt=""/>
             }
         </div>
     }
 }
 
 @code {
-    private readonly List<Media> mediaList = Connection.LoadMediaTable();
+    private readonly List<Connection.MediaRow> mediaList = LoadMediaTable();
 }

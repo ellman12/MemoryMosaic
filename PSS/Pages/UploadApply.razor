@@ -1,0 +1,228 @@
+@page "/apply-upload"
+@using System.IO
+@using System.Globalization
+@using PSS.Backend
+
+<link href="css/UploadApply.css" rel="stylesheet">
+
+<header>
+    <button @onclick="AddItems">
+        <span class="material-icons-outlined">add_photo_alternate</span><span>Add to Library</span>
+    </button>
+
+    <button @onclick="ToggleAlbums">
+        <span class="material-icons-outlined">@toggleBtnIcon</span><span>@albumToggleBtnText</span>
+    </button>
+
+    <button @onclick="NewAlbumBtnClick" class="@newAlbumBtnId" id="@newAlbumBtnId">
+        <span class="material-icons-outlined">@newAlbumBtnIcon</span><span>@newAlbumBtnText</span>
+    </button>
+
+    <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
+
+    <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn">
+        <span class="material-icons-outlined">check</span><span>Confirm</span>
+    </button>
+
+    <span id="statusSpan">@status</span>
+</header>
+
+@{
+    GC.Collect();
+    GC.WaitForPendingFinalizers();
+    if (applied) return;
+    if (allPaths.Count == 0) status = "No files found to add";
+
+    <span id="chooseAlbumsSpan" style="visibility: @albumsDivVisibility">Add Items to Albums</span>
+    <div id="albums" style="visibility: @albumsDivVisibility">
+        @for (int i = 0; i < albums.Count; i++)
+        {
+            int ii = i;
+            <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
+                <div class="coverDiv">
+                    <img class="cover" src="@albums[i].albumCover" alt="">
+                </div>
+                <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
+                <span title="@albums[i].name">@albums[i].name</span>
+            </div>
+        }
+    </div>
+
+    <div id="mainDiv">
+        @for (int i = 0; i < allPaths.Count; i++)
+        {
+            int ii = i; @*Using just i caused crash*@
+            string path = allPaths[i].Replace('\\', '/');
+            string ext = Path.GetExtension(path);
+
+            //shortPath is relative to wwwroot
+            string shortPath = path.Replace(PSS.Settings.uploadRootPath, "");
+            shortPath = Path.GetFileName(PSS.Settings.uploadRootPath) + shortPath;
+
+            <div class="itemDiv">
+                @if (ext is ".jpg" or ".jpeg" or ".png")
+                {
+                    <img onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt=""/>
+                }
+
+                <span>@Path.GetFileName(path)</span>
+                <input type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">
+                <span>@dateTakenList[i].ToString("ddd, MMM d, yyy h:mm:ss tt")</span>
+                <span class="warnSpan">@(dataPresentList[i] ? "" : "Date taken not found in file. Defaulting to time right now.")</span>
+                <span class="errorSpan">@(ItemExists(Path.GetFileName(path), dateTakenList[ii]) ? "Item already on server" : "")</span>
+            </div>
+        }
+    </div>
+}
+
+@code{
+    private static bool applied;
+    private static string status;
+    private static string[] pngPaths;
+    private static string[] jpgPaths;
+    private static List<string> allPaths;
+    private static List<DateTime> dateTakenList;
+    private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
+
+    //Things relating to albums
+    private static string toggleBtnIcon;
+    private static string albumsDivVisibility;
+    private static string albumToggleBtnText;
+    private static string albumInputDisplay;
+    private static string confirmBtnDisplay;
+    private static string newAlbumBtnIcon;
+    private static string newAlbumBtnText;
+    private static string newAlbumBtnId;
+    private static string newAlbumName;
+    private static List<Connection.Album> albums;
+    private static List<bool> checkedAlbums;
+
+    protected override void OnInitialized()
+    {
+        applied = false;
+        pngPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.png", SearchOption.AllDirectories);
+        jpgPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.jp*g", SearchOption.AllDirectories);
+        allPaths = new List<string>(pngPaths.Concat(jpgPaths).ToArray());
+        dateTakenList = (from album in allPaths select new DateTime()).ToList();
+        dataPresentList = (from album in allPaths select new bool()).ToList();
+
+        for (int i = 0; i < allPaths.Count; i++)
+        {
+            dataPresentList[i] = Metadata.GetDateTaken(allPaths[i], out var dateTaken);
+            dateTakenList[i] = dateTaken;
+        }
+
+        toggleBtnIcon = "image_not_supported";
+        albumsDivVisibility = "visible";
+        albumToggleBtnText = "Hide Albums";
+        albumInputDisplay = "none";
+        confirmBtnDisplay = "none";
+        newAlbumBtnIcon = "library_add";
+        newAlbumBtnText = "New Album";
+        newAlbumBtnId = "newAlbumBtn";
+        albums = Connection.GetAlbumNames();
+        checkedAlbums = (from album in albums select new bool()).ToList();
+    }
+
+    //Adds all the items to photo library, and, if applicable, any albums.
+    private static void AddItems()
+    {
+        applied = true;
+        int rowsAffected = 0;
+        for (int p = 0; p < allPaths.Count; p++)
+        {
+            if (ItemExists(Path.GetFileName(allPaths[p]), dateTakenList[p])) continue; //Ignore duplicates
+
+            string newDir = GenerateSortedDir(dateTakenList[p]);
+            string newPath = Path.Combine(newDir, Path.GetFileName(allPaths[p]));
+            Directory.CreateDirectory(newDir);
+
+            GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
+            GC.WaitForPendingFinalizers();
+            try
+            {
+                File.Move(allPaths[p], newPath);
+                rowsAffected += Connection.InsertMedia(newPath, dateTakenList[p]);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+    //Add item to album(s) selected.
+            for (int c = 0; c < checkedAlbums.Count; c++)
+            {
+                if (!checkedAlbums[c]) continue;
+                try
+                {
+                    Connection.AddToAlbum(allPaths[p], albums[c].id);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+        status = $"Added {rowsAffected} items to library";
+    }
+
+    private static string GenerateSortedDir(DateTime dateTaken) => Path.Join(PSS.Settings.libraryRootPath, dateTaken.Year.ToString(), $"{dateTaken.Month} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
+    private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));
+
+    private static void ToggleAlbums()
+    {
+        if (albumsDivVisibility == "hidden")
+        {
+            toggleBtnIcon = "image_not_supported";
+            albumToggleBtnText = "Hide Albums";
+            albumsDivVisibility = "visible";
+        }
+        else
+        {
+            toggleBtnIcon = "image";
+            albumToggleBtnText = "Show Albums";
+            albumsDivVisibility = "hidden";
+        }
+    }
+
+    private static void NewAlbumBtnClick()
+    {
+        if (newAlbumBtnText == "New Album")
+        {
+            newAlbumBtnId = "cancelBtn";
+            toggleBtnIcon = "image_not_supported";
+            albumToggleBtnText = "Hide Albums";
+            albumsDivVisibility = "visible";
+
+            newAlbumBtnIcon = "close";
+            newAlbumBtnText = "Cancel";
+            albumInputDisplay = "inline";
+            confirmBtnDisplay = "flex";
+        }
+        else if (newAlbumBtnText == "Cancel")
+        {
+            newAlbumBtnId = "newAlbumBtn";
+            newAlbumBtnIcon = "library_add";
+            newAlbumBtnText = "New Album";
+            albumInputDisplay = "none";
+            confirmBtnDisplay = "none";
+        }
+    }
+
+    private static void ConfirmBtnClick()
+    {
+        newAlbumBtnIcon = "library_add";
+        newAlbumBtnText = "New Album";
+        newAlbumBtnId = "newAlbumBtn";
+
+        albumInputDisplay = "none";
+        confirmBtnDisplay = "none";
+
+    //TODO: test for "" and duplicate album name on input...
+        Connection.CreateAlbum(newAlbumName);
+        albums.Add(new Connection.Album(Connection.GetAlbumID(newAlbumName), newAlbumName, null));
+        checkedAlbums.Add(new bool());
+        newAlbumName = ""; //Reset for next time
+    }
+
+}

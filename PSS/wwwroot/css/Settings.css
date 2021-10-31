@@ -1,0 +1,27 @@
+﻿#settingsdiv {
+    width: 500px;
+    height: auto;
+    border: 3px solid white;
+    margin: 0 auto 20px;
+    padding: 20px 10px;
+    border-radius: 20px;
+}
+
+.settingsh {
+    color: white;
+    font-family: 'Product Sans', serif;
+    text-align: center;
+    margin: 0;
+}
+
+.whitetext {
+    color: white;
+    font-family: 'Product Sans', serif;
+    margin: 5px 0 0;
+    padding: 0;
+}
+
+/*Span and input elements*/
+.settingpair {margin-top: 4px;}
+
+div>button {margin-top: 10px;}

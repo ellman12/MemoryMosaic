@@ -4,25 +4,11 @@ using System.Data;
 using System.Globalization;
 using Npgsql;
 
-namespace PSS.Backend
+namespace DBSwitchTest
 {
-    public static class Connection
+    class Connection
     {
-        private static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
-
-        public record Album
-        {
-            public int id;
-            public string name;
-            public string albumCover;
-
-            public Album(int id, string name, string albumCover)
-            {
-                this.id = id;
-                this.name = name;
-                this.albumCover = albumCover;
-            }
-        }
+        public static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
 
         //Represents a row in the media table.
         public readonly struct MediaRow
@@ -41,22 +27,21 @@ namespace PSS.Backend
             }
         }
 
-        private static void Open()
+        public static void Open()
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
         }
 
-        private static void Close()
+        public static void Close()
         {
             if (connection.State == ConnectionState.Open)
                 connection.Close();
         }
 
         //For inserting a photo or video into the media table (the main table). Will not insert duplicates.
-        public static int InsertMedia(string path, DateTime dateTaken)
+        public static void InsertMedia(string path, DateTime dateTaken)
         {
-            int rowsAffected = 0;
             try
             {
                 Open();
@@ -64,7 +49,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateAdded", DateTime.Now);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
-                rowsAffected = cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
             {
@@ -74,8 +59,6 @@ namespace PSS.Backend
             {
                 Close();
             }
-
-            return rowsAffected;
         }
 
         //Add an item to media (main table) and an album.
@@ -280,31 +263,6 @@ namespace PSS.Backend
             }
         }
 
-        public static List<Album> GetAlbumNames()
-        {
-            List<Album> albums = new();
-            try
-            {
-                Open();
-                NpgsqlCommand cmd = new("SELECT id, name, album_cover FROM albums", connection);
-                cmd.ExecuteNonQuery();
-                var reader = cmd.ExecuteReader();
-
-                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2))); //https://stackoverflow.com/a/38930847
-                reader.Close();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine("An unknown error occurred in GetAlbumNames. Error code: " + e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return albums;
-        }
-
         //Moves an item from media and album_entries (if applicable) into the 2 trash albums.
         public static void DeleteItem(string path)
         {
@@ -386,8 +344,6 @@ namespace PSS.Backend
 
                 while (reader.Read())
                     media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
-
-                reader.Close();
             }
             catch (NpgsqlException e)
             {
@@ -397,7 +353,6 @@ namespace PSS.Backend
             {
                 Close();
             }
-
             return media;
         }
 
@@ -425,7 +380,6 @@ namespace PSS.Backend
             {
                 Close();
             }
-
             return media;
         }
 
@@ -452,7 +406,6 @@ namespace PSS.Backend
             {
                 Close();
             }
-
             return media;
         }
 
@@ -643,25 +596,6 @@ namespace PSS.Backend
         public static string GetPeriod(string path)
         {
             return GetDateTaken(path).ToString("tt", CultureInfo.InvariantCulture);
-        }
-
-        //ONLY FOR TESTING. Clears a table, but doesn't delete the table itself.
-        public static void ClearMediaTable()
-        {
-            try
-            {
-                Open();
-                NpgsqlCommand cmd = new("DELETE FROM media", connection);
-                cmd.ExecuteNonQuery();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
         }
     }
 }

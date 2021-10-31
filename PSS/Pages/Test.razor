@@ -1,3 +1,21 @@
 @*A blank page just for testing stuff*@
-@page "/test/"
+@page "/test"
 @layout EmptyLayout
+
+@foreach (var yes in dateTakenList)
+{
+    <span style="color: white">@yes.ToString("F")</span>
+    <br>
+}
+
+@foreach (var i in Enumerable.Range(0, N))
+{
+    <input type="date" @bind="@dateTakenList[i]" @oninput="@(e => dateTakenList[i] = DateTime.Parse(e.Value.ToString()))">
+    <br>
+}
+
+@code
+{
+    private static int N = 12;
+    private List<DateTime> dateTakenList = new(Enumerable.Range(0, N).Select(_ => new DateTime()));
+}

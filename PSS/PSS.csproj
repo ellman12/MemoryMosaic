@@ -12,25 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="5.1.2" />
-    <PackageReference Include="MySql.Data" Version="8.0.26" />
+    <PackageReference Include="ExifLib" Version="1.7.0" />
+    <PackageReference Include="MudBlazor" Version="5.1.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Npgsql" Version="5.0.10" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\Pics and Vids\Test Pics\20210330_143013.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Pics\20210501_193042.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Pics\20210501_193043.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Pics\20210502_143910.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Pics\20210502_144205.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Pics\20210502_144212.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Pics\IMG_20210501_111608.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Pics\Screenshot_20210314-210328_Outlook.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Pics\Screenshot_20210416-075337_Outlook.jpg" />
-    <None Include="wwwroot\Pics and Vids\Test Vids\20210501_192909.mp4" />
-    <None Include="wwwroot\Pics and Vids\Test Vids\20210501_192939.mp4" />
-    <None Include="wwwroot\Pics and Vids\Test Vids\20210501_193046.mp4" />
-    <None Include="wwwroot\Pics and Vids\Test Vids\VID_20210430_200417.mp4" />
-    <None Include="wwwroot\Pics and Vids\Test Vids\VID_20210501_132900_01.mp4" />
     <None Include="wwwroot\PSS.js" />
   </ItemGroup>
 

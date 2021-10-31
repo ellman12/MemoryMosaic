@@ -1,0 +1,49 @@
+@page "/upload"
+@using System.IO
+<link href="css/Upload.css" rel="stylesheet"/>
+
+@{
+    <div id="baseContainer">
+        @if (allPaths.Length > 0)
+        {
+            <div id="applyContainer">
+                <span>Items found on server waiting to be added</span>
+                <button onclick="location.href='apply-upload'">Add to Library</button>
+            </div>
+        }
+
+        <div id="folderContainer">
+            <span>Enter the path to a folder you want to upload</span><br><br>
+            <input type="text" placeholder="Enter a folder path here" @bind="Folder" @bind:event="oninput"/>
+            <span style="visibility: @cmdVisibility; margin-top: 40px">Run this command to upload your folder:</span>
+            <span style="visibility: @cmdVisibility">@command</span>
+        </div>
+    </div>
+}
+
+@code {
+    private static readonly string[] pngPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.png", SearchOption.AllDirectories);
+    private static readonly string[] jpgPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.jp*g", SearchOption.AllDirectories);
+    private static readonly string[] allPaths = pngPaths.Concat(jpgPaths).ToArray();
+
+    private static string cmdVisibility = "hidden";
+    private static string command = "";
+    private static string _folder = "";
+
+    private static string Folder
+    {
+        get => _folder;
+        set
+        {
+            _folder = value;
+            if (_folder == "")
+                cmdVisibility = "hidden";
+            else
+            {
+                cmdVisibility = "visible";
+                command = $"scp {PSS.Settings.scpFlags} \"{_folder}\" \"{PSS.Settings.username}@{PSS.Settings.serverIP}:{PSS.Settings.uploadRootPath}\"";
+            }
+        }
+    }
+
+}

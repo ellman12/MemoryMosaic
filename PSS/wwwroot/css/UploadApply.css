@@ -1,0 +1,174 @@
+* {
+    color: white;
+    font-family: 'Product Sans', serif;
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+header button {
+    margin-top: 10px;
+    margin-right: 12px;
+    color: white; /* Icon Color */
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    display: flex;
+    word-break: break-word;
+    word-wrap: break-word;
+    -webkit-box-align: center;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans, serif;
+    font-size: 1rem;
+    font-weight: 400;
+    width: 170px;
+    padding-left: 17px;
+    padding-bottom: 11px;
+    padding-top: 11px;
+}
+
+header button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+button span ~ span {
+    padding-left: 11px;
+    text-decoration: none;
+}
+
+header input[type="text"] {
+    margin-top: 12px;
+    margin-left: 0;
+    width: 200px;
+    font-size: 16px;
+    margin-right: 11px;
+}
+
+#newAlbumBtn {
+    width: 138px;
+    padding-left: 10px;
+}
+
+#cancelBtn {
+    width: 113px;
+    padding-left: 10px;
+}
+
+#confirmBtn {
+    width: 119px;
+    padding-left: 10px;
+}
+
+#statusSpan {
+    margin-top: 10px;
+    margin-left: 30px;
+}
+
+#chooseAlbumsSpan {
+    position: absolute;
+    right: 50px;
+    top: 78px;
+    width: 300px;
+    text-align: center;
+}
+
+#albums {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid white;
+    position: absolute;
+    top: 105px;
+    right: 50px;
+    z-index: 9999;
+    padding-right: 2px;
+    user-select: none;
+    width: 300px;
+    height: 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+/*Div that groups cover, checkbox, etc. together*/
+.album {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: auto;
+}
+
+.album:hover {
+    background-color: darkgreen;
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+/*Not sure if good/best solution but used to have every cover same size and aligned*/
+.coverDiv {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.cover {
+    border-radius: 4px;
+    object-fit: cover;
+    width: 60px;
+    height: 60px;
+}
+
+.album input[type="checkbox"] {
+    margin-left: 7px;
+}
+
+.album span {
+    margin-top: -1px;
+    margin-left: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#mainDiv {
+    position: absolute;
+    left: 145px;
+    top: 71px;
+}
+
+.itemDiv {
+    margin-bottom: 10px;
+}
+
+.itemDiv img {
+    width: 6%;
+    vertical-align: middle; /*https://stackoverflow.com/a/489394*/
+}
+
+.itemDiv img:hover { /*https://stackoverflow.com/a/25036868*/
+    -webkit-transform: scale(1.9);
+    transform: scale(1.9);
+    cursor: pointer;
+}
+
+.itemDiv span {
+    margin-left: 10px;
+}
+
+.itemDiv .warnSpan {
+    color: yellow;
+}
+
+.itemDiv .errorSpan {
+    color: red;
+}
+
+input {
+    color: black; /*Font color*/
+    margin-left: 10px;
+}

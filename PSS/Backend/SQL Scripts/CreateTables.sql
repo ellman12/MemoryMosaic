@@ -1,39 +1,74 @@
--- Used when first initializing PSS; creates all the necessary tables.
-CREATE TABLE `album_entries` (
-  `path` varchar(600) NOT NULL,
-  `album_id` int unsigned NOT NULL,
-  `date_added_to_album` datetime NOT NULL,
-  PRIMARY KEY (`path`,`album_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- Used to create all the tables in PostgreSQL
+CREATE TABLE IF NOT EXISTS public.album_entries
+(
+    path text COLLATE pg_catalog."default" NOT NULL,
+    album_id integer NOT NULL,
+    date_added_to_album timestamp without time zone NOT NULL,
+    CONSTRAINT album_entries_pkey PRIMARY KEY (path, album_id)
+    )
 
-CREATE TABLE `album_entries_trash` (
-  `path` varchar(600) NOT NULL,
-  `album_id` int unsigned NOT NULL,
-  `date_added_to_album` datetime NOT NULL,
-  PRIMARY KEY (`path`,`album_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    TABLESPACE pg_default;
 
-CREATE TABLE `albums` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(600) NOT NULL,
-  `album_cover` varchar(600) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`),
-  UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+ALTER TABLE public.album_entries
+    OWNER to postgres;
 
-CREATE TABLE `media` (
-  `path` varchar(600) NOT NULL,
-  `date_added` datetime NOT NULL,
-  `date_taken` datetime NOT NULL,
-  `uuid` char(36) NOT NULL,
-  PRIMARY KEY (`path`,`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `media_trash` (
-  `path` varchar(600) NOT NULL,
-  `date_added` datetime NOT NULL,
-  `date_taken` datetime NOT NULL,
-  `uuid` char(36) NOT NULL,
-  PRIMARY KEY (`path`,`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE IF NOT EXISTS public.album_entries_trash
+(
+    path text COLLATE pg_catalog."default" NOT NULL,
+    album_id integer NOT NULL,
+    date_added_to_album timestamp without time zone NOT NULL,
+    CONSTRAINT album_entries_trash_pkey PRIMARY KEY (path, album_id)
+    )
+
+    TABLESPACE pg_default;
+
+ALTER TABLE public.album_entries_trash
+    OWNER to postgres;
+
+
+CREATE TABLE IF NOT EXISTS public.albums
+(
+    -- id serial NOT NULL,
+    id integer NOT NULL DEFAULT nextval('albums_id_seq'::regclass),
+    name text COLLATE pg_catalog."default" NOT NULL,
+    album_cover text COLLATE pg_catalog."default",
+    CONSTRAINT albums_pkey PRIMARY KEY (id),
+    CONSTRAINT albums_name_key UNIQUE (name)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.albums
+    OWNER to postgres;
+
+
+CREATE TABLE IF NOT EXISTS public.media
+(
+    path text COLLATE pg_catalog."default" NOT NULL,
+    date_added timestamp without time zone NOT NULL,
+    date_taken timestamp without time zone NOT NULL,
+    uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
+    CONSTRAINT media_pkey PRIMARY KEY (path, uuid),
+    CONSTRAINT albums_name_key UNIQUE (path)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.media
+    OWNER to postgres;
+
+
+CREATE TABLE IF NOT EXISTS public.media_trash
+(
+    path text COLLATE pg_catalog."default" NOT NULL,
+    date_added timestamp without time zone NOT NULL,
+    date_taken timestamp without time zone NOT NULL,
+    uuid uuid NOT NULL,
+    CONSTRAINT media_trash_pkey PRIMARY KEY (path, uuid)
+    )
+
+    TABLESPACE pg_default;
+
+ALTER TABLE public.media_trash
+    OWNER to postgres;
