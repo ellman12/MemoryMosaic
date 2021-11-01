@@ -5,9 +5,9 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: flex-start;
     position: absolute;
     left: 145px;
-    background-color: darkgreen;
 }
 
 .thumbnail {
