@@ -39,8 +39,8 @@ namespace PSS
 
         public static void ReadSettings()
         {
-            IConfigurationRoot config = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(Environment.CurrentDirectory + "/pss_settings.json").Build();
-            Settings settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json"));
+            new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(Environment.CurrentDirectory + "/pss_settings.json").Build();
+            JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json"));
             uploadRootPath = uploadRootPath.Replace('\\', '/');
             libFolderFullPath = libFolderFullPath.Replace('\\', '/');
         }
@@ -48,13 +48,12 @@ namespace PSS
         //Delete .json file and reset settings to default.
         public static void ResetSettings()
         {
-            Settings defaultSettings = new(); //I wish I didn't need to make an instance :/
             username = "elliott";
             serverIP = "localhost";
             scpFlags = "-r";
             uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload"; //TODO: temp
             libFolderFullPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_library"; //TODO: temp
-            File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(defaultSettings));
+            File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(typeof(Settings)));
         }
     }
 }

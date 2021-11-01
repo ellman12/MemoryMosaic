@@ -53,7 +53,6 @@ namespace PSS
             });
 
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
