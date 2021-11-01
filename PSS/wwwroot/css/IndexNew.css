@@ -9,8 +9,33 @@
     left: 145px;
 }
 
-.thumbnail {
-    height: 200px;
-    margin: 4px;
-    cursor: pointer;
-}
+    #mainDiv .thumbnail {
+        cursor: pointer;
+    }
+
+        #mainDiv .thumbnail span {
+            opacity: 0;
+            height: 24px;
+            width: 24px;
+            position: absolute;
+            box-sizing: border-box;
+            color: #fff;
+            outline: none;
+            margin-top: 8px;
+            margin-left: 8px;
+            fill-opacity: .54;
+            transition: 0.3s;
+            transition-property: opacity,fill-opacity;
+        }
+
+        #mainDiv .thumbnail:hover span { /* Show checkbox on hover */
+            opacity: 0.42;
+        }
+
+
+        #mainDiv .thumbnail img {
+            height: 200px;
+            margin-left: 3px;
+            margin-right: 3px;
+            margin-top: 3px;
+        }

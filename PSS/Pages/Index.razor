@@ -1,6 +1,5 @@
 @page "/"
 @using static PSS.Backend.Connection
-@using PSS.Backend
 
 @*TODO?: https://css-tricks.com/snippets/css/complete-guide-grid/*@
 
@@ -16,7 +15,10 @@
         <div id="mainDiv">
             @foreach (MediaRow media in mediaList)
             {
-                <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href='/view/@media.uuid'" class="thumbnail" alt="@PSS.Settings.requestPath/@media.path" loading="lazy" />
+                <div class="thumbnail">
+                    <span class="material-icons">check_circle</span>
+                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href = '/view/@media.uuid'" alt="@PSS.Settings.requestPath/@media.path" loading="lazy" />
+                </div>
             }
         </div>
     }
