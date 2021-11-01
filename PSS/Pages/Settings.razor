@@ -41,14 +41,14 @@
     private string serverIP = PSS.Settings.serverIP;
     private string scpFlags = PSS.Settings.scpFlags;
     private string uploadRootPath = PSS.Settings.uploadRootPath;
-    private string libraryRootPath = PSS.Settings.libraryRootPath;
+    private string libraryRootPath = PSS.Settings.libFolderFullPath;
 
     private void ApplyBtnClicked()
     {
         PSS.Settings.username = username;
         PSS.Settings.serverIP = serverIP;
         PSS.Settings.scpFlags = scpFlags;
-        PSS.Settings.libraryRootPath = libraryRootPath;
+        PSS.Settings.libFolderFullPath = libraryRootPath;
         PSS.Settings.WriteSettings();
     }
 
@@ -57,7 +57,7 @@
         username = PSS.Settings.username;
         serverIP = PSS.Settings.serverIP;
         scpFlags = PSS.Settings.scpFlags;
-        libraryRootPath = PSS.Settings.libraryRootPath;
+        libraryRootPath = PSS.Settings.libFolderFullPath;
     }
 
     private void ResetBtnClicked()

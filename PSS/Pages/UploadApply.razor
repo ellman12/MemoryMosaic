@@ -166,7 +166,7 @@
         status = $"Added {rowsAffected} items to library";
     }
 
-    private static string GenerateSortedDir(DateTime dateTaken) => Path.Join(PSS.Settings.libraryRootPath, dateTaken.Year.ToString(), $"{dateTaken.Month} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
+    private static string GenerateSortedDir(DateTime dateTaken) => Path.Join(PSS.Settings.libFolderFullPath, dateTaken.Year.ToString(), $"{dateTaken.Month} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
     private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));
 
     private static void ToggleAlbums()

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -11,8 +11,12 @@ namespace PSS
         [JsonProperty] public static string serverIP;
         [JsonProperty] public static string scpFlags;
         [JsonProperty] public static string uploadRootPath;
-        [JsonProperty] public static string libraryRootPath;
 
+        /// <summary>
+        /// The full path to the library folder on the server.
+        /// </summary>
+        [JsonProperty] public static string libFolderFullPath;
+        
         public static void WriteSettings()
         {
             //https://stackoverflow.com/a/16921677
@@ -23,12 +27,10 @@ namespace PSS
 
         public static void ReadSettings()
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile(Environment.CurrentDirectory + "/pss_settings.json").Build();
+            IConfigurationRoot config = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(Environment.CurrentDirectory + "/pss_settings.json").Build();
             Settings settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json"));
             uploadRootPath = uploadRootPath.Replace('\\', '/');
-            libraryRootPath = libraryRootPath.Replace('\\', '/');
+            libFolderFullPath = libFolderFullPath.Replace('\\', '/');
         }
 
         //Delete .json file and reset settings to default.
@@ -38,9 +40,6 @@ namespace PSS
             username = "elliott";
             serverIP = "localhost";
             scpFlags = "-r";
-            uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload"; //TODO: temp
-            libraryRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_library"; //TODO: temp
-
             File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(defaultSettings));
         }
     }
