@@ -4,6 +4,7 @@
 #mainDiv {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     position: absolute;
     left: 145px;
     background-color: darkgreen;
