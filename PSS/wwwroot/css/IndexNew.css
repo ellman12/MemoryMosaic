@@ -1,7 +1,16 @@
 /* Stuff for just Index.razor */
 /* This stuff is for sure not used elsewhere */
 
-#mainDiv{
+#mainDiv {
     display: flex;
+    flex-direction: row;
+    position: absolute;
+    left: 145px;
     background-color: darkgreen;
+}
+
+.thumbnail {
+    max-width: 10%;
+    margin: 4px;
+    cursor: pointer;
 }

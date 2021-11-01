@@ -1,10 +1,10 @@
 /*Stuff for just Index.razor*/
 
-.thumbnail {
-    max-width: 13%;
-    padding: 4px;
-    cursor: pointer;
-}
+/*.thumbnail {*/
+/*    max-width: 13%;*/
+/*    padding: 4px;*/
+/*    cursor: pointer;*/
+/*}*/
 
 /*Used if media has 0 items*/
 .indexCenteredWhiteText {
