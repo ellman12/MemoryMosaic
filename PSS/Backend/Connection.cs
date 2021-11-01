@@ -25,7 +25,7 @@ namespace PSS.Backend
         }
 
         //Represents a row in the media table.
-        public readonly struct MediaRow
+        public record MediaRow
         {
             public readonly string path;
             public readonly DateTime dateTaken;
