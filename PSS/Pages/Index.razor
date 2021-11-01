@@ -4,22 +4,24 @@
 
 @*TODO?: https://css-tricks.com/snippets/css/complete-guide-grid/*@
 
+<link href="css/IndexNew.css" rel="stylesheet" />
+
 @{
     if (mediaList.Count == 0)
     {
-        <h1 class="indexCenteredWhiteText">Looks empty here...<br/>Upload some items to get started.</h1>
+        <h1 class="indexCenteredWhiteText">Looks empty here...<br />Upload some items to get started.</h1>
     }
     else
     {
-        <div style="display: flex">
+        <div id="mainDiv">
             @foreach (MediaRow media in mediaList)
             {
-                <img onclick="location.href = '/view/@media.uuid'" id=@media.uuid src=@media.path class="thumbnail" alt=""/>
+                <img style="color: white" src=@media.path onclick="location.href='/view/@media.uuid'" class="thumbnail" alt="@media.path" />
             }
         </div>
     }
 }
 
 @code {
-    private readonly List<Connection.MediaRow> mediaList = LoadMediaTable();
+    private readonly List<MediaRow> mediaList = LoadMediaTable();
 }

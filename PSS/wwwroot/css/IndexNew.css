@@ -1,0 +1,7 @@
+/* Stuff for just Index.razor */
+/* This stuff is for sure not used elsewhere */
+
+#mainDiv{
+    display: flex;
+    background-color: darkgreen;
+}
