@@ -13,7 +13,7 @@ namespace PSS
         [JsonProperty] public static string username;
         [JsonProperty] public static string serverIP;
         [JsonProperty] public static string scpFlags;
-        
+
         /// <summary>
         /// Where scp should upload files. 
         /// </summary>
@@ -28,7 +28,7 @@ namespace PSS
         /// Used (in Startup.cs) for accessing files outside of wwwroot.
         /// </summary>
         public const string requestPath = "/pss_library";
-            
+
         public static void WriteSettings()
         {
             //https://stackoverflow.com/a/16921677
@@ -49,11 +49,11 @@ namespace PSS
         public static void ResetSettings()
         {
             username = "elliott";
-            serverIP = "localhost";
+            serverIP = "localhost"; 
             scpFlags = "-r";
             uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload"; //TODO: temp
             libFolderFullPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_library"; //TODO: temp
-            File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(typeof(Settings)));
+            File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings()));
         }
     }
 }
