@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -43,16 +44,12 @@ namespace PSS
             app.UseHttpsRedirection();
 
             //https://stackoverflow.com/questions/38406571/static-files-outside-the-wwwroot-for-netcore-app
-            //Allows for the direct browsing of files within the wwwroot folder
             app.UseStaticFiles();
-
-            //Allow static files within the .well-known directory to allow for automatic SSL renewal
             app.UseStaticFiles(new StaticFileOptions()
             {
-                //ServeUnknownFileTypes = true, //This is needed as IIS would not serve extensionless URLs from the directory without it
-                //FileProvider = new PhysicalFileProvider(
-                //    Path.Combine("C:/Users/Elliott/Downloads/", "hi")),
-                //RequestPath = new PathString("/hello")
+                ServeUnknownFileTypes = true,
+                FileProvider = new PhysicalFileProvider(Settings.libFolderFullPath),
+                RequestPath = new PathString(Settings.requestPath)
             });
 
             app.UseRouting();
