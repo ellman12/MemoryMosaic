@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using static PSS.Backend.Connection
 @using PSS.Backend
 
@@ -16,7 +16,7 @@
         <div id="mainDiv">
             @foreach (MediaRow media in mediaList)
             {
-                <img style="color: white" src=@media.path onclick="location.href='/view/@media.uuid'" class="thumbnail" alt="@media.path" />
+                <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href='/view/@media.uuid'" class="thumbnail" alt="@PSS.Settings.requestPath/@media.path" />
             }
         </div>
     }
