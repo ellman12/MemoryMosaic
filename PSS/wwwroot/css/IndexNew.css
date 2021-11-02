@@ -23,7 +23,7 @@ h1 {
     cursor: pointer;
 }
 
-#mainDiv .thumbnail span {
+#mainDiv .thumbnail .unchecked {
     opacity: 0;
     height: 24px;
     width: 24px;
@@ -38,11 +38,11 @@ h1 {
     transition-property: opacity, fill-opacity;
 }
 
-#mainDiv .thumbnail:hover span { /* Show checkbox on hover */
+#mainDiv .thumbnail:hover .unchecked { /* Show checkbox on hover */
     opacity: 0.42;
 }
 
-#mainDiv .thumbnail span:hover { /* Make it 100% opaque */
+#mainDiv .thumbnail .unchecked:hover { /* Make it 100% opaque */
     opacity: 1;
 }
 
