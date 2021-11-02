@@ -16,7 +16,7 @@
             @foreach (MediaRow media in mediaList)
             {
                 <div class="thumbnail">
-                    <span onclick="toggleCheck('@media.uuid')" id="@media.uuid" class="material-icons unchecked">check_circle</span>
+                    <span @onclick="(() => ToggleCheck(media.uuid))" id="@media.uuid" class="material-icons unchecked">check_circle</span>
                     <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href = '/view/@media.uuid'" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
@@ -26,5 +26,18 @@
 
 @code {
     private static readonly List<MediaRow> mediaList = LoadMediaTable();
-    private static List<Guid> selectedItems = new(); //Dynamically updated at runtime.
+    private static List<Guid> selectedItems = new(); //Stores Guids of all items user selected. If unchecked, removed from list.
+
+    [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
+    public IJSRuntime JSRuntime { get; set; }
+
+    private async Task ToggleCheck(Guid uuid)
+    {
+        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
+        if (newClass.Contains("checked"))
+            selectedItems.Add(uuid);
+        else
+            selectedItems.Remove(uuid);
+    }
+
 }
