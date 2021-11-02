@@ -1,11 +1,17 @@
 @page "/"
 @using static PSS.Backend.Connection
 
-@*TODO?: https://css-tricks.com/snippets/css/complete-guide-grid/*@
-
 <link href="css/IndexNew.css" rel="stylesheet"/>
 
 @{
+    <header style="visibility: @headerVis">
+        <button><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        <button><span class="material-icons-outlined">perm_media</span></button>
+        <button><span class="material-icons-outlined">archive</span></button>
+        <button><span class="material-icons-outlined">star_outline</span></button>
+        <button><span class="material-icons-outlined">collections</span></button>
+    </header>
+
     if (mediaList.Count == 0)
     {
         <h1>Looks empty here...<br/>Upload some items to get started.</h1>
@@ -25,8 +31,9 @@
 }
 
 @code {
+    private static string headerVis = "hidden";
     private static readonly List<MediaRow> mediaList = LoadMediaTable();
-    private static List<Guid> selectedItems = new(); //Stores Guids of all items user selected. If unchecked, removed from list.
+    private static readonly List<Guid> selectedItems = new(); //Stores Guids of all items user selected. If unchecked, removed from list.
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
     public IJSRuntime JSRuntime { get; set; }
@@ -34,10 +41,11 @@
     private async Task ToggleCheck(Guid uuid)
     {
         string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
-        if (newClass.Contains("checked"))
-            selectedItems.Add(uuid);
-        else
+        if (newClass.Contains("unchecked"))
             selectedItems.Remove(uuid);
+        else
+            selectedItems.Add(uuid);
+        
+        headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
     }
-
 }
