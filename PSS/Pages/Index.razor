@@ -3,12 +3,12 @@
 
 @*TODO?: https://css-tricks.com/snippets/css/complete-guide-grid/*@
 
-<link href="css/IndexNew.css" rel="stylesheet" />
+<link href="css/IndexNew.css" rel="stylesheet"/>
 
 @{
     if (mediaList.Count == 0)
     {
-        <h1>Looks empty here...<br />Upload some items to get started.</h1>
+        <h1>Looks empty here...<br/>Upload some items to get started.</h1>
     }
     else
     {
@@ -16,8 +16,8 @@
             @foreach (MediaRow media in mediaList)
             {
                 <div class="thumbnail">
-                    <span class="material-icons unchecked">check_circle</span>
-                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href = '/view/@media.uuid'" alt="@PSS.Settings.requestPath/@media.path" loading="lazy" />
+                    <span onclick="toggleCheck('@media.uuid')" id="@media.uuid" class="material-icons unchecked">check_circle</span>
+                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href = '/view/@media.uuid'" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
         </div>
@@ -25,6 +25,6 @@
 }
 
 @code {
-    private  static readonly List<MediaRow> mediaList = LoadMediaTable();
+    private static readonly List<MediaRow> mediaList = LoadMediaTable();
     private static List<Guid> selectedItems = new(); //Dynamically updated at runtime.
 }

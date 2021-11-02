@@ -2,3 +2,14 @@
 function notImplemented() {
     window.alert("This item is not implemented yet :(");
 }
+
+function toggleCheck(id) {
+    if (document.getElementById(id).classList.contains("unchecked")) {
+        document.getElementById(id).classList.remove("unchecked");
+        document.getElementById(id).classList.add("checked");
+
+    } else if (document.getElementById(id).classList.contains("checked")) {
+        document.getElementById(id).classList.remove("checked");
+        document.getElementById(id).classList.add("unchecked");
+    }
+}
