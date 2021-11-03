@@ -16,7 +16,7 @@
 
     <div id="albumSelector" style="visibility: @albumsVis">
         <button id="closeBtn" @onclick="CloseBtnClick" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
-        <button id="confirmBtn" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
+        <button id="confirmBtn" @onclick="ConfirmBtnClick" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
         <span id="addToText">Add to</span>
         <div id="albums">
             @for (int i = 0; i < albums.Count; i++)
@@ -55,10 +55,9 @@
     private static string headerVis;
     private static string albumsVis;
     private static readonly List<MediaRow> mediaList = LoadMediaTable();
-    private static readonly List<Album> albums = GetAlbumNames();
-    private static List<bool> checkedAlbums;
-
     private static List<Guid> selectedItems; //Stores Guids of all items user selected. If unchecked, removed from list.
+    private static List<bool> checkedAlbums;
+    private static readonly List<Album> albums = GetAlbumNames();
 
     protected override void OnInitialized()
     {
@@ -98,5 +97,21 @@
     {
         albumsVis = "hidden";
         for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
+    }
+
+    //Add item(s) to album(s) selected.
+    private static void ConfirmBtnClick()
+    {
+        for (int c = 0; c < checkedAlbums.Count; c++)
+        {
+            if (checkedAlbums[c] == false) continue;
+
+            foreach (Guid uuid in selectedItems)
+            {
+                AddToAlbum(GetPathFromUuid(uuid), albums[c].id); //TODO: I would like to not use GetPathFromUuid() here...
+            }
+        }
+
+        CloseBtnClick();
     }
 }
