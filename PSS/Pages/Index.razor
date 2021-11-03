@@ -13,6 +13,10 @@
         <span id="selectedAmtText" style="visibility: @headerVis">@selectedItems.Count selected</span>
         <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
+    
+    <div id="albumSelector">
+        @*TODO: when this shown either just have onabort simple x button, and/or when click outside div, close. gonna need a confirm btn too*@
+    </div>
 
     if (mediaList.Count == 0)
     {
