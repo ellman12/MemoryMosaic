@@ -43,7 +43,7 @@
             @foreach (MediaRow media in mediaList)
             {
                 <div class="thumbnail">
-                    <span @onclick="(() => ToggleCheck(media.uuid))" id="@media.uuid" class="material-icons unchecked">check_circle</span>
+                    <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
                     <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href = '/view/@media.uuid'" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
@@ -55,13 +55,13 @@
     private static string headerVis;
     private static string albumsVis;
     private static readonly List<MediaRow> mediaList = LoadMediaTable();
-    private static List<Guid> selectedItems; //Stores Guids of all items user selected. If unchecked, removed from list.
+    private static List<string> selectedItems; //Stores all items user selected. If unchecked, removed from list.
     private static List<bool> checkedAlbums;
     private static readonly List<Album> albums = GetAlbumNames();
 
     protected override void OnInitialized()
     {
-        selectedItems = new List<Guid>(); //Reset on page load/refresh
+        selectedItems = new List<string>(); //Reset on page load/refresh
         headerVis = "hidden";
         albumsVis = "hidden";
         checkedAlbums = (from album in albums select new bool()).ToList();
@@ -70,7 +70,7 @@
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
     public IJSRuntime JSRuntime { get; set; }
 
-    private async Task ToggleCheck(Guid uuid)
+    private async Task ToggleCheck(string uuid)
     {
         string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
         if (newClass.Contains("unchecked"))
@@ -83,8 +83,8 @@
 
     private async Task ClearChecks()
     {
-        foreach (Guid uuid in selectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", uuid);
+        foreach (string item in selectedItems)
+            await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         headerVis = "hidden";
         albumsVis = "hidden";
@@ -106,9 +106,9 @@
         {
             if (checkedAlbums[c] == false) continue;
 
-            foreach (Guid uuid in selectedItems)
+            foreach (string item in selectedItems)
             {
-                AddToAlbum(GetPathFromUuid(uuid), albums[c].id); //TODO: I would like to not use GetPathFromUuid() here... Probably change path to uuid in album_entries...
+                AddToAlbum(item, albums[c].id);
             }
         }
 
