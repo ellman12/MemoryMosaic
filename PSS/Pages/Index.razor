@@ -9,13 +9,13 @@
         <button><span class="material-icons-outlined">perm_media</span></button>
         <button><span class="material-icons-outlined">archive</span></button>
         <button><span class="material-icons-outlined">star_outline</span></button>
-        <button><span class="material-icons-outlined">collections</span></button>
+        <button @onclick="AlbumBtnClick"><span class="material-icons-outlined">collections</span></button>
         <span id="selectedAmtText" style="visibility: @headerVis">@selectedItems.Count selected</span>
         <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
 
-    <div id="albumSelector">
-        <button id="closeBtn" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
+    <div id="albumSelector" style="visibility: @albumsVis">
+        <button id="closeBtn" @onclick="CloseBtnClick" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
         <button id="confirmBtn" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
         <span id="addToText">Add to</span>
         <div id="albums">
@@ -88,7 +88,15 @@
             await JSRuntime.InvokeAsync<string>("removeCheck", uuid);
         selectedItems.Clear();
         headerVis = "hidden";
+        albumsVis = "hidden";
     }
-    
-    // private static void CloseAlbums
+
+    //Functions for album stuff
+    private static void AlbumBtnClick() => albumsVis = "visible";
+
+    private static void CloseBtnClick()
+    {
+        albumsVis = "hidden";
+        for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
+    }
 }
