@@ -108,7 +108,7 @@
 
             foreach (Guid uuid in selectedItems)
             {
-                AddToAlbum(GetPathFromUuid(uuid), albums[c].id); //TODO: I would like to not use GetPathFromUuid() here...
+                AddToAlbum(GetPathFromUuid(uuid), albums[c].id); //TODO: I would like to not use GetPathFromUuid() here... Probably change path to uuid in album_entries...
             }
         }
 
