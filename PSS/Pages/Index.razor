@@ -15,8 +15,8 @@
     </header>
 
     <div id="albumSelector">
-        @*TODO: when this shown either just have onabort simple x button, and/or when click outside div, close. gonna need a confirm btn too*@
-        <button id="closeBtn"><span class="material-icons-outlined">close</span></button>
+        <button id="closeBtn" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
+        <button id="confirmBtn" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
         <span id="addToText">Add to</span>
         <div id="albums">
             @for (int i = 0; i < albums.Count; i++)
@@ -53,6 +53,7 @@
 
 @code {
     private static string headerVis;
+    private static string albumsVis;
     private static readonly List<MediaRow> mediaList = LoadMediaTable();
     private static readonly List<Album> albums = GetAlbumNames();
     private static List<bool> checkedAlbums;
@@ -63,6 +64,7 @@
     {
         selectedItems = new List<Guid>(); //Reset on page load/refresh
         headerVis = "hidden";
+        albumsVis = "hidden";
         checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
@@ -87,4 +89,6 @@
         selectedItems.Clear();
         headerVis = "hidden";
     }
+    
+    // private static void CloseAlbums
 }
