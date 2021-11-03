@@ -1,6 +1,7 @@
 /* Stuff for just Index.razor */
 /* This stuff is for sure not used elsewhere */
 * {
+    font-family: 'Product Sans', sans-serif;
     user-select: none;
 }
 
@@ -18,23 +19,25 @@ header {
     z-index: 999;
 }
 
-header button {
+button {
     color: white;
     border-radius: 50%;
     width: 50px;
     height: 50px;
     border: none;
     background: none;
+}
+
+header button {
     margin-right: 6px;
 }
 
-header button:hover {
+button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
 #selectedAmtText {
-    font-family: 'Product Sans', sans-serif;
     font-size: 20px;
     color: white;
     position: absolute;
@@ -111,10 +114,24 @@ h1 {
     top: 50%;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+    /*background-color: black;*/
     background-color: green;
     width: 440px;
     height: 500px;
     overflow-y: scroll;
     overflow-x: hidden;
     z-index: 999;
+}
+
+#addToText {
+    color: white;
+    position: absolute;
+    top: 20px;
+    left: 15px;
+}
+
+#closeBtn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }
