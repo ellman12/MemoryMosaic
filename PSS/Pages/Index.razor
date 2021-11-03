@@ -33,9 +33,16 @@
 }
 
 @code {
-    private static string headerVis = "hidden";
+    private static string headerVis;
     private static readonly List<MediaRow> mediaList = LoadMediaTable();
-    private static readonly List<Guid> selectedItems = new(); //Stores Guids of all items user selected. If unchecked, removed from list.
+    private static List<Guid> selectedItems; //Stores Guids of all items user selected. If unchecked, removed from list.
+
+    protected override void OnInitialized()
+    {
+        selectedItems = new List<Guid>(); //Reset on page load/refresh
+        headerVis = "hidden";
+        
+    }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
     public IJSRuntime JSRuntime { get; set; }
