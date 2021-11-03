@@ -5,7 +5,7 @@
 
 @{
     <header style="visibility: @headerVis">
-        <button><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        <button @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         <button><span class="material-icons-outlined">perm_media</span></button>
         <button><span class="material-icons-outlined">archive</span></button>
         <button><span class="material-icons-outlined">star_outline</span></button>
@@ -54,13 +54,14 @@
 @code {
     private static string headerVis;
     private static string albumsVis;
-    private static readonly List<MediaRow> mediaList = LoadMediaTable();
+    private static List<MediaRow> mediaList;
     private static List<string> selectedItems; //Stores all items user selected. If unchecked, removed from list.
     private static List<bool> checkedAlbums;
     private static readonly List<Album> albums = GetAlbumNames();
 
     protected override void OnInitialized()
     {
+        mediaList = LoadMediaTable();
         selectedItems = new List<string>(); //Reset on page load/refresh
         headerVis = "hidden";
         albumsVis = "hidden";
@@ -81,18 +82,31 @@
         headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
     }
 
-    private async Task ClearChecks()
+    private void ClearChecks()
     {
         foreach (string item in selectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", item);
+            JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         headerVis = "hidden";
         albumsVis = "hidden";
     }
+    
+    //Move selected stuff to trash tables and move to trash folder on server
+    private void DeleteBtnClick()
+    {
+        foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
+        {
+            DeleteItem(path);
+            headerVis = "hidden";
+        }
+        ClearChecks();
+        mediaList = LoadMediaTable();
+        // StateHasChanged();
+    }
 
     //Functions for album stuff
     private static void AlbumBtnClick() => albumsVis = "visible";
-
+ 
     private static void CloseBtnClick()
     {
         albumsVis = "hidden";
@@ -111,7 +125,6 @@
                 AddToAlbum(item, albums[c].id);
             }
         }
-
         CloseBtnClick();
     }
 }
