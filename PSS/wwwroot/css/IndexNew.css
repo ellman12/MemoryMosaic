@@ -5,6 +5,7 @@
 }
 
 header {
+    background-color: black;
     display: flex;
     flex-direction: row-reverse;
     align-content: center;
@@ -14,6 +15,7 @@ header {
     right: 0;
     padding-top: 4px;
     padding-right: 100px;
+    z-index: 999;
 }
 
 header button {
