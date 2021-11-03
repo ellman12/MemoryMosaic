@@ -13,11 +13,24 @@
         <span id="selectedAmtText" style="visibility: @headerVis">@selectedItems.Count selected</span>
         <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
-    
+
     <div id="albumSelector">
         @*TODO: when this shown either just have onabort simple x button, and/or when click outside div, close. gonna need a confirm btn too*@
         <button id="closeBtn"><span class="material-icons-outlined">close</span></button>
         <span id="addToText">Add to</span>
+        <div id="albums">
+            @for (int i = 0; i < albums.Count; i++)
+            {
+                int ii = i;
+                <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
+                    <div class="coverDiv">
+                        <img class="cover" src="@albums[i].albumCover" alt="">
+                    </div>
+                    <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
+                    <span title="@albums[i].name">@albums[i].name</span>
+                </div>
+            }
+        </div>
     </div>
 
     if (mediaList.Count == 0)
@@ -41,12 +54,16 @@
 @code {
     private static string headerVis;
     private static readonly List<MediaRow> mediaList = LoadMediaTable();
+    private static readonly List<Album> albums = GetAlbumNames();
+    private static List<bool> checkedAlbums;
+
     private static List<Guid> selectedItems; //Stores Guids of all items user selected. If unchecked, removed from list.
 
     protected override void OnInitialized()
     {
         selectedItems = new List<Guid>(); //Reset on page load/refresh
         headerVis = "hidden";
+        checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/

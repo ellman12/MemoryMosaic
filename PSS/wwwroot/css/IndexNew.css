@@ -3,6 +3,7 @@
 * {
     font-family: 'Product Sans', sans-serif;
     user-select: none;
+    color: white;
 }
 
 header {
@@ -109,7 +110,7 @@ h1 {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    position: absolute;
+    position: fixed;
     left: 50%;
     top: 50%;
     -webkit-transform: translate(-50%, -50%);
@@ -121,6 +122,21 @@ h1 {
     overflow-y: scroll;
     overflow-x: hidden;
     z-index: 999;
+    border: 1px solid white;
+    padding-right: 2px;
+}
+
+#albums {
+    position: absolute;
+    border: 2px solid white;
+    padding-right: 2px;
+    left: 50%;
+    top: 55%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 405px;
+    height: 420px;
+    overflow-y: scroll;
 }
 
 #addToText {
@@ -134,4 +150,43 @@ h1 {
     position: absolute;
     top: 5px;
     right: 5px;
+}
+
+.album {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: auto;
+}
+
+.album:hover {
+    background-color: darkgreen;
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+.coverDiv {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.cover {
+    border-radius: 4px;
+    object-fit: cover;
+    width: 60px;
+    height: 60px;
+}
+
+.album input[type="checkbox"] {
+    margin-left: 7px;
+}
+
+.album span {
+    margin-top: -1px;
+    margin-left: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
