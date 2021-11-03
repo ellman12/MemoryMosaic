@@ -31,13 +31,19 @@ header button:hover {
     cursor: pointer;
 }
 
-header > span {
+#selectedAmtText {
     font-family: 'Product Sans', sans-serif;
     font-size: 20px;
     color: white;
     position: absolute;
-    left: 10px;
+    left: 60px;
     top: 18px;
+}
+
+#clearBtn {
+    position: absolute;
+    top: 6px;
+    left: -5px;
 }
 
 h1 {
