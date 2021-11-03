@@ -82,24 +82,24 @@
         headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
     }
 
-    private void ClearChecks()
+    private async Task ClearChecks()
     {
         foreach (string item in selectedItems)
-            JSRuntime.InvokeAsync<string>("removeCheck", item);
+            await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         headerVis = "hidden";
         albumsVis = "hidden";
     }
     
     //Move selected stuff to trash tables and move to trash folder on server
-    private void DeleteBtnClick()
+    private async Task DeleteBtnClick()
     {
         foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
         {
             DeleteItem(path);
             headerVis = "hidden";
         }
-        ClearChecks();
+        await ClearChecks();
         mediaList = LoadMediaTable();
         // StateHasChanged();
     }
@@ -114,7 +114,7 @@
     }
 
     //Add item(s) to album(s) selected.
-    private static void ConfirmBtnClick()
+    private async Task ConfirmBtnClick()
     {
         for (int c = 0; c < checkedAlbums.Count; c++)
         {
@@ -126,5 +126,7 @@
             }
         }
         CloseBtnClick();
+        headerVis = "hidden";
+        await ClearChecks();
     }
 }
