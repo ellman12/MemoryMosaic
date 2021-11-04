@@ -14,15 +14,17 @@ namespace PSS.Backend
 
         public record Album
         {
-            public int id;
-            public string name;
-            public string albumCover;
+            public readonly int id;
+            public readonly string name;
+            public readonly string albumCover;
+            public readonly DateTime dateUpdated;
 
-            public Album(int id, string name, string albumCover)
+            public Album(int id, string name, string albumCover, DateTime dateUpdated)
             {
                 this.id = id;
                 this.name = name;
                 this.albumCover = albumCover;
+                this.dateUpdated = dateUpdated;
             }
         }
 
@@ -93,7 +95,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO albums (name) VALUES (@name)", connection);
+                NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated) VALUES (@name, now())", connection);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.ExecuteNonQuery();
             }
@@ -282,7 +284,7 @@ namespace PSS.Backend
             }
         }
 
-        public static List<Album> GetAlbumNames()
+        public static List<Album> GetAlbumsTable()
         {
             List<Album> albums = new();
             try
@@ -290,14 +292,14 @@ namespace PSS.Backend
                 Open();
                 NpgsqlCommand cmd = new("SELECT id, name, album_cover FROM albums", connection);
                 cmd.ExecuteNonQuery();
-                var reader = cmd.ExecuteReader();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
 
-                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2))); //https://stackoverflow.com/a/38930847
+                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2), reader.GetDateTime(3))); //https://stackoverflow.com/a/38930847
                 reader.Close();
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred in GetAlbumNames. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                Console.WriteLine("An unknown error occurred in GetAlbumsTable. Error code: " + e.ErrorCode + " Message: " + e.Message);
             }
             finally
             {
