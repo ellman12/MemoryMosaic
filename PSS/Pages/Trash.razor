@@ -1,3 +1,14 @@
 ﻿@page "/trash"
 
 <link href="css/Trash.css" rel="stylesheet"/>
+
+@{
+    <header>
+        <button class="iconBtn" id="clearBtn"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText">0 selected</span>
+        <div>
+            <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>Restore Selected</span></button>
+            <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>Delete Selected Forever</span></button>
+        </div>
+    </header>
+}

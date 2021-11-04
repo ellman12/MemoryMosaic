@@ -1,0 +1,77 @@
+* {
+    color: white;
+    user-select: none;
+    font-family: 'Product Sans', sans-serif;
+}
+
+header {
+    background-color: green;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    top: 0;
+    left: 146px;
+    position: fixed;
+    height: 64px;
+    right: 0;
+    padding-top: 4px;
+    padding-right: 100px;
+    z-index: 999;
+}
+
+header .iconBtn {
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: none;
+}
+
+button:hover, .textBtn:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+#selectedAmtText {
+    font-size: 20px;
+    color: white;
+    left: 60px;
+}
+
+#clearBtn {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 2px;
+}
+
+header > div {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    position: absolute;
+    right: 20px;
+}
+
+header > div > .textBtn {
+    margin-left: 10px;
+    color: white; /* Icon Color */
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    display: flex;
+    word-break: break-word;
+    word-wrap: break-word;
+    -webkit-box-align: center;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans, serif;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 11px 17px;
+}
+
+button span ~ span {
+    padding-left: 11px;
+    text-decoration: none;
+}
