@@ -20,17 +20,13 @@ header {
     z-index: 999;
 }
 
-button {
+header button, #albumSelector button {
     color: white;
     border-radius: 50%;
     width: 50px;
     height: 50px;
     border: none;
     background: none;
-}
-
-header button {
-    margin-right: 6px;
 }
 
 button:hover {
