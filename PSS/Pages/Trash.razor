@@ -1,14 +1,62 @@
 ﻿@page "/trash"
+@using static PSS.Backend.Connection
 
 <link href="css/Trash.css" rel="stylesheet"/>
 
 @{
     <header>
-        <button class="iconBtn" id="clearBtn"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText">0 selected</span>
+        <button class="iconBtn" id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText">@selectedItems.Count selected</span>
         <div>
             <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>Restore Selected</span></button>
             <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>Delete Selected Forever</span></button>
         </div>
     </header>
+    
+    if (mediaTrashList.Count == 0)
+    {
+        <h1>Trash is empty</h1>
+    }
+    else
+    {
+        <div id="mainDiv">
+            @foreach (MediaRow media in mediaTrashList)
+            {
+                <div class="thumbnail">
+                    <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
+                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private static List<MediaRow> mediaTrashList;
+    private static List<string> selectedItems; //Stores all items user selected. If unchecked, removed from list.
+
+    protected override void OnInitialized()
+    {
+        mediaTrashList = LoadMediaTrashTable();
+        selectedItems = new List<string>(); //Reset on page load/refresh
+    }
+
+    [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
+    public IJSRuntime JSRuntime { get; set; }
+
+    private async Task ToggleCheck(string id) //id = string path
+    {
+        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
+        if (newClass.Contains("unchecked"))
+            selectedItems.Remove(id);
+        else
+            selectedItems.Add(id);
+    }
+
+    private async Task ClearChecks()
+    {
+        foreach (string item in selectedItems)
+            await JSRuntime.InvokeAsync<string>("removeCheck", item);
+        selectedItems.Clear();
+    }
 }

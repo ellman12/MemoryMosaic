@@ -4,6 +4,17 @@
     font-family: 'Product Sans', sans-serif;
 }
 
+h1 {
+    font-family: 'Product Sans', sans-serif;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    user-select: none;
+}
+
 header {
     background-color: green;
     display: flex;
@@ -74,4 +85,48 @@ header > div > .textBtn {
 button span ~ span {
     padding-left: 11px;
     text-decoration: none;
+}
+
+#mainDiv {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 145px;
+    top: 70px;
+}
+
+#mainDiv .thumbnail {
+    cursor: pointer;
+}
+
+#mainDiv .thumbnail span { /* Checkbox icons */
+    opacity: 0;
+    height: 24px;
+    width: 24px;
+    position: absolute;
+    color: #fff;
+    margin-top: 8px;
+    margin-left: 8px;
+    transition: 0.3s;
+}
+
+#mainDiv .thumbnail:hover span.unchecked { /* Show checkbox on hover */
+    opacity: 0.42;
+}
+
+#mainDiv .thumbnail span.unchecked:hover { /* Make it 100% opaque */
+    opacity: 1;
+}
+
+#mainDiv .thumbnail .checked {
+    color: #009FFF;
+    opacity: 1;
+}
+
+#mainDiv .thumbnail img {
+    height: 200px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
 }
