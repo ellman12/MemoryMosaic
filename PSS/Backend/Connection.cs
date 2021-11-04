@@ -306,7 +306,7 @@ namespace PSS.Backend
         }
 
         //Moves an item from media and album_entries (if applicable) into the 2 trash albums.
-        public static void DeleteItem(string path)
+        public static void MoveToTrash(string path)
         {
             try
             {
