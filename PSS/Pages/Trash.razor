@@ -1,4 +1,4 @@
-@page "/trash"
+﻿@page "/trash"
 @using static PSS.Backend.Connection
 @using System.IO
 
@@ -60,6 +60,25 @@
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
     }
+
+    private async Task RestoreBtnClick()
+    {
+        //Restore ALL
+        if (selectedItems.Count == 0)
+            foreach (MediaRow item in mediaTrashList) RestoreItem(item.path);
+        else //Restore selected
+        {
+            foreach (string item in selectedItems)
+            {
+                await JSRuntime.InvokeAsync<string>("removeCheck", item);
+                RestoreItem(item);
+            }
+        }
+        await ClearChecks();
+        mediaTrashList = LoadMediaTrashTable();
+        selectedItems.Clear();
+    }
+
     private async Task DeleteBtnClick()
     {
         //Delete ALL
