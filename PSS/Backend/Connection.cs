@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
+using Microsoft.VisualBasic.FileIO; 
 using Npgsql;
 
 namespace PSS.Backend
@@ -306,7 +308,7 @@ namespace PSS.Backend
         }
 
         //Moves an item from media and album_entries (if applicable) into the 2 trash albums.
-        public static void DeleteItem(string path)
+        public static void MoveToTrash(string path)
         {
             try
             {
@@ -338,8 +340,37 @@ namespace PSS.Backend
                 Close();
             }
         }
+
+        /// <summary>
+        /// PERMANENTLY remove an item from database and server.
+        /// </summary>
+        public static void PermDeleteItem(string path)
+        {
+            File.Delete(Path.Join(Settings.libFolderFullPath, path));
+            
+            try
+            {
+                Open();
+
+                //Copy item from media to trash
+                NpgsqlCommand cmd = new("DELETE FROM media_trash WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+
+                cmd.CommandText = "DELETE FROM album_entries_trash WHERE path=@path";
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
         
-        //Undoes a call to DeleteItem(). Will restore albums it was in, as well as re-adding it to the media table.
+        //Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
         public static void RestoreItem(string path)
         {
             try
@@ -443,6 +474,33 @@ namespace PSS.Backend
 
                 while (reader.Read())
                     media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return media;
+        }
+
+        public static List<MediaRow> LoadMediaTrashTable()
+        {
+            List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT * FROM media_trash ORDER BY date_taken DESC", connection);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+
+                reader.Close();
             }
             catch (NpgsqlException e)
             {

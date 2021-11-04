@@ -71,7 +71,7 @@ h1 {
     cursor: pointer;
 }
 
-#mainDiv .thumbnail span {
+#mainDiv .thumbnail span { /* Checkbox icons */
     opacity: 0;
     height: 24px;
     width: 24px;
