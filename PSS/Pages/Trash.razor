@@ -5,8 +5,8 @@
 
 @{
     <header>
-        <button class="iconBtn" id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText">@selectedItems.Count selected</span>
+        <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")">@selectedItems.Count selected</span>
         <div>
             <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>Restore Selected</span></button>
             <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>Delete Selected Forever</span></button>
