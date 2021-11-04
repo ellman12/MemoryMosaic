@@ -456,6 +456,33 @@ namespace PSS.Backend
             return media;
         }
 
+        public static List<MediaRow> LoadMediaTrashTable()
+        {
+            List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT * FROM media_trash ORDER BY date_taken DESC", connection);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+
+                reader.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return media;
+        }
+
         //Update oldPath in the media and album_entries tables with newPath.
         public static void UpdatePath(string oldPath, string newPath)
         {
