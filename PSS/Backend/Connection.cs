@@ -338,7 +338,7 @@ namespace PSS.Backend
                 Close();
             }
         }
-
+        
         //Undoes a call to DeleteItem(). Will restore albums it was in, as well as re-adding it to the media table.
         public static void RestoreItem(string path)
         {

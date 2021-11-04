@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using ExifLib;
+using static System.Int32;
 
 namespace PSS.Backend
 {
@@ -45,9 +46,10 @@ namespace PSS.Backend
         private static bool GetJpgDate(string path, out DateTime dateTaken)
         {
             bool hasData;
-            ExifReader reader = new(path);
             try
             {
+                ExifReader reader = new(path);
+
                 //I think if this ↓ returns false it means no data found. 0 documentation on this... 
                 hasData = reader.GetTagValue(ExifTags.DateTimeDigitized, out dateTaken);
 
@@ -148,8 +150,31 @@ namespace PSS.Backend
             else
                 hasData = false;
 
-            dateTaken = (timestamp == "" ? DateTime.Now : DateTime.Parse(timestamp));
+            if (timestamp == "")
+                dateTaken = DateTime.Now;
+            else
+                ParseTimestamp(timestamp, out dateTaken);
+
             return hasData;
+        }
+
+        //Try parsing timestamp like this: "20211031155822"
+        public static bool ParseTimestamp(string timestamp, out DateTime dateTime)
+        {
+            if (DateTime.TryParse(timestamp, out dateTime) == false && timestamp.Length == 14) //Not successful
+            {
+                //Try my way
+                int year = Parse(timestamp[0..4]);
+                int month = Parse(timestamp[4..6]);
+                int day = Parse(timestamp[6..8]);
+                int hour = Parse(timestamp[8..10]);
+                int min = Parse(timestamp[10..12]);
+                int sec = Parse(timestamp[12..14]);
+
+                dateTime = new(year, month, day, hour, min, sec);
+                return true;
+            }
+            return false;
         }
     }
 }

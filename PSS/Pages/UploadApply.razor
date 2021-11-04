@@ -137,7 +137,7 @@
             string newDir = GenerateSortedDir(dateTakenList[p]);
             string newPath = Path.Combine(newDir, filename); //Used for moving to new home on server.
             
-            string newShortPath = Path.Combine(PSS.Settings.requestPath, GenerateDatePath(dateTakenList[p]), filename); //Don't need full path, just the short path (/pss_library...).
+            string newShortPath = Path.Combine(GenerateDatePath(dateTakenList[p]), filename); //Don't need full path, just the short path (/2021/10 October/...).
             Directory.CreateDirectory(newDir);
 
             GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
@@ -152,7 +152,7 @@
                 Console.WriteLine(e.Message);
             }
 
-    //Add item to album(s) selected.
+            //Add item to album(s) selected.
             for (int c = 0; c < checkedAlbums.Count; c++)
             {
                 if (!checkedAlbums[c]) continue;

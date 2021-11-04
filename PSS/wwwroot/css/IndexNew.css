@@ -1,7 +1,197 @@
 /* Stuff for just Index.razor */
 /* This stuff is for sure not used elsewhere */
+* {
+    font-family: 'Product Sans', sans-serif;
+    user-select: none;
+    color: white;
+}
 
-#mainDiv{
+header {
+    background-color: black;
     display: flex;
+    flex-direction: row-reverse;
+    align-content: center;
+    position: fixed;
+    height: 54px;
+    left: 146px;
+    right: 0;
+    padding-top: 4px;
+    padding-right: 100px;
+    z-index: 999;
+}
+
+button {
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: none;
+}
+
+header button {
+    margin-right: 6px;
+}
+
+button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+#selectedAmtText {
+    font-size: 20px;
+    color: white;
+    position: absolute;
+    left: 60px;
+    top: 18px;
+}
+
+#clearBtn {
+    position: absolute;
+    top: 6px;
+    left: -5px;
+}
+
+h1 {
+    color: white;
+    font-family: 'Product Sans', sans-serif;
+    text-align: center;
+    position: absolute;
+    top: 36%;
+    left: 36%;
+    user-select: none;
+}
+
+#mainDiv {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 145px;
+    top: 60px;
+}
+
+#mainDiv .thumbnail {
+    cursor: pointer;
+}
+
+#mainDiv .thumbnail span {
+    opacity: 0;
+    height: 24px;
+    width: 24px;
+    position: absolute;
+    color: #fff;
+    margin-top: 8px;
+    margin-left: 8px;
+    transition: 0.3s;
+}
+
+#mainDiv .thumbnail:hover span.unchecked { /* Show checkbox on hover */
+    opacity: 0.42;
+}
+
+#mainDiv .thumbnail span.unchecked:hover { /* Make it 100% opaque */
+    opacity: 1;
+}
+
+#mainDiv .thumbnail .checked {
+    color: #009FFF;
+    opacity: 1;
+}
+
+#mainDiv .thumbnail img {
+    height: 200px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+#albumSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background-color: black;
+    width: 440px;
+    height: 500px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    z-index: 999;
+    border: 1px solid white;
+    padding-right: 2px;
+}
+
+#addToText {
+    color: white;
+    position: absolute;
+    top: 20px;
+    left: 18px;
+}
+
+#closeBtn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+#confirmBtn {
+    position: absolute;
+    top: 5px;
+    right: 60px;
+}
+
+#albums {
+    position: absolute;
+    border: 1px solid white;
+    padding-right: 2px;
+    left: 50%;
+    top: 54%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 405px;
+    height: 420px;
+    overflow-y: scroll;
+}
+
+.album {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: auto;
+}
+
+.album:hover {
     background-color: darkgreen;
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+.coverDiv {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.cover {
+    border-radius: 4px;
+    object-fit: cover;
+    width: 60px;
+    height: 60px;
+}
+
+.album input[type="checkbox"] {
+    margin-left: 7px;
+}
+
+.album span {
+    margin-top: -1px;
+    margin-left: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

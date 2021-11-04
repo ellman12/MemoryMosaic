@@ -1,27 +1,132 @@
-﻿@page "/"
+@page "/"
 @using static PSS.Backend.Connection
-@using PSS.Backend
 
-@*TODO?: https://css-tricks.com/snippets/css/complete-guide-grid/*@
-
-<link href="css/IndexNew.css" rel="stylesheet" />
+<link href="css/IndexNew.css" rel="stylesheet"/>
 
 @{
+    <header style="visibility: @headerVis">
+        <button @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        <button><span class="material-icons-outlined">perm_media</span></button>
+        <button><span class="material-icons-outlined">archive</span></button>
+        <button><span class="material-icons-outlined">star_outline</span></button>
+        <button @onclick="AlbumBtnClick"><span class="material-icons-outlined">collections</span></button>
+        <span id="selectedAmtText" style="visibility: @headerVis">@selectedItems.Count selected</span>
+        <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+    </header>
+
+    <div id="albumSelector" style="visibility: @albumsVis">
+        <button id="closeBtn" @onclick="CloseBtnClick" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
+        <button id="confirmBtn" @onclick="ConfirmBtnClick" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
+        <span id="addToText">Add to</span>
+        <div id="albums">
+            @for (int i = 0; i < albums.Count; i++)
+            {
+                int ii = i;
+                <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
+                    <div class="coverDiv">
+                        <img class="cover" src="@albums[i].albumCover" alt="">
+                    </div>
+                    <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
+                    <span title="@albums[i].name">@albums[i].name</span>
+                </div>
+            }
+        </div>
+    </div>
+
     if (mediaList.Count == 0)
     {
-        <h1 class="indexCenteredWhiteText">Looks empty here...<br />Upload some items to get started.</h1>
+        <h1>Looks empty here...<br/>Upload some items to get started.</h1>
     }
     else
     {
         <div id="mainDiv">
             @foreach (MediaRow media in mediaList)
             {
-                <img style="color: white" src=@media.path onclick="location.href='/view/@media.uuid'" class="thumbnail" alt="@media.path" />
+                <div class="thumbnail">
+                    <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
+                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href = '/view/@media.uuid'" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
+                </div>
             }
         </div>
     }
 }
 
 @code {
-    private readonly List<MediaRow> mediaList = LoadMediaTable();
+    private static string headerVis;
+    private static string albumsVis;
+    private static List<MediaRow> mediaList;
+    private static List<string> selectedItems; //Stores all items user selected. If unchecked, removed from list.
+    private static List<bool> checkedAlbums;
+    private static readonly List<Album> albums = GetAlbumNames();
+
+    protected override void OnInitialized()
+    {
+        mediaList = LoadMediaTable();
+        selectedItems = new List<string>(); //Reset on page load/refresh
+        headerVis = "hidden";
+        albumsVis = "hidden";
+        checkedAlbums = (from album in albums select new bool()).ToList();
+    }
+
+    [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
+    public IJSRuntime JSRuntime { get; set; }
+
+    private async Task ToggleCheck(string id) //id = string path
+    {
+        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
+        if (newClass.Contains("unchecked"))
+            selectedItems.Remove(id);
+        else
+            selectedItems.Add(id);
+
+        headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
+    }
+
+    private async Task ClearChecks()
+    {
+        foreach (string item in selectedItems)
+            await JSRuntime.InvokeAsync<string>("removeCheck", item);
+        selectedItems.Clear();
+        headerVis = "hidden";
+        albumsVis = "hidden";
+    }
+    
+    //Move selected stuff to trash tables and move to trash folder on server
+    private async Task DeleteBtnClick()
+    {
+        foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
+        {
+            DeleteItem(path);
+            headerVis = "hidden";
+        }
+        await ClearChecks();
+        mediaList = LoadMediaTable();
+        // StateHasChanged();
+    }
+
+    //Functions for album stuff
+    private static void AlbumBtnClick() => albumsVis = "visible";
+ 
+    private static void CloseBtnClick()
+    {
+        albumsVis = "hidden";
+        for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
+    }
+
+    //Add item(s) to album(s) selected.
+    private async Task ConfirmBtnClick()
+    {
+        for (int c = 0; c < checkedAlbums.Count; c++)
+        {
+            if (checkedAlbums[c] == false) continue;
+
+            foreach (string item in selectedItems)
+            {
+                AddToAlbum(item, albums[c].id);
+            }
+        }
+        CloseBtnClick();
+        headerVis = "hidden";
+        await ClearChecks();
+    }
 }

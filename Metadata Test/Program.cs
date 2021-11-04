@@ -11,7 +11,43 @@ namespace Metadata_Test
     class Program
     {
         static void Main()
-        {
+        {  //                   01234567891123
+            string timestamp = "20211031155822";
+
+            int year = Int32.Parse(timestamp[0..4]);
+            int month = Int32.Parse(timestamp[4..6]);
+            int day = Int32.Parse(timestamp[6..8]);
+            int hour = Int32.Parse(timestamp[8..10]);
+            int min = Int32.Parse(timestamp[10..12]);
+            int sec = Int32.Parse(timestamp[12..14]);
+
+            var yes = new DateTime(year, month, day, hour, min, sec);
+            Console.WriteLine(yes.ToString("F"));
+
+            var dateTime = new DateTime();
+            bool yes2 = DateTime.TryParse(timestamp, out dateTime);
+            Console.WriteLine(yes2);
+
+            Console.WriteLine(ParseTimestamp(timestamp, out dateTime));
+            
+            static bool ParseTimestamp(string timestamp, out DateTime dateTime)
+            {
+                if (DateTime.TryParse(timestamp, out dateTime) == false && timestamp.Length == 14) //Not successful
+                {
+                    //Try my way
+                    int year = Int32.Parse(timestamp[0..4]);
+                    int month = Int32.Parse(timestamp[4..6]);
+                    int day = Int32.Parse(timestamp[6..8]);
+                    int hour = Int32.Parse(timestamp[8..10]);
+                    int min = Int32.Parse(timestamp[10..12]);
+                    int sec = Int32.Parse(timestamp[12..14]);
+
+                    dateTime = new(year, month, day, hour, min, sec);
+                    return true;
+                }
+                return false;
+            }
+
             //Works for just jpeg
             //try
             //{
