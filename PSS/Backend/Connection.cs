@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
+using Microsoft.VisualBasic.FileIO; 
 using Npgsql;
 
 namespace PSS.Backend
@@ -338,8 +340,37 @@ namespace PSS.Backend
                 Close();
             }
         }
+
+        /// <summary>
+        /// PERMANENTLY remove an item from database and server.
+        /// </summary>
+        public static void PermDeleteItem(string path)
+        {
+            File.Delete(Path.Join(Settings.libFolderFullPath, path));
+            
+            try
+            {
+                Open();
+
+                //Copy item from media to trash
+                NpgsqlCommand cmd = new("DELETE FROM media_trash WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+
+                cmd.CommandText = "DELETE FROM album_entries_trash WHERE path=@path";
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
         
-        //Undoes a call to DeleteItem(). Will restore albums it was in, as well as re-adding it to the media table.
+        //Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
         public static void RestoreItem(string path)
         {
             try

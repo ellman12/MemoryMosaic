@@ -1,4 +1,4 @@
-@page "/"
+﻿@page "/"
 @using static PSS.Backend.Connection
 
 <link href="css/IndexNew.css" rel="stylesheet"/>
@@ -55,7 +55,7 @@
     private static string headerVis;
     private static string albumsVis;
     private static List<MediaRow> mediaList;
-    private static List<string> selectedItems; //Stores all items user selected. If unchecked, removed from list.
+    private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
     private static List<bool> checkedAlbums;
     private static readonly List<Album> albums = GetAlbumNames();
 
