@@ -8,8 +8,8 @@
         <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")">@selectedItems.Count selected</span>
         <div>
-            <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>Restore Selected</span></button>
-            <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>Delete Selected Forever</span></button>
+            <button class="textBtn"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")</span></button>
+            <button class="textBtn"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
     </header>
     
