@@ -5,10 +5,11 @@
 
 <div id="mainDiv">
     @foreach (Album album in albums)
-    {
+    { 
         <div class="album"> @*Text and album thumbnail*@
             <div class="thumbnail"> @*img and 3 dots*@
                 <img src="@PSS.Settings.requestPath/@album.albumCover" alt=""/>
+                <button class="dotsBtn"><span class="material-icons-outlined">more_vert</span></button>
             </div>
             <span class="albumName">@album.name</span>
         </div>
