@@ -9,7 +9,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     position: absolute;
     left: 145px;
     top: 60px;
@@ -20,7 +20,7 @@
 #mainDiv > .album {
     background-color: darkslategrey;
     margin-bottom: 15px;
-    margin-left: 5px;
+    margin-left: 25px;
     display: flex;
     flex-direction: column;
 }
