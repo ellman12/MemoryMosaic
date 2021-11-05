@@ -296,7 +296,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT id, name, album_cover FROM albums", connection);
+                NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums", connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
