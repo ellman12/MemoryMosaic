@@ -5,3 +5,38 @@
     font-family: 'Product Sans', sans-serif;
 }
 
+#mainDiv {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    position: absolute;
+    left: 145px;
+    top: 60px;
+    background-color: darkgreen;
+}
+
+/* Div containing album name and thumbnail */
+#mainDiv > .album {
+    background-color: darkslategrey;
+    margin-right: 20px;
+}
+
+/* Div containing img and 3 dots button */
+#mainDiv > .album > .thumbnail {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: darkblue;
+}
+
+#mainDiv > .album > .thumbnail > img {
+    border-radius: 4px;
+    object-fit: cover;
+    width: 230px;
+    height: 230px;
+}
+
+#mainDiv > .album > .thumbnail > .albumName {
+    /*    height: 64px;*/
+}

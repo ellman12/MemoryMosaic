@@ -1,2 +1,27 @@
 ﻿@page "/albums"
+@using static PSS.Backend.Connection
 
+<link href="css/AlbumsMain.css" rel="stylesheet">
+
+<div id="mainDiv">
+    @foreach (Album album in albums)
+    {
+        <div class="album"> @*Text and album thumbnail*@
+            <div class="thumbnail"> @*img and 3 dots*@
+                <img src="@PSS.Settings.requestPath/@album.albumCover" alt=""/>
+                <span class="albumName"></span>
+            </div>
+        </div>
+    }
+</div>
+
+@code
+{
+    private static List<Album> albums;
+
+    protected override void OnInitialized()
+    {
+        albums = GetAlbumsTable();
+    }
+    
+}
