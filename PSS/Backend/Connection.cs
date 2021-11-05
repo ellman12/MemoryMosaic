@@ -252,6 +252,9 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.Parameters.AddWithValue("@date_added_to_album", DateTime.Now);
                 cmd.ExecuteNonQuery();
+
+                cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
+                cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
             {
@@ -272,6 +275,9 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("DELETE FROM album_entries WHERE album_id=@albumID AND path=@path", connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+                
+                cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
