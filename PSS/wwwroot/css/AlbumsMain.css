@@ -19,7 +19,10 @@
 /* Div containing album name and thumbnail */
 #mainDiv > .album {
     background-color: darkslategrey;
-    margin-right: 20px;
+    margin-bottom: 15px;
+    margin-left: 5px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Div containing img and 3 dots button */
@@ -37,6 +40,9 @@
     height: 230px;
 }
 
-#mainDiv > .album > .thumbnail > .albumName {
-    /*    height: 64px;*/
+#mainDiv > .album > .albumName {
+    height: 24px;
+    font-size: 17px;
+    margin-top: 5px;
+    margin-left: 5px;
 }
