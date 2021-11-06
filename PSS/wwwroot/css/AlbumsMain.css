@@ -13,14 +13,12 @@
     position: absolute;
     left: 145px;
     top: 60px;
-    background-color: darkgreen;
 }
 
 /* Div containing album name and thumbnail */
 #mainDiv > .album {
     position: relative;
-    background-color: darkslategrey;
-    margin-bottom: 15px;
+    margin-bottom: 45px;
     margin-left: 25px;
     display: flex;
     flex-direction: column;
@@ -40,14 +38,15 @@
     margin: 0;
     padding: 0;
     display: flex;
-    background-color: darkblue;
 }
 
 .thumbnail > img {
     border-radius: 4px;
     object-fit: cover;
-    width: 230px;
-    height: 230px;
+    width: 200px;
+    height: 200px;
+    border: 1px solid #212121;
+    background-color: #212121;
 }
 
 .thumbnail .dotsBtn {
