@@ -1,4 +1,4 @@
-﻿/* Main albums page where user clicks album thumbnail they want to view items of */
+/* Main albums page where user clicks album thumbnail they want to view items of */
 * {
     color: white;
     user-select: none;
@@ -30,7 +30,7 @@
 
 #mainDiv > .album:hover > .thumbnail > .dotsBtn {
     opacity: 1;
-    transition: all .3s cubic-bezier(0,0,.2,1);
+    transition: all .3s cubic-bezier(0, 0, .2, 1);
 }
 
 /* Div containing img and 3 dots button */
@@ -72,8 +72,12 @@
 }
 
 #mainDiv > .album > .albumName {
-    height: 24px;
-    font-size: 17px;
-    margin-top: 10px;
+    width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    letter-spacing: .0178571429em;
+    font-weight: 500;
+    margin-top: 7px;
     margin-left: 5px;
 }
