@@ -3,6 +3,16 @@
 
 <link href="css/AlbumsMain.css" rel="stylesheet">
 
+<header>
+    <span id="albumsText">Albums</span>
+    
+    <div id="buttons">
+        <button><span class="material-icons-outlined">library_add</span><span>New Album</span></button>
+        @* <button><svg width="18px" height="18px" viewBox="0 0 24 24" class="material-icons" style="fill: white"><path d="M20 17l-1.41-1.41L16 18.17V11h-2v7.17l-2.59-2.58L10 17l5 5zM5 7l1.41 1.41L9 5.83V13h2V5.83l2.59 2.58L15 7l-5-5z"></path></svg><span>Last Modified</span></button> *@
+        <button><span class="material-icons-outlined">sort</span><span>Last Modified</span></button>
+    </div>
+</header>
+
 <div id="mainDiv">
     @foreach (Album album in albums)
     { 

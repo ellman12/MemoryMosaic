@@ -5,6 +5,62 @@
     font-family: 'Product Sans', sans-serif;
 }
 
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: fixed;
+    z-index: 999;
+    top: 5px;
+    left: 171px;
+    height: 56px;
+    width: 100%;
+    padding-bottom: 6px;
+    border-bottom: 1px solid gray;
+}
+
+header > #albumsText {
+    font-size: 1.125rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.5rem;
+    margin-left: 10px;
+}
+
+header > #buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    right: 249px;
+}
+
+header > #buttons > button {
+    margin-left: 12px;
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans, serif;
+    font-size: 1rem;
+    font-weight: 400;
+    width: auto;
+    padding: 11px 11px 11px 10px;
+}
+
+header > #buttons > button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+/* Proper spacing for both buttons' text */
+button span ~ span {
+    padding-left: 11px;
+    text-decoration: none;
+}
+
 #mainDiv {
     display: flex;
     flex-direction: row;
@@ -12,7 +68,7 @@
     justify-content: flex-start;
     position: absolute;
     left: 145px;
-    top: 60px;
+    top: 84px;
 }
 
 /* Div containing album name and thumbnail */
@@ -45,7 +101,7 @@
     object-fit: cover;
     width: 200px;
     height: 200px;
-    border: 1px solid #212121;
+    border: 1px solid #212121; /* There's this weird border around images that gets hidden with this */
     background-color: #212121;
 }
 
