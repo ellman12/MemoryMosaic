@@ -5,12 +5,19 @@
 
 <header>
     <span id="albumsText">Albums</span>
+    @* <button id="newAlbumBtn"><span class="material-icons-outlined">library_add</span><span class="btnText">New Album</span></button> *@
     
-    <div id="buttons">
-        <button><span class="material-icons-outlined">library_add</span><span>New Album</span></button>
-        @* <button><svg width="18px" height="18px" viewBox="0 0 24 24" class="material-icons" style="fill: white"><path d="M20 17l-1.41-1.41L16 18.17V11h-2v7.17l-2.59-2.58L10 17l5 5zM5 7l1.41 1.41L9 5.83V13h2V5.83l2.59 2.58L15 7l-5-5z"></path></svg><span>Last Modified</span></button> *@
-        <button><span class="material-icons-outlined">sort</span><span>Last Modified</span></button>
-    </div>
+    <button @onclick="NewAlbumBtnClick" id="@newAlbumBtnId">
+        <span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span>
+    </button>
+
+    <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
+    
+    <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn">
+        <span class="material-icons-outlined">check</span><span class="btnText">Confirm</span>
+    </button>
+    
+    <button id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">Last Modified</span></button>
 </header>
 
 <div id="mainDiv">
@@ -30,9 +37,55 @@
 {
     private static List<Album> albums;
 
+    private static string newAlbumBtnIcon;
+    private static string newAlbumBtnText;
+    private static string newAlbumBtnId;
+    private static string newAlbumName;
+    private static string albumInputDisplay;
+    private static string confirmBtnDisplay;
+
     protected override void OnInitialized()
     {
         albums = GetAlbumsTable();
+        newAlbumBtnIcon = "library_add";
+        newAlbumBtnText = "New Album";
+        newAlbumBtnId = "newAlbumBtn";
+        albumInputDisplay = "none";
+        confirmBtnDisplay = "none";
+    }
+
+    private static void NewAlbumBtnClick()
+    {
+        if (newAlbumBtnText == "New Album")
+        {
+            newAlbumBtnId = "cancelBtn";
+            newAlbumBtnIcon = "close";
+            newAlbumBtnText = "Cancel";
+            albumInputDisplay = "inline";
+            confirmBtnDisplay = "flex";
+        }
+        else if (newAlbumBtnText == "Cancel")
+        {
+            newAlbumBtnId = "newAlbumBtn";
+            newAlbumBtnIcon = "library_add";
+            newAlbumBtnText = "New Album";
+            albumInputDisplay = "none";
+            confirmBtnDisplay = "none";
+        }
     }
     
+    private static void ConfirmBtnClick()
+    {
+        newAlbumBtnIcon = "library_add";
+        newAlbumBtnText = "New Album";
+        newAlbumBtnId = "newAlbumBtn";
+        // albumInputDisplay = "none";
+        // confirmBtnDisplay = "none";
+
+        //TODO: test for "" and duplicate album name on input...
+        // CreateAlbum(newAlbumName);
+        // albums.Add(new Connection.Album(Connection.GetAlbumID(newAlbumName), newAlbumName, null, DateTime.Now));
+        // checkedAlbums.Add(new bool());
+        // newAlbumName = ""; //Reset for next time
+    }
 }

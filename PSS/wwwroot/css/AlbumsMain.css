@@ -17,6 +17,7 @@ header {
     width: 100%;
     padding-bottom: 6px;
     border-bottom: 1px solid gray;
+    background-color: black;
 }
 
 header > #albumsText {
@@ -25,40 +26,48 @@ header > #albumsText {
     letter-spacing: 0;
     line-height: 1.5rem;
     margin-left: 10px;
+    margin-right: 40px;
 }
 
-header > #buttons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: absolute;
-    right: 249px;
-}
-
-header > #buttons > button {
-    margin-left: 12px;
+header > button {
     background-color: black;
     border: 1px solid white;
     border-radius: 4px;
     display: flex;
+    word-break: break-word;
+    word-wrap: break-word;
+    -webkit-box-align: center;
     align-items: center;
     letter-spacing: .01785714em;
-    font-family: Product Sans, serif;
+    font-family: Product Sans, sans-serif;
     font-size: 1rem;
     font-weight: 400;
     width: auto;
     padding: 11px 11px 11px 10px;
 }
 
-header > #buttons > button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
-
-/* Proper spacing for both buttons' text */
-button span ~ span {
+/* Proper spacing for buttons' text */
+.btnText {
     padding-left: 11px;
     text-decoration: none;
+}
+
+header > input[type="text"] {
+    width: 200px;
+    font-size: 16px;
+    margin-left: 12px;
+    margin-right: 12px;
+    color: black; /* Font color */
+}
+
+#sortBtn {
+    position: absolute;
+    right: 250px;
+}
+
+header > button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
 }
 
 #mainDiv {
