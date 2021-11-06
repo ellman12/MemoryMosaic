@@ -79,13 +79,12 @@
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
         newAlbumBtnId = "newAlbumBtn";
-        // albumInputDisplay = "none";
-        // confirmBtnDisplay = "none";
+        albumInputDisplay = "none";
+        confirmBtnDisplay = "none";
 
         //TODO: test for "" and duplicate album name on input...
-        // CreateAlbum(newAlbumName);
-        // albums.Add(new Connection.Album(Connection.GetAlbumID(newAlbumName), newAlbumName, null, DateTime.Now));
-        // checkedAlbums.Add(new bool());
-        // newAlbumName = ""; //Reset for next time
+        CreateAlbum(newAlbumName);
+        albums = GetAlbumsTable();
+        newAlbumName = ""; //Reset for next time
     }
 }
