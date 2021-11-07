@@ -56,16 +56,37 @@ button:hover {
     left: -5px;
 }
 
-header button, #albumSelector button {
-    color: white;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
+#moreOptionsDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    position: absolute;
+    top: 60px;
+    right: 250px;
+    background-color: black;
+    border: 1px solid white;
+    width: auto;
 }
 
-button:hover {
+#moreOptionsDiv > button {
+    width: 100%;
+    border: none;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 11px 12px 11px 10px;
+}
+
+button span ~ span, button svg ~ span {
+    padding-left: 11px;
+    text-decoration: none;
+}
+
+#moreOptionsDiv > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }

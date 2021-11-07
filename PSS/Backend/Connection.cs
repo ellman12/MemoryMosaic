@@ -19,6 +19,15 @@ namespace PSS.Backend
             LastModified,
             LastModifiedReversed
         }
+        
+        //AV = AlbumView
+        public enum AVSortMode
+        {
+            OldestDateTaken,
+            NewestDateTaken,
+            OldestAdded,
+            NewestAdded
+        }
 
         public record Album
         {
@@ -465,14 +474,23 @@ namespace PSS.Backend
         //     return LoadAlbum(GetAlbumID(name));
         // }
 
-        public static List<MediaRow> LoadAlbum(int albumID)
+        public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+            
+            string orderBy = mode switch
+            {
+                AVSortMode.OldestDateTaken => "date_taken ASC",
+                AVSortMode.NewestDateTaken => "date_taken DESC",
+                AVSortMode.OldestAdded => "date_added_to_album ASC",
+                AVSortMode.NewestAdded => "date_added_to_album DESC",
+                _ => "date_taken DESC"
+            };
 
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID", connection);
+                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
