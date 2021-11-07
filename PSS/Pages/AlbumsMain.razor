@@ -10,20 +10,20 @@
     <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
     <button id="sortBtn" @onclick="SortBtnClick"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
 
-    <div id="sortDiv">
-        <button>
+    <div id="sortDiv"> @* This is ugly but I think it works well *@
+        <button @onclick="@(() => mode = SortMode.Title)">
             <span class="material-icons-outlined" style="@(mode == SortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
             <span class="btnText" style="color: @(mode == SortMode.Title ? "#1a73e8" : "white")">Album Title</span>
         </button>
-        <button>
+        <button @onclick="@(() => mode = SortMode.TitleReversed)">
             <span class="material-icons-outlined" style="@(mode == SortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
             <span class="btnText" style="color: @(mode == SortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
         </button>
-        <button>
+        <button @onclick="@(() => mode = SortMode.LastModified)">
             <span class="material-icons-outlined" style="@(mode == SortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
             <span class="btnText" style="color: @(mode == SortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
         </button>
-        <button>
+        <button @onclick="@(() => mode = SortMode.LastModifiedReversed)">
             <span class="material-icons-outlined" style="@(mode == SortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
             <span class="btnText" style="color: @(mode == SortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
         </button>
