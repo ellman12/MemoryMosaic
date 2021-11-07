@@ -202,6 +202,38 @@ namespace PSS.Backend
             return returnVal;
         }
 
+        public static string GetAlbumName(int id)
+        {
+            string returnVal = "";
+            try
+            {
+                Open();
+
+                //Find the album ID using the album name.
+                NpgsqlCommand selectCmd = new("SELECT name FROM albums WHERE id=@id", connection);
+                selectCmd.Parameters.AddWithValue("@id", id);
+                selectCmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = selectCmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read(); //There should only be 1 line to read.
+                    returnVal = reader.GetString(0); //First and only column.
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return returnVal;
+        } 
+
         //Deletes items in the album from album_entries, then remove the album from the albums table.
         //THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos.
         public static void DeleteAlbum(string name)
