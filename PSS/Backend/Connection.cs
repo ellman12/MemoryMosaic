@@ -459,33 +459,11 @@ namespace PSS.Backend
             return media;
         }
 
-        public static List<MediaRow> LoadAlbum(string name)
-        {
-            List<MediaRow> media = new(); //Stores every row retrieved; returned later.
-            int ID = GetAlbumID(name); //Find the album to work with.
-
-            try
-            {
-                Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@ID", connection);
-                cmd.Parameters.AddWithValue("@ID", ID);
-                cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return media;
-        }
+        // public static List<MediaRow> LoadAlbum(string name)
+        // {
+        //     List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+        //     return LoadAlbum(GetAlbumID(name));
+        // }
 
         public static List<MediaRow> LoadAlbum(int albumID)
         {
