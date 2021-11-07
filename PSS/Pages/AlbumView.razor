@@ -5,8 +5,8 @@
 
 @{
     <header style="visibility: @headerVis">
-        <button title="More Options"><span class="material-icons-outlined">more_vert</span></button>
-        <div id="moreOptionsDiv">
+        <button @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
+        <div id="moreOptionsDiv" style="visibility: @sortDivVis">
             <button @onclick="@(() => ChangeOrder(AVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(mode == AVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(AVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(mode == AVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(AVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(mode == AVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
@@ -50,6 +50,7 @@
     private static string albumsVis;
     private static List<MediaRow> albumMedia;
     private static List<string> selectedItems;
+    private static string sortDivVis;
     private static AVSortMode mode;
 
     protected override void OnInitialized()
@@ -57,6 +58,7 @@
         statAlbumID = albumID;
         albumMedia = LoadAlbum(Int32.Parse(albumID));
         selectedItems = new List<string>(); //Reset on page load/refresh
+        sortDivVis = "hidden";
         mode = AVSortMode.NewestDateTaken; //Default
     }
 

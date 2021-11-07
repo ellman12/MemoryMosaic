@@ -61,8 +61,8 @@ button:hover {
     flex-direction: column;
     justify-content: space-evenly;
     position: absolute;
-    top: 60px;
-    right: 250px;
+    top: 58px;
+    right: 100px;
     background-color: black;
     border: 1px solid white;
     width: auto;
