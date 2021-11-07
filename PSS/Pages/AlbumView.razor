@@ -1,0 +1,9 @@
+﻿@page "/album-view/{albumID}"
+@using static PSS.Backend.Connection
+
+<link href="css/AlbumView.css" rel="stylesheet">
+
+@code {
+    [Parameter]
+    public string albumID { get; set; }
+}
