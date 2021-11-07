@@ -91,13 +91,40 @@ button span ~ span, button svg ~ span {
     cursor: pointer;
 }
 
+#albumNameDiv {
+    position: absolute;
+    /*background-color: red;*/
+    width: 100%;
+    height: 100px;
+    left: 146px;
+    top: 60px;
+}
+
+#albumNameDiv > input[type="text"] {
+    color: white;
+    background-color: black;
+    position: absolute;
+    top: 30px;
+    left: 100px;
+    border: none;
+    outline: 1px solid black;
+}
+
+#albumNameDiv > input[type="text"]:hover {
+    border-bottom: 1px solid #dadce0;
+}
+
+#albumNameDiv > input[type="text"]:focus {
+    border-bottom: 1px solid #4285f4;
+}
+
 #mainDiv {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     position: absolute;
     left: 145px;
-    top: 60px;
+    top: 300px;
 }
 
 #mainDiv > .thumbnail:hover {

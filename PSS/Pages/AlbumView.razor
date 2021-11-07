@@ -23,6 +23,10 @@
         <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
     
+    <div id="albumNameDiv">
+        <input type="text" placeholder="Enter new album name" @bind="albumName" style="display: @albumInputDisplay"/>
+    </div>
+    
     if (albumMedia.Count == 0)
     {
         <h1>Album is empty</h1>
@@ -52,7 +56,9 @@
     private static List<string> selectedItems;
     private static string sortDivVis;
     private static AVSortMode mode;
-
+    private static string albumName;
+    private static string albumInputDisplay;    
+    
     protected override void OnInitialized()
     {
         statAlbumID = albumID;
@@ -60,6 +66,8 @@
         selectedItems = new List<string>(); //Reset on page load/refresh
         sortDivVis = "hidden";
         mode = AVSortMode.NewestDateTaken; //Default
+        albumName = GetAlbumName(Int32.Parse(albumID));
+        albumInputDisplay = "inline-block";
     }
 
     [Inject]
