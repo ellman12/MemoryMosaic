@@ -1,23 +1,14 @@
-﻿@page "/albums"
+@page "/albums"
 @using static PSS.Backend.Connection
 
 <link href="css/AlbumsMain.css" rel="stylesheet">
 
 <header>
     <span id="albumsText">Albums</span>
-    @* <button id="newAlbumBtn"><span class="material-icons-outlined">library_add</span><span class="btnText">New Album</span></button> *@
-    
-    <button @onclick="NewAlbumBtnClick" id="@newAlbumBtnId">
-        <span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span>
-    </button>
-
+    <button @onclick="NewAlbumBtnClick" id="@newAlbumBtnId"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
     <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
-    
-    <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn">
-        <span class="material-icons-outlined">check</span><span class="btnText">Confirm</span>
-    </button>
-    
-    <button id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">Last Modified</span></button>
+    <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
+    <button id="sortBtn" @onclick="SortBtnClick"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
 </header>
 
 <div id="mainDiv">
@@ -36,7 +27,6 @@
 @code
 {
     private static List<Album> albums;
-
     private static string newAlbumBtnIcon;
     private static string newAlbumBtnText;
     private static string newAlbumBtnId;
