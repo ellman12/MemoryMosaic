@@ -24,7 +24,14 @@
     </header>
     
     <div id="albumNameDiv">
-        <input type="text" placeholder="Enter new album name" @bind="albumName" style="display: @albumInputDisplay"/>
+        <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" style="display: @albumInputDisplay"/>
+        <button>
+            <span class="material-icons-outlined">close</span><span>Cancel</span>
+        </button>
+
+        <button>
+            <span class="material-icons-outlined">check</span><span>Confirm</span>
+        </button>
     </div>
     
     if (albumMedia.Count == 0)
@@ -57,6 +64,24 @@
     private static string sortDivVis;
     private static AVSortMode mode;
     private static string albumName;
+    private static string _newAlbumName;
+
+    private static string NewAlbumName
+    {
+        get => _newAlbumName;
+        set
+        {
+            if (value == albumName)
+            {
+                //Hide apply/cancel buttons
+            }
+            else if (value != albumName && value != "")
+            {
+                _newAlbumName = value;
+                //Show buttons
+            }
+        }
+    }
     private static string albumInputDisplay;    
     
     protected override void OnInitialized()
@@ -67,6 +92,7 @@
         sortDivVis = "hidden";
         mode = AVSortMode.NewestDateTaken; //Default
         albumName = GetAlbumName(Int32.Parse(albumID));
+        NewAlbumName = albumName;
         albumInputDisplay = "inline-block";
     }
 

@@ -109,8 +109,9 @@ button span ~ span, button svg ~ span {
     border: 2px solid black;
     font-size: 32px;
     outline: none;
-    width: 50%;
+    width: 40%;
     margin-left: 60px;
+    margin-right: 40px;
 }
 
 #albumNameDiv > input[type="text"]:hover {
@@ -120,6 +121,39 @@ button span ~ span, button svg ~ span {
 #albumNameDiv > input[type="text"]:focus {
     border-bottom: 2px solid #4285f4;
     transition: all .3s cubic-bezier(.4,0,.2,1);
+}
+
+#albumNameDiv > button {
+    margin-left: 15px;
+    color: white; /* Icon Color */
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    display: flex;
+    word-break: break-word;
+    word-wrap: break-word;
+    -webkit-box-align: center;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans, serif;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 11px;
+}
+
+#albumNameDiv > button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+#cancelBtn {
+    width: 113px;
+    padding-left: 10px;
+}
+
+#confirmBtn {
+    width: 119px;
+    padding-left: 10px;
 }
 
 #mainDiv {
