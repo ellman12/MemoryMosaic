@@ -64,7 +64,7 @@
         newAlbumBtnId = "newAlbumBtn";
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
-        sortBtnText = "Last Modified";
+        SetSortBtnText();
         sortDivVis = "hidden";
         mode = SortMode.Title; //Default sort mode
     }
@@ -103,10 +103,23 @@
         newAlbumName = ""; //Reset for next time
     }
 
+    private static void SetSortBtnText()
+    {
+        sortBtnText = mode switch
+        {
+            SortMode.Title => "Album Title",
+            SortMode.TitleReversed => "Title Reversed",
+            SortMode.LastModified => "Last Modified",
+            SortMode.LastModifiedReversed => "Last Modified Reversed",
+            _ => "Album Title"
+        };
+    }
+
     private static void ChangeOrder(SortMode newMode)
     {
         mode = newMode;
         albums = GetAlbumsTable(mode);
+        SetSortBtnText();
         sortDivVis = "hidden";
     }
 }
