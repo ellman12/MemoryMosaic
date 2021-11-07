@@ -9,6 +9,25 @@
     <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
     <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
     <button id="sortBtn" @onclick="SortBtnClick"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
+
+    <div id="sortDiv">
+        <button>
+            <span class="material-icons-outlined" style="@(mode == SortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == SortMode.Title ? "#1a73e8" : "white")">Album Title</span>
+        </button>
+        <button>
+            <span class="material-icons-outlined" style="@(mode == SortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == SortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
+        </button>
+        <button>
+            <span class="material-icons-outlined" style="@(mode == SortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == SortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
+        </button>
+        <button>
+            <span class="material-icons-outlined" style="@(mode == SortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == SortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
+        </button>
+    </div>
 </header>
 
 <div id="mainDiv">
@@ -33,6 +52,16 @@
     private static string newAlbumName;
     private static string albumInputDisplay;
     private static string confirmBtnDisplay;
+    private static string sortBtnText;
+    private static SortMode mode;
+
+    private enum SortMode
+    {
+        Title,
+        TitleReversed,
+        LastModified,
+        LastModifiedReversed
+    }
 
     protected override void OnInitialized()
     {
@@ -42,6 +71,8 @@
         newAlbumBtnId = "newAlbumBtn";
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
+        sortBtnText = "Last Modified";
+        mode = SortMode.Title; //Default sort mode
     }
 
     private static void NewAlbumBtnClick()
@@ -63,7 +94,7 @@
             confirmBtnDisplay = "none";
         }
     }
-    
+
     private static void ConfirmBtnClick()
     {
         newAlbumBtnIcon = "library_add";
@@ -72,9 +103,13 @@
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
 
-        //TODO: test for "" and duplicate album name on input...
+    //TODO: test for "" and duplicate album name on input...
         CreateAlbum(newAlbumName);
         albums = GetAlbumsTable();
         newAlbumName = ""; //Reset for next time
+    }
+
+    private static void SortBtnClick()
+    {
     }
 }

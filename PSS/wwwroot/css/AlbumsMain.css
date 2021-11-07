@@ -52,6 +52,11 @@ header > button {
     text-decoration: none;
 }
 
+button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
 header > input[type="text"] {
     width: 200px;
     font-size: 16px;
@@ -65,7 +70,32 @@ header > input[type="text"] {
     right: 250px;
 }
 
-header > button:hover {
+#sortDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    position: absolute;
+    top: 60px;
+    right: 250px;
+    background-color: black;
+    border: 1px solid white;
+    width: 250px;
+}
+
+#sortDiv > button {
+    width: 100%;
+    border: none;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 11px 11px 11px 10px;
+}
+
+#sortDiv > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
