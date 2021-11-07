@@ -8,9 +8,9 @@
     <button @onclick="NewAlbumBtnClick" id="@newAlbumBtnId"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
     <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
     <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
-    <button id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
-
-    <div id="sortDiv"> @* This is ugly but I think it works well *@
+    
+    <button @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
+    <div id="sortDiv" style="visibility: @sortDivVis"> @* This is ugly but I think it works well *@
         <button @onclick="@(() => ChangeOrder(SortMode.Title))">
             <span class="material-icons-outlined" style="@(mode == SortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
             <span class="btnText" style="color: @(mode == SortMode.Title ? "#1a73e8" : "white")">Album Title</span>
@@ -53,6 +53,7 @@
     private static string albumInputDisplay;
     private static string confirmBtnDisplay;
     private static string sortBtnText;
+    private static string sortDivVis;
     private static SortMode mode;
 
     protected override void OnInitialized()
@@ -64,6 +65,7 @@
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
         sortBtnText = "Last Modified";
+        sortDivVis = "hidden";
         mode = SortMode.Title; //Default sort mode
     }
 
@@ -101,5 +103,10 @@
         newAlbumName = ""; //Reset for next time
     }
 
-    private static void ChangeOrder(SortMode newMode) => albums = GetAlbumsTable(mode = newMode);
+    private static void ChangeOrder(SortMode newMode)
+    {
+        mode = newMode;
+        albums = GetAlbumsTable(mode);
+        sortDivVis = "hidden";
+    }
 }
