@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using Microsoft.VisualBasic.FileIO; 
 using Npgsql;
 
 namespace PSS.Backend
@@ -11,6 +10,14 @@ namespace PSS.Backend
     public static class Connection
     {
         private static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
+
+        public enum SortMode
+        {
+            Title,
+            TitleReversed,
+            LastModified,
+            LastModifiedReversed
+        }
 
         public record Album
         {
@@ -276,7 +283,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
-                
+
                 cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
                 cmd.ExecuteNonQuery();
             }
@@ -290,13 +297,24 @@ namespace PSS.Backend
             }
         }
 
-        public static List<Album> GetAlbumsTable()
+        public static List<Album> GetAlbumsTable(SortMode mode = SortMode.Title)
         {
             List<Album> albums = new();
+
+            string orderBy = mode switch
+            {
+                SortMode.Title => "name ASC",
+                SortMode.TitleReversed => "name DESC",
+                SortMode.LastModified => "last_updated ASC",
+                SortMode.LastModifiedReversed => "last_updated DESC",
+                _ => "name ASC"
+            };
+
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums", connection);
+                NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums ORDER BY " + orderBy, connection);
+                cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
@@ -355,7 +373,7 @@ namespace PSS.Backend
         public static void PermDeleteItem(string path)
         {
             File.Delete(Path.Join(Settings.libFolderFullPath, path));
-            
+
             try
             {
                 Open();
@@ -377,7 +395,7 @@ namespace PSS.Backend
                 Close();
             }
         }
-        
+
         //Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
         public static void RestoreItem(string path)
         {
