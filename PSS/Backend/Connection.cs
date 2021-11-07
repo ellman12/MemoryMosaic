@@ -11,7 +11,8 @@ namespace PSS.Backend
     {
         private static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
 
-        public enum SortMode
+        //AM = AlbumsMain
+        public enum AMSortMode
         {
             Title,
             TitleReversed,
@@ -297,16 +298,16 @@ namespace PSS.Backend
             }
         }
 
-        public static List<Album> GetAlbumsTable(SortMode mode = SortMode.Title)
+        public static List<Album> GetAlbumsTable(AMSortMode mode = AMSortMode.Title)
         {
             List<Album> albums = new();
 
             string orderBy = mode switch
             {
-                SortMode.Title => "name ASC",
-                SortMode.TitleReversed => "name DESC",
-                SortMode.LastModified => "last_updated ASC",
-                SortMode.LastModifiedReversed => "last_updated DESC",
+                AMSortMode.Title => "name ASC",
+                AMSortMode.TitleReversed => "name DESC",
+                AMSortMode.LastModified => "last_updated ASC",
+                AMSortMode.LastModifiedReversed => "last_updated DESC",
                 _ => "name ASC"
             };
 

@@ -11,21 +11,21 @@
     
     <button @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
     <div id="sortDiv" style="visibility: @sortDivVis"> @* This is ugly but I think it works well *@
-        <button @onclick="@(() => ChangeOrder(SortMode.Title))">
-            <span class="material-icons-outlined" style="@(mode == SortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == SortMode.Title ? "#1a73e8" : "white")">Album Title</span>
+        <button @onclick="@(() => ChangeOrder(AMSortMode.Title))">
+            <span class="material-icons-outlined" style="@(mode == AMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == AMSortMode.Title ? "#1a73e8" : "white")">Album Title</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(SortMode.TitleReversed))">
-            <span class="material-icons-outlined" style="@(mode == SortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == SortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
+        <button @onclick="@(() => ChangeOrder(AMSortMode.TitleReversed))">
+            <span class="material-icons-outlined" style="@(mode == AMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == AMSortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(SortMode.LastModified))">
-            <span class="material-icons-outlined" style="@(mode == SortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == SortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
+        <button @onclick="@(() => ChangeOrder(AMSortMode.LastModified))">
+            <span class="material-icons-outlined" style="@(mode == AMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == AMSortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(SortMode.LastModifiedReversed))">
-            <span class="material-icons-outlined" style="@(mode == SortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == SortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
+        <button @onclick="@(() => ChangeOrder(AMSortMode.LastModifiedReversed))">
+            <span class="material-icons-outlined" style="@(mode == AMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == AMSortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
         </button>
     </div>
 </header>
@@ -54,7 +54,7 @@
     private static string confirmBtnDisplay;
     private static string sortBtnText;
     private static string sortDivVis;
-    private static SortMode mode;
+    private static AMSortMode mode;
 
     protected override void OnInitialized()
     {
@@ -66,7 +66,7 @@
         confirmBtnDisplay = "none";
         SetSortBtnText();
         sortDivVis = "hidden";
-        mode = SortMode.LastModified; //Default sort mode
+        mode = AMSortMode.LastModified; //Default sort mode
     }
 
     private static void NewAlbumBtnClick()
@@ -107,15 +107,15 @@
     {
         sortBtnText = mode switch
         {
-            SortMode.Title => "Album Title",
-            SortMode.TitleReversed => "Title Reversed",
-            SortMode.LastModified => "Last Modified",
-            SortMode.LastModifiedReversed => "Last Modified Reversed",
+            AMSortMode.Title => "Album Title",
+            AMSortMode.TitleReversed => "Title Reversed",
+            AMSortMode.LastModified => "Last Modified",
+            AMSortMode.LastModifiedReversed => "Last Modified Reversed",
             _ => "Album Title"
         };
     }
 
-    private static void ChangeOrder(SortMode newMode)
+    private static void ChangeOrder(AMSortMode newMode)
     {
         mode = newMode;
         albums = GetAlbumsTable(mode);
