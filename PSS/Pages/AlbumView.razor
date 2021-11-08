@@ -65,7 +65,7 @@
             {
                 <div class="thumbnail">
                     <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
-                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
+                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" onclick="location.href='/view/@media.uuid'" loading="lazy"/>
                 </div>
             }
          </div>
