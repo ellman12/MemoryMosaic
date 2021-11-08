@@ -293,10 +293,13 @@ namespace PSS.Backend
                 NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE album_id=@id", connection);
                 delCmd.Parameters.AddWithValue("@id", albumID);
                 delCmd.ExecuteNonQuery();
+                
+                //Remove all items from the trash table too.
+                delCmd.CommandText = "DELETE FROM album_entries_trash WHERE album_id=@id";
+                delCmd.ExecuteNonQuery();
 
                 //Finally, remove from albums table.
                 delCmd.CommandText = "DELETE FROM albums WHERE id=@id";
-                delCmd.Parameters.AddWithValue("@ID", albumID);
                 delCmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
