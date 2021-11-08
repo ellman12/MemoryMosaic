@@ -4,7 +4,7 @@
 <link href="css/AlbumView.css" rel="stylesheet">
 
 @{
-    <header style="visibility: @headerVis">
+    <header>
         <button @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
         <div id="moreOptionsDiv" style="visibility: @sortDivVis">
             <button @onclick="@(() => ChangeOrder(AVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(mode == AVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
@@ -14,12 +14,12 @@
             <button><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
         </div>
         
-        <button title="Delete Selected" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-        <button title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
-        <button title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
-        <button title="Add Selected to Album" @onclick="AlbumBtnClick"><span class="material-icons-outlined">library_add</span></button>
-        <span id="selectedAmtText" style="visibility: @headerVis">@selectedItems.Count selected</span>
-        <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
+        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album" @onclick="AlbumBtnClick"><span class="material-icons-outlined">library_add</span></button>
+        <span style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="selectedAmtText">@selectedItems.Count selected</span>
+        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
     
     <div id="albumNameDiv">
@@ -57,7 +57,6 @@
     public string albumID { get; set; }
     private static int statAlbumID;
 
-    private static string headerVis;
     private static string albumsVis;
     private static List<MediaRow> albumMedia;
     private static List<string> selectedItems;
@@ -106,8 +105,6 @@
             selectedItems.Remove(id);
         else
             selectedItems.Add(id);
-
-        // headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
     }
     
     private async Task ClearChecks()
@@ -115,7 +112,6 @@
         foreach (string item in selectedItems)
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
-        headerVis = "hidden";
         albumsVis = "hidden";
     }
     
@@ -125,7 +121,6 @@
         foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
         {
             MoveToTrash(path);
-            headerVis = "hidden";
         }
         await ClearChecks();
         // mediaList = LoadMediaTable();

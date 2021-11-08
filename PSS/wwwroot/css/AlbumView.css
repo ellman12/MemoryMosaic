@@ -1,4 +1,4 @@
-﻿* {
+* {
     color: white;
     user-select: none;
     font-family: 'Product Sans', sans-serif;
@@ -146,23 +146,13 @@ button span ~ span, button svg ~ span {
     cursor: pointer;
 }
 
-#cancelBtn {
-    width: 113px;
-    padding-left: 10px;
-}
-
-#confirmBtn {
-    width: 119px;
-    padding-left: 10px;
-}
-
 #mainDiv {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     position: absolute;
     left: 145px;
-    top: 300px;
+    top: 170px;
 }
 
 #mainDiv > .thumbnail:hover {
