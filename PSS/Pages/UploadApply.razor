@@ -40,7 +40,7 @@
             int ii = i;
             <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
                 <div class="coverDiv">
-                    <img class="cover" src="@albums[i].albumCover" alt="">
+                    <img class="cover" src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
                 </div>
                 <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
                 <span title="@albums[i].name">@albums[i].name</span>

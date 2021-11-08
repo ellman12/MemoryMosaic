@@ -34,6 +34,25 @@
         </button>
     </div>
     
+    <div id="albumSelector" style="visibility: @albumsVis">
+        <button id="closeBtn" @onclick="CloseBtnClick" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
+        <button id="confirmBtn" @onclick="AlbumsConfirmBtnClick" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
+        <span id="addToText">Add to</span>
+        <div id="albums">
+            @for (int i = 0; i < albums.Count; i++)
+            {
+                int ii = i;
+                <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
+                    <div class="coverDiv">
+                        <img class="cover" src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
+                    </div>
+                    <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
+                    <span title="@albums[i].name">@albums[i].name</span>
+                </div>
+            }
+        </div>
+    </div>
+    
     if (albumMedia.Count == 0)
     {
         <h1>Album is empty</h1>
@@ -65,6 +84,8 @@
     private static string albumName;
     private static string _newAlbumName;
     private static string buttonsVis;
+    private static List<bool> checkedAlbums;
+    private static readonly List<Album> albums = GetAlbumsTable();
     
     private static string NewAlbumName
     {
@@ -85,6 +106,7 @@
     
     protected override void OnInitialized()
     {
+        albumsVis = "hidden";
         statAlbumID = Int32.Parse(albumID);
         albumMedia = LoadAlbum(statAlbumID);
         selectedItems = new List<string>(); //Reset on page load/refresh
@@ -93,6 +115,8 @@
         albumName = GetAlbumName(statAlbumID);
         _newAlbumName = albumName;
         buttonsVis = "hidden";
+        selectedItems = new List<string>(); //Reset on page load/refresh
+        checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
     [Inject]
@@ -129,29 +153,28 @@
     //Functions for album stuff
     private static void AlbumBtnClick() => albumsVis = "visible";
  
-    // private static void CloseBtnClick()
-    // {
-    //     albumsVis = "hidden";
-    //     // for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
-    // }
-    //
-    // //Add item(s) to album(s) selected.
-    // private async Task ConfirmBtnClick()
-    // {
-    //     // for (int c = 0; c < checkedAlbums.Count; c++)
-    //     // {
-    //         // if (checkedAlbums[c] == false) continue;
-    //
-    //         // foreach (string item in selectedItems)
-    //         // {
-    //             // AddToAlbum(item, albums[c].id);
-    //         // }
-    //     // }
-    //     // CloseBtnClick();
-    //     // headerVis = "hidden";
-    //     await ClearChecks();
-    // }
-    //
+    private static void CloseBtnClick()
+    {
+        albumsVis = "hidden";
+        for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
+    }
+    
+    //Add item(s) to album(s) selected.
+    private async Task AlbumsConfirmBtnClick()
+    {
+        for (int c = 0; c < checkedAlbums.Count; c++)
+        {
+            if (checkedAlbums[c] == false) continue;
+    
+            foreach (string item in selectedItems)
+            {
+                AddToAlbum(item, albums[c].id);
+            }
+        }
+        CloseBtnClick();
+        await ClearChecks();
+    }
+    
 
     private static void CancelBtnClick()
     {
