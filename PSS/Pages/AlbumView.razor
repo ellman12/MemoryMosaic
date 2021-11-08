@@ -1,4 +1,5 @@
 @page "/album-view/{albumID}"
+@inject NavigationManager navigationManager; //https://stackoverflow.com/a/58417140
 @using static PSS.Backend.Connection
 
 <link href="css/AlbumView.css" rel="stylesheet">
@@ -11,10 +12,10 @@
             <button @onclick="@(() => ChangeOrder(AVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(mode == AVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(AVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(mode == AVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
             <button @onclick="@(() => ChangeOrder(AVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(mode == AVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
-            <button><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
+            <button @onclick="DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
         </div>
         
-        <button  @onclick="DeleteBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        <button @onclick="DeleteBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         <button @onclick="RemoveBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
         <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
         <button @onclick="AlbumBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
@@ -137,6 +138,12 @@
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         albumsVis = "hidden";
+    }
+
+    private void DeleteAlbumBtnClick()
+    {
+        navigationManager.NavigateTo("/albums");
+        DeleteAlbum(statAlbumID);
     }
     
     //Move selected stuff to trash tables and move to trash folder on server
