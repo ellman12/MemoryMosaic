@@ -1,4 +1,4 @@
-﻿@page "/album-view/{albumID}"
+@page "/album-view/{albumID}"
 @using static PSS.Backend.Connection
 
 <link href="css/AlbumView.css" rel="stylesheet">
@@ -55,7 +55,7 @@
 @code {
     [Parameter]
     public string albumID { get; set; }
-    private static string statAlbumID;
+    private static int statAlbumID;
 
     private static string headerVis;
     private static string albumsVis;
@@ -86,12 +86,12 @@
     
     protected override void OnInitialized()
     {
-        statAlbumID = albumID;
-        albumMedia = LoadAlbum(Int32.Parse(albumID));
+        statAlbumID = Int32.Parse(albumID);
+        albumMedia = LoadAlbum(statAlbumID);
         selectedItems = new List<string>(); //Reset on page load/refresh
         sortDivVis = "hidden";
         mode = AVSortMode.NewestDateTaken; //Default
-        albumName = GetAlbumName(Int32.Parse(albumID));
+        albumName = GetAlbumName(statAlbumID);
         NewAlbumName = albumName;
         albumInputDisplay = "inline-block";
     }
@@ -160,7 +160,7 @@
     private static void ChangeOrder(AVSortMode newMode)
     {
         mode = newMode;
-        albumMedia = LoadAlbum(Int32.Parse(statAlbumID), mode);
+        albumMedia = LoadAlbum(statAlbumID, mode);
         // sortDivVis = "hidden";
     }
 }
