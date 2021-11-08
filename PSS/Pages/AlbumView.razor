@@ -14,12 +14,12 @@
             <button><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
         </div>
         
-        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        <button  @onclick="DeleteBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
         <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
-        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album" @onclick="AlbumBtnClick"><span class="material-icons-outlined">library_add</span></button>
+        <button @onclick="AlbumBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
         <span style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="selectedAmtText">@selectedItems.Count selected</span>
-        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <button @onclick="ClearChecks" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="clearBtn"><span class="material-icons-outlined">close</span></button>
     </header>
     
     <div id="albumNameDiv">
@@ -147,7 +147,7 @@
             MoveToTrash(path);
         }
         await ClearChecks();
-        // mediaList = LoadMediaTable();
+        albumMedia = LoadAlbum(statAlbumID, mode);
     }
 
     //Functions for album stuff
