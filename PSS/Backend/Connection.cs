@@ -126,6 +126,26 @@ namespace PSS.Backend
             }
         }
 
+        public static void RenameAlbum(string newName, int id)
+        {
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("UPDATE albums SET name=@newName WHERE id=@id", connection);
+                cmd.Parameters.AddWithValue("@newName", newName);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
         //This has 3 different use cases: give an album a cover if it doesn't have a cover,
         //update an existing cover, or remove an album cover (supply literal 'null' as path).
         //Albums aren't required to have an album cover.
