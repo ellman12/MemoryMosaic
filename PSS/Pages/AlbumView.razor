@@ -1,4 +1,4 @@
-@page "/album-view/{albumID}"
+﻿@page "/album-view/{albumID}"
 @using static PSS.Backend.Connection
 
 <link href="css/AlbumView.css" rel="stylesheet">
@@ -24,12 +24,13 @@
     </header>
     
     <div id="albumNameDiv">
-        <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" style="display: @albumInputDisplay"/>
-        <button>
+        <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" @bind:event="oninput" autocomplete="off">
+        
+        <button @onclick="CancelBtnClick" style="visibility: @buttonsVis">
             <span class="material-icons-outlined">close</span><span>Cancel</span>
         </button>
 
-        <button>
+        <button @onclick="ConfirmBtnClick" style="visibility: @buttonsVis">
             <span class="material-icons-outlined">check</span><span>Confirm</span>
         </button>
     </div>
@@ -65,24 +66,24 @@
     private static AVSortMode mode;
     private static string albumName;
     private static string _newAlbumName;
-
+    private static string buttonsVis;
+    
     private static string NewAlbumName
     {
         get => _newAlbumName;
         set
         {
-            if (value == albumName)
+            if (value == albumName) //Same so don't need to reapply
             {
-                //Hide apply/cancel buttons
+                buttonsVis = "hidden";
             }
-            else if (value != albumName && value != "")
+            else if (value != albumName)
             {
                 _newAlbumName = value;
-                //Show buttons
+                buttonsVis = "visible";
             }
         }
     }
-    private static string albumInputDisplay;    
     
     protected override void OnInitialized()
     {
@@ -93,7 +94,7 @@
         mode = AVSortMode.NewestDateTaken; //Default
         albumName = GetAlbumName(statAlbumID);
         NewAlbumName = albumName;
-        albumInputDisplay = "inline-block";
+        buttonsVis = "hidden";
     }
 
     [Inject]
@@ -134,28 +135,45 @@
     //Functions for album stuff
     private static void AlbumBtnClick() => albumsVis = "visible";
  
-    private static void CloseBtnClick()
+    // private static void CloseBtnClick()
+    // {
+    //     albumsVis = "hidden";
+    //     // for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
+    // }
+    //
+    // //Add item(s) to album(s) selected.
+    // private async Task ConfirmBtnClick()
+    // {
+    //     // for (int c = 0; c < checkedAlbums.Count; c++)
+    //     // {
+    //         // if (checkedAlbums[c] == false) continue;
+    //
+    //         // foreach (string item in selectedItems)
+    //         // {
+    //             // AddToAlbum(item, albums[c].id);
+    //         // }
+    //     // }
+    //     // CloseBtnClick();
+    //     // headerVis = "hidden";
+    //     await ClearChecks();
+    // }
+    //
+
+    private static void CancelBtnClick()
     {
-        albumsVis = "hidden";
-        // for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
+        buttonsVis = "hidden";
+        _newAlbumName = albumName; //Reset to OG
     }
 
-    //Add item(s) to album(s) selected.
-    private async Task ConfirmBtnClick()
+    private static void ConfirmBtnClick()
     {
-        // for (int c = 0; c < checkedAlbums.Count; c++)
-        // {
-            // if (checkedAlbums[c] == false) continue;
-
-            // foreach (string item in selectedItems)
-            // {
-                // AddToAlbum(item, albums[c].id);
-            // }
-        // }
-        // CloseBtnClick();
-        // headerVis = "hidden";
-        await ClearChecks();
+        buttonsVis = "hidden";
+        if (NewAlbumName != "")
+            RenameAlbum(NewAlbumName, statAlbumID);
+        else
+            NewAlbumName = "Please enter a name";
     }
+        
     
     private static void ChangeOrder(AVSortMode newMode)
     {
