@@ -21,21 +21,22 @@
         <button @onclick="AlbumBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
         <span style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="selectedAmtText">@selectedItems.Count selected</span>
         <button @onclick="ClearChecks" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="clearBtn"><span class="material-icons-outlined">close</span></button>
-    </header>
-    
-    <div id="albumNameDiv">
-        <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" @bind:event="oninput" autocomplete="off">
         
-        <button @onclick="CancelBtnClick" style="visibility: @buttonsVis">
-            <span class="material-icons-outlined">close</span><span>Cancel</span>
-        </button>
-
-        <button @onclick="ConfirmBtnClick" style="visibility: @buttonsVis">
-            <span class="material-icons-outlined">check</span><span>Confirm</span>
-        </button>
-    </div>
+        <div id="albumRenameDiv">
+            <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" @bind:event="oninput" autocomplete="off">
+            
+            <button @onclick="CancelBtnClick" style="visibility: @buttonsVis">
+                <span class="material-icons-outlined">close</span><span>Cancel</span>
+            </button>
     
-    <div id="albumSelector" style="visibility: @albumsVis">
+            <button @onclick="ConfirmBtnClick" style="visibility: @buttonsVis">
+                <span class="material-icons-outlined">check</span><span>Confirm</span>
+            </button>
+        </div>
+    </header>
+
+    
+<div id="albumSelector" style="visibility: @albumsVis">
         <button id="closeBtn" @onclick="CloseBtnClick" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
         <button id="confirmBtn" @onclick="AlbumsConfirmBtnClick" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
         <span id="addToText">Add to</span>

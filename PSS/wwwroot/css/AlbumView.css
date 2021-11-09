@@ -17,7 +17,7 @@ h1 {
 header {
     display: flex;
     flex-direction: row-reverse;
-    align-content: center;
+    align-items: center;
     position: fixed;
     height: 54px;
     left: 146px;
@@ -90,47 +90,41 @@ button span ~ span, button svg ~ span {
     cursor: pointer;
 }
 
-#albumNameDiv {
+header > #albumRenameDiv {
     display: flex;
     flex-direction: row;
     align-items: center;
     position: absolute;
-    width: 100%;
-    height: 100px;
-    left: 146px;
-    top: 60px;
+    width: auto;
+    left: 20%;
 }
 
-#albumNameDiv > input[type="text"] {
+#albumRenameDiv > input[type="text"] {
     color: white;
     background-color: black;
     border: 2px solid black;
-    font-size: 32px;
     outline: none;
-    width: 40%;
-    margin-left: 60px;
-    margin-right: 40px;
+    font-size: 20px;
+   width: 50%;
 }
 
-#albumNameDiv > input[type="text"]:hover {
+#albumRenameDiv > input[type="text"]:hover {
     border-bottom: 2px solid #dadce0;
+    transition: all .3s cubic-bezier(.4,0,.2,1);
 }
 
-#albumNameDiv > input[type="text"]:focus {
+#albumRenameDiv > input[type="text"]:focus {
     border-bottom: 2px solid #4285f4;
     transition: all .3s cubic-bezier(.4,0,.2,1);
 }
 
-#albumNameDiv > button {
+#albumRenameDiv > button {
+    width: auto;
     margin-left: 15px;
-    color: white; /* Icon Color */
     background-color: black;
     border: 1px solid white;
     border-radius: 4px;
     display: flex;
-    word-break: break-word;
-    word-wrap: break-word;
-    -webkit-box-align: center;
     align-items: center;
     letter-spacing: .01785714em;
     font-family: Product Sans, serif;
@@ -139,7 +133,7 @@ button span ~ span, button svg ~ span {
     padding: 11px;
 }
 
-#albumNameDiv > button:hover {
+#albumRenameDiv > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
@@ -150,7 +144,7 @@ button span ~ span, button svg ~ span {
     flex-wrap: wrap;
     position: absolute;
     left: 145px;
-    top: 170px;
+    top: 60px;
 }
 
 #mainDiv > .thumbnail:hover {
