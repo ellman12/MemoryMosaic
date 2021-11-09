@@ -1,4 +1,0 @@
-﻿1. Forgetting to pass in the connection paramater to the SQL command constructor.
-E.g.
-BAD → MySqlCommand cmd = new("SELECT * FROM media");
-GOOD → MySqlCommand cmd = new("SELECT * FROM media", connection);

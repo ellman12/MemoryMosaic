@@ -1,1 +1,0 @@
-Make button act like an <a>: https://stackoverflow.com/a/2906611
