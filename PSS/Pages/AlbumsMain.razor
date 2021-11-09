@@ -1,0 +1,125 @@
+@page "/albums"
+@using static PSS.Backend.Connection
+
+<link href="css/AlbumsMain.css" rel="stylesheet">
+
+<header>
+    <span id="albumsText">Albums</span>
+    <button @onclick="NewAlbumBtnClick" id="@newAlbumBtnId"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
+    <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
+    <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
+    
+    <button @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
+    <div id="sortDiv" style="visibility: @sortDivVis"> @* This is ugly but I think it works well *@
+        <button @onclick="@(() => ChangeOrder(AMSortMode.Title))">
+            <span class="material-icons-outlined" style="@(mode == AMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == AMSortMode.Title ? "#1a73e8" : "white")">Album Title</span>
+        </button>
+        <button @onclick="@(() => ChangeOrder(AMSortMode.TitleReversed))">
+            <span class="material-icons-outlined" style="@(mode == AMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == AMSortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
+        </button>
+        <button @onclick="@(() => ChangeOrder(AMSortMode.LastModified))">
+            <span class="material-icons-outlined" style="@(mode == AMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == AMSortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
+        </button>
+        <button @onclick="@(() => ChangeOrder(AMSortMode.LastModifiedReversed))">
+            <span class="material-icons-outlined" style="@(mode == AMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == AMSortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
+        </button>
+    </div>
+</header>
+
+<div id="mainDiv">
+    @foreach (Album album in albums)
+    { 
+        <div class="album" onclick="location.href='/album-view/@album.id'"> @*Text and album thumbnail*@
+            <div class="thumbnail"> @*img and 3 dots*@
+                <img src="@PSS.Settings.requestPath/@album.albumCover" alt=""/>
+                <button class="dotsBtn"><span class="material-icons-outlined">more_vert</span></button>
+            </div>
+            <span class="albumName">@album.name</span>
+        </div>
+    }
+</div>
+
+@code
+{
+    private static List<Album> albums;
+    private static string newAlbumBtnIcon;
+    private static string newAlbumBtnText;
+    private static string newAlbumBtnId;
+    private static string newAlbumName;
+    private static string albumInputDisplay;
+    private static string confirmBtnDisplay;
+    private static string sortBtnText;
+    private static string sortDivVis;
+    private static AMSortMode mode;
+
+    protected override void OnInitialized()
+    {
+        albums = GetAlbumsTable(mode);
+        newAlbumBtnIcon = "library_add";
+        newAlbumBtnText = "New Album";
+        newAlbumBtnId = "newAlbumBtn";
+        albumInputDisplay = "none";
+        confirmBtnDisplay = "none";
+        SetSortBtnText();
+        sortDivVis = "hidden";
+        mode = AMSortMode.LastModified; //Default sort mode
+    }
+
+    private static void NewAlbumBtnClick()
+    {
+        if (newAlbumBtnText == "New Album")
+        {
+            newAlbumBtnId = "cancelBtn";
+            newAlbumBtnIcon = "close";
+            newAlbumBtnText = "Cancel";
+            albumInputDisplay = "inline";
+            confirmBtnDisplay = "flex";
+        }
+        else if (newAlbumBtnText == "Cancel")
+        {
+            newAlbumBtnId = "newAlbumBtn";
+            newAlbumBtnIcon = "library_add";
+            newAlbumBtnText = "New Album";
+            albumInputDisplay = "none";
+            confirmBtnDisplay = "none";
+        }
+    }
+
+    private static void ConfirmBtnClick()
+    {
+        newAlbumBtnIcon = "library_add";
+        newAlbumBtnText = "New Album";
+        newAlbumBtnId = "newAlbumBtn";
+        albumInputDisplay = "none";
+        confirmBtnDisplay = "none";
+
+        //TODO: test for "" and duplicate album name on input...
+        CreateAlbum(newAlbumName);
+        albums = GetAlbumsTable(mode);
+        newAlbumName = ""; //Reset for next time
+    }
+
+    private static void SetSortBtnText()
+    {
+        sortBtnText = mode switch
+        {
+            AMSortMode.Title => "Album Title",
+            AMSortMode.TitleReversed => "Title Reversed",
+            AMSortMode.LastModified => "Last Modified",
+            AMSortMode.LastModifiedReversed => "Last Modified Reversed",
+            _ => "Album Title"
+        };
+    }
+
+    private static void ChangeOrder(AMSortMode newMode)
+    {
+        mode = newMode;
+        albums = GetAlbumsTable(mode);
+        SetSortBtnText();
+        sortDivVis = "hidden";
+    }
+}

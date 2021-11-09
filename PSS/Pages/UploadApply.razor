@@ -40,7 +40,7 @@
             int ii = i;
             <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
                 <div class="coverDiv">
-                    <img class="cover" src="@albums[i].albumCover" alt="">
+                    <img class="cover" src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
                 </div>
                 <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
                 <span title="@albums[i].name">@albums[i].name</span>
@@ -120,7 +120,7 @@
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
         newAlbumBtnId = "newAlbumBtn";
-        albums = Connection.GetAlbumNames();
+        albums = Connection.GetAlbumsTable();
         checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
@@ -227,9 +227,9 @@
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
 
-    //TODO: test for "" and duplicate album name on input...
+        //TODO: test for "" and duplicate album name on input...
         Connection.CreateAlbum(newAlbumName);
-        albums.Add(new Connection.Album(Connection.GetAlbumID(newAlbumName), newAlbumName, null));
+        albums.Add(new Connection.Album(Connection.GetAlbumID(newAlbumName), newAlbumName, null, DateTime.Now));
         checkedAlbums.Add(new bool());
         newAlbumName = ""; //Reset for next time
     }

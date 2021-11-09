@@ -1,0 +1,216 @@
+@page "/album-view/{albumID}"
+@inject NavigationManager navigationManager; //https://stackoverflow.com/a/58417140
+@using static PSS.Backend.Connection
+
+<link href="css/AlbumView.css" rel="stylesheet">
+
+@{
+    <header>
+        <button @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
+        <div id="moreOptionsDiv" style="visibility: @sortDivVis">
+            <button @onclick="@(() => ChangeOrder(AVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(mode == AVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
+            <button @onclick="@(() => ChangeOrder(AVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(mode == AVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
+            <button @onclick="@(() => ChangeOrder(AVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(mode == AVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
+            <button @onclick="@(() => ChangeOrder(AVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(mode == AVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
+            <button @onclick="DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
+        </div>
+        
+        <button @onclick="DeleteBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        <button @onclick="RemoveBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+        <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
+        <button @onclick="AlbumBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
+        <span style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="selectedAmtText">@selectedItems.Count selected</span>
+        <button @onclick="ClearChecks" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="clearBtn"><span class="material-icons-outlined">close</span></button>
+        
+        <div id="albumRenameDiv">
+            <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" @bind:event="oninput" autocomplete="off">
+            
+            <button @onclick="CancelBtnClick" style="visibility: @buttonsVis">
+                <span class="material-icons-outlined">close</span><span>Cancel</span>
+            </button>
+    
+            <button @onclick="ConfirmBtnClick" style="visibility: @buttonsVis">
+                <span class="material-icons-outlined">check</span><span>Confirm</span>
+            </button>
+        </div>
+    </header>
+
+    
+<div id="albumSelector" style="visibility: @albumsVis">
+        <button id="closeBtn" @onclick="CloseBtnClick" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
+        <button id="confirmBtn" @onclick="AlbumsConfirmBtnClick" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
+        <span id="addToText">Add to</span>
+        <div id="albums">
+            @for (int i = 0; i < albums.Count; i++)
+            {
+                int ii = i;
+                <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
+                    <div class="coverDiv">
+                        <img class="cover" src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
+                    </div>
+                    <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
+                    <span title="@albums[i].name">@albums[i].name</span>
+                </div>
+            }
+        </div>
+    </div>
+    
+    if (albumMedia.Count == 0)
+    {
+        <h1>Album is empty</h1>
+    }
+    else
+    {
+        <div id="mainDiv">
+            @foreach (MediaRow media in albumMedia)
+            {
+                <div class="thumbnail">
+                    <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
+                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" onclick="location.href='/view/@media.uuid'" loading="lazy"/>
+                </div>
+            }
+         </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string albumID { get; set; }
+    private static int statAlbumID;
+
+    private static string albumsVis;
+    private static List<MediaRow> albumMedia;
+    private static List<string> selectedItems;
+    private static string sortDivVis;
+    private static AVSortMode mode;
+    private static string albumName;
+    private static string _newAlbumName;
+    private static string buttonsVis;
+    private static List<bool> checkedAlbums;
+    private static readonly List<Album> albums = GetAlbumsTable();
+    
+    private static string NewAlbumName
+    {
+        get => _newAlbumName;
+        set
+        {
+            if (value == albumName) //Same so don't need to reapply
+            {
+                buttonsVis = "hidden";
+            }
+            else if (value != albumName)
+            {
+                _newAlbumName = value;
+                buttonsVis = "visible";
+            }
+        }
+    }
+    
+    protected override void OnInitialized()
+    {
+        albumsVis = "hidden";
+        statAlbumID = Int32.Parse(albumID);
+        albumMedia = LoadAlbum(statAlbumID);
+        selectedItems = new List<string>(); //Reset on page load/refresh
+        sortDivVis = "hidden";
+        mode = AVSortMode.NewestDateTaken; //Default
+        albumName = GetAlbumName(statAlbumID);
+        _newAlbumName = albumName;
+        buttonsVis = "hidden";
+        selectedItems = new List<string>(); //Reset on page load/refresh
+        checkedAlbums = (from album in albums select new bool()).ToList();
+    }
+
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
+
+    private async Task ToggleCheck(string id) //id = string path
+    {
+        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
+        if (newClass.Contains("unchecked"))
+            selectedItems.Remove(id);
+        else
+            selectedItems.Add(id);
+    }
+    
+    private async Task ClearChecks()
+    {
+        foreach (string item in selectedItems)
+            await JSRuntime.InvokeAsync<string>("removeCheck", item);
+        selectedItems.Clear();
+        albumsVis = "hidden";
+    }
+
+    private void DeleteAlbumBtnClick()
+    {
+        navigationManager.NavigateTo("/albums");
+        DeleteAlbum(statAlbumID);
+    }
+    
+    //Move selected stuff to trash tables and move to trash folder on server
+    private async Task DeleteBtnClick()
+    {
+        foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
+        {
+            MoveToTrash(path);
+        }
+        await ClearChecks();
+        albumMedia = LoadAlbum(statAlbumID, mode);
+    }
+
+    private async Task RemoveBtnClick()
+    {
+        foreach (string path in selectedItems.ToList())
+        {
+            RemoveFromAlbum(path, statAlbumID);
+        }
+        await ClearChecks();
+        albumMedia = LoadAlbum(statAlbumID, mode);
+    }
+
+    //Functions for album stuff
+    private static void AlbumBtnClick() => albumsVis = "visible";
+ 
+    private static void CloseBtnClick()
+    {
+        albumsVis = "hidden";
+        for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
+    }
+    
+    //Add item(s) to album(s) selected.
+    private async Task AlbumsConfirmBtnClick()
+    {
+        for (int c = 0; c < checkedAlbums.Count; c++)
+        {
+            if (checkedAlbums[c] == false) continue;
+    
+            foreach (string item in selectedItems)
+            {
+                AddToAlbum(item, albums[c].id);
+            }
+        }
+        CloseBtnClick();
+        await ClearChecks();
+    }
+
+    private static void CancelBtnClick()
+    {
+        buttonsVis = "hidden";
+        _newAlbumName = albumName; //Reset to OG
+    }
+
+    private static void ConfirmBtnClick()
+    {
+        buttonsVis = "hidden";
+        if (NewAlbumName != "")
+            RenameAlbum(NewAlbumName, statAlbumID);
+        else
+            NewAlbumName = "Please enter a name";
+    }
+        
+    private static void ChangeOrder(AVSortMode newMode)
+    {
+        mode = newMode;
+        albumMedia = LoadAlbum(statAlbumID, mode);
+    }
+}

@@ -24,7 +24,7 @@
                 int ii = i;
                 <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
                     <div class="coverDiv">
-                        <img class="cover" src="@albums[i].albumCover" alt="">
+                        <img class="cover" src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
                     </div>
                     <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
                     <span title="@albums[i].name">@albums[i].name</span>
@@ -44,7 +44,7 @@
             {
                 <div class="thumbnail">
                     <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
-                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href = '/view/@media.uuid'" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
+                    <img style="color: white" src="@PSS.Settings.requestPath/@media.path" onclick="location.href='/view/@media.uuid'" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
         </div>
@@ -57,7 +57,7 @@
     private static List<MediaRow> mediaList;
     private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
     private static List<bool> checkedAlbums;
-    private static readonly List<Album> albums = GetAlbumNames();
+    private static readonly List<Album> albums = GetAlbumsTable();
 
     protected override void OnInitialized()
     {

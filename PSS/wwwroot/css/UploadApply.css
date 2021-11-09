@@ -44,7 +44,7 @@ button span ~ span {
     text-decoration: none;
 }
 
-header input[type="text"] {
+header > input[type="text"] {
     margin-top: 12px;
     margin-left: 0;
     width: 200px;
@@ -107,7 +107,6 @@ header input[type="text"] {
 }
 
 .album:hover {
-    background-color: darkgreen;
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }

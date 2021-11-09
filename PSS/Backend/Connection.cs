@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using Microsoft.VisualBasic.FileIO; 
 using Npgsql;
 
 namespace PSS.Backend
@@ -12,17 +11,37 @@ namespace PSS.Backend
     {
         private static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
 
+        //AM = AlbumsMain
+        public enum AMSortMode
+        {
+            Title,
+            TitleReversed,
+            LastModified,
+            LastModifiedReversed
+        }
+        
+        //AV = AlbumView
+        public enum AVSortMode
+        {
+            OldestDateTaken,
+            NewestDateTaken,
+            OldestAdded,
+            NewestAdded
+        }
+
         public record Album
         {
-            public int id;
-            public string name;
-            public string albumCover;
+            public readonly int id;
+            public readonly string name;
+            public readonly string albumCover;
+            public readonly DateTime dateUpdated;
 
-            public Album(int id, string name, string albumCover)
+            public Album(int id, string name, string albumCover, DateTime dateUpdated)
             {
                 this.id = id;
                 this.name = name;
                 this.albumCover = albumCover;
+                this.dateUpdated = dateUpdated;
             }
         }
 
@@ -93,8 +112,28 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO albums (name) VALUES (@name)", connection);
+                NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated) VALUES (@name, now())", connection);
                 cmd.Parameters.AddWithValue("@name", name);
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        public static void RenameAlbum(string newName, int id)
+        {
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("UPDATE albums SET name=@newName WHERE id=@id", connection);
+                cmd.Parameters.AddWithValue("@newName", newName);
+                cmd.Parameters.AddWithValue("@id", id);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -183,6 +222,38 @@ namespace PSS.Backend
             return returnVal;
         }
 
+        public static string GetAlbumName(int id)
+        {
+            string returnVal = "";
+            try
+            {
+                Open();
+
+                //Find the album ID using the album name.
+                NpgsqlCommand selectCmd = new("SELECT name FROM albums WHERE id=@id", connection);
+                selectCmd.Parameters.AddWithValue("@id", id);
+                selectCmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = selectCmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read(); //There should only be 1 line to read.
+                    returnVal = reader.GetString(0); //First and only column.
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return returnVal;
+        } 
+
         //Deletes items in the album from album_entries, then remove the album from the albums table.
         //THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos.
         public static void DeleteAlbum(string name)
@@ -222,10 +293,13 @@ namespace PSS.Backend
                 NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE album_id=@id", connection);
                 delCmd.Parameters.AddWithValue("@id", albumID);
                 delCmd.ExecuteNonQuery();
+                
+                //Remove all items from the trash table too.
+                delCmd.CommandText = "DELETE FROM album_entries_trash WHERE album_id=@id";
+                delCmd.ExecuteNonQuery();
 
                 //Finally, remove from albums table.
                 delCmd.CommandText = "DELETE FROM albums WHERE id=@id";
-                delCmd.Parameters.AddWithValue("@ID", albumID);
                 delCmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -250,6 +324,9 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.Parameters.AddWithValue("@date_added_to_album", DateTime.Now);
                 cmd.ExecuteNonQuery();
+
+                cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
+                cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
             {
@@ -271,6 +348,9 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
+
+                cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
+                cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
             {
@@ -282,22 +362,33 @@ namespace PSS.Backend
             }
         }
 
-        public static List<Album> GetAlbumNames()
+        public static List<Album> GetAlbumsTable(AMSortMode mode = AMSortMode.Title)
         {
             List<Album> albums = new();
+
+            string orderBy = mode switch
+            {
+                AMSortMode.Title => "name ASC",
+                AMSortMode.TitleReversed => "name DESC",
+                AMSortMode.LastModified => "last_updated ASC",
+                AMSortMode.LastModifiedReversed => "last_updated DESC",
+                _ => "name ASC"
+            };
+
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT id, name, album_cover FROM albums", connection);
+                NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums ORDER BY " + orderBy, connection);
+                cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
-                var reader = cmd.ExecuteReader();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
 
-                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2))); //https://stackoverflow.com/a/38930847
+                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2), reader.GetDateTime(3))); //https://stackoverflow.com/a/38930847
                 reader.Close();
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred in GetAlbumNames. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                Console.WriteLine("An unknown error occurred in GetAlbumsTable. Error code: " + e.ErrorCode + " Message: " + e.Message);
             }
             finally
             {
@@ -347,7 +438,7 @@ namespace PSS.Backend
         public static void PermDeleteItem(string path)
         {
             File.Delete(Path.Join(Settings.libFolderFullPath, path));
-            
+
             try
             {
                 Open();
@@ -369,7 +460,7 @@ namespace PSS.Backend
                 Close();
             }
         }
-        
+
         //Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
         public static void RestoreItem(string path)
         {
@@ -432,42 +523,29 @@ namespace PSS.Backend
             return media;
         }
 
-        public static List<MediaRow> LoadAlbum(string name)
+        // public static List<MediaRow> LoadAlbum(string name)
+        // {
+        //     List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+        //     return LoadAlbum(GetAlbumID(name));
+        // }
+
+        public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
-            int ID = GetAlbumID(name); //Find the album to work with.
+            
+            string orderBy = mode switch
+            {
+                AVSortMode.OldestDateTaken => "date_taken ASC",
+                AVSortMode.NewestDateTaken => "date_taken DESC",
+                AVSortMode.OldestAdded => "date_added_to_album ASC",
+                AVSortMode.NewestAdded => "date_added_to_album DESC",
+                _ => "date_taken DESC"
+            };
 
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@ID", connection);
-                cmd.Parameters.AddWithValue("@ID", ID);
-                cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return media;
-        }
-
-        public static List<MediaRow> LoadAlbum(int albumID)
-        {
-            List<MediaRow> media = new(); //Stores every row retrieved; returned later.
-
-            try
-            {
-                Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID", connection);
+                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();

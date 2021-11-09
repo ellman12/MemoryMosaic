@@ -29,10 +29,10 @@ ALTER TABLE public.album_entries_trash
 
 CREATE TABLE IF NOT EXISTS public.albums
 (
-    -- id serial NOT NULL,
-    id integer NOT NULL DEFAULT nextval('albums_id_seq'::regclass),
+    id serial NOT NULL,
     name text COLLATE pg_catalog."default" NOT NULL,
     album_cover text COLLATE pg_catalog."default",
+    last_updated timestamp without time zone NOT NULL,
     CONSTRAINT albums_pkey PRIMARY KEY (id),
     CONSTRAINT albums_name_key UNIQUE (name)
 )
