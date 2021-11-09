@@ -95,7 +95,7 @@ button span ~ span {
     top: 70px;
 }
 
-#mainDiv .thumbnail span {
+#mainDiv .thumbnail:hover {
     cursor: pointer;
 }
 

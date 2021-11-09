@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject NavigationManager navigationManager;
 @using static PSS.Backend.Connection
 
 <link href="css/IndexNew.css" rel="stylesheet"/>
@@ -44,7 +45,7 @@
             {
                 <div class="thumbnail">
                     <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
-                    <a href="/view/@media.uuid"><img style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/></a>
+                    <img @onclick="() => ImgClicked(media.uuid.ToString(), media.path)" style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
         </div>
@@ -89,6 +90,14 @@
         selectedItems.Clear();
         headerVis = "hidden";
         albumsVis = "hidden";
+    }
+    
+    private async Task ImgClicked(string uuid, string path)
+    {
+        if (selectedItems.Count > 0)
+            await ToggleCheck(path);
+        else
+            navigationManager.NavigateTo($"/view/{uuid}");
     }
     
     //Move selected stuff to trash tables and move to trash folder on server
