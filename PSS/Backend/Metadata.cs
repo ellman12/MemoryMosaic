@@ -69,7 +69,7 @@ namespace PSS.Backend
         //TODO: untested
         private static bool GetVidDate(string path, out DateTime dateTaken)
         {
-            bool hasData = false;
+            // bool hasData = false;
             string cmdOutput = ""; //The output of the ffprobe command.
             ProcessStartInfo ffprobeInfo = new()
             {
