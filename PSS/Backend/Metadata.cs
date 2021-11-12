@@ -103,58 +103,69 @@ namespace PSS.Backend
             bool hasData = true;
             string timestamp = ""; //The actual timestamp in the filename, without the extra chars we don't want. Converted to DateTime at the end.
 
-            if (filename.Contains("Screenshot_")) //If Android screenshot. E.g., 'Screenshot_20201028-141626_Messages.jpg'
+            try
             {
-                //Console.WriteLine("Screenshot");
-                timestamp = filename.Substring(11, 8) + filename.Substring(20, 6); //Strip the chars we don't want.
-                timestamp = timestamp.Insert(4, "-");
-                timestamp = timestamp.Insert(7, "-");
-                timestamp = timestamp.Insert(10, " ");
-                timestamp = timestamp.Insert(13, ":");
-                timestamp = timestamp.Insert(16, ":");
+                if (filename.Contains("Screenshot_")) //If Android screenshot. E.g., 'Screenshot_20201028-141626_Messages.jpg'
+                {
+                    //Console.WriteLine("Screenshot");
+                    timestamp = filename.Substring(11, 8) + filename.Substring(20, 6); //Strip the chars we don't want.
+                    timestamp = timestamp.Insert(4, "-");
+                    timestamp = timestamp.Insert(7, "-");
+                    timestamp = timestamp.Insert(10, " ");
+                    timestamp = timestamp.Insert(13, ":");
+                    timestamp = timestamp.Insert(16, ":");
+                }
+                else if (filename.Contains("IMG_") || filename.Contains("VID_"))
+                {
+                    //Console.WriteLine("img or vid");
+                    timestamp = filename.Substring(4, 8) + filename.Substring(13, 6);
+                }
+                else if (filename[4] == '-' && filename[13] == '-' && filename[16] == '-' && filename.Contains(".mkv")) //Check if an OBS-generated file. It would have '-' at these 3 indices.
+                {
+                    //Console.WriteLine("OBS");
+                    timestamp = filename;
+                    timestamp = filename.Substring(0, timestamp.Length - 4); //Remove extension https://stackoverflow.com/questions/15564944/remove-the-last-three-characters-from-a-string
+                    timestamp = timestamp.Replace("-", "").Replace(" ", "");
+                }
+                else if (filename[8] == '_') //A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones. Not 100% sure.
+                {
+                    //Console.WriteLine("Android _");
+                    timestamp = filename.Substring(0, 8) + filename.Substring(9, 6);
+                }
+                else if (filename.Contains("_s")) //A Nintendo Switch screenshot/video clip, like '2018022016403700_s.mp4'.
+                {
+                    //Console.WriteLine("Switch");
+                    timestamp = filename.Substring(0, 14);
+                }
+                else if (filename.Contains("Capture") && filename.Contains(".png")) //Terraria's Capture Mode 'Capture 2020-05-16 21_04_54.png'
+                {
+                    //Console.WriteLine("Terraria");
+                    timestamp = filename.Substring(8, 19);
+                    timestamp = timestamp.Replace('_', ':');
+                }
+                else if (filename.Contains("Screenshot ") && filename.Contains(".png")) //Snip & Sketch generates these filenames. E.g., 'Screenshot 2020-11-17 104051.png'
+                {
+                    //Console.WriteLine("Snip and sketch");
+                    timestamp = filename.Substring(11, 17);
+                    timestamp = timestamp.Replace("-", "").Replace(" ", "");
+                }
+                else
+                    hasData = false;
             }
-            else if (filename.Contains("IMG_") || filename.Contains("VID_"))
+            catch (Exception e)
             {
-                //Console.WriteLine("img or vid");
-                timestamp = filename.Substring(4, 8) + filename.Substring(13, 6);
+                Console.WriteLine($"Error in GetFilenameTimestamp() {e.Message}");
             }
-            else if (filename[4] == '-' && filename[13] == '-' && filename[16] == '-' && filename.Contains(".mkv")) //Check if an OBS-generated file. It would have '-' at these 3 indices.
+            finally
             {
-                //Console.WriteLine("OBS");
-                timestamp = filename;
-                timestamp = filename.Substring(0, timestamp.Length - 4); //Remove extension https://stackoverflow.com/questions/15564944/remove-the-last-three-characters-from-a-string
-                timestamp = timestamp.Replace("-", "").Replace(" ", "");
+                if (timestamp == "")
+                {
+                    dateTaken = DateTime.Now;
+                    hasData = false;
+                }
+                else
+                    hasData = ParseTimestamp(timestamp, out dateTaken);
             }
-            else if (filename[8] == '_') //A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones. Not 100% sure.
-            {
-                //Console.WriteLine("Android _");
-                timestamp = filename.Substring(0, 8) + filename.Substring(9, 6);
-            }
-            else if (filename.Contains("_s")) //A Nintendo Switch screenshot/video clip, like '2018022016403700_s.mp4'.
-            {
-                //Console.WriteLine("Switch");
-                timestamp = filename.Substring(0, 14);
-            }
-            else if (filename.Contains("Capture") && filename.Contains(".png")) //Terraria's Capture Mode 'Capture 2020-05-16 21_04_54.png'
-            {
-                //Console.WriteLine("Terraria");
-                timestamp = filename.Substring(8, 19);
-                timestamp = timestamp.Replace('_', ':');
-            }
-            else if (filename.Contains("Screenshot ") && filename.Contains(".png")) //Snip & Sketch generates these filenames. E.g., 'Screenshot 2020-11-17 104051.png'
-            {
-                //Console.WriteLine("Snip and sketch");
-                timestamp = filename.Substring(11, 17);
-                timestamp = timestamp.Replace("-", "").Replace(" ", "");
-            }
-            else
-                hasData = false;
-
-            if (timestamp == "")
-                dateTaken = DateTime.Now;
-            else
-                ParseTimestamp(timestamp, out dateTaken);
-
             return hasData;
         }
 
