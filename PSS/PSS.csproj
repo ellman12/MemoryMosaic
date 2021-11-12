@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="ExifLib" Version="1.7.0" />
-    <PackageReference Include="MudBlazor" Version="5.1.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql" Version="5.0.10" />
   </ItemGroup>
