@@ -38,7 +38,6 @@ button:hover {
     z-index: 999;
     top: 56px;
     right: 60px;
-    width: 316px;
 }
 
 #infoDiv > div {
@@ -57,10 +56,6 @@ button:hover {
 
 #infoDiv > div > span {
     margin-right: 5px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 252px;
 }
 
 #moreOptionsDiv {
