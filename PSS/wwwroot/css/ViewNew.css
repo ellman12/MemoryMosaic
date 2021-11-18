@@ -31,6 +31,20 @@ button:hover {
     cursor: pointer;
 }
 
+#infoDiv {
+    background-color: black;
+    position: absolute;
+    z-index: 999;
+    top: 56px;
+    right: 130px;
+    height: 400px;
+    width: 300px;
+}
+
+#infoDiv > span {
+    
+}
+
 #moreOptionsDiv {
     display: flex;
     flex-direction: column;

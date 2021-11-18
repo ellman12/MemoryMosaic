@@ -1,4 +1,4 @@
-@*Page for viewing full-sized images*@
+﻿@*Page for viewing full-sized images*@
 @page "/view/{id}"
 @using PSS.Backend
 @using System.IO
@@ -15,11 +15,14 @@
     }
     else
     {
-        // DateTime dateTaken = Connection.GetDateTaken(id);
+        DateTime dateTaken = Connection.GetDateTaken(Guid.Parse(id));
         <div id="buttons">
-            <button title="Show Info"><span class="material-icons-outlined">info</span></button>
+            <button @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
             <button title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             <button @onclick="@(() => ToggleDropdown(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
+        </div>
+        <div id="infoDiv" style="visibility: @infoVis">
+            <span>@dateTaken.ToString("ddd, MMM d, yyyy h:mm tt")</span>
         </div>
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
             <button title="Star"><span class="material-icons-outlined">star_border</span></button>
@@ -36,6 +39,7 @@
     [Parameter]
     public string id { get; set; }
 
+    private static string infoVis = "hidden";
     private static string moreOptionsVis = "hidden";
 }
 
