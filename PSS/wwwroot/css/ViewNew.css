@@ -1,6 +1,32 @@
 /*Stuff for just View.razor*/
 
-/*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
+/*Buttons div in top right corner*/
+#buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    background-color: black;
+    position: absolute;
+    /*width: 700px;*/
+    right: 20px;
+    z-index: 999;
+}
+
+#buttons > button {
+    background: none;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 3px;
+}
+
+#buttons > button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
 #container {
     height: 98%;
     display: flex;
@@ -13,13 +39,9 @@
     transform: translate(-50%, -50%);
 }
 
+/*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
 #image {
-/*    left: 0;*/
     height: 100%;
-/*    margin: auto;*/
     overflow: auto;
-/*    position: absolute;*/
-/*    right: 0;*/
-    -o-object-fit: cover;
     object-fit: cover;
 }

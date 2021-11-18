@@ -15,8 +15,19 @@
     }
     else
     {
-        DateTime dateTaken = Connection.GetDateTaken(id);
-
+        // DateTime dateTaken = Connection.GetDateTaken(id);
+        <div id="buttons">
+            <button title="Show Info"><span class="material-icons-outlined">info</span></button>
+            <button title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <button><span class="material-icons-outlined">more_vert</span></button>
+            <div id="moreOptionsDiv">
+                <button title="Star"><span class="material-icons-outlined">star_border</span></button>
+                <button title="Add to Album"><span class="material-icons-outlined">collections</span></button>
+                <button title="Add to Folder"><span class="material-icons-outlined">perm_media</span></button>
+                <button title="Archive"><span class="material-icons-outlined">archive</span></button>
+            </div>
+        </div>
+        
         <div id="container"><img id="image" src="@PSS.Settings.requestPath/@path" alt="" /></div>
     }
 }
