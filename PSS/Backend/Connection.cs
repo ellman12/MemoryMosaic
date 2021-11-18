@@ -781,6 +781,68 @@ namespace PSS.Backend
             return GetDateTaken(path).ToString("tt", CultureInfo.InvariantCulture);
         }
 
+        public static DateTime GetDateAdded(string path)
+        {
+            DateTime dateTaken = new();
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    dateTaken = reader.GetDateTime(0);
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return dateTaken;
+        }
+
+        public static DateTime GetDateAdded(Guid uuid)
+        {
+            DateTime dateTaken = new();
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    dateTaken = reader.GetDateTime(0);
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return dateTaken;
+        }
+
         //ONLY FOR TESTING. Clears a table, but doesn't delete the table itself.
         public static void ClearMediaTable()
         {
