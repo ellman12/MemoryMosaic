@@ -22,7 +22,11 @@
             <button @onclick="@(() => ToggleDropdown(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
         </div>
         <div id="infoDiv" style="visibility: @infoVis">
-            <span>@dateTaken.ToString("ddd, MMM d, yyyy h:mm tt")</span>
+            <div>
+                <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
+                <span>@dateTaken.ToString("ddd, MMM d, yyyy h:mm tt")</span>
+                <button><span class="material-icons-outlined">edit</span></button>
+            </div>
         </div>
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
             <button title="Star"><span class="material-icons-outlined">star_border</span></button>
@@ -39,7 +43,7 @@
     [Parameter]
     public string id { get; set; }
 
-    private static string infoVis = "hidden";
+    private static string infoVis = "visible";
     private static string moreOptionsVis = "hidden";
 }
 

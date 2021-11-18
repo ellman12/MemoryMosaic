@@ -32,17 +32,30 @@ button:hover {
 }
 
 #infoDiv {
+    outline: 1px solid white;
     background-color: black;
     position: absolute;
     z-index: 999;
     top: 56px;
-    right: 130px;
-    height: 400px;
-    width: 300px;
+    right: 100px;
+    height: 200px;
 }
 
-#infoDiv > span {
-    
+#infoDiv > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 60px;
+}
+
+#infoDiv > div > svg {
+    fill: white;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#infoDiv > div > span {
+    margin-right: 5px;
 }
 
 #moreOptionsDiv {
