@@ -1,4 +1,9 @@
 /*Stuff for just View.razor*/
+* {
+    color: white;
+    user-select: none;
+    font-family: 'Product Sans', sans-serif;
+}
 
 /*Buttons div in top right corner*/
 #buttons {
@@ -7,12 +12,11 @@
     justify-content: space-evenly;
     background-color: black;
     position: absolute;
-    /*width: 700px;*/
-    right: 20px;
+    right: 0;
     z-index: 999;
 }
 
-#buttons button {
+button {
     background: none;
     color: white;
     border: none;
@@ -22,9 +26,20 @@
     margin: 3px;
 }
 
-#buttons button:hover {
+button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
+}
+
+#moreOptionsDiv {
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    position: absolute;
+    right: 0;
+    top: 56px;
+    z-index: 999;
+
 }
 
 #container {
