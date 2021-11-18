@@ -1,0 +1,25 @@
+/*Stuff for just View.razor*/
+
+/*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
+#container {
+    height: 98%;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#image {
+/*    left: 0;*/
+    height: 100%;
+/*    margin: auto;*/
+    overflow: auto;
+/*    position: absolute;*/
+/*    right: 0;*/
+    -o-object-fit: cover;
+    object-fit: cover;
+}

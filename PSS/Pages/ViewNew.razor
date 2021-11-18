@@ -1,0 +1,27 @@
+﻿@*Page for viewing full-sized images*@
+@page "/view/{id}"
+@using PSS.Backend
+@using System.IO
+@layout EmptyLayout
+
+<link href="/css/ViewNew.css" rel="stylesheet" />
+
+@{
+    string path = Connection.GetPathFromUuid(id);
+    if (path == "null") //If URL contains a UUID that isn't present in the database.
+    {
+        <NavMenu />
+        <Error />
+    }
+    else
+    {
+        DateTime dateTaken = Connection.GetDateTaken(id);
+
+        <div id="container"><img id="image" src="@PSS.Settings.requestPath/@path" alt="" /></div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+}
