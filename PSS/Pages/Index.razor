@@ -100,7 +100,7 @@
             navigationManager.NavigateTo($"/view/{uuid}");
     }
     
-    //Move selected stuff to trash tables and move to trash folder on server
+    //Move selected stuff to trash tables
     private async Task DeleteBtnClick()
     {
         foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
