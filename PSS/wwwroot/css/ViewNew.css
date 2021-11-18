@@ -37,8 +37,8 @@ button:hover {
     position: absolute;
     z-index: 999;
     top: 56px;
-    right: 100px;
-    height: 200px;
+    right: 60px;
+    width: 316px;
 }
 
 #infoDiv > div {
@@ -46,7 +46,7 @@ button:hover {
     flex-direction: row;
     align-items: center;
     align-content: center;
-    height: 60px;
+    height: 50px;
 }
 
 #infoDiv > div > svg {
@@ -57,6 +57,10 @@ button:hover {
 
 #infoDiv > div > span {
     margin-right: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 252px;
 }
 
 #moreOptionsDiv {
@@ -64,10 +68,10 @@ button:hover {
     flex-direction: column;
     background-color: black;
     position: absolute;
-    right: 0;
+    right: 1px;
     top: 56px;
     z-index: 999;
-
+    outline: 1px solid white;
 }
 
 #imgDiv {
