@@ -42,7 +42,7 @@ button:hover {
 
 }
 
-#container {
+#imgDiv {
     height: 98%;
     display: flex;
     align-content: center;
@@ -55,7 +55,7 @@ button:hover {
 }
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
-#image {
+#imgDiv > img {
     height: 100%;
     overflow: auto;
     object-fit: cover;

@@ -1,4 +1,4 @@
-﻿@*Page for viewing full-sized images*@
+@*Page for viewing full-sized images*@
 @page "/view/{id}"
 @using PSS.Backend
 @using System.IO
@@ -28,7 +28,7 @@
             <button title="Archive"><span class="material-icons-outlined">archive</span></button>
         </div>
         
-        <div id="container"><img id="image" src="@PSS.Settings.requestPath/@path" alt="" /></div>
+        <div id="imgDiv"><img src="@PSS.Settings.requestPath/@path" alt="" /></div>
     }
 }
 
