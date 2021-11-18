@@ -57,11 +57,16 @@
     [Parameter]
     public string id { get; set; }
 
-    private static string infoVis = "visible";
-    private static string moreOptionsVis = "hidden";
+    private static string infoVis;
+    private static string moreOptionsVis;
 }
 
 @functions{
+    protected override void OnInitialized()
+    {
+        infoVis = "hidden";
+        moreOptionsVis = "hidden";
+    } 
 
     private static void ToggleDropdown(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
 }
