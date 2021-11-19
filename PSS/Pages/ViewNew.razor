@@ -45,20 +45,23 @@
         
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
             <button title="Star"><span class="material-icons-outlined">star_border</span></button>
-            <button title="Add to Album"><span class="material-icons-outlined">collections</span></button>
+            <button @onclick="@(() => albumsVis = "visible")" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
             <button title="Add to Folder"><span class="material-icons-outlined">perm_media</span></button>
             <button title="Archive"><span class="material-icons-outlined">archive</span></button>
         </div>
         
-        <div id="imgDiv"><img src="@PSS.Settings.requestPath/@path" alt="" /></div>
+        <AlbumSelector SelectedItems="@(new List<string> {path})" @bind-AlbumsVis="@albumsVis"/>
+
+        <div id="imgDiv"><img id="@path" src="@PSS.Settings.requestPath/@path" alt="" /></div>
     }
 }
 
 @code {
     [Parameter]
     public string id { get; set; }
-
     private static string staticID;
+    
+    private static string albumsVis;
     private static string infoVis;
     private static string moreOptionsVis;
 }
@@ -67,6 +70,7 @@
     protected override void OnInitialized()
     {
         staticID = id;
+        albumsVis = "hidden";
         infoVis = "hidden";
         moreOptionsVis = "hidden";
     }
