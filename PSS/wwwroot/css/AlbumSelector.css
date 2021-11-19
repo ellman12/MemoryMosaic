@@ -1,11 +1,4 @@
-/* Main albums page where user clicks album thumbnail they want to view items of */
-* {
-    color: white;
-    user-select: none;
-    font-family: 'Product Sans', sans-serif;
-}
-
-button {
+#albumSelector > button {
     color: white;
     border-radius: 50%;
     width: 50px;
@@ -14,7 +7,7 @@ button {
     background: none;
 }
 
-button:hover {
+#albumSelector > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
