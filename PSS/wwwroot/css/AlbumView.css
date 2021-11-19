@@ -242,7 +242,6 @@ header > #albumRenameDiv {
 }
 
 .album:hover {
-    background-color: darkgreen;
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }

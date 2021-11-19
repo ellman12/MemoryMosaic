@@ -4,6 +4,11 @@
 @layout EmptyLayout
 
 @{
-    string yes = "new album 59";
-    <button @onclick="() => Connection.RemoveFromAlbum(yes, 1)">click me</button>
-} 
+    
+    <AlbumSelector SelectedItems="yes"/>
+}
+
+@code
+{
+    private List<string> yes = new() {"item1", "item2"};
+}
