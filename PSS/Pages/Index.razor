@@ -10,7 +10,7 @@
         <button><span class="material-icons-outlined">perm_media</span></button>
         <button><span class="material-icons-outlined">archive</span></button>
         <button><span class="material-icons-outlined">star_outline</span></button>
-        <button @onclick="AlbumBtnClick"><span class="material-icons-outlined">collections</span></button>
+        <button @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
         <span id="selectedAmtText" style="visibility: @headerVis">@selectedItems.Count selected</span>
         <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
@@ -94,6 +94,4 @@
         await ClearChecks();
         mediaList = LoadMediaTable();
     }
-
-    private static void AlbumBtnClick() => albumsVis = "visible";
 }

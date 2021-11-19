@@ -1,4 +1,4 @@
-@*Reusable component for adding selected items to album(s)*@
+@* Reusable component that allows user to choose album(s) to add selected items to *@
 @using static PSS.Backend.Connection
 <link href="css/AlbumSelector.css" rel="stylesheet">
 
@@ -22,19 +22,19 @@
 </div>
 
 @code{
-    [Parameter]
+    [Parameter] //Needs to be passed in
     public List<string> SelectedItems { get; set; } //Passed in from the page. Paths selected by user
     
     [Parameter]
+    public EventCallback<int> SelectedItemsCountChanged { get; set; } //Used for clearing SelectedItems. https://blazor-university.com/components/two-way-binding/
+    
+    [Parameter] //Needs to be passed in
     public string HeaderVis { get; set; } //Passed in from the calling page. Visibility of the header that displays selected items count, misc buttons, etc.
     
     [Parameter]
     public EventCallback<string> HeaderVisChanged { get; set; } //Changing the passed in headerVis.
-
-    [Parameter]
-    public EventCallback<int> SelectedItemsCountChanged { get; set; } //Used for clearing SelectedItems. https://blazor-university.com/components/two-way-binding/
     
-    [Parameter]
+    [Parameter] //Needs to be passed in
     public string AlbumsVis { get; set; } //Visibility of the selector
     
     [Parameter]
