@@ -5,6 +5,7 @@
     height: 50px;
     border: none;
     background: none;
+    margin: 0;
 }
 
 #albumSelector > button:hover {
