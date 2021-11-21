@@ -29,6 +29,7 @@ namespace PSS.Backend
             NewestAdded
         }
 
+        //Represents a record from the albums table.
         public record Album
         {
             public readonly int id;
@@ -36,6 +37,13 @@ namespace PSS.Backend
             public readonly string albumCover;
             public readonly DateTime dateUpdated;
 
+            public Album(int id, string name, string albumCover)
+            {
+                this.id = id;
+                this.name = name;
+                this.albumCover = albumCover;
+            }
+            
             public Album(int id, string name, string albumCover, DateTime dateUpdated)
             {
                 this.id = id;
@@ -379,7 +387,7 @@ namespace PSS.Backend
             {
                 Open();
                 NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums ORDER BY " + orderBy, connection);
-                cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
+                //cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
@@ -395,6 +403,38 @@ namespace PSS.Backend
                 Close();
             }
 
+            return albums;
+        }
+
+        /// <summary>
+        /// Returns a List of all the items an album is in.
+        /// </summary>
+        /// <param name="path">path to item</param>
+        /// <returns>List of the albums the item is in, if any</returns>
+        public static List<Album> GetAlbumsItemIn(string path)
+        {
+            List<Album> albums = new();
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT album_id, name, album_cover FROM album_entries AS e INNER JOIN albums AS a ON e.album_id=a.id WHERE path=@path ORDER BY name ASC", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2)));
+                reader.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred in GetAlbumsTable. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+            
             return albums;
         }
 
