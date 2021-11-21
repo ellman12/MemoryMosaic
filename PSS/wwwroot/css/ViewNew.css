@@ -57,6 +57,7 @@ button:hover {
     margin-right: 5px;
 }
 
+/*Dropdown in top right corner*/
 #moreOptionsDiv {
     display: flex;
     flex-direction: column;
@@ -66,6 +67,56 @@ button:hover {
     top: 56px;
     z-index: 999;
     outline: 1px solid white;
+}
+
+#datePicker {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background-color: black;
+    height: 125px;
+    z-index: 999;
+    border: 1px solid white;
+}
+
+#datePicker > span {
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    display: block;
+}
+
+#datePicker > input[type="datetime-local"] {
+    color: black;
+    border: none;
+    outline: none;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+header button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+#datePicker > #buttons > button {
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: none;
+    margin-top: 10px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+#datePicker > #buttons > button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
 }
 
 #imgDiv {

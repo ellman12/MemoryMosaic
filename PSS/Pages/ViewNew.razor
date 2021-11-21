@@ -11,13 +11,11 @@
     string path = Connection.GetPathFromUuid(id);
     if (path == "null") //If URL contains a UUID that isn't present in the database.
     {
-        <NavMenu />
-        <Error />
+        <NavMenu/>
+        <Error/>
     }
     else
     {
-        DateTime dateTaken = Connection.GetDateTaken(Guid.Parse(id));
-        
         @*Stuff in top right corner*@
         <div id="buttons">
             <button @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
@@ -51,8 +49,17 @@
         </div>
         
         <AlbumSelector SelectedItems="@(new List<string> {path})" @bind-AlbumsVis="@albumsVis"/>
+        
+        <div id="datePicker">
+            <span>Enter new date taken:</span>
+            <input title="" type="datetime-local" @bind="@ViewNew.dateTaken" required/>
+            <div id="buttons">
+                <button><span class="material-icons-outlined">close</span></button>
+                <button><span class="material-icons-outlined">check</span></button>
+            </div>
+        </div>
 
-        <div id="imgDiv"><img id="@path" src="@PSS.Settings.requestPath/@path" alt="" /></div>
+        <div id="imgDiv"><img id="@path" src="@PSS.Settings.requestPath/@path" alt=""/></div>
     }
 }
 
@@ -60,7 +67,8 @@
     [Parameter]
     public string id { get; set; }
     private static string staticID;
-    
+
+    private static DateTime dateTaken;
     private static string albumsVis;
     private static string infoVis;
     private static string moreOptionsVis;
@@ -69,6 +77,7 @@
 @functions{
     protected override void OnInitialized()
     {
+        dateTaken = Connection.GetDateTaken(Guid.Parse(id));
         staticID = id;
         albumsVis = "hidden";
         infoVis = "hidden";
