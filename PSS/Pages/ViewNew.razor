@@ -5,10 +5,9 @@
 @using System.IO
 @layout EmptyLayout
 
-<link href="/css/ViewNew.css" rel="stylesheet" />
+<link href="/css/ViewNew.css" rel="stylesheet"/>
 
 @{
-    string path = Connection.GetPathFromUuid(id);
     if (path == "null") //If URL contains a UUID that isn't present in the database.
     {
         <NavMenu/>
@@ -27,7 +26,7 @@
             <div title="Date Taken">
                 <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
                 <span>@ogDateTaken.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
-                <button><span class="material-icons-outlined">edit</span></button>
+                <button @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
             </div>
             
             <div title="Date Added">
@@ -50,12 +49,12 @@
         
         <AlbumSelector SelectedItems="@(new List<string> {path})" @bind-AlbumsVis="@albumsVis"/>
         
-        <div id="datePicker">
+        <div id="datePicker" style="visibility: @editDateDivVis;">
             <span>Enter new date taken:</span>
             <input title="" type="datetime-local" @bind="@newDateTaken" required/>
             <div id="buttons">
-                <button><span class="material-icons-outlined">close</span></button>
-                <button><span class="material-icons-outlined">check</span></button>
+                <button @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
+                <button @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
             </div>
         </div>
 
@@ -68,21 +67,25 @@
     public string id { get; set; }
     private static string staticID;
 
+    private static string path;
     private static DateTime ogDateTaken; //Original
     private static DateTime newDateTaken;
     private static string albumsVis;
     private static string infoVis;
     private static string moreOptionsVis;
+    private static string editDateDivVis;
 }
 
 @functions{
     protected override void OnInitialized()
     {
+        path = Connection.GetPathFromUuid(id);
         ogDateTaken = newDateTaken = Connection.GetDateTaken(Guid.Parse(id));
         staticID = id;
         albumsVis = "hidden";
         infoVis = "hidden";
         moreOptionsVis = "hidden";
+        editDateDivVis = "hidden";
     }
     
     private void DeleteBtnClick()
@@ -92,4 +95,10 @@
     }
 
     private static void ToggleDropdown(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
+
+    private static void ConfirmBtnClick()
+    {
+        editDateDivVis = "hidden";
+        Connection.UpdateDateTaken(path, newDateTaken);
+    }
 }
