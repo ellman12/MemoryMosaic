@@ -64,7 +64,7 @@
     overflow-y: scroll;
 }
 
-.album {
+#albums .album {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -72,29 +72,29 @@
     width: auto;
 }
 
-.album:hover {
+#albums .album:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
-.coverDiv {
+#albums .coverDiv {
     margin: 0;
     padding: 0;
     display: flex;
 }
 
-.cover {
+#albums .cover {
     border-radius: 4px;
     object-fit: cover;
     width: 60px;
     height: 60px;
 }
 
-.album input[type="checkbox"] {
+#albums .album input[type="checkbox"] {
     margin-left: 7px;
 }
 
-.album span {
+#albums .album span {
     margin-top: -1px;
     margin-left: 6px;
     white-space: nowrap;
