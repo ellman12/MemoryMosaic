@@ -38,6 +38,22 @@
                 <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
                 <span>@Path.GetFileName(Connection.GetPathFromUuid(id))</span>
             </div>
+            
+            <span id="albumsText">Albums</span>
+
+            <div id="albumsIn">
+                @foreach (Connection.Album album in albums)
+                {
+                    <a href="/album-view/@album.id">
+                        <div class="album">
+                            <div class="coverDiv">
+                                <img class="cover" src="@PSS.Settings.requestPath/@album.albumCover" alt="">
+                            </div>
+                            <span title="@album.name">@album.name</span>
+                        </div>
+                    </a>
+                }
+            </div>
         </div>
         
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
@@ -74,6 +90,7 @@
     private static string infoVis;
     private static string moreOptionsVis;
     private static string editDateDivVis;
+    private static List<Connection.Album> albums;
 }
 
 @functions{
@@ -86,6 +103,7 @@
         infoVis = "hidden";
         moreOptionsVis = "hidden";
         editDateDivVis = "hidden";
+        albums = Connection.GetAlbumsItemIn(path);
     }
     
     private void DeleteBtnClick()
