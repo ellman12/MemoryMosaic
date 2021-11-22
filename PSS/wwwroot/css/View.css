@@ -204,6 +204,7 @@ button:hover {
     top: 50%;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+    outline: none; /* Remove focus outline */
 }
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/

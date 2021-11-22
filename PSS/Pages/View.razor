@@ -83,7 +83,7 @@
 
         <button id="backBtn" onclick="location.href='/'"><span class="material-icons-outlined">keyboard_backspace</span></button>
 
-        <div @onkeydown="@KeyPress" tabindex="0" id="imgDiv"><img id="@path" src="@PSS.Settings.requestPath/@path" alt=""/></div>
+        <div @onkeydown="@ChangeImage" tabindex="0" id="imgDiv"><img onload="document.getElementById('imgDiv').focus()" id="@path" src="@PSS.Settings.requestPath/@path" alt=""/></div>
                                                                                                                            
         if (index + 1 < mediaList.Count)
         {
@@ -109,7 +109,7 @@
     private static string editDateDivVis;
     private static List<Connection.Album> albums;
     private static readonly List<Connection.MediaRow> mediaList = Connection.LoadMediaTable();
-    private static int index;
+    private static int index; //The current image's index in this list ↑
 }
 
 @functions{
@@ -142,10 +142,23 @@
         ogDateTaken = newDateTaken;
     }
 
-    private static void KeyPress(KeyboardEventArgs e)
+    private void ChangeImage(KeyboardEventArgs e)
     {
-        if (e.Code == "ArrowRight") ;
-        else if (e.Code == "ArrowLeft") ;
-        Console.WriteLine(e.Code);
+        if (e.AltKey && e.Code == "LeftArrow")
+        {
+            navigationManager.NavigateTo("/", true);
+            return;
+        }
+        
+        if (!e.AltKey && e.Code == "ArrowLeft" && index - 1 > 0)
+        {
+            id = mediaList[index - 1].uuid.ToString();
+            navigationManager.NavigateTo($"view/{id}", true); //True makes this actually work
+        }
+        else if (!e.AltKey && e.Code == "ArrowRight" && index + 1 < mediaList.Count)
+        {
+            id = mediaList[index + 1].uuid.ToString();
+            navigationManager.NavigateTo($"view/{id}", true);
+        }
     }
 }
