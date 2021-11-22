@@ -84,11 +84,6 @@ button:hover {
     width: auto;
 }
 
-#albumsIn > a > .album:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
-
 #albumsIn > a > .album > .coverDiv {
     margin: 0;
     padding: 0;
@@ -152,11 +147,6 @@ button:hover {
     margin-left: 10px;
 }
 
-header button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
-
 #datePicker > #buttons > button {
     color: white;
     border-radius: 50%;
@@ -169,9 +159,14 @@ header button:hover {
     margin-bottom: 5px;
 }
 
-#datePicker > #buttons > button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
+#backBtn {
+    height: 70px;
+    width: 70px;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    margin: 0;
+    z-index: 99999;
 }
 
 #imgDiv {
