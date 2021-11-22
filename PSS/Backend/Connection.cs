@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using Npgsql;
 
 namespace PSS.Backend
 {
+    /// <summary>
+    /// Backend database stuff.
+    /// </summary>
     public static class Connection
     {
         private static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
@@ -89,9 +91,8 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateAdded, @dateTaken) ON CONFLICT (path) DO NOTHING", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now()) ON CONFLICT (path) DO NOTHING", connection);
                 cmd.Parameters.AddWithValue("@path", path);
-                cmd.Parameters.AddWithValue("@dateAdded", DateTime.Now);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
                 rowsAffected = cmd.ExecuteNonQuery();
             }
@@ -563,12 +564,6 @@ namespace PSS.Backend
             return media;
         }
 
-        // public static List<MediaRow> LoadAlbum(string name)
-        // {
-        //     List<MediaRow> media = new(); //Stores every row retrieved; returned later.
-        //     return LoadAlbum(GetAlbumID(name));
-        // }
-
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
@@ -810,17 +805,6 @@ namespace PSS.Backend
             return dateTaken;
         }
 
-        //Get whether an item was taken in the morning or afternoon: returns "AM" or "PM". //https://stackoverflow.com/a/7875351
-        public static string GetPeriod(Guid uuid)
-        {
-            return GetDateTaken(uuid).ToString("tt", CultureInfo.InvariantCulture);
-        }
-
-        public static string GetPeriod(string path)
-        {
-            return GetDateTaken(path).ToString("tt", CultureInfo.InvariantCulture);
-        }
-
         public static DateTime GetDateAdded(string path)
         {
             DateTime dateTaken = new();
@@ -881,25 +865,6 @@ namespace PSS.Backend
             }
 
             return dateTaken;
-        }
-
-        //ONLY FOR TESTING. Clears a table, but doesn't delete the table itself.
-        public static void ClearMediaTable()
-        {
-            try
-            {
-                Open();
-                NpgsqlCommand cmd = new("DELETE FROM media", connection);
-                cmd.ExecuteNonQuery();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
         }
     }
 }
