@@ -169,6 +169,31 @@ button:hover {
     z-index: 99999;
 }
 
+.sideBtn {
+    background: rgba(66,66,66,0.54);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    margin-top: -28px;
+    height: 56px;
+    width: 56px;
+    z-index: 9999;
+}
+
+.sideBtn:hover {
+    cursor: pointer;
+}
+
+.sideBtn > svg {
+    fill: white;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+#leftBtn {left: 10px;}
+#rightBtn {right: 10px;}
+
 #imgDiv {
     height: 98%;
     display: flex;

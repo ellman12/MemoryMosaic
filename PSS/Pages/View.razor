@@ -31,7 +31,7 @@
             
             <div class="dataDiv" title="Date Added">
                 <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
-                <span>@Connection.GetDateAdded(Guid.Parse(id)).ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
+                <span>@dateAdded.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
             </div>
 
             <div class="dataDiv">
@@ -74,9 +74,23 @@
             </div>
         </div>
         
+        if (index - 1 > 0) //Don't go outside array
+        {
+            <div onclick="location.href='/view/@mediaList[index - 1].uuid'" class="sideBtn" id="leftBtn">
+                <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"></path></svg>
+            </div>
+        }
+
         <button id="backBtn" onclick="location.href='/'"><span class="material-icons-outlined">keyboard_backspace</span></button>
 
-        <div id="imgDiv"><img id="@path" src="@PSS.Settings.requestPath/@path" alt=""/></div>
+        <div @onkeydown="@KeyPress" tabindex="0" id="imgDiv"><img id="@path" src="@PSS.Settings.requestPath/@path" alt=""/></div>
+                                                                                                                           
+        if (index + 1 < mediaList.Count)
+        {
+            <div onclick="location.href='/view/@mediaList[index + 1].uuid'" class="sideBtn" id="rightBtn">
+                <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path></svg>
+            </div>
+        }
     }
 }
 
@@ -86,6 +100,7 @@
     private static string staticID;
 
     private static string path;
+    private static DateTime dateAdded;
     private static DateTime ogDateTaken; //Original
     private static DateTime newDateTaken;
     private static string albumsVis;
@@ -93,12 +108,15 @@
     private static string moreOptionsVis;
     private static string editDateDivVis;
     private static List<Connection.Album> albums;
+    private static readonly List<Connection.MediaRow> mediaList = Connection.LoadMediaTable();
+    private static int index;
 }
 
 @functions{
     protected override void OnInitialized()
     {
         path = Connection.GetPathFromUuid(id);
+        dateAdded = Connection.GetDateAdded(Guid.Parse(id));
         ogDateTaken = newDateTaken = Connection.GetDateTaken(Guid.Parse(id));
         staticID = id;
         albumsVis = "hidden";
@@ -106,6 +124,7 @@
         moreOptionsVis = "hidden";
         editDateDivVis = "hidden";
         albums = Connection.GetAlbumsItemIn(path);
+        index = mediaList.IndexOf(new Connection.MediaRow(path, ogDateTaken, dateAdded, Guid.Parse(id)));
     }
     
     private void DeleteBtnClick()
@@ -121,5 +140,12 @@
         editDateDivVis = "hidden";
         Connection.UpdateDateTaken(path, newDateTaken);
         ogDateTaken = newDateTaken;
+    }
+
+    private static void KeyPress(KeyboardEventArgs e)
+    {
+        if (e.Code == "ArrowRight") ;
+        else if (e.Code == "ArrowLeft") ;
+        Console.WriteLine(e.Code);
     }
 }
