@@ -39,21 +39,23 @@
                 <span>@Path.GetFileName(Connection.GetPathFromUuid(id))</span>
             </div>
             
-            <span id="albumsText">Albums</span>
-
-            <div id="albumsIn">
-                @foreach (Connection.Album album in albums)
-                {
-                    <a href="/album-view/@album.id">
-                        <div class="album">
-                            <div class="coverDiv">
-                                <img class="cover" src="@PSS.Settings.requestPath/@album.albumCover" alt="">
+            @if (albums.Count > 0)
+            {
+                <span id="albumsText">Albums</span>
+                <div id="albumsIn">
+                    @foreach (Connection.Album album in albums)
+                    {
+                        <a href="/album-view/@album.id">
+                            <div class="album">
+                                <div class="coverDiv">
+                                    <img class="cover" src="@PSS.Settings.requestPath/@album.albumCover" alt="">
+                                </div>
+                                <span title="@album.name">@album.name</span>
                             </div>
-                            <span title="@album.name">@album.name</span>
-                        </div>
-                    </a>
-                }
-            </div>
+                        </a>
+                    }
+                </div>
+            }
         </div>
         
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
