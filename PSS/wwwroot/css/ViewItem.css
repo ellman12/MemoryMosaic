@@ -1,0 +1,215 @@
+/*Stuff for just View.razor*/
+* {
+    color: white;
+    user-select: none;
+    font-family: 'Product Sans', sans-serif;
+}
+
+/*Buttons div in top right corner*/
+#buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    position: absolute;
+    right: 0;
+    z-index: 999;
+}
+
+button {
+    background: none;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 3px;
+}
+
+button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+/* Div below the i button */
+#infoDiv {
+    outline: 1px solid white;
+    background-color: black;
+    position: absolute;
+    z-index: 999;
+    top: 56px;
+    right: 60px;
+}
+
+/* 3 divs for date taken/added, and filename */
+#infoDiv > .dataDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    height: 55px;
+}
+
+#infoDiv > .dataDiv > svg {
+    fill: white;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#infoDiv > .dataDiv > span {
+    margin-right: 5px;
+}
+
+#infoDiv > #albumsText {
+    margin-left: 18px;
+}
+
+/* Showing albums this item is in */
+#infoDiv > #albumsIn {
+    border: 1px solid white;
+    padding-right: 2px;
+    margin-top: 12px;
+    height: 95px;
+    overflow-y: scroll;
+}
+
+#albumsIn > a {
+    text-decoration: none; /* Remove underline */
+}
+
+#albumsIn > a > .album {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: auto;
+}
+
+#albumsIn > a > .album > .coverDiv {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#albumsIn > a > .album > .coverDiv > .cover {
+    border-radius: 4px;
+    object-fit: cover;
+    width: 60px;
+    height: 60px;
+    border: 1px solid #212121;
+    background-color: #212121;
+}
+
+#albumsIn > a > .album > span {
+    margin-top: -1px;
+    margin-left: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/*Dropdown in top right corner*/
+#moreOptionsDiv {
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    position: absolute;
+    right: 1px;
+    top: 56px;
+    z-index: 999;
+    outline: 1px solid white;
+}
+
+#datePicker {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background-color: black;
+    height: 125px;
+    z-index: 999;
+    border: 1px solid white;
+}
+
+#datePicker > span {
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    display: block;
+}
+
+#datePicker > input[type="datetime-local"] {
+    color: black;
+    border: none;
+    outline: none;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+#datePicker > #buttons > button {
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: none;
+    margin-top: 10px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+#backBtn {
+    height: 70px;
+    width: 70px;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    margin: 0;
+    z-index: 99999;
+}
+
+.sideBtn {
+    background: rgba(66,66,66,0.54);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    margin-top: -28px;
+    height: 56px;
+    width: 56px;
+    z-index: 9999;
+}
+
+.sideBtn:hover {
+    cursor: pointer;
+}
+
+.sideBtn > svg {
+    fill: white;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+#leftBtn {left: 10px;}
+#rightBtn {right: 10px;}
+
+#imgDiv {
+    height: 98%;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    outline: none; /* Remove focus outline */
+}
+
+/*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
+#imgDiv > img {
+    height: 100%;
+    overflow: auto;
+    object-fit: cover;
+}

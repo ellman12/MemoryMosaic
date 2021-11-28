@@ -34,6 +34,7 @@ header button {
     padding-top: 11px;
 }
 
+/*Add a little space to right of button icon*/
 header button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;

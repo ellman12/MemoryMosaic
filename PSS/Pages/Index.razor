@@ -10,29 +10,12 @@
         <button><span class="material-icons-outlined">perm_media</span></button>
         <button><span class="material-icons-outlined">archive</span></button>
         <button><span class="material-icons-outlined">star_outline</span></button>
-        <button @onclick="AlbumBtnClick"><span class="material-icons-outlined">collections</span></button>
+        <button @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
         <span id="selectedAmtText" style="visibility: @headerVis">@selectedItems.Count selected</span>
         <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
 
-    <div id="albumSelector" style="visibility: @albumsVis">
-        <button id="closeBtn" @onclick="CloseBtnClick" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
-        <button id="confirmBtn" @onclick="ConfirmBtnClick" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
-        <span id="addToText">Add to</span>
-        <div id="albums">
-            @for (int i = 0; i < albums.Count; i++)
-            {
-                int ii = i;
-                <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
-                    <div class="coverDiv">
-                        <img class="cover" src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
-                    </div>
-                    <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
-                    <span title="@albums[i].name">@albums[i].name</span>
-                </div>
-            }
-        </div>
-    </div>
+    <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
 
     if (mediaList.Count == 0)
     {
@@ -57,8 +40,6 @@
     private static string albumsVis;
     private static List<MediaRow> mediaList;
     private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
-    private static List<bool> checkedAlbums;
-    private static readonly List<Album> albums = GetAlbumsTable();
 
     protected override void OnInitialized()
     {
@@ -66,7 +47,6 @@
         selectedItems = new List<string>(); //Reset on page load/refresh
         headerVis = "hidden";
         albumsVis = "hidden";
-        checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
@@ -85,7 +65,7 @@
 
     private async Task ClearChecks()
     {
-        foreach (string item in selectedItems)
+        foreach (string item in selectedItems)  
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         headerVis = "hidden";
@@ -100,7 +80,7 @@
             navigationManager.NavigateTo($"/view/{uuid}");
     }
     
-    //Move selected stuff to trash tables and move to trash folder on server
+    //Move selected stuff to trash tables
     private async Task DeleteBtnClick()
     {
         foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
@@ -110,31 +90,5 @@
         }
         await ClearChecks();
         mediaList = LoadMediaTable();
-    }
-
-    //Functions for album stuff
-    private static void AlbumBtnClick() => albumsVis = "visible";
- 
-    private static void CloseBtnClick()
-    {
-        albumsVis = "hidden";
-        for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
-    }
-
-    //Add item(s) to album(s) selected.
-    private async Task ConfirmBtnClick()
-    {
-        for (int c = 0; c < checkedAlbums.Count; c++)
-        {
-            if (checkedAlbums[c] == false) continue;
-
-            foreach (string item in selectedItems)
-            {
-                AddToAlbum(item, albums[c].id);
-            }
-        }
-        CloseBtnClick();
-        headerVis = "hidden";
-        await ClearChecks();
     }
 }

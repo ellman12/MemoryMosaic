@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using Npgsql;
 
 namespace PSS.Backend
 {
+    /// <summary>
+    /// Backend database stuff.
+    /// </summary>
     public static class Connection
     {
         private static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
@@ -29,6 +31,7 @@ namespace PSS.Backend
             NewestAdded
         }
 
+        //Represents a record from the albums table.
         public record Album
         {
             public readonly int id;
@@ -36,6 +39,13 @@ namespace PSS.Backend
             public readonly string albumCover;
             public readonly DateTime dateUpdated;
 
+            public Album(int id, string name, string albumCover)
+            {
+                this.id = id;
+                this.name = name;
+                this.albumCover = albumCover;
+            }
+            
             public Album(int id, string name, string albumCover, DateTime dateUpdated)
             {
                 this.id = id;
@@ -81,9 +91,8 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateAdded, @dateTaken) ON CONFLICT (path) DO NOTHING", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now()) ON CONFLICT (path) DO NOTHING", connection);
                 cmd.Parameters.AddWithValue("@path", path);
-                cmd.Parameters.AddWithValue("@dateAdded", DateTime.Now);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
                 rowsAffected = cmd.ExecuteNonQuery();
             }
@@ -379,7 +388,7 @@ namespace PSS.Backend
             {
                 Open();
                 NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums ORDER BY " + orderBy, connection);
-                cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
+                //cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
@@ -395,6 +404,38 @@ namespace PSS.Backend
                 Close();
             }
 
+            return albums;
+        }
+
+        /// <summary>
+        /// Returns a List of all the items an album is in.
+        /// </summary>
+        /// <param name="path">path to item</param>
+        /// <returns>List of the albums the item is in, if any</returns>
+        public static List<Album> GetAlbumsItemIn(string path)
+        {
+            List<Album> albums = new();
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT album_id, name, album_cover FROM album_entries AS e INNER JOIN albums AS a ON e.album_id=a.id WHERE path=@path ORDER BY name ASC", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2)));
+                reader.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred in GetAlbumsTable. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+            
             return albums;
         }
 
@@ -522,12 +563,6 @@ namespace PSS.Backend
 
             return media;
         }
-
-        // public static List<MediaRow> LoadAlbum(string name)
-        // {
-        //     List<MediaRow> media = new(); //Stores every row retrieved; returned later.
-        //     return LoadAlbum(GetAlbumID(name));
-        // }
 
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
@@ -770,25 +805,24 @@ namespace PSS.Backend
             return dateTaken;
         }
 
-        //Get whether an item was taken in the morning or afternoon: returns "AM" or "PM". //https://stackoverflow.com/a/7875351
-        public static string GetPeriod(Guid uuid)
+        public static DateTime GetDateAdded(string path)
         {
-            return GetDateTaken(uuid).ToString("tt", CultureInfo.InvariantCulture);
-        }
+            DateTime dateTaken = new();
 
-        public static string GetPeriod(string path)
-        {
-            return GetDateTaken(path).ToString("tt", CultureInfo.InvariantCulture);
-        }
-
-        //ONLY FOR TESTING. Clears a table, but doesn't delete the table itself.
-        public static void ClearMediaTable()
-        {
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("DELETE FROM media", connection);
+                NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    dateTaken = reader.GetDateTime(0);
+                    reader.Close();
+                }
             }
             catch (NpgsqlException e)
             {
@@ -798,6 +832,71 @@ namespace PSS.Backend
             {
                 Close();
             }
+
+            return dateTaken;
+        }
+
+        public static DateTime GetDateAdded(Guid uuid)
+        {
+            DateTime dateTaken = new();
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    dateTaken = reader.GetDateTime(0);
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return dateTaken;
+        }
+        
+        public static DateTime GetDateAddedToAlbum(string path, int albumID)
+        {
+            DateTime dateTaken = new();
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT date_added_to_album FROM album_entries WHERE path=@path AND album_id=@albumID", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    dateTaken = reader.GetDateTime(0);
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return dateTaken;
         }
     }
 }

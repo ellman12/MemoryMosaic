@@ -18,7 +18,7 @@
         <button @onclick="DeleteBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         <button @onclick="RemoveBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
         <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
-        <button @onclick="AlbumBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
+        <button @onclick="@(() => albumsVis = "visible")" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
         <span style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="selectedAmtText">@selectedItems.Count selected</span>
         <button @onclick="ClearChecks" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" id="clearBtn"><span class="material-icons-outlined">close</span></button>
         
@@ -35,25 +35,8 @@
         </div>
     </header>
     
-    <div id="albumSelector" style="visibility: @albumsVis">
-        <button id="closeBtn" @onclick="CloseBtnClick" title="Cancel Adding to Albums"><span class="material-icons-outlined">close</span></button>
-        <button id="confirmBtn" @onclick="AlbumsConfirmBtnClick" title="Add to Selected Albums"><span class="material-icons-outlined">check</span></button>
-        <span id="addToText">Add to</span>
-        <div id="albums">
-            @for (int i = 0; i < albums.Count; i++)
-            {
-                int ii = i;
-                <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
-                    <div class="coverDiv">
-                        <img class="cover" src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
-                    </div>
-                    <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
-                    <span title="@albums[i].name">@albums[i].name</span>
-                </div>
-            }
-        </div>
-    </div>
-    
+    <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@buttonsVis" @bind-AlbumsVis="@albumsVis"/>
+
     if (albumMedia.Count == 0)
     {
         <h1>Album is empty</h1>
@@ -85,9 +68,7 @@
     private static string albumName;
     private static string _newAlbumName;
     private static string buttonsVis;
-    private static List<bool> checkedAlbums;
-    private static readonly List<Album> albums = GetAlbumsTable();
-    
+
     private static string NewAlbumName
     {
         get => _newAlbumName;
@@ -117,7 +98,6 @@
         _newAlbumName = albumName;
         buttonsVis = "hidden";
         selectedItems = new List<string>(); //Reset on page load/refresh
-        checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
     [Inject]
@@ -145,7 +125,7 @@
         if (selectedItems.Count > 0)
             await ToggleCheck(path);
         else
-            navigationManager.NavigateTo($"/view/{uuid}");
+            navigationManager.NavigateTo($"/view-album-item/{albumID}/{uuid}");
     }
 
     private void DeleteAlbumBtnClick()
@@ -176,30 +156,6 @@
     }
 
     //Functions for album stuff
-    private static void AlbumBtnClick() => albumsVis = "visible";
- 
-    private static void CloseBtnClick()
-    {
-        albumsVis = "hidden";
-        for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
-    }
-    
-    //Add item(s) to album(s) selected.
-    private async Task AlbumsConfirmBtnClick()
-    {
-        for (int c = 0; c < checkedAlbums.Count; c++)
-        {
-            if (checkedAlbums[c] == false) continue;
-    
-            foreach (string item in selectedItems)
-            {
-                AddToAlbum(item, albums[c].id);
-            }
-        }
-        CloseBtnClick();
-        await ClearChecks();
-    }
-
     private static void CancelBtnClick()
     {
         buttonsVis = "hidden";
