@@ -25,7 +25,7 @@ header button {
     -webkit-box-align: center;
     align-items: center;
     letter-spacing: .01785714em;
-    font-family: Product Sans, serif;
+    font-family: Product Sans, sans-serif;
     font-size: 1rem;
     font-weight: 400;
     width: 170px;
@@ -34,12 +34,12 @@ header button {
     padding-top: 11px;
 }
 
-/*Add a little space to right of button icon*/
 header button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
+/*Add a little space to right of button icon*/
 button span ~ span {
     padding-left: 11px;
     text-decoration: none;

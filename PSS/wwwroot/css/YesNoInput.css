@@ -1,0 +1,51 @@
+﻿/* YesNoInput component styling */
+* {
+    color: white;
+    user-select: none;
+    font-family: 'Product Sans', sans-serif;
+}
+
+#inputDiv {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    border: 2px solid white;
+    width: 300px;
+    height: 300px;
+}
+
+#inputDiv > #buttons {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    bottom: 10px;
+    right: 6px;
+}
+
+#inputDiv > #buttons > button {
+    margin-left: 10px;
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    display: flex;
+    word-break: break-word;
+    word-wrap: break-word;
+    -webkit-box-align: center;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans, sans-serif;
+    font-size: 1rem;
+    width: 90px;
+    font-weight: 400;
+    padding: 11px;
+}
+
+#inputDiv > #buttons > button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+/*Add a little space to right of button icon*/
+#inputDiv > #buttons > button > span ~ span {padding-left: 11px;}
