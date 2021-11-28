@@ -1,3 +1,12 @@
+-- Run this file to initialize database for first time use.
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; -- https://stackoverflow.com/a/12505220
+
+CREATE DATABASE "PSS"
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    CONNECTION LIMIT = -1;
+
 -- Used to create all the tables in PostgreSQL
 CREATE TABLE IF NOT EXISTS public.album_entries
 (
