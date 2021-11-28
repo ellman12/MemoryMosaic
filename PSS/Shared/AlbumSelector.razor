@@ -40,8 +40,8 @@
     [Parameter]
     public EventCallback<string> AlbumsVisChanged { get; set; }
     
+    private static List<Album> albums;
     private static List<bool> checkedAlbums;
-    private static readonly List<Album> albums = GetAlbumsTable();
     
     [Inject]
     public IJSRuntime JSRuntime { get; set; }
@@ -50,6 +50,7 @@
     {
         AlbumsVis = "hidden";
         HeaderVis = "hidden";
+        albums = GetAlbumsTable();
         checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
