@@ -1,11 +1,19 @@
-@*Page for viewing full-sized images*@
-@page "/view/{id}"
-@inject NavigationManager navigationManager;
+@*Reusable component used for viewing an item in either Index or AlbumView.
+Required Parameters:
+    1. string id (uuid) to display
+    2. List of items that the currently viewed item is a part of.
+        E.g., if the viewed item was in Index, that would be the List of items from the media SQL table.
+        If it was an item in an album, the List would be the List of items in that album.
+        This List allows the user to go left/right through the List to view different items,
+        instead of having to hit the back button each time. Google Photos has this same behavior, although it is much faster.
+    3. String Page. Either 'view' or 'view-album-item/<albumID>' Used for the left/right buttons.
+    4. String ReturnPath: The page to return to when hit the back button.
+    5. DateTime DateAdded: Either date added to library (if viewing Index items) or date added to album.
+*@
 @using PSS.Backend
-@using System.IO
-@layout EmptyLayout
+@inject NavigationManager navigationManager;
 
-<link href="/css/View.css" rel="stylesheet"/>
+<link href="/css/ViewItem.css" rel="stylesheet"/>
 
 @{
     if (path == "null") //If URL contains a UUID that isn't present in the database.
@@ -31,12 +39,12 @@
             
             <div class="dataDiv" title="Date Added">
                 <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
-                <span>@dateAdded.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
+                <span>@DateAdded.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
             </div>
 
             <div class="dataDiv">
                 <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
-                <span>@Path.GetFileName(Connection.GetPathFromUuid(id))</span>
+                <span>@System.IO.Path.GetFileName(Connection.GetPathFromUuid(id))</span>
             </div>
             
             @if (albums.Count > 0)
@@ -48,7 +56,7 @@
                         <a href="/album-view/@album.id">
                             <div class="album">
                                 <div class="coverDiv">
-                                    <img class="cover" src="@PSS.Settings.requestPath/@album.albumCover" alt="">
+                                    <img class="cover" src="@Settings.requestPath/@album.albumCover" alt="">
                                 </div>
                                 <span title="@album.name">@album.name</span>
                             </div>
@@ -76,20 +84,20 @@
             </div>
         </div>
         
-        if (index - 1 > 0) //Don't go outside array
+        <button id="backBtn" onclick="location.href='@ReturnPath'"><span class="material-icons-outlined">keyboard_backspace</span></button>
+
+        if (index - 1 >= 0) //Don't go outside array
         {
-            <div onclick="location.href='/view/@mediaList[index - 1].uuid'" class="sideBtn" id="leftBtn">
+            <div onclick="location.href='/@Page/@MediaList[index - 1].uuid'" class="sideBtn" id="leftBtn">
                 <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"></path></svg>
             </div>
         }
-
-        <button id="backBtn" onclick="location.href='/'"><span class="material-icons-outlined">keyboard_backspace</span></button>
-
-        <div @onkeydown="@ChangeImage" tabindex="0" id="imgDiv"><img onload="document.getElementById('imgDiv').focus()" id="@path" src="@PSS.Settings.requestPath/@path" alt=""/></div>
+        
+        <div @onkeydown="@ChangeImage" tabindex="0" id="imgDiv"><img onload="document.getElementById('imgDiv').focus()" id="@path" src="@Settings.requestPath/@path" alt=""/></div>
                                                                                                                            
-        if (index + 1 < mediaList.Count)
+        if (index + 1 < MediaList.Count)
         {
-            <div onclick="location.href='/view/@mediaList[index + 1].uuid'" class="sideBtn" id="rightBtn">
+            <div onclick="location.href='/@Page/@MediaList[index + 1].uuid'" class="sideBtn" id="rightBtn">
                 <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path></svg>
             </div>
         }
@@ -99,10 +107,21 @@
 @code {
     [Parameter]
     public string id { get; set; }
-    private static string staticID;
+    private static Guid parsedID;
+    
+    [Parameter]
+    public List<Connection.MediaRow> MediaList { get; set; }
+    
+    [Parameter]
+    public string Page { get; set; }
 
+    [Parameter]
+    public string ReturnPath { get; set; }
+    
+    [Parameter]
+    public DateTime DateAdded { get; set; }
+    
     private static string path;
-    private static DateTime dateAdded;
     private static DateTime ogDateTaken; //Original
     private static DateTime newDateTaken;
     private static string albumsVis;
@@ -110,29 +129,27 @@
     private static string moreOptionsVis;
     private static string editDateDivVis;
     private static List<Connection.Album> albums;
-    private static readonly List<Connection.MediaRow> mediaList = Connection.LoadMediaTable();
-    private static int index; //The current image's index in this list ↑
+    private static int index; //The current image's index in the list
 }
 
 @functions{
     protected override void OnInitialized()
     {
-        path = Connection.GetPathFromUuid(id);
-        dateAdded = Connection.GetDateAdded(Guid.Parse(id));
-        ogDateTaken = newDateTaken = Connection.GetDateTaken(Guid.Parse(id));
-        staticID = id;
+        parsedID = Guid.Parse(id);
+        path = Connection.GetPathFromUuid(parsedID);
+        ogDateTaken = newDateTaken = Connection.GetDateTaken(parsedID);
         albumsVis = "hidden";
         infoVis = "hidden";
         moreOptionsVis = "hidden";
         editDateDivVis = "hidden";
         albums = Connection.GetAlbumsItemIn(path);
-        index = mediaList.IndexOf(new Connection.MediaRow(path, ogDateTaken, dateAdded, Guid.Parse(id)));
+        index = MediaList.IndexOf(new Connection.MediaRow(path, ogDateTaken, DateAdded, parsedID));
     }
     
     private void DeleteBtnClick()
     {
-        navigationManager.NavigateTo("/");
-        Connection.MoveToTrash(Connection.GetPathFromUuid(staticID));
+        navigationManager.NavigateTo(ReturnPath);
+        Connection.MoveToTrash(Connection.GetPathFromUuid(parsedID));
     }
 
     private static void ToggleDropdown(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
@@ -148,19 +165,19 @@
     {
         if (e.AltKey && e.Code == "LeftArrow")
         {
-            navigationManager.NavigateTo("/", true);
+            navigationManager.NavigateTo(ReturnPath, true);
             return;
         }
         
         if (!e.AltKey && e.Code == "ArrowLeft" && index - 1 > 0)
         {
-            id = mediaList[index - 1].uuid.ToString();
-            navigationManager.NavigateTo($"view/{id}", true); //True makes this actually work
+            id = MediaList[index - 1].uuid.ToString();
+            navigationManager.NavigateTo($"{Page}/{id}", true); //True makes this actually work
         }
-        else if (!e.AltKey && e.Code == "ArrowRight" && index + 1 < mediaList.Count)
+        else if (!e.AltKey && e.Code == "ArrowRight" && index + 1 < MediaList.Count)
         {
-            id = mediaList[index + 1].uuid.ToString();
-            navigationManager.NavigateTo($"view/{id}", true);
+            id = MediaList[index + 1].uuid.ToString();
+            navigationManager.NavigateTo($"{Page}/{id}", true);
         }
     }
 }

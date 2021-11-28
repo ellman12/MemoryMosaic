@@ -125,7 +125,7 @@
         if (selectedItems.Count > 0)
             await ToggleCheck(path);
         else
-            navigationManager.NavigateTo($"/view/{uuid}");
+            navigationManager.NavigateTo($"/view-album-item/{albumID}/{uuid}");
     }
 
     private void DeleteAlbumBtnClick()

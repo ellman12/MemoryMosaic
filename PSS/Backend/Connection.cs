@@ -866,5 +866,37 @@ namespace PSS.Backend
 
             return dateTaken;
         }
+        
+        public static DateTime GetDateAddedToAlbum(string path, int albumID)
+        {
+            DateTime dateTaken = new();
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT date_added_to_album FROM album_entries WHERE path=@path AND album_id=@albumID", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    dateTaken = reader.GetDateTime(0);
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return dateTaken;
+        }
     }
 }

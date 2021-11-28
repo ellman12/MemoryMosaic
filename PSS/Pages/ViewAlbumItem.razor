@@ -1,0 +1,25 @@
+@*Page for viewing full-sized images in an album*@
+@page "/view-album-item/{albumID}/{id}"
+@using PSS.Backend
+@layout EmptyLayout
+
+@{
+    string returnPath = $"/album-view/{albumID}";
+    string newPage = $"view-album-item/{albumID}"; //Page wasn't allowed...
+    <ViewItem id="@id" MediaList="@mediaList" Page="@newPage" ReturnPath="@returnPath" DateAdded="@Connection.GetDateAddedToAlbum(Connection.GetPathFromUuid(id), Convert.ToInt32(albumID))"/>
+}
+
+@code {
+    [Parameter]
+    public string albumID { get; set; }
+    
+    [Parameter]
+    public string id { get; set; }
+
+    private static List<Connection.MediaRow> mediaList;
+
+    protected override void OnInitialized()
+    {
+        mediaList = Connection.LoadAlbum(Convert.ToInt32(albumID));
+    }
+}
