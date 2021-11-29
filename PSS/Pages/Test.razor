@@ -3,4 +3,4 @@
 @using PSS.Backend
 @* @layout EmptyLayout *@
 
-<YesNoInput Message="Delete Selected Items? jdhasd jhajhds jshdj shdkjsdha sdhjhj gshdgh"/>
+<YesNoInput YesBtnClick="@(() => Console.WriteLine("yes"))" NoBtnClick="@(() => Console.WriteLine("no"))" Message="Delete Selected Items? jdhasd jhajhds jshdj shdkjsdha sdhjhj gshdgh"/>
