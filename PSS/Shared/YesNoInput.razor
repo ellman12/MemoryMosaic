@@ -1,10 +1,10 @@
-@* Reusable component that allows user to choose yes or no before doing something as a double check. *@
-@using static PSS.Backend.Connection
+﻿@* Reusable component that allows user to choose yes or no before doing something as a double check. *@
+@using PSS.Backend
 <link href="css/YesNoInput.css" rel="stylesheet">
 
 @{
     <div id="inputDiv">
-        <span>@Message</span>
+        <span id="message">@Message</span>
         <div id="buttons">
             <button><span class="material-icons-outlined">close</span><span>No</span></button>
             <button><span class="material-icons-outlined">check</span><span>Yes</span></button>
@@ -12,7 +12,7 @@
     </div>
 }
 
-@code {
-    [Parameter]
-    public string Message { get; set; }
+@code{
+    [Parameter, EditorRequired]
+    public string Message { get; set; } //https://stackoverflow.com/a/62142640
 }
