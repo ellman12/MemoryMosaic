@@ -3,4 +3,15 @@
 @using PSS.Backend
 @* @layout EmptyLayout *@
 
-<YesNoInput YesBtnClick="@(() => Console.WriteLine("yes"))" NoBtnClick="@(() => Console.WriteLine("no"))" Message="Delete Selected Items? jdhasd jhajhds jshdj shdkjsdha sdhjhj gshdgh"/>
+<TwoChoiceInput @bind-TwoChoiceVis="@hello" YesBtnClick="@Yes" NoBtnClick="@(() => Console.WriteLine("no"))" Message="Delete Selected Items?"/>
+
+@code {
+    private static string hello = "visible";
+
+    private void Yes()
+    {
+        hello = "hidden";
+        StateHasChanged();
+    }
+
+}

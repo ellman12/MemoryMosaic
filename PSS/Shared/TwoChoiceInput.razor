@@ -3,6 +3,7 @@
     1. String Message: What to say to user
     2. Method to run when 'Yes' pressed https://stackoverflow.com/a/56831924
     3. Method to run when 'No' pressed
+    4. String TwoChoiceVis. Either 'hidden' (default) or 'visible'.
     
     Optional Parameters:
     1. String YesBtnText: 'Yes' by default
@@ -11,15 +12,13 @@
 @using PSS.Backend
 <link href="css/TwoChoiceInput.css" rel="stylesheet">
 
-@{
-    <div id="inputDiv">
-        <span id="message">@Message</span>
-        <div id="buttons">
-            <button @onclick="@(() => NoBtnClick.Invoke())"><span class="material-icons-outlined">close</span><span>@NoBtnText</span></button>
-            <button @onclick="@(() => YesBtnClick.Invoke())"><span class="material-icons-outlined">check</span><span>@YesBtnText</span></button>
-        </div>
+<div id="inputDiv" style="visibility: @TwoChoiceVis">
+    <span id="message">@Message</span>
+    <div id="buttons">
+        <button @onclick="@(() => NoBtnClick.Invoke())"><span class="material-icons-outlined">close</span><span>@NoBtnText</span></button>
+        <button @onclick="@(() => YesBtnClick.Invoke())"><span class="material-icons-outlined">check</span><span>@YesBtnText</span></button>
     </div>
-}
+</div>
 
 @code {
     [Parameter, EditorRequired]
@@ -32,9 +31,14 @@
     public Action YesBtnClick { get; set; }
 
     [Parameter]
+    public string TwoChoiceVis { get; set; }
+    
+    [Parameter]
+    public EventCallback<string> TwoChoiceVisChanged { get; set; } //Changing the passed in TwoChoiceVis.
+
+    [Parameter]
     public string YesBtnText { get; set; } = "Yes";
 
     [Parameter]
     public string NoBtnText { get; set; } = "No";
-
 }
