@@ -1,0 +1,40 @@
+﻿@*Reusable component that allows user to choose between two options (Yes/No by default).
+    Required Parameters:
+    1. String Message: What to say to user
+    2. Method to run when 'Yes' pressed https://stackoverflow.com/a/56831924
+    3. Method to run when 'No' pressed
+    
+    Optional Parameters:
+    1. String YesBtnText: 'Yes' by default
+    2. String NoBtnText: 'No' by default
+*@
+@using PSS.Backend
+<link href="css/TwoChoiceInput.css" rel="stylesheet">
+
+@{
+    <div id="inputDiv">
+        <span id="message">@Message</span>
+        <div id="buttons">
+            <button @onclick="@(() => NoBtnClick.Invoke())"><span class="material-icons-outlined">close</span><span>@NoBtnText</span></button>
+            <button @onclick="@(() => YesBtnClick.Invoke())"><span class="material-icons-outlined">check</span><span>@YesBtnText</span></button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string Message { get; set; } //https://stackoverflow.com/a/62142640
+
+    [Parameter, EditorRequired]
+    public Action NoBtnClick { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Action YesBtnClick { get; set; }
+
+    [Parameter]
+    public string YesBtnText { get; set; } = "Yes";
+
+    [Parameter]
+    public string NoBtnText { get; set; } = "No";
+
+}
