@@ -8,11 +8,12 @@
     Optional Parameters:
     1. String YesBtnText: 'Yes' by default
     2. String NoBtnText: 'No' by default
+    3. String PositioningStyle. Styling used for positioning this thing. Defaults to center of screen, but can be changed to like absolute position and top right corner of screen. 
 *@
 @using PSS.Backend
 <link href="css/TwoChoiceInput.css" rel="stylesheet">
 
-<div id="inputDiv" style="visibility: @TwoChoiceVis">
+<div id="inputDiv" style="visibility: @TwoChoiceVis; @PositioningStyle">
     <span id="message">@Message</span>
     <div id="buttons">
         <button @onclick="@(() => NoBtnClick.Invoke())"><span class="material-icons-outlined">close</span><span>@NoBtnText</span></button>
@@ -36,9 +37,13 @@
     [Parameter]
     public EventCallback<string> TwoChoiceVisChanged { get; set; } //Changing the passed in TwoChoiceVis.
 
+    //Optional parameters ↓
     [Parameter]
     public string YesBtnText { get; set; } = "Yes";
 
     [Parameter]
     public string NoBtnText { get; set; } = "No";
+    
+    [Parameter]
+    public string PositioningStyle { get; set; } = "position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);";
 }
