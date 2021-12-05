@@ -1,4 +1,4 @@
-﻿* {
+* {
     color: white;
     user-select: none;
     font-family: 'Product Sans', sans-serif;
@@ -9,6 +9,7 @@
     border: 1px solid white;
     width: 250px;
     height: 170px;
+    z-index: 9999;
 }
 
 #inputDiv > #message {
