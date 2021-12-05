@@ -16,6 +16,8 @@
     </header>
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
+    
+    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
 
     if (mediaList.Count == 0)
     {
@@ -41,12 +43,16 @@
     private static List<MediaRow> mediaList;
     private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
 
+    private static string choiceVis;
+    private static string choiceMsg;
+
     protected override void OnInitialized()
     {
         mediaList = LoadMediaTable();
         selectedItems = new List<string>(); //Reset on page load/refresh
         headerVis = "hidden";
         albumsVis = "hidden";
+        choiceVis = "hidden";
     }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
@@ -70,6 +76,7 @@
         selectedItems.Clear();
         headerVis = "hidden";
         albumsVis = "hidden";
+        choiceVis = "hidden";
     }
     
     private async Task ImgClicked(string uuid, string path)
@@ -80,8 +87,14 @@
             navigationManager.NavigateTo($"/view/{uuid}");
     }
     
-    //Move selected stuff to trash tables
-    private async Task DeleteBtnClick()
+    //Show choice div
+    private static void DeleteBtnClick()
+    {
+        choiceVis = "visible";
+        choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
+    }
+
+    private async void DeleteSelected()
     {
         foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
         {
@@ -90,5 +103,12 @@
         }
         await ClearChecks();
         mediaList = LoadMediaTable();
+        StateHasChanged();
+    }
+
+    private void CloseChoiceDiv()
+    {
+        choiceVis = "hidden";
+        StateHasChanged();
     }
 }
