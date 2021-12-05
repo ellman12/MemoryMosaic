@@ -36,6 +36,7 @@
     </header>
     
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@buttonsVis" @bind-AlbumsVis="@albumsVis"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
 
     if (albumMedia.Count == 0)
     {
@@ -85,6 +86,9 @@
             }
         }
     }
+
+    private static string choiceVis;
+    private static string choiceMsg;
     
     protected override void OnInitialized()
     {
@@ -98,6 +102,7 @@
         _newAlbumName = albumName;
         buttonsVis = "hidden";
         selectedItems = new List<string>(); //Reset on page load/refresh
+        choiceVis = "hidden";
     }
 
     [Inject]
@@ -118,6 +123,7 @@
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         albumsVis = "hidden";
+        choiceVis = "hidden";
     }
 
     private async Task ImgClicked(string uuid, string path)
@@ -134,17 +140,7 @@
         DeleteAlbum(statAlbumID);
     }
     
-    //Move selected stuff to trash tables and move to trash folder on server
-    private async Task DeleteBtnClick()
-    {
-        foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
-        {
-            MoveToTrash(path);
-        }
-        await ClearChecks();
-        albumMedia = LoadAlbum(statAlbumID, mode);
-    }
-
+    //Remove selected from the album
     private async Task RemoveBtnClick()
     {
         foreach (string path in selectedItems.ToList())
@@ -153,6 +149,31 @@
         }
         await ClearChecks();
         albumMedia = LoadAlbum(statAlbumID, mode);
+    }
+    
+    //Choice div stuff
+    //Show choice div
+    private static void DeleteBtnClick()
+    {
+        choiceVis = "visible";
+        choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
+    }
+
+    private async void DeleteSelected()
+    {
+        foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
+        {
+            MoveToTrash(path);
+        }
+        await ClearChecks();
+        albumMedia = LoadAlbum(statAlbumID, mode);
+        StateHasChanged();
+    }
+
+    private void CloseChoiceDiv()
+    {
+        choiceVis = "hidden";
+        StateHasChanged();
     }
 
     //Functions for album stuff
