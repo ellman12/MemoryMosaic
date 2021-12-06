@@ -74,7 +74,23 @@
         if (selectedItems.Count > 0) await ToggleCheck(path);
     }
 
-    private async Task RestoreBtnClick()
+    //Show choice div
+    private void RestoreBtnClick()
+    {
+        if (mediaTrashList.Count == 0) return;
+
+        yesBtnFunc = RestoreItems;
+        
+        choiceVis = "visible";
+        choiceMsg = selectedItems.Count switch
+        {
+            0 => "Restore Everything?",
+            1 => "Restore Selected Item?",
+            _ => "Restore Selected Items?"
+        };
+    }
+
+    private async void RestoreItems()
     {
         //Restore ALL
         if (selectedItems.Count == 0)
@@ -90,6 +106,7 @@
         await ClearChecks();
         mediaTrashList = LoadMediaTrashTable();
         selectedItems.Clear();
+        StateHasChanged();
     }
 
     //Show choice div
@@ -123,6 +140,7 @@
         await ClearChecks();
         mediaTrashList = LoadMediaTrashTable();
         selectedItems.Clear();
+        StateHasChanged();
     }
 
     private void CloseChoiceDiv()
