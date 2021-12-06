@@ -14,7 +14,7 @@
         </div>
     </header>
     
-    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteItems" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@yesBtnFunc" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
 
     if (mediaTrashList.Count == 0)
     {
@@ -39,6 +39,7 @@
     private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
 
     private static string choiceVis;
+    private static Action yesBtnFunc;
     private static string choiceMsg;
     
     protected override void OnInitialized()
@@ -92,9 +93,11 @@
     }
 
     //Show choice div
-    private static void DeleteBtnClick()
+    private void DeleteBtnClick()
     {
         if (mediaTrashList.Count == 0) return;
+
+        yesBtnFunc = DeleteItems;
 
         choiceVis = "visible";
         choiceMsg = selectedItems.Count switch
