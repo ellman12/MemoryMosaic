@@ -87,8 +87,13 @@
     }
     
     //Show choice div
-    private static void DeleteBtnClick()
+    private void DeleteBtnClick()
     {
+        if (PSS.Settings.showPrompts == false)
+        {
+            DeleteSelected();
+            return;
+        }
         choiceVis = "visible";
         choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
     }
