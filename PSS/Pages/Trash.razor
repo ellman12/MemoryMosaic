@@ -2,6 +2,7 @@
 @inject NavigationManager navigationManager;
 @using static PSS.Backend.Connection
 
+<title>Trash</title>
 <link href="css/Trash.css" rel="stylesheet"/>
 
 @{
@@ -78,7 +79,11 @@
     private void RestoreBtnClick()
     {
         if (mediaTrashList.Count == 0) return;
-        if (PSS.Settings.showPrompts == false) DeleteItems();
+        if (PSS.Settings.showPrompts == false)
+        {
+            DeleteItems();
+            return;
+        }
 
         yesBtnFunc = RestoreItems;
         
@@ -114,7 +119,11 @@
     private void DeleteBtnClick()
     {
         if (mediaTrashList.Count == 0) return;
-        if (PSS.Settings.showPrompts == false) DeleteItems();
+        if (PSS.Settings.showPrompts == false)
+        {
+            DeleteItems();
+            return;
+        }
 
         yesBtnFunc = DeleteItems;
 

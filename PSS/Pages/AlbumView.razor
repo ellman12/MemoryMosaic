@@ -3,6 +3,7 @@
 @using static PSS.Backend.Connection
 @using PSS.Backend
 
+<title>@albumName</title>
 <link href="css/AlbumView.css" rel="stylesheet">
 
 @{
@@ -149,7 +150,11 @@
     private void DeleteSelectedBtnClick()
     {
         if (albumMedia.Count == 0) return;
-        if (PSS.Settings.showPrompts == false) DeleteSelected();
+        if (PSS.Settings.showPrompts == false)
+        {
+            DeleteSelected();
+            return;
+        }
         
         yesBtnFunc = DeleteSelected;
         choiceVis = "visible";
@@ -166,7 +171,11 @@
 
     private void DeleteAlbumBtnClick()
     {
-        if (PSS.Settings.showPrompts == false) DeleteAlbum();
+        if (PSS.Settings.showPrompts == false)
+        {
+            DeleteAlbum();
+            return;
+        }
 
         yesBtnFunc = DeleteAlbum;
         choiceVis = "visible";

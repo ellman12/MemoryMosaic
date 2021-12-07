@@ -3,6 +3,8 @@
 @using PSS.Backend
 @* @layout EmptyLayout *@
 
+<title>Test</title>
+
 <TwoChoiceInput @bind-TwoChoiceVis="@hello" YesBtnClick="@Yes" NoBtnClick="@(() => Console.WriteLine("no"))" Message="Delete Selected Items?"/>
 
 @code {
