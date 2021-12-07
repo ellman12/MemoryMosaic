@@ -50,7 +50,7 @@
             {
                 <div class="thumbnail">
                     <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
-                    <img @onclick="() => ImgClicked(media.uuid.ToString(), media.path)" style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
+                    <img @onclick="(() => ImgClicked(media.uuid.ToString(), media.path))" style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
          </div>
@@ -149,11 +149,7 @@
     private void DeleteSelectedBtnClick()
     {
         if (albumMedia.Count == 0) return;
-        
-        /*
-         * if show choice on, do this stuff below
-         * else just call the DeleteSelected
-         */
+        if (PSS.Settings.showPrompts == false) DeleteSelected();
         
         yesBtnFunc = DeleteSelected;
         choiceVis = "visible";
@@ -170,6 +166,8 @@
 
     private void DeleteAlbumBtnClick()
     {
+        if (PSS.Settings.showPrompts == false) DeleteAlbum();
+
         yesBtnFunc = DeleteAlbum;
         choiceVis = "visible";
         choiceMsg = $"Permanently Delete Album \"{albumName}\"?";

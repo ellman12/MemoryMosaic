@@ -78,6 +78,7 @@
     private void RestoreBtnClick()
     {
         if (mediaTrashList.Count == 0) return;
+        if (PSS.Settings.showPrompts == false) DeleteItems();
 
         yesBtnFunc = RestoreItems;
         
@@ -113,6 +114,7 @@
     private void DeleteBtnClick()
     {
         if (mediaTrashList.Count == 0) return;
+        if (PSS.Settings.showPrompts == false) DeleteItems();
 
         yesBtnFunc = DeleteItems;
 
