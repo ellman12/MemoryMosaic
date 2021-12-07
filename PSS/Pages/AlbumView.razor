@@ -1,6 +1,7 @@
 @page "/album-view/{albumID}"
 @inject NavigationManager navigationManager; //https://stackoverflow.com/a/58417140
 @using static PSS.Backend.Connection
+@using PSS.Backend
 
 <link href="css/AlbumView.css" rel="stylesheet">
 
@@ -15,7 +16,7 @@
             <button @onclick="DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
         </div>
         
-        <button @onclick="DeleteBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        <button @onclick="DeleteSelectedBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         <button @onclick="RemoveBtnClick" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
         <button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
         <button @onclick="@(() => albumsVis = "visible")" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
@@ -36,7 +37,7 @@
     </header>
     
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@buttonsVis" @bind-AlbumsVis="@albumsVis"/>
-    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@yesBtnFunc" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
 
     if (albumMedia.Count == 0)
     {
@@ -69,6 +70,10 @@
     private static string albumName;
     private static string _newAlbumName;
     private static string buttonsVis;
+    
+    private static string choiceVis;
+    private static string choiceMsg;
+    private static Action yesBtnFunc;
 
     private static string NewAlbumName
     {
@@ -86,9 +91,6 @@
             }
         }
     }
-
-    private static string choiceVis;
-    private static string choiceMsg;
     
     protected override void OnInitialized()
     {
@@ -134,12 +136,6 @@
             navigationManager.NavigateTo($"/view-album-item/{albumID}/{uuid}");
     }
 
-    private void DeleteAlbumBtnClick()
-    {
-        navigationManager.NavigateTo("/albums");
-        DeleteAlbum(statAlbumID);
-    }
-    
     //Remove selected from the album
     private async Task RemoveBtnClick()
     {
@@ -152,22 +148,34 @@
     }
     
     //Choice div stuff
-    //Show choice div
-    private static void DeleteBtnClick()
+    //Show prompt and make yes Action the delete selected items
+    private void DeleteSelectedBtnClick()
     {
+        if (albumMedia.Count == 0) return;
+        yesBtnFunc = DeleteSelected;
         choiceVis = "visible";
         choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
     }
 
     private async void DeleteSelected()
     {
-        foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
-        {
-            MoveToTrash(path);
-        }
+        foreach (string path in selectedItems.ToList()) MoveToTrash(path);
         await ClearChecks();
         albumMedia = LoadAlbum(statAlbumID, mode);
         StateHasChanged();
+    }
+
+    private void DeleteAlbumBtnClick()
+    {
+        yesBtnFunc = DeleteAlbum;
+        choiceVis = "visible";
+        choiceMsg = $"Permanently Delete Album \"{albumName}\"?";
+    }
+    
+    private void DeleteAlbum()
+    {
+        navigationManager.NavigateTo("/albums");
+        Connection.DeleteAlbum(statAlbumID);
     }
 
     private void CloseChoiceDiv()
