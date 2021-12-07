@@ -2,37 +2,34 @@
 
 <link href="css/Settings.css" rel="stylesheet"/>
 
-<div id="settingsdiv">
-    @*<h1 class="settingsh">PSS Settings</h1>*@
-    <h2 class="settingsh">Uploading</h2> @*style="margin-top: 10px"*@
-
-    <div class="settingpair">
-        <span class="whitetext">SSH Username</span>
-        <input type="text" class="settingpair" @bind="@username"/>
+<div id="settings-div">
+    <div class="settings-pair">
+        <span>SSH Username</span>
+        <input type="text" class="settings-pair" @bind="@username"/>
     </div>
 
-    <div class="settingpair">
-        <span class="whitetext">Server IP Address</span>
-        <input type="text" class="settingpair" @bind="@serverIP"/>
+    <div class="settings-pair">
+        <span>Server IP Address</span>
+        <input type="text" class="settings-pair" @bind="@serverIP"/>
     </div>
 
-    <div class="settingpair">
-        <span class="whitetext">scp Flags</span>
-        <input type="text" class="settingpair" @bind="@scpFlags"/>
+    <div class="settings-pair">
+        <span>scp Flags</span>
+        <input type="text" class="settings-pair" @bind="@scpFlags"/>
     </div>
 
-    <div class="settingpair">
-        <span class="whitetext">Where to upload items for applying</span>
-        <input type="text" class="settingpair" @bind="@uploadRootPath"/>
+    <div class="settings-pair">
+        <span>Where to upload items for applying</span>
+        <input type="text" class="settings-pair" @bind="@uploadRootPath"/>
     </div>
 
-    <div class="settingpair">
-        <span class="whitetext">Root path to library folder</span>
-        <input type="text" class="settingpair" @bind="@libraryRootPath"/>
+    <div class="settings-pair">
+        <span>Root path to library folder</span>
+        <input type="text" class="settings-pair" @bind="@libraryRootPath"/>
     </div>
 
-    <div class="settingpair">
-        <span class="whitetext">Show Prompts?</span>
+    <div class="settings-pair">
+        <span>Show Prompts?</span>
         <input type="checkbox" @bind="@showPrompts"/>
     </div>
 

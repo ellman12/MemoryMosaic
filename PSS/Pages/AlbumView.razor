@@ -139,10 +139,7 @@
     //Remove selected from the album
     private async Task RemoveBtnClick()
     {
-        foreach (string path in selectedItems.ToList())
-        {
-            RemoveFromAlbum(path, statAlbumID);
-        }
+        foreach (string path in selectedItems.ToList()) RemoveFromAlbum(path, statAlbumID);
         await ClearChecks();
         albumMedia = LoadAlbum(statAlbumID, mode);
     }
@@ -152,6 +149,12 @@
     private void DeleteSelectedBtnClick()
     {
         if (albumMedia.Count == 0) return;
+        
+        /*
+         * if show choice on, do this stuff below
+         * else just call the DeleteSelected
+         */
+        
         yesBtnFunc = DeleteSelected;
         choiceVis = "visible";
         choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
