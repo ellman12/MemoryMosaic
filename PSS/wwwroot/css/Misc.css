@@ -1,4 +1,7 @@
-﻿/*This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg*/
+﻿/* This stuff is shared throughout the project */
+/* Product Sans is the font throughout the project, and .material-icons is used for every icon I get from Google's fonts/icons website. */
+
+/*This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg*/
 @font-face {
     font-family: 'Product Sans';
     font-style: normal;
