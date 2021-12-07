@@ -25,6 +25,11 @@ namespace PSS
         [JsonProperty] public static string libFolderFullPath;
 
         /// <summary>
+        /// Should prompts be shown when doing things like deleting items and albums, etc.?
+        /// </summary>
+        [JsonProperty] public static bool showPrompts;
+        
+        /// <summary>
         /// Used (in Startup.cs) for accessing files outside of wwwroot.
         /// </summary>
         public const string requestPath = "/pss_library";
@@ -53,6 +58,7 @@ namespace PSS
             scpFlags = "-r";
             uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload"; //TODO: temp
             libFolderFullPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_library"; //TODO: temp
+            showPrompts = true;
             File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings()));
         }
     }

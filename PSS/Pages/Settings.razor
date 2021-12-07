@@ -1,4 +1,4 @@
-﻿@page "/settings"
+@page "/settings"
 
 <link href="css/Settings.css" rel="stylesheet"/>
 
@@ -31,39 +31,46 @@
         <input type="text" class="settingpair" @bind="@libraryRootPath"/>
     </div>
 
+    <div class="settingpair">
+        <span class="whitetext">Show Prompts?</span>
+        <input type="checkbox" @bind="@showPrompts"/>
+    </div>
+
     <button @onclick="@ApplyBtnClicked">Apply</button>
     <button @onclick="@CancelBtnClicked">Cancel</button>
     <button @onclick="@ResetBtnClicked">Reset</button>
 </div>
 
 @code {
-    private string username = PSS.Settings.username;
-    private string serverIP = PSS.Settings.serverIP;
-    private string scpFlags = PSS.Settings.scpFlags;
-    private string uploadRootPath = PSS.Settings.uploadRootPath;
-    private string libraryRootPath = PSS.Settings.libFolderFullPath;
+    private static string username = PSS.Settings.username;
+    private static string serverIP = PSS.Settings.serverIP;
+    private static string scpFlags = PSS.Settings.scpFlags;
+    private static string uploadRootPath = PSS.Settings.uploadRootPath;
+    private static string libraryRootPath = PSS.Settings.libFolderFullPath;
+    private static bool showPrompts = PSS.Settings.showPrompts;
 
-    private void ApplyBtnClicked()
+    private static void ApplyBtnClicked()
     {
         PSS.Settings.username = username;
         PSS.Settings.serverIP = serverIP;
         PSS.Settings.scpFlags = scpFlags;
         PSS.Settings.libFolderFullPath = libraryRootPath;
+        PSS.Settings.showPrompts = showPrompts;
         PSS.Settings.WriteSettings();
     }
 
-    private void CancelBtnClicked()
+    private static void CancelBtnClicked()
     {
         username = PSS.Settings.username;
         serverIP = PSS.Settings.serverIP;
         scpFlags = PSS.Settings.scpFlags;
         libraryRootPath = PSS.Settings.libFolderFullPath;
+        showPrompts = PSS.Settings.showPrompts;
     }
 
-    private void ResetBtnClicked()
+    private static void ResetBtnClicked()
     {
         PSS.Settings.ResetSettings();
         CancelBtnClicked();
     }
-
 }
