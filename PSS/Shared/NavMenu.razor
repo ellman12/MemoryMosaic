@@ -1,9 +1,41 @@
-﻿<nav style="position: fixed; margin-right: 10px; margin-left: -10px; margin-top: 0;">
-    <button onclick="location.href='/'" class="nav_btn"><span class="material-icons-outlined">&#xe3f4;</span><span class="nav_btn_text">Photos</span></button>
-    <button onclick="location.href='albums'" class="nav_btn"><span class="material-icons-outlined">&#xe411;</span><span class="nav_btn_text">Albums</span></button>
-    <button onclick="location.href='upload'" class="nav_btn"><span class="material-icons-outlined">&#xe2c3;</span><span class="nav_btn_text">Upload</span></button>
-    <button onclick="location.href='apply-upload'" class="nav_btn"><span class="material-icons-outlined">&#xf06f;</span><span class="nav_btn_text">Starred</span></button>
-    <button onclick="location.href='search'" class="nav_btn"><span class="material-icons-outlined">&#xe8b6;</span><span class="nav_btn_text">Search</span></button>
-    <button onclick="location.href='trash'" class="nav_btn"><svg width="24px" height="24px" class="material-icons-outlined" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span class="nav_btn_text">Trash</span></button>
-    <button onclick="location.href='settings'" class="nav_btn"><span class="material-icons-outlined">&#xe8b8;</span><span class="nav_btn_text">Settings</span></button>
+﻿<style>
+    nav > a {
+        text-decoration: none;
+        font-family: 'Product Sans', sans-serif;
+        color: white;
+        background-color: black;
+        border: none;
+        border-radius: 4px;
+        display: flex;
+        flex: 1;
+        word-wrap: break-word;
+        align-items: center;
+        letter-spacing: .01785714em;
+        font-size: 1rem;
+        font-weight: 400;
+        width: 120px;
+        padding-left: 12px;
+        padding-bottom: 11px;
+        padding-top: 11px;
+    }
+    
+    nav > a:hover {
+        background-color: rgba(211, 211, 211, 0.1);
+        cursor: pointer;
+    }
+    
+    a > span + span, a > svg + span {
+        padding-left: 11px;
+        text-decoration: none;
+    }
+</style>
+
+<nav style="position: fixed; margin-right: 10px; margin-left: -10px; margin-top: 0;">
+    <a href="/"><span class="material-icons-outlined">&#xe3f4;</span><span>Photos</span></a>
+    <a href="albums"><span class="material-icons-outlined">&#xe411;</span><span>Albums</span></a>
+    <a href="upload"><span class="material-icons-outlined">&#xe2c3;</span><span>Upload</span></a>
+    <a href="apply-upload"><span class="material-icons-outlined">&#xf06f;</span><span>Starred</span></a>
+    <a href="search"><span class="material-icons-outlined">&#xe8b6;</span><span>Search</span></a>
+    <a href="trash"><svg width="24px" height="24px" class="material-icons-outlined" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Trash</span></a>
+    <a href="settings"><span class="material-icons-outlined">&#xe8b8;</span><span>Settings</span></a>
 </nav>
