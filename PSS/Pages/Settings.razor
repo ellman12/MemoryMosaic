@@ -30,7 +30,7 @@
 
     <div class="settings-pair">
         <span>Show Prompts?</span>
-        <input type="checkbox" @bind="@showPrompts"/>
+        <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
     </div>
 
     <button @onclick="@ApplyBtnClicked">Apply</button>
@@ -51,6 +51,7 @@
         PSS.Settings.username = username;
         PSS.Settings.serverIP = serverIP;
         PSS.Settings.scpFlags = scpFlags;
+        PSS.Settings.uploadRootPath = uploadRootPath;
         PSS.Settings.libFolderFullPath = libraryRootPath;
         PSS.Settings.showPrompts = showPrompts;
         PSS.Settings.WriteSettings();
@@ -61,6 +62,7 @@
         username = PSS.Settings.username;
         serverIP = PSS.Settings.serverIP;
         scpFlags = PSS.Settings.scpFlags;
+        uploadRootPath = PSS.Settings.uploadRootPath;
         libraryRootPath = PSS.Settings.libFolderFullPath;
         showPrompts = PSS.Settings.showPrompts;
     }
