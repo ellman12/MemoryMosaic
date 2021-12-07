@@ -1,7 +1,4 @@
-﻿/*Misc PSS CSS stuff*/
-
-/*This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg*/
-/*These 2 are from Google*/
+﻿/*This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg*/
 @font-face {
     font-family: 'Product Sans';
     font-style: normal;
@@ -10,7 +7,7 @@
 }
 
 .material-icons {
-    font-family: 'Material Icons';
+    font-family: 'Material Icons', 'Product Sans', sans-serif;
     line-height: 1;
     text-transform: none;
     letter-spacing: normal;
