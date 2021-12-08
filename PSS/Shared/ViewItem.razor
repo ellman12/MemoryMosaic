@@ -164,7 +164,7 @@ Required Parameters:
 
     private void ChangeImage(KeyboardEventArgs e)
     {
-        if (e.AltKey && e.Code == "LeftArrow")
+        if (e.Code == "KeyB")
         {
             navigationManager.NavigateTo(ReturnPath, true);
             return;
