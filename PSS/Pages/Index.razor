@@ -46,6 +46,14 @@
     private static string choiceVis;
     private static string choiceMsg;
 
+    private static bool shiftDown;
+
+    private async Task getShiftDown()
+    {
+        shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
+        Console.WriteLine(shiftDown);
+    }
+
     protected override void OnInitialized()
     {
         mediaList = LoadMediaTable();
@@ -67,6 +75,29 @@
             selectedItems.Add(id);
 
         headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
+
+        await getShiftDown();
+        
+        // if shift down only do this stuff
+        if (!shiftDown) return;
+        
+        int index = -1;
+        //get index of latest selected thing
+        for (int i = 0; i < mediaList.Count; i++)
+        {
+            if (mediaList[i].path != id) continue;
+            index = i;
+            break;
+        }
+        
+        //get highest index that isn't this one
+        
+        
+        //TODO: do the thing from the sticky note here!
+        Console.WriteLine(id);
+        Console.WriteLine(index);
+        
+        
     }
 
     private async Task ClearChecks()

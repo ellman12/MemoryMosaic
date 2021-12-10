@@ -1,3 +1,5 @@
+let shiftDown = false;
+
 function toggleCheck(id) {
     let className;
     if (document.getElementById(id).classList.contains("unchecked")) {
@@ -10,7 +12,7 @@ function toggleCheck(id) {
         document.getElementById(id).classList.add("unchecked");
         className = "unchecked";
     }
-    
+
     return className;
 }
 
@@ -19,3 +21,21 @@ function removeCheck(id) {
     document.getElementById(id).classList.remove("checked");
     document.getElementById(id).classList.add("unchecked");
 }
+
+function getShiftDown() {
+    return shiftDown;
+}
+
+window.addEventListener("keydown", function(event) {
+    if (event.code === "ShiftLeft") {
+        shiftDown = true;
+        console.log(shiftDown);
+    }
+}, true);
+
+window.addEventListener("keyup", function(event) {
+    if (event.code === "ShiftLeft") {
+        shiftDown = false;
+        console.log(shiftDown);
+    }
+}, true);
