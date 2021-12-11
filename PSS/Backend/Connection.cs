@@ -61,13 +61,23 @@ namespace PSS.Backend
             public readonly string path;
             public readonly DateTime dateTaken;
             public readonly DateTime dateAdded;
+            public bool starred;
             public readonly Guid uuid;
 
-            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid)
+            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid) //Keeping for legacy purposes before starred column was added.
             {
                 path = p;
                 dateTaken = dt;
                 dateAdded = da;
+                this.uuid = uuid;
+            }
+            
+            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid)
+            {
+                path = p;
+                dateTaken = dt;
+                dateAdded = da;
+                this.starred = starred;
                 this.uuid = uuid;
             }
         }
@@ -85,15 +95,16 @@ namespace PSS.Backend
         }
 
         //For inserting a photo or video into the media table (the main table). Will not insert duplicates.
-        public static int InsertMedia(string path, DateTime dateTaken)
+        public static int InsertMedia(string path, DateTime dateTaken, bool starred = false)
         {
             int rowsAffected = 0;
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now()) ON CONFLICT (path) DO NOTHING", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now(), @starred) ON CONFLICT (path) DO NOTHING", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+                cmd.Parameters.AddWithValue("@starred", starred);
                 rowsAffected = cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -548,7 +559,7 @@ namespace PSS.Backend
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
 
                 reader.Close();
             }
@@ -611,7 +622,7 @@ namespace PSS.Backend
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
 
                 reader.Close();
             }

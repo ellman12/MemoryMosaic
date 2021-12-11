@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS public.media
     path text COLLATE pg_catalog."default" NOT NULL,
     date_taken timestamp without time zone NOT NULL,
     date_added timestamp without time zone NOT NULL,
+    starred boolean NOT NULL,
     uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
     CONSTRAINT media_pkey PRIMARY KEY (path, uuid),
     CONSTRAINT path_key UNIQUE (path)
@@ -73,6 +74,7 @@ CREATE TABLE IF NOT EXISTS public.media_trash
     path text COLLATE pg_catalog."default" NOT NULL,
     date_taken timestamp without time zone NOT NULL,
     date_added timestamp without time zone NOT NULL,
+    starred boolean NOT NULL,
     uuid uuid NOT NULL,
     CONSTRAINT media_trash_pkey PRIMARY KEY (path, uuid)
     )
