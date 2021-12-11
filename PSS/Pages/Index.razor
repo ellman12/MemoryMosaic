@@ -69,9 +69,8 @@
         string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
         if (newClass.Contains("unchecked"))
             selectedItems.Remove(id);
-        else
-            if (!selectedItems.Contains(id)) //Needed to prevent adding dupes when shift clicking
-                selectedItems.Add(id);
+        else if (!selectedItems.Contains(id)) //Needed to prevent adding dupes when shift clicking
+            selectedItems.Add(id);
 
         headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
 
@@ -85,44 +84,34 @@
         }
 
         await getShiftDown();
-        if (!shiftDown)
+        if (!shiftDown) //Not shift click so just select 1 item like normal.
         {
             lastIndex = index;
             return;
         }
-        await ShiftClick(index);
+        await ShiftClick(index); //Select multiple.
+    }
+
+    //Add items from start to end into selectedItems. Used for ShiftClick.
+    private async Task AddSelected(int startIndex, int endIndex)
+    {
+        for (int i = startIndex; i <= endIndex; i++)
+        {
+            string currentID = mediaList[i].path;
+            if (selectedItems.Contains(currentID)) continue;
+            selectedItems.Add(currentID);
+            await ToggleCheck(currentID);
+        }
     }
 
     //If shift was held down select multiple things
     private async Task ShiftClick(int currentIndex)
     {
-        //TODO: this if sucks I know
-        //First item is on left and item shift clicked is right.
-        //E.g., ###1####2###
-        //Loop from 1 --> 2, and add stuff in between to selected items
+        //First item is on left and item shift clicked is right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selected items
         if (lastIndex < currentIndex)
-        {
-            for (int i = lastIndex; i <= currentIndex; i++)
-            {
-                string currentID = mediaList[i].path;
-                if (selectedItems.Contains(currentID))
-                    continue;
-                selectedItems.Add(currentID);
-                await ToggleCheck(currentID);
-            }
-        }
-        //First item is on right and second item (the one shift clicked) is on left. E.g., ###2####1###. Same as above but opposite direction
-        else if (lastIndex > currentIndex)
-        {
-            for (int i = currentIndex; i <= lastIndex; i++)
-            {
-                string currentID = mediaList[i].path;
-                if (selectedItems.Contains(currentID))
-                    continue;
-                selectedItems.Add(currentID);
-                await ToggleCheck(currentID);
-            }
-        }
+            await AddSelected(lastIndex, currentIndex);
+        else if (lastIndex > currentIndex) //Same as above but swap 1 and 2 and the direction.
+            await AddSelected(currentIndex, lastIndex);
     }
 
     private async Task ClearChecks()
@@ -137,10 +126,8 @@
 
     private async Task ImgClicked(string uuid, string path)
     {
-        if (selectedItems.Count > 0)
-            await ToggleCheck(path);
-        else
-            navigationManager.NavigateTo($"/view/{uuid}");
+        if (selectedItems.Count > 0) await ToggleCheck(path);
+        else navigationManager.NavigateTo($"/view/{uuid}");
     }
     
     //Show choice div
