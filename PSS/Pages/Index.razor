@@ -1,6 +1,7 @@
 @page "/"
 @inject NavigationManager navigationManager;
 @using static PSS.Backend.Connection
+@using PSS.Backend
 
 <title>Photos</title>
 <link href="css/Index.css" rel="stylesheet"/>
@@ -10,11 +11,12 @@
         <button @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         <button><span class="material-icons-outlined">perm_media</span></button>
         <button><span class="material-icons-outlined">archive</span></button>
-        <button><span class="material-icons-outlined">star_outline</span></button>
+        <button @onclick="@(() => starChoiceVis = "visible")"><span class="material-icons-outlined">star_outline</span></button>
         <button @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
         <span id="selectedAmtText">@selectedItems.Count selected</span>
         <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
+    <TwoChoiceInput YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
@@ -49,8 +51,18 @@
     //Shit click stuff. Last index is the last item you selected (would not be the current thing obv).
     private static bool shiftDown;
     private static int lastIndex;
-
+    
     private async Task getShiftDown() => shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
+    
+    private static string starChoiceVis;
+
+    private async void UpdateStars(bool starred)
+    {
+        starChoiceVis = "hidden";
+        UpdateStarred(selectedItems, starred);
+        await ClearChecks();
+        StateHasChanged();
+    }
 
     protected override void OnInitialized()
     {
@@ -59,6 +71,7 @@
         headerVis = "hidden";
         albumsVis = "hidden";
         choiceVis = "hidden";
+        starChoiceVis = "hidden";
     }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
