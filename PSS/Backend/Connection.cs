@@ -604,7 +604,7 @@ namespace PSS.Backend
             return media;
         }
 
-        ///<summary>Change an item from either starred (true) or not starred.</summary>
+        ///<summary>Change a single item from either starred (true) or not starred.</summary>
         public static void UpdateStarred(string path, bool starred)
         {
             try
@@ -614,6 +614,31 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@starred", starred);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
+        
+        ///<summary>Change a List of paths (strings) from either starred (true) or not starred.</summary>
+        public static void UpdateStarred(List<string> paths, bool starred)
+        {
+            try
+            {
+                Open();
+                foreach(string path in paths)
+                {
+                    NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE path=@path", connection);
+                    cmd.Parameters.AddWithValue("@starred", starred);
+                    cmd.Parameters.AddWithValue("@path", path);
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine(path);
+                }
             }
             catch (NpgsqlException e)
             {
