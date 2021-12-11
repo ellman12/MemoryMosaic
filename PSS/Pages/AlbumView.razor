@@ -93,6 +93,12 @@
         }
     }
     
+    //Shit click stuff.
+    private static bool shiftDown;
+    private static int lastIndex;
+    
+    private async Task getShiftDown() => shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
+
     protected override void OnInitialized()
     {
         albumsVis = "hidden";
@@ -116,8 +122,47 @@
         string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
         if (newClass.Contains("unchecked"))
             selectedItems.Remove(id);
-        else
+        else if (!selectedItems.Contains(id)) //Needed to prevent adding dupes when shift clicking
             selectedItems.Add(id);
+
+        //Get mediaList currentIndex of latest selected thing. Needed only for shift click
+        int index = -1;
+        for (int i = 0; i < albumMedia.Count; i++)
+        {
+            if (albumMedia[i].path != id) continue;
+            index = i;
+            break;
+        }
+
+        await getShiftDown();
+        if (!shiftDown) //Not shift click so just select 1 item like normal.
+        {
+            lastIndex = index;
+            return;
+        }
+        await ShiftClick(index); //Select multiple.
+    }
+
+    //Add items from start to end into selectedItems. Used for ShiftClick.
+    private async Task AddSelected(int startIndex, int endIndex)
+    {
+        for (int i = startIndex; i <= endIndex; i++)
+        {
+            string currentID = albumMedia[i].path;
+            if (selectedItems.Contains(currentID)) continue;
+            selectedItems.Add(currentID);
+            await ToggleCheck(currentID);
+        }
+    }
+
+    //If shift was held down select multiple things
+    private async Task ShiftClick(int currentIndex)
+    {
+        //First item is on left and item shift clicked is right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selected items
+        if (lastIndex < currentIndex)
+            await AddSelected(lastIndex, currentIndex);
+        else if (lastIndex > currentIndex) //Same as above but swap 1 and 2 and the direction.
+            await AddSelected(currentIndex, lastIndex);
     }
     
     private async Task ClearChecks()
