@@ -574,7 +574,57 @@ namespace PSS.Backend
 
             return media;
         }
+        
+        ///<summary>Load only starred items from the media table.</summary>
+        ///<returns>Row(s) retrieved in a List&lt;MediaRow&gt;</returns>
+        public static List<MediaRow> LoadStarred()
+        {
+            List<MediaRow> media = new();
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT * FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
 
+                while (reader.Read())
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), true, reader.GetGuid(4)));
+
+                reader.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return media;
+        }
+
+        ///<summary>Change an item from either starred (true) or not starred.</summary>
+        public static void UpdateStarred(string path, bool starred)
+        {
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE path=@path;", connection);
+                cmd.Parameters.AddWithValue("@starred", starred);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
+        
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
