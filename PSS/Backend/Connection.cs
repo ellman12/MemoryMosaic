@@ -637,7 +637,6 @@ namespace PSS.Backend
                     cmd.Parameters.AddWithValue("@starred", starred);
                     cmd.Parameters.AddWithValue("@path", path);
                     cmd.ExecuteNonQuery();
-                    Console.WriteLine(path);
                 }
             }
             catch (NpgsqlException e)

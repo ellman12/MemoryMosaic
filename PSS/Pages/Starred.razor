@@ -1,8 +1,8 @@
-@page "/"
+@page "/starred"
 @inject NavigationManager navigationManager;
 @using static PSS.Backend.Connection
 
-<title>Photos</title>
+<title>Starred</title>
 <link href="css/IndexAndStarred.css" rel="stylesheet"/>
 
 @{
@@ -15,7 +15,7 @@
         <span id="selectedAmtText">@selectedItems.Count selected</span>
         <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
     </header>
-    <TwoChoiceInput YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(SelectedRemoveStar)" NoBtnClick="@(() => starChoiceVis = "hidden")" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
@@ -55,17 +55,17 @@
     
     private static string starChoiceVis;
 
-    private async void UpdateStars(bool starred)
+    private async void SelectedRemoveStar()
     {
         starChoiceVis = "hidden";
-        UpdateStarred(selectedItems, starred);
+        UpdateStarred(selectedItems, false);
         await ClearChecks();
         StateHasChanged();
     }
 
     protected override void OnInitialized()
     {
-        mediaList = LoadMediaTable();
+        mediaList = LoadStarred();
         selectedItems = new List<string>(); //Reset on page load/refresh
         headerVis = "hidden";
         albumsVis = "hidden";
