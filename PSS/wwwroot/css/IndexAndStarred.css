@@ -9,43 +9,54 @@
 header {
     background-color: black;
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
+    align-items: center;
     align-content: center;
     position: fixed;
-    height: 54px;
     left: 146px;
     right: 0;
-    padding-top: 4px;
-    padding-right: 100px;
+    top: 4px;
     z-index: 999;
 }
 
+header > #buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    right: 55px;
+} 
+
 header button {
-    color: white;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
     width: 50px;
     height: 50px;
     border: none;
     background: none;
 }
 
+header > span {
+    font-size: 20px;
+}
+
+header > #selectedAmtText {
+    font-size: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+header > #starredText {
+    position: absolute;
+    left: 43%;
+}
+
 button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
-}
-
-#selectedAmtText {
-    font-size: 20px;
-    color: white;
-    position: absolute;
-    left: 60px;
-    top: 18px;
-}
-
-#clearBtn {
-    position: absolute;
-    top: 6px;
-    left: -5px;
 }
 
 h1 {

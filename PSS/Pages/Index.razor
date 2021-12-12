@@ -7,13 +7,15 @@
 
 @{
     <header style="visibility: @headerVis">
-        <button @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-        <button><span class="material-icons-outlined">perm_media</span></button>
-        <button><span class="material-icons-outlined">archive</span></button>
-        <button title="Add or Remove Stars From Selected" @onclick="@(() => starChoiceVis = "visible")"><span class="material-icons-outlined">star_outline</span></button>
-        <button @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
-        <span id="selectedAmtText">@selectedItems.Count selected</span>
-        <button id="clearBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <div id="buttons">
+            <button @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
+            <button title="Add or Remove Stars From Selected" @onclick="@(() => starChoiceVis = "visible")"><span class="material-icons-outlined">star_outline</span></button>
+            <button><span class="material-icons-outlined">archive</span></button>
+            <button><span class="material-icons-outlined">perm_media</span></button>
+            <button @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        </div>
+        <button @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
     </header>
     <TwoChoiceInput YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
