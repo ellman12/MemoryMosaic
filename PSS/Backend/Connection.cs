@@ -671,7 +671,7 @@ namespace PSS.Backend
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
             }
             catch (NpgsqlException e)
             {
