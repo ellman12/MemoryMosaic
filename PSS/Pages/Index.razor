@@ -17,7 +17,7 @@
         <button @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
     </header>
-    <TwoChoiceInput YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+    <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>

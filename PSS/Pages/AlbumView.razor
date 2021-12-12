@@ -41,7 +41,7 @@
             <button @onclick="@DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
         </div>
     </header>
-    <TwoChoiceInput YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+    <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@buttonsVis" @bind-AlbumsVis="@albumsVis"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@yesBtnFunc" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
