@@ -24,11 +24,23 @@ Required Parameters:
     }
     else
     {
+        bool starred = Connection.GetStarred(path);
+        
         @*Stuff in top right corner*@
         <div id="buttons">
             <button @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
             <button @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             <button @onclick="@(() => ToggleDropdown(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
+        </div>
+        
+        <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
+            <button @onclick="@(() => albumsVis = "visible")" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
+            
+            <button @onclick="@(() => Connection.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
+                <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
+            </button>
+            <button title="Archive"><span class="material-icons-outlined">archive</span></button>
+            <button title="Add to Folder"><span class="material-icons-outlined">perm_media</span></button>
         </div>
         
         <div id="infoDiv" style="visibility: @infoVis">
@@ -65,13 +77,6 @@ Required Parameters:
                     }
                 </div>
             }
-        </div>
-        
-        <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
-            <button title="Star"><span class="material-icons-outlined">star_border</span></button>
-            <button @onclick="@(() => albumsVis = "visible")" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
-            <button title="Add to Folder"><span class="material-icons-outlined">perm_media</span></button>
-            <button title="Archive"><span class="material-icons-outlined">archive</span></button>
         </div>
         
         <AlbumSelector SelectedItems="@(new List<string> {path})" @bind-AlbumsVis="@albumsVis"/>

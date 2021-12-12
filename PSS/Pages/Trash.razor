@@ -27,8 +27,9 @@
             @foreach (MediaRow media in mediaTrashList)
             {
                 <div class="thumbnail">
-                    <span @onclick="(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
-                    <img @onclick="() => ImgClicked(media.path)" style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
+                    @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
+                    <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
+                    <img @onclick="@(() => ImgClicked(media.path))" style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
         </div>

@@ -61,13 +61,23 @@ namespace PSS.Backend
             public readonly string path;
             public readonly DateTime dateTaken;
             public readonly DateTime dateAdded;
+            public bool starred;
             public readonly Guid uuid;
 
-            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid)
+            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid) //Keeping for legacy purposes before starred column was added.
             {
                 path = p;
                 dateTaken = dt;
                 dateAdded = da;
+                this.uuid = uuid;
+            }
+            
+            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid)
+            {
+                path = p;
+                dateTaken = dt;
+                dateAdded = da;
+                this.starred = starred;
                 this.uuid = uuid;
             }
         }
@@ -85,15 +95,16 @@ namespace PSS.Backend
         }
 
         //For inserting a photo or video into the media table (the main table). Will not insert duplicates.
-        public static int InsertMedia(string path, DateTime dateTaken)
+        public static int InsertMedia(string path, DateTime dateTaken, bool starred = false)
         {
             int rowsAffected = 0;
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now()) ON CONFLICT (path) DO NOTHING", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now(), @starred) ON CONFLICT (path) DO NOTHING", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+                cmd.Parameters.AddWithValue("@starred", starred);
                 rowsAffected = cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -548,7 +559,36 @@ namespace PSS.Backend
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
+
+                reader.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return media;
+        }
+        
+        ///<summary>Load only starred items from the media table.</summary>
+        ///<returns>Row(s) retrieved in a List&lt;MediaRow&gt;</returns>
+        public static List<MediaRow> LoadStarred()
+        {
+            List<MediaRow> media = new();
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT * FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), true, reader.GetGuid(4)));
 
                 reader.Close();
             }
@@ -564,6 +604,82 @@ namespace PSS.Backend
             return media;
         }
 
+        public static bool GetStarred(string path)
+        {
+            bool starred = false;
+            
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT starred FROM media WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    starred = reader.GetBoolean(0);
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return starred;
+        }
+
+        ///<summary>Change a single item from either starred (true) or not starred.</summary>
+        public static void UpdateStarred(string path, bool starred)
+        {
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE path=@path;", connection);
+                cmd.Parameters.AddWithValue("@starred", starred);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
+        
+        ///<summary>Change a List of paths (strings) from either starred (true) or not starred.</summary>
+        public static void UpdateStarred(List<string> paths, bool starred)
+        {
+            try
+            {
+                Open();
+                foreach(string path in paths)
+                {
+                    NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE path=@path", connection);
+                    cmd.Parameters.AddWithValue("@starred", starred);
+                    cmd.Parameters.AddWithValue("@path", path);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
+        
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
@@ -580,13 +696,13 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
             }
             catch (NpgsqlException e)
             {
@@ -611,7 +727,7 @@ namespace PSS.Backend
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetGuid(3)));
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
 
                 reader.Close();
             }

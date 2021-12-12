@@ -1,19 +1,13 @@
 @*A blank page just for testing stuff*@
 @page "/test"
+@using static PSS.Backend.Connection
 @using PSS.Backend
 @* @layout EmptyLayout *@
 
 <title>Test</title>
 
-<TwoChoiceInput @bind-TwoChoiceVis="@hello" YesBtnClick="@Yes" NoBtnClick="@(() => Console.WriteLine("no"))" Message="Delete Selected Items?"/>
+<button style="margin-left: 50%;" @onclick="@(() => UpdateStarred(@"2021\12 December\FF8EyTQWUAojmvr.jpg", true))">click me</button>
 
 @code {
-    private static string hello = "visible";
-
-    private void Yes()
-    {
-        hello = "hidden";
-        StateHasChanged();
-    }
-
+   
 }

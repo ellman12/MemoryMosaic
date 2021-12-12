@@ -1,35 +1,35 @@
-@page "/"
+@page "/starred"
 @inject NavigationManager navigationManager;
 @using static PSS.Backend.Connection
 
-<title>Photos</title>
+<title>Starred</title>
 <link href="css/IndexAndStarred.css" rel="stylesheet"/>
 
 @{
-    <header style="visibility: @headerVis">
-        <div id="buttons">
+    <header>
+        <div id="buttons" style="visibility: @headerVis">
             <button @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
-            <button title="Add or Remove Stars From Selected" @onclick="@(() => starChoiceVis = "visible")"><span class="material-icons-outlined">star_outline</span></button>
+            <button title="Remove Stars From Selected" @onclick="@(() => UpdateStars(false))"><span class="material-icons-outlined">star_outline</span></button>
             <button><span class="material-icons-outlined">archive</span></button>
             <button><span class="material-icons-outlined">perm_media</span></button>
             <button @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         </div>
-        <button @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+        <button style="visibility: @headerVis" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span style="visibility: @headerVis" id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+        <span id="starredText">Starred</span>
     </header>
-    <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
 
-    if (mediaList.Count == 0)
+    if (starredList.Count == 0)
     {
-        <h1>Upload some items to get started</h1>
+        <h1>Starred items appear here</h1>
     }
     else
     {
         <div id="mainDiv">
-            @foreach (MediaRow media in mediaList)
+            @foreach (MediaRow media in starredList)
             {
                 <div class="thumbnail">
                     @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
@@ -44,7 +44,7 @@
 @code {
     private static string headerVis;
     private static string albumsVis;
-    private static List<MediaRow> mediaList;
+    private static List<MediaRow> starredList;
     private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
 
     private static string choiceVis;
@@ -56,25 +56,21 @@
     
     private async Task getShiftDown() => shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
     
-    private static string starChoiceVis;
-
     private async void UpdateStars(bool starred)
     {
         UpdateStarred(selectedItems, starred);
         await ClearChecks();
-        starChoiceVis = "hidden";
-        mediaList = LoadMediaTable();
+        starredList = LoadStarred();
         StateHasChanged();
     }
-
+    
     protected override void OnInitialized()
     {
-        mediaList = LoadMediaTable();
+        starredList = LoadStarred();
         selectedItems = new List<string>(); //Reset on page load/refresh
         headerVis = "hidden";
         albumsVis = "hidden";
         choiceVis = "hidden";
-        starChoiceVis = "hidden";
     }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
@@ -90,11 +86,11 @@
 
         headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
 
-        //Get mediaList currentIndex of latest selected thing. Needed only for shift click
+        //Get starredList currentIndex of latest selected thing. Needed only for shift click
         int index = -1;
-        for (int i = 0; i < mediaList.Count; i++)
+        for (int i = 0; i < starredList.Count; i++)
         {
-            if (mediaList[i].path != id) continue;
+            if (starredList[i].path != id) continue;
             index = i;
             break;
         }
@@ -113,7 +109,7 @@
     {
         for (int i = startIndex; i <= endIndex; i++)
         {
-            string currentID = mediaList[i].path;
+            string currentID = starredList[i].path;
             if (selectedItems.Contains(currentID)) continue;
             selectedItems.Add(currentID);
             await ToggleCheck(currentID);
@@ -143,7 +139,7 @@
     private async Task ImgClicked(string uuid, string path)
     {
         if (selectedItems.Count > 0) await ToggleCheck(path);
-        else navigationManager.NavigateTo($"/view/{uuid}");
+        else navigationManager.NavigateTo($"/view-starred-item/{uuid}");
     }
     
     //Show choice div
@@ -166,7 +162,7 @@
             headerVis = "hidden";
         }
         await ClearChecks();
-        mediaList = LoadMediaTable();
+        starredList = LoadStarred();
         StateHasChanged();
     }
 
