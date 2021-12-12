@@ -32,7 +32,7 @@
             @foreach (MediaRow media in starredList)
             {
                 <div class="thumbnail">
-                    <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons unchecked">check_circle</span>
+                    <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
                     <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
             }

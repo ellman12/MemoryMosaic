@@ -80,35 +80,39 @@ h1 {
     top: 60px;
 }
 
-#mainDiv .thumbnail {
+#mainDiv > .thumbnail {
+    position: relative;
     cursor: pointer;
 }
 
-#mainDiv .thumbnail span { /* Checkbox icons */
-    opacity: 0;
-    height: 24px;
-    width: 24px;
+#mainDiv > .thumbnail > .star-icon {
     position: absolute;
-    color: #fff;
+    left: 8px;
+    bottom: 10px; /* https://stackoverflow.com/a/12365963 */
+}
+
+#mainDiv > .thumbnail > .checkbox {
+    opacity: 0;
+    position: absolute;
     margin-top: 8px;
     margin-left: 8px;
     transition: 0.3s;
 }
 
-#mainDiv .thumbnail:hover span.unchecked { /* Show checkbox on hover */
+#mainDiv > .thumbnail:hover > .unchecked { /* Show checkbox on hover */
     opacity: 0.42;
 }
 
-#mainDiv .thumbnail span.unchecked:hover { /* Make it 100% opaque */
+#mainDiv > .thumbnail > .unchecked:hover { /* Make it 100% opaque */
     opacity: 1;
 }
 
-#mainDiv .thumbnail .checked {
+#mainDiv > .thumbnail > .checked {
     color: #009FFF;
     opacity: 1;
 }
 
-#mainDiv .thumbnail img {
+#mainDiv > .thumbnail > img {
     height: 200px;
     margin-left: 3px;
     margin-right: 3px;
