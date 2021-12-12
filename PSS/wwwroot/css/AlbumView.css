@@ -15,44 +15,51 @@ h1 {
 }
 
 header {
+    background-color: black;
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
     align-items: center;
+    align-content: center;
     position: fixed;
-    height: 54px;
     left: 146px;
     right: 0;
-    padding-top: 4px;
-    padding-right: 100px;
+    top: 4px;
     z-index: 999;
 }
 
-header > button {
-    color: white;
+header > #buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    right: 55px;
+}
+
+header > button, header > #buttons > button, #albumRenameDiv > button {
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
     width: 50px;
     height: 50px;
     border: none;
     background: none;
 }
 
-button:hover {
+header > span {
+    font-size: 20px;
+}
+
+header > #selectedAmtText {
+    font-size: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+header > button:hover, header > #buttons > button:hover, #albumRenameDiv > button:hover, #moreOptionsDiv > button:hover, #albumRenameDiv > button:hover { /* IDK why background color doesn't work when I just do header button:hover... */
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
-}
-
-#selectedAmtText {
-    font-size: 20px;
-    color: white;
-    position: absolute;
-    left: 60px;
-    top: 18px;
-}
-
-#clearBtn {
-    position: absolute;
-    top: 6px;
-    left: -5px;
 }
 
 #moreOptionsDiv {
@@ -61,7 +68,7 @@ button:hover {
     justify-content: space-evenly;
     position: absolute;
     top: 58px;
-    right: 100px;
+    right: 58px;
     background-color: black;
     border: 1px solid white;
     width: auto;
@@ -85,11 +92,6 @@ button span ~ span, button svg ~ span {
     text-decoration: none;
 }
 
-#moreOptionsDiv > button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
-
 header > #albumRenameDiv {
     display: flex;
     flex-direction: row;
@@ -105,7 +107,7 @@ header > #albumRenameDiv {
     border: 2px solid black;
     outline: none;
     font-size: 20px;
-   width: 50%;
+    width: 50%;
 }
 
 #albumRenameDiv > input[type="text"]:hover {
@@ -119,23 +121,7 @@ header > #albumRenameDiv {
 }
 
 #albumRenameDiv > button {
-    width: auto;
-    margin-left: 15px;
-    background-color: black;
-    border: 1px solid white;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    letter-spacing: .01785714em;
-    font-family: Product Sans, serif;
-    font-size: 1rem;
-    font-weight: 400;
-    padding: 11px;
-}
-
-#albumRenameDiv > button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
+    margin-left: 3px;
 }
 
 #mainDiv {

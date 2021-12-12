@@ -10,32 +10,35 @@
     string vis = selectedItems.Count > 0 ? "visible" : "hidden";
     
     <header>
-        <button @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
+        <button @onclick="@ClearChecks" style="visibility: @vis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
+        <span style="visibility: @vis" id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+
+        <div id="albumRenameDiv">
+            <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" @bind:event="oninput" autocomplete="off">
+            
+            <button @onclick="@CancelBtnClick" style="visibility: @buttonsVis">
+                <span class="material-icons-outlined">close</span>
+            </button>
+    
+            <button @onclick="@ConfirmBtnClick" style="visibility: @buttonsVis">
+                <span class="material-icons-outlined">check</span>
+            </button>
+        </div>
+
+        <div id="buttons">
+            <button style="visibility: @vis" @onclick="@(() => albumsVis = "visible")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
+            <button style="visibility: @vis" title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
+            <button style="visibility: @vis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+            <button style="visibility: @vis" @onclick="@DeleteSelectedBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <button @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
+        </div>
+
         <div id="moreOptionsDiv" style="visibility: @sortDivVis">
             <button @onclick="@(() => ChangeOrder(AVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(mode == AVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(AVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(mode == AVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(AVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(mode == AVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
             <button @onclick="@(() => ChangeOrder(AVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(mode == AVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == AVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
-            <button @onclick="DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
-        </div>
-        
-        <button @onclick="DeleteSelectedBtnClick" style="visibility: @vis" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-        <button @onclick="RemoveBtnClick" style="visibility: @vis" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
-        <button style="visibility: @vis" title="Star Selected"><span class="material-icons-outlined">star_outline</span></button>
-        <button @onclick="@(() => albumsVis = "visible")" style="visibility: @vis" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
-        <span style="visibility: @vis" id="selectedAmtText">@selectedItems.Count selected</span>
-        <button @onclick="ClearChecks" style="visibility: @vis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
-        
-        <div id="albumRenameDiv">
-            <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" @bind:event="oninput" autocomplete="off">
-            
-            <button @onclick="CancelBtnClick" style="visibility: @buttonsVis">
-                <span class="material-icons-outlined">close</span><span>Cancel</span>
-            </button>
-    
-            <button @onclick="ConfirmBtnClick" style="visibility: @buttonsVis">
-                <span class="material-icons-outlined">check</span><span>Confirm</span>
-            </button>
+            <button @onclick="@DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete Album</span></button>
         </div>
     </header>
     
