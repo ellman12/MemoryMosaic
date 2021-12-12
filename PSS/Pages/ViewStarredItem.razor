@@ -1,0 +1,15 @@
+@*Page for viewing full-sized images in Starred*@
+@page "/view-starred-item/{id}"
+@using PSS.Backend
+@layout EmptyLayout
+
+@{
+    <ViewItem id="@id" MediaList="@starredList" Page="view-starred-item" ReturnPath="starred" DateAdded="@Connection.GetDateAdded(Guid.Parse(id))"/>
+}
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private static readonly List<Connection.MediaRow> starredList = Connection.LoadStarred();
+}

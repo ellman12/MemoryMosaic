@@ -139,7 +139,7 @@
     private async Task ImgClicked(string uuid, string path)
     {
         if (selectedItems.Count > 0) await ToggleCheck(path);
-        else navigationManager.NavigateTo($"/view/{uuid}");
+        else navigationManager.NavigateTo($"/view-starred-item/{uuid}");
     }
     
     //Show choice div
