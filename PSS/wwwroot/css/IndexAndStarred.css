@@ -62,10 +62,12 @@ button:hover {
 h1 {
     color: white;
     font-family: 'Product Sans', sans-serif;
-    text-align: center;
     position: absolute;
-    top: 36%;
-    left: 36%;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
     user-select: none;
 }
 
