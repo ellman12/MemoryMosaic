@@ -32,6 +32,7 @@
             @foreach (MediaRow media in starredList)
             {
                 <div class="thumbnail">
+                    @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
                     <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
                     <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" style="color: white" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
                 </div>
@@ -161,7 +162,7 @@
             headerVis = "hidden";
         }
         await ClearChecks();
-        starredList = LoadMediaTable();
+        starredList = LoadStarred();
         StateHasChanged();
     }
 

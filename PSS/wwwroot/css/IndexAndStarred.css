@@ -81,14 +81,14 @@ h1 {
 }
 
 #mainDiv > .thumbnail {
-    position: relative;
+    position: relative; /* https://stackoverflow.com/a/12365963 */
     cursor: pointer;
 }
 
 #mainDiv > .thumbnail > .star-icon {
     position: absolute;
     left: 8px;
-    bottom: 10px; /* https://stackoverflow.com/a/12365963 */
+    bottom: 10px;
 }
 
 #mainDiv > .thumbnail > .checkbox {
