@@ -604,6 +604,37 @@ namespace PSS.Backend
             return media;
         }
 
+        public static bool GetStarred(string path)
+        {
+            bool starred = false;
+            
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT starred FROM media WHERE path=@path", connection);
+                cmd.Parameters.AddWithValue("@path", path);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    starred = reader.GetBoolean(0);
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return starred;
+        }
+
         ///<summary>Change a single item from either starred (true) or not starred.</summary>
         public static void UpdateStarred(string path, bool starred)
         {
