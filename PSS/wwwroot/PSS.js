@@ -29,13 +29,11 @@ function getShiftDown() {
 window.addEventListener("keydown", function(event) {
     if (event.code === "ShiftLeft") {
         shiftDown = true;
-        console.log(shiftDown);
     }
 }, true);
 
 window.addEventListener("keyup", function(event) {
     if (event.code === "ShiftLeft") {
         shiftDown = false;
-        console.log(shiftDown);
     }
 }, true);
