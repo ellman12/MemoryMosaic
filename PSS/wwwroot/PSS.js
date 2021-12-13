@@ -32,25 +32,25 @@ function getShiftDown() {
 }
 
 window.addEventListener("keydown", function(event) {
-    if (event.code === "ControlLeft") {
+    if (event.code === "ControlLeft" || event.code === "ControlRight") {
         ctrlDown = true;
     }
 }, true);
 
 window.addEventListener("keyup", function(event) {
-    if (event.code === "ControlLeft") {
+    if (event.code === "ControlLeft" || event.code === "ControlRight") {
         ctrlDown = false;
     }
 }, true);
 
 window.addEventListener("keydown", function(event) {
-    if (event.code === "ShiftLeft") {
+    if (event.code === "ShiftLeft" || event.code === "ShiftRight") {
         shiftDown = true;
     }
 }, true);
 
 window.addEventListener("keyup", function(event) {
-    if (event.code === "ShiftLeft") {
+    if (event.code === "ShiftLeft" || event.code === "ShiftRight") {
         shiftDown = false;
     }
 }, true);
