@@ -1,3 +1,4 @@
+let ctrlDown = false;
 let shiftDown = false;
 
 function toggleCheck(id) {
@@ -22,9 +23,25 @@ function removeCheck(id) {
     document.getElementById(id).classList.add("unchecked");
 }
 
+function getCtrlDown() {
+    return ctrlDown;
+}
+
 function getShiftDown() {
     return shiftDown;
 }
+
+window.addEventListener("keydown", function(event) {
+    if (event.code === "ControlLeft") {
+        ctrlDown = true;
+    }
+}, true);
+
+window.addEventListener("keyup", function(event) {
+    if (event.code === "ControlLeft") {
+        ctrlDown = false;
+    }
+}, true);
 
 window.addEventListener("keydown", function(event) {
     if (event.code === "ShiftLeft") {

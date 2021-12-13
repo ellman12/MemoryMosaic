@@ -53,8 +53,10 @@
     //Shit click stuff. Last index is the last item you selected (would not be the current thing obv).
     private static bool shiftDown;
     private static int lastIndex;
-    
     private async Task getShiftDown() => shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
+    
+    private static bool ctrlDown;
+    private async Task getCtrlDown() => ctrlDown = await JSRuntime.InvokeAsync<bool>("getCtrlDown");
     
     private static string starChoiceVis;
 
@@ -142,8 +144,11 @@
 
     private async Task ImgClicked(string uuid, string path)
     {
-        if (selectedItems.Count > 0) await ToggleCheck(path);
-        else navigationManager.NavigateTo($"/view/{uuid}");
+        await getCtrlDown();
+        if (selectedItems.Count > 0 || ctrlDown)
+            await ToggleCheck(path);
+        else
+            navigationManager.NavigateTo($"/view/{uuid}");
     }
     
     //Show choice div
