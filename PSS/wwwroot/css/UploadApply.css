@@ -76,6 +76,8 @@ header > #statusSpan {
 }
 
 #textAndAlbums {
+    z-index: 9999;
+    background-color: black;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -89,7 +91,6 @@ header > #statusSpan {
     display: flex;
     flex-direction: column;
     border: 1px solid white;
-    background-color: black;
     padding-right: 2px;
     user-select: none;
     width: 300px;
