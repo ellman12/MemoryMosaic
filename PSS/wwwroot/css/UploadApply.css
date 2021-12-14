@@ -79,6 +79,7 @@ header > input[type="text"] {
     top: 78px;
     width: 300px;
     text-align: center;
+    z-index: 99999;
 }
 
 #albums {
@@ -90,6 +91,7 @@ header > input[type="text"] {
     top: 105px;
     right: 50px;
     z-index: 9999;
+    background-color: black;
     padding-right: 2px;
     user-select: none;
     width: 300px;
