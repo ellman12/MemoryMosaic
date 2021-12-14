@@ -34,19 +34,21 @@
     if (applied) return;
     if (allPaths.Count == 0) status = "No files found to add";
 
-    <span id="chooseAlbumsSpan" style="visibility: @albumsDivVisibility">Add Items to Albums</span>
-    <div id="albums" style="visibility: @albumsDivVisibility">
-        @for (int i = 0; i < albums.Count; i++)
-        {
-            int ii = i;
-            <div @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])" class="album">
-                <div class="coverDiv">
-                    <img class="cover" src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
+    <div id="textAndAlbums" style="visibility: @albumsDivVisibility">
+        <span>Add Items to Albums</span>
+        <div id="albums">
+            @for (int i = 0; i < albums.Count; i++)
+            {
+                int ii = i;
+                <div class="album" @onclick="@(() => checkedAlbums[ii] = !checkedAlbums[ii])">
+                    <div class="coverDiv">
+                        <img src="@PSS.Settings.requestPath/@albums[i].albumCover" alt="">
+                    </div>
+                    <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
+                    <span title="@albums[i].name">@albums[i].name</span>
                 </div>
-                <input type="checkbox" id="@i" @bind="@checkedAlbums[ii]" @bind:event="oninput">
-                <span title="@albums[i].name">@albums[i].name</span>
-            </div>
-        }
+            }
+        </div>
     </div>
 
     <div id="mainDiv">
