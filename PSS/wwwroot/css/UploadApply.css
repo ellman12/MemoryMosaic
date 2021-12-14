@@ -12,7 +12,7 @@ header {
     left: 146px;
 }
 
-header button {
+header > button {
     margin-top: 10px;
     margin-right: 12px;
     color: white; /* Icon Color */
@@ -34,13 +34,13 @@ header button {
     padding-top: 11px;
 }
 
-header button:hover {
+header > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
 /*Add a little space to right of button icon*/
-button span ~ span {
+header > button span ~ span {
     padding-left: 11px;
     text-decoration: none;
 }
@@ -54,22 +54,22 @@ header > input[type="text"] {
     margin-right: 11px;
 }
 
-#newAlbumBtn {
+ header > #newAlbumBtn {
     width: 138px;
     padding-left: 10px;
 }
 
-#cancelBtn {
+ header > #cancelBtn {
     width: 113px;
     padding-left: 10px;
 }
 
-#confirmBtn {
+header > #confirmBtn {
     width: 119px;
     padding-left: 10px;
 }
 
-#statusSpan {
+header > #statusSpan {
     margin-top: 10px;
     margin-left: 30px;
 }
@@ -83,7 +83,7 @@ header > input[type="text"] {
     top: 110px;
 }
 
-#albums {
+#textAndAlbums > #albums {
     margin-top: 4px;
     display: flex;
     flex-direction: column;
@@ -98,7 +98,7 @@ header > input[type="text"] {
 }
 
 /*Div that groups cover, checkbox, etc. together*/
-.album {
+#textAndAlbums > #albums > .album {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -106,19 +106,19 @@ header > input[type="text"] {
     width: auto;
 }
 
-.album:hover {
+#textAndAlbums > #albums > .album:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
 /*Not sure if good/best solution but used to have every cover same size and aligned*/
-.coverDiv {
+#textAndAlbums > #albums > .album > .coverDiv {
     margin: 0;
     padding: 0;
     display: flex;
 }
 
-.coverDiv > img {
+#textAndAlbums > #albums > .album > .coverDiv > img {
     border: 1px solid black;
     background-color: #212121;
     border-radius: 4px;
@@ -127,11 +127,11 @@ header > input[type="text"] {
     height: 60px;
 }
 
-.album > input[type="checkbox"] {
+#textAndAlbums > #albums > .album > input[type="checkbox"] {
     margin-left: 7px;
 }
 
-.album > span {
+#textAndAlbums > #albums > .album > span {
     margin-top: -4px;
     margin-left: 6px;
     white-space: nowrap;
@@ -145,51 +145,46 @@ header > input[type="text"] {
     top: 71px;
 }
 
-.itemDiv {
+#mainDiv > .itemDiv {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 10px;
 }
 
-.itemDiv img {
+#mainDiv > .itemDiv > img {
     width: 6%;
     vertical-align: middle; /*https://stackoverflow.com/a/489394*/
 }
 
-.itemDiv img:hover { /*https://stackoverflow.com/a/25036868*/
+#mainDiv > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/
     -webkit-transform: scale(1.9);
     transform: scale(1.9);
     cursor: pointer;
 }
 
-.itemDiv > span {
+#mainDiv > .itemDiv > span {
     margin-left: 10px;
 }
 
-.itemDiv > .filenameSpan {
+#mainDiv > .itemDiv > .filenameSpan {
     width: 60px;
     overflow: scroll;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.itemDiv > .dateTakenSpan {
+#mainDiv > .itemDiv > .dateTakenSpan {
     width: 115px;
     overflow: scroll;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.itemDiv > input {
+#mainDiv > .itemDiv > input {
     color: black; /*Font color*/
     margin-left: 10px;
 }
 
-.itemDiv > .warnSpan {
-    color: yellow;
-}
-
-.itemDiv > .errorSpan {
-    color: red;
-}
+#mainDiv > .itemDiv > .warnSpan {color: yellow;}
+#mainDiv > .itemDiv > .errorSpan {color: red;}
