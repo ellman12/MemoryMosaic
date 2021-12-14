@@ -56,7 +56,7 @@
     private async Task getShiftDown() => shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
     
     private static bool ctrlDown;
-    private async Task getCtrlDown() => ctrlDown = await JSRuntime.InvokeAsync<bool>("getCtrlDown");
+    private async Task GetCtrlDown() => ctrlDown = await JSRuntime.InvokeAsync<bool>("getCtrlDown");
     
     private async void UpdateStars(bool starred)
     {
@@ -140,7 +140,7 @@
 
     private async Task ImgClicked(string uuid, string path)
     {
-        await getCtrlDown();
+        await GetCtrlDown();
         if (selectedItems.Count > 0 || ctrlDown)
             await ToggleCheck(path);
         else
