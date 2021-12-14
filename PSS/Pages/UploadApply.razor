@@ -68,7 +68,7 @@
 
                 @{string name = Path.GetFileName(path);}
                 <span title="@name" class="filenameSpan">@name</span>
-                <span>@dateTakenList[i].ToString("ddd, MMM d, yyy")</span>
+                <span class="dateTakenSpan">@dateTakenList[i].ToString("ddd, MMM d, yyy")</span>
                 <input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">
                 <span class="warnSpan">@(dataPresentList[i] ? "" : "Date taken not found in file. Defaulting to time right now.")</span>
                 <span class="errorSpan">@(ItemExists(Path.GetFileName(path), dateTakenList[ii]) ? "Item already on server" : "")</span>

@@ -173,6 +173,13 @@ header > input[type="text"] {
     text-overflow: ellipsis;
 }
 
+.itemDiv > .dateTakenSpan {
+    width: 115px;
+    overflow: scroll;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .itemDiv > input {
     color: black; /*Font color*/
     margin-left: 10px;
