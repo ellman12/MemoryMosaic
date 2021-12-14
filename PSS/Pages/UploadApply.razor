@@ -63,11 +63,12 @@
             <div class="itemDiv">
                 @if (ext is ".jpg" or ".jpeg" or ".png")
                 {
-                    <img onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
+                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
                 }
 
-                <span class="filenameSpan">@Path.GetFileName(path)</span>
-                <input type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">
+                @{string name = Path.GetFileName(path);}
+                <span title="@name" class="filenameSpan">@name</span>
+                <input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">
                 <span>@dateTakenList[i].ToString("ddd, MMM d, yyy h:mm:ss tt")</span>
                 <span class="warnSpan">@(dataPresentList[i] ? "" : "Date taken not found in file. Defaulting to time right now.")</span>
                 <span class="errorSpan">@(ItemExists(Path.GetFileName(path), dateTakenList[ii]) ? "Item already on server" : "")</span>
