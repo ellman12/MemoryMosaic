@@ -167,11 +167,10 @@ header > input[type="text"] {
 }
 
 .itemDiv > .filenameSpan {
-    width: 80px;
-    overflow: hidden;
+    width: 60px;
+    overflow: scroll;
     white-space: nowrap;
     text-overflow: ellipsis;
-    display: inline-block; /* SO said this was needed for ... to appear, which is weird considering I've never needed this. */
 }
 
 .itemDiv > .warnSpan {
