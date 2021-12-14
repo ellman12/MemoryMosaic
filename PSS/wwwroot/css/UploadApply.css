@@ -84,6 +84,8 @@ header > #statusSpan {
     position: absolute;
     right: 10px;
     top: 110px;
+    border: 1px solid white;
+    padding: 10px;
 }
 
 #textAndAlbums > #albums {
@@ -187,7 +189,9 @@ header > #statusSpan {
     width: 205px;
     color: black; /*Font color*/
     margin-left: 10px;
+    border: none;
 }
 
+#mainDiv > .itemDiv > .infoSpan {color: #93ccdc;}
 #mainDiv > .itemDiv > .warnSpan {color: yellow;}
 #mainDiv > .itemDiv > .errorSpan {color: red;}
