@@ -173,15 +173,15 @@ header > input[type="text"] {
     text-overflow: ellipsis;
 }
 
+.itemDiv > input {
+    color: black; /*Font color*/
+    margin-left: 10px;
+}
+
 .itemDiv > .warnSpan {
     color: yellow;
 }
 
 .itemDiv > .errorSpan {
     color: red;
-}
-
-input {
-    color: black; /*Font color*/
-    margin-left: 10px;
 }
