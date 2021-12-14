@@ -156,6 +156,18 @@ header > #statusSpan {
     margin-bottom: 10px;
 }
 
+#mainDiv > .itemDiv > button {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: none;
+}
+
 #mainDiv > .itemDiv > img {
     width: 6%;
     vertical-align: middle; /*https://stackoverflow.com/a/489394*/
