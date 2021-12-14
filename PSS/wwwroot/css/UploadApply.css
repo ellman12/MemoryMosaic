@@ -184,6 +184,7 @@ header > #statusSpan {
 }
 
 #mainDiv > .itemDiv > input {
+    width: 205px;
     color: black; /*Font color*/
     margin-left: 10px;
 }
