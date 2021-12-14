@@ -135,7 +135,7 @@ Required Parameters:
     private static string moreOptionsVis;
     private static string editDateDivVis;
     private static List<Connection.Album> albums;
-    private static int index; //The current image's index in the list
+    private static int index = 0; //The current image's index in the list
 }
 
 @functions{
@@ -149,7 +149,13 @@ Required Parameters:
         moreOptionsVis = "hidden";
         editDateDivVis = "hidden";
         albums = Connection.GetAlbumsItemIn(path);
-        index = MediaList.IndexOf(new Connection.MediaRow(path, ogDateTaken, DateAdded, parsedID));
+        
+        //Find index. Can't use IndexOf for reasons
+        for (int i = 0; i < MediaList.Count; i++)
+        {
+            if (MediaList[i].path == path)
+                index = i;
+        }
     }
     
     private void DeleteBtnClick()
