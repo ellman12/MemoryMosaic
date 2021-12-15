@@ -75,7 +75,6 @@
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                 <input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">
                 @* <span class="warnSpan">@(dataPresentList[i] ? "Dote taken not found in file. Defaulting to time right now." : "Date taken not found in file. Defaulting to time right now.")</span> *@
-                <span class="infoSpan">@("DT from metadata.")</span>
                 <span class="warnSpan">@("No DT found. DT set to now.")</span>
                 <span class="errorSpan">@("Item already in library. Won't upload.")</span>
                 @* <span class="errorSpan">@(ItemExists(Path.GetFileName(path), dateTakenList[ii]) ? "Item already on server" : "")</span> *@
