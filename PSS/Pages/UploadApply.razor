@@ -64,7 +64,7 @@
             
             string name = Path.GetFileName(path);
             string dateString = dateTakenList[i].ToString("ddd, MMM d, yyy");
-
+            
             <div class="itemDiv">
                 @if (ext is ".jpg" or ".jpeg" or ".png")
                 {
@@ -80,7 +80,6 @@
                 <span class="errorSpan">@("Item already in library. Won't upload.")</span>
                 @* <span class="errorSpan">@(ItemExists(Path.GetFileName(path), dateTakenList[ii]) ? "Item already on server" : "")</span> *@
                 <button class="material-icons">close</button>
-
             </div>
         }
     </div>
@@ -89,8 +88,8 @@
 @code{
     private static bool applied;
     private static string status;
-    private static string[] pngPaths;
-    private static string[] jpgPaths;
+    private static List<string> pngPaths;
+    private static List<string> jpgPaths;
     private static List<string> allPaths;
     private static List<DateTime> dateTakenList;
     private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
@@ -111,15 +110,15 @@
     protected override void OnInitialized()
     {
         applied = false;
-        pngPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.png", SearchOption.AllDirectories);
-        jpgPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.jp*g", SearchOption.AllDirectories);
+        pngPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.png", SearchOption.AllDirectories).ToList();
+        jpgPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.jp*g", SearchOption.AllDirectories).ToList();
         allPaths = new List<string>(pngPaths.Concat(jpgPaths).ToArray());
         dateTakenList = (from album in allPaths select new DateTime()).ToList();
         dataPresentList = (from album in allPaths select new bool()).ToList();
 
         for (int i = 0; i < allPaths.Count; i++)
         {
-            dataPresentList[i] = Metadata.GetDateTaken(allPaths[i], out var dateTaken);
+            dataPresentList[i] = Metadata.GetDateTaken(allPaths[i], out DateTime dateTaken);
             dateTakenList[i] = dateTaken;
         }
 
