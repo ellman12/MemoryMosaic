@@ -78,11 +78,11 @@
                 <span title="@name" class="filenameSpan">@name</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                 <input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">
-                @* <span class="warnSpan">@(dataPresentList[i] ? "Dote taken not found in file. Defaulting to time right now." : "Date taken not found in file. Defaulting to time right now.")</span> *@
-                <span class="warnSpan">@("No DT found. DT set to now.")</span>
-                <span class="errorSpan">@("Item already in library. Won't upload.")</span>
-                @* <span class="errorSpan">@(ItemExists(Path.GetFileName(path), dateTakenList[ii]) ? "Item already on server" : "")</span> *@
-                <button @onclick="@(() => DeleteBtnClick(ii))" class="material-icons">close</button>
+                
+                @if (!dataPresentList[i]){<span class="warnSpan">No DT found. DT set to now.</span>}
+                @if (alreadyInLib[i]){<span class="errorSpan">Item already in library. Won't upload.</span>}
+                
+                <button title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii))" class="material-icons">close</button>
             </div>
         }
     </div>
@@ -96,6 +96,7 @@
     private static List<string> allPaths;
     private static List<DateTime> dateTakenList;
     private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
+    private static List<bool> alreadyInLib; //True if the item is already on the server (in your library).
 
     //Things relating to albums
     private static string toggleBtnIcon;
@@ -117,11 +118,13 @@
         allPaths = new List<string>(pngPaths.Concat(jpgPaths).ToArray());
         dateTakenList = (from album in allPaths select new DateTime()).ToList();
         dataPresentList = (from album in allPaths select new bool()).ToList();
+        alreadyInLib = (from album in allPaths select new bool()).ToList();
 
         for (int i = 0; i < allPaths.Count; i++)
         {
             dataPresentList[i] = Metadata.GetDateTaken(allPaths[i], out DateTime dateTaken);
             dateTakenList[i] = dateTaken;
+            alreadyInLib[i] = ItemExists(Path.GetFileName(allPaths[i]), dateTakenList[i]);
         }
 
         toggleBtnIcon = "image_not_supported";
