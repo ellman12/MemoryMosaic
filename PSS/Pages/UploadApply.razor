@@ -79,7 +79,7 @@
                 <span class="warnSpan">@("No DT found. DT set to now.")</span>
                 <span class="errorSpan">@("Item already in library. Won't upload.")</span>
                 @* <span class="errorSpan">@(ItemExists(Path.GetFileName(path), dateTakenList[ii]) ? "Item already on server" : "")</span> *@
-                <button class="material-icons">close</button>
+                <button @onclick="@(() => DeleteBtnClick(ii))" class="material-icons">close</button>
             </div>
         }
     </div>
@@ -132,6 +132,14 @@
         newAlbumBtnId = "newAlbumBtn";
         albums = Connection.GetAlbumsTable();
         checkedAlbums = (from album in albums select new bool()).ToList();
+    }
+
+    //Clears an item from the Lists
+    private static void DeleteBtnClick(int index)
+    {
+        allPaths.RemoveAt(index);
+        dateTakenList.RemoveAt(index);
+        dataPresentList.RemoveAt(index);
     }
 
     //Adds all the items to photo library, and, if applicable, any albums.
