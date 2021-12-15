@@ -32,6 +32,12 @@
     <span id="statusSpan">@status</span>
 </header>
 
+<div id="filter">
+    <label><input type="checkbox">Neither</label>
+    <label style="color: yellow"><input type="checkbox">Warning</label>
+    <label style="color: red"><input type="checkbox">Error</label>
+</div>
+
 @{
     GC.Collect();
     GC.WaitForPendingFinalizers();

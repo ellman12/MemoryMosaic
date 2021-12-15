@@ -43,6 +43,32 @@ header > button span ~ span {
     text-decoration: none;
 }
 
+#filter {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: var(--left-margin);
+    z-index: 9999;
+    background-color: black;
+    top: 10px;
+    border: 1px solid white;
+}
+
+#filter input, #filter label {
+    margin-right: 6px;
+}
+
+#filter > label {
+    user-select: none;
+    width: 100%;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+#filter > label:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+}
+
 header > input[type="text"] {
     color: black; /* Font */
     margin-top: 12px;
