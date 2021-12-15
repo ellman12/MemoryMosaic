@@ -14,7 +14,7 @@ namespace PSS.Backend
         //1. Determine type.
         //2. Try reading embedded metadata (if the type is even capable of doing so).
         //3. If no metadata found, try reading filename.
-        //4. If all else fails, make it the min value to flag to user to fix it.
+        //4. If all else fails, set it to date time right now.
         public static bool GetDateTaken(string path, out DateTime dateTaken)
         {
             bool hasData = false;
