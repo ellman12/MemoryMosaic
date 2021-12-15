@@ -23,16 +23,12 @@ header > button {
     display: flex;
     word-break: break-word;
     word-wrap: break-word;
-    -webkit-box-align: center;
     align-items: center;
     letter-spacing: .01785714em;
     font-family: Product Sans, sans-serif;
     font-size: 1rem;
     font-weight: 400;
-    width: 170px;
-    padding-left: 17px;
-    padding-bottom: 11px;
-    padding-top: 11px;
+    padding: 11px 17px;
 }
 
 header > button:hover {
@@ -53,21 +49,6 @@ header > input[type="text"] {
     width: 200px;
     font-size: 16px;
     margin-right: 11px;
-}
-
- header > #newAlbumBtn {
-    width: 138px;
-    padding-left: 10px;
-}
-
- header > #cancelBtn {
-    width: 113px;
-    padding-left: 10px;
-}
-
-header > #confirmBtn {
-    width: 119px;
-    padding-left: 10px;
 }
 
 header > #statusSpan {

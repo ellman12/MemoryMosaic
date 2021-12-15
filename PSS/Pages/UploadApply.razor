@@ -7,6 +7,10 @@
 <link href="css/UploadApply.css" rel="stylesheet">
 
 <header>
+    <button>
+        <span class="material-icons-outlined">filter_list</span><span>Filter Items</span>
+    </button>
+    
     <button @onclick="AddItems">
         <span class="material-icons-outlined">add_photo_alternate</span><span>Add to Library</span>
     </button>
@@ -15,7 +19,7 @@
         <span class="material-icons-outlined">@toggleBtnIcon</span><span>@albumToggleBtnText</span>
     </button>
 
-    <button @onclick="NewAlbumBtnClick" class="@newAlbumBtnId" id="@newAlbumBtnId">
+    <button @onclick="NewAlbumBtnClick">
         <span class="material-icons-outlined">@newAlbumBtnIcon</span><span>@newAlbumBtnText</span>
     </button>
 
@@ -101,7 +105,6 @@
     private static string confirmBtnDisplay;
     private static string newAlbumBtnIcon;
     private static string newAlbumBtnText;
-    private static string newAlbumBtnId;
     private static string newAlbumName;
     private static List<Connection.Album> albums;
     private static List<bool> checkedAlbums;
@@ -128,7 +131,6 @@
         confirmBtnDisplay = "none";
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
-        newAlbumBtnId = "newAlbumBtn";
         albums = Connection.GetAlbumsTable();
         checkedAlbums = (from album in albums select new bool()).ToList();
     }
@@ -215,7 +217,6 @@
     {
         if (newAlbumBtnText == "New Album")
         {
-            newAlbumBtnId = "cancelBtn";
             toggleBtnIcon = "image_not_supported";
             albumToggleBtnText = "Hide Albums";
             albumsDivVisibility = "visible";
@@ -227,7 +228,6 @@
         }
         else if (newAlbumBtnText == "Cancel")
         {
-            newAlbumBtnId = "newAlbumBtn";
             newAlbumBtnIcon = "library_add";
             newAlbumBtnText = "New Album";
             albumInputDisplay = "none";
@@ -239,7 +239,6 @@
     {
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
-        newAlbumBtnId = "newAlbumBtn";
 
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
