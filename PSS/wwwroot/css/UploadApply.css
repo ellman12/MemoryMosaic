@@ -157,6 +157,7 @@ header > #statusSpan {
 }
 
 #mainDiv > .itemDiv > button {
+    margin-left: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -166,6 +167,11 @@ header > #statusSpan {
     height: 50px;
     border: none;
     background: none;
+}
+
+#mainDiv > .itemDiv > button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
 }
 
 #mainDiv > .itemDiv > img {
@@ -191,16 +197,16 @@ header > #statusSpan {
 }
 
 #mainDiv > .itemDiv > .dateTakenSpan {
-    width: 115px;
-    overflow: scroll;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    /*width: 125px;*/
+    /*overflow: scroll;*/
+    /*white-space: nowrap;*/
+    /*text-overflow: ellipsis;*/
 }
 
 #mainDiv > .itemDiv > input {
     width: 205px;
     color: black; /*Font color*/
-    margin-left: 10px;
+    margin-left: 11px;
     border: none;
 }
 
