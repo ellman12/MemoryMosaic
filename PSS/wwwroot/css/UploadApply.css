@@ -2,6 +2,7 @@
     color: white;
     font-family: 'Product Sans', serif;
     scrollbar-width: none !important;
+    --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
 }
 
 header {
@@ -10,7 +11,7 @@ header {
     align-items: center;
     position: absolute;
     top: 0;
-    left: 146px;
+    left: var(--left-margin);
 }
 
 header > button {
