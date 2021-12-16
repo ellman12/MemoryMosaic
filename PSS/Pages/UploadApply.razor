@@ -33,9 +33,9 @@
 </header>
 
 <div id="filter">
-    <label><input type="checkbox">Neither</label>
-    <label style="color: yellow"><input type="checkbox">Warning</label>
-    <label style="color: red"><input type="checkbox">Error</label>
+    <label><input type="checkbox" @bind="@neitherChecked">Neither</label>
+    <label style="color: yellow"><input type="checkbox" @bind="@warningChecked">Warning</label>
+    <label style="color: red"><input type="checkbox" @bind="@errorChecked">Error</label>
 </div>
 
 @{
@@ -103,6 +103,9 @@
     private static List<DateTime> dateTakenList;
     private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
     private static List<bool> alreadyInLib; //True if the item is already on the server (in your library).
+    private static bool neitherChecked;
+    private static bool warningChecked;
+    private static bool errorChecked;
 
     //Things relating to albums
     private static string toggleBtnIcon;
@@ -125,6 +128,10 @@
         dateTakenList = (from album in allPaths select new DateTime()).ToList();
         dataPresentList = (from album in allPaths select new bool()).ToList();
         alreadyInLib = (from album in allPaths select new bool()).ToList();
+        
+        neitherChecked = false;
+        warningChecked = false;
+        errorChecked = false;
 
         for (int i = 0; i < allPaths.Count; i++)
         {
