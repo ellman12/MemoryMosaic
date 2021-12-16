@@ -100,7 +100,7 @@ namespace PSS.Backend
         //converted into an actual DateTime object.
         private static bool GetFilenameTimestamp(string filename, out DateTime dateTaken)
         {
-            bool hasData = true;
+            bool hasData;
             string timestamp = ""; //The actual timestamp in the filename, without the extra chars we don't want. Converted to DateTime at the end.
 
             try
@@ -139,9 +139,8 @@ namespace PSS.Backend
                 }
                 else if (filename.Contains("Capture") && filename.Contains(".png")) //Terraria's Capture Mode 'Capture 2020-05-16 21_04_54.png'
                 {
-                    //Console.WriteLine("Terraria");
                     timestamp = filename.Substring(8, 19);
-                    timestamp = timestamp.Replace('_', ':');
+                    timestamp = timestamp.Replace("-", "").Replace(":", "").Replace("_", "").Replace(" ", "");
                 }
                 else if (filename.Contains("Screenshot ") && filename.Contains(".png")) //Snip & Sketch generates these filenames. E.g., 'Screenshot 2020-11-17 104051.png'
                 {
