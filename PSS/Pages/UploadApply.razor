@@ -266,11 +266,23 @@
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
 
-        //TODO: test for "" and duplicate album name on input...
+        if (String.IsNullOrWhiteSpace(newAlbumName))
+        {
+            status = "Cannot have blank album name!";
+            newAlbumName = "";
+            return;
+        }
+        if (albums.Any(album => album.name == newAlbumName))
+        {
+            status = $"Album name \"{newAlbumName}\" already taken!";
+            newAlbumName = "";
+            return;
+        }
+
         Connection.CreateAlbum(newAlbumName);
         albums.Add(new Connection.Album(Connection.GetAlbumID(newAlbumName), newAlbumName, null, DateTime.Now));
         checkedAlbums.Add(new bool());
+        status = $"Successfully created album \"{newAlbumName}\"";
         newAlbumName = ""; //Reset for next time
     }
-
 }
