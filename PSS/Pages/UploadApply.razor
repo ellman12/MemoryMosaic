@@ -87,9 +87,8 @@
 
                 <span title="@name" class="filenameSpan">@name</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
-                <input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">
-                
-                @if (!dataPresentList[i]){<span class="warnSpan">No DT found. DT set to now.</span>}
+                @if (!alreadyInLib[i]){<input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">}
+                @if (!dataPresentList[i] && !alreadyInLib[i]){<span class="warnSpan">No DT found. DT set to now.</span>}
                 @if (alreadyInLib[i]){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
                 <button title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii))" class="material-icons">close</button>
