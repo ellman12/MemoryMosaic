@@ -64,6 +64,10 @@
     <div id="mainDiv">
         @for (int i = 0; i < allPaths.Count; i++)
         {
+            if (warningChecked && dataPresentList[i]) continue; //If this item doesn't have a warning skip it
+            if (errorChecked && alreadyInLib[i] == false) continue; //If this item has an error skip it
+            if (neitherChecked && !dataPresentList[i] && !alreadyInLib[i]) continue; //Only show items with no warnings or errors
+            
             int ii = i; @*Using just i caused crash*@
             string path = allPaths[i].Replace('\\', '/');
             string ext = Path.GetExtension(path);
