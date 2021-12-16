@@ -204,13 +204,6 @@ header > #statusSpan {
     text-overflow: ellipsis;
 }
 
-#mainDiv > .itemDiv > .dateTakenSpan {
-    /*width: 125px;*/
-    /*overflow: scroll;*/
-    /*white-space: nowrap;*/
-    /*text-overflow: ellipsis;*/
-}
-
 #mainDiv > .itemDiv > input {
     width: 205px;
     color: black; /*Font color*/
@@ -218,5 +211,6 @@ header > #statusSpan {
     border: none;
 }
 
+#mainDiv > .itemDiv > .infoSpan {margin-left: 13px; color: #93ccdc;}
 #mainDiv > .itemDiv > .warnSpan {color: yellow;}
 #mainDiv > .itemDiv > .errorSpan {color: red;}
