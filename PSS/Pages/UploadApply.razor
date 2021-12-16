@@ -42,7 +42,7 @@
     GC.Collect();
     GC.WaitForPendingFinalizers();
     if (applied) return;
-    if (allPaths.Count == 0) status = "No files found to add";
+    status = allPaths.Count == 0 ? "No files found to add" : $"{pngPaths.Count + jpgPaths.Count} pictures and {0} videos pending upload";
 
     <div id="textAndAlbums" style="visibility: @albumsDivVisibility">
         <span>Add Items to Albums</span>
@@ -112,7 +112,6 @@
     private static bool warningChecked;
     private static bool errorChecked;
     private static string filterVis;
-    
 
     //Things relating to albums
     private static string toggleBtnIcon;
