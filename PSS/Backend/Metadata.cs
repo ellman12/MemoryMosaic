@@ -175,7 +175,6 @@ namespace PSS.Backend
         {
             if (DateTime.TryParse(timestamp, out dateTime) == false && timestamp.Length == 14) //Not successful
             {
-                //Try my way
                 int year = Parse(timestamp[0..4]);
                 int month = Parse(timestamp[4..6]);
                 int day = Parse(timestamp[6..8]);
@@ -183,7 +182,7 @@ namespace PSS.Backend
                 int min = Parse(timestamp[10..12]);
                 int sec = Parse(timestamp[12..14]);
 
-                dateTime = new(year, month, day, hour, min, sec);
+                dateTime = new DateTime(year, month, day, hour, min, sec);
                 return true;
             }
             return false;
