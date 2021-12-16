@@ -173,7 +173,7 @@
         int rowsAffected = 0;
         for (int p = 0; p < allPaths.Count; p++)
         {
-            if (ItemExists(Path.GetFileName(allPaths[p]), dateTakenList[p])) continue; //Ignore duplicates
+            if (alreadyInLib[p]) continue; //Ignore duplicates
 
             string filename = Path.GetFileName(allPaths[p]);
             string newDir = GenerateSortedDir(dateTakenList[p]);
