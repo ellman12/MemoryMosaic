@@ -137,9 +137,13 @@ namespace PSS.Backend
                     timestamp = filename.Substring(8, 19);
                     timestamp = timestamp.Replace("-", "").Replace(":", "").Replace("_", "").Replace(" ", "");
                 }
-                else if (filename.EndsWith("_1.jpg")) //Not sure if these are exclusive to Terraria or what
+                else if (filename.EndsWith("_1.jpg")) //Not sure if these are exclusive to Terraria or what '20201226213009_1.jpg'
                 {
                     timestamp = filename.Substring(0, 14);
+                }
+                else if (filename.Contains("105600") && filename.EndsWith("_1.png")) //Might just be another Terraria-exclusive thing '105600_20201122143721_1.png'
+                {
+                    timestamp = filename.Substring(7, 14);
                 }
                 else if (filename.Contains("Screenshot ") && filename.Contains(".png")) //Snip & Sketch generates these filenames. E.g., 'Screenshot 2020-11-17 104051.png'
                 {
