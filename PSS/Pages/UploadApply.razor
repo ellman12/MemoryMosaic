@@ -7,7 +7,7 @@
 <link href="css/UploadApply.css" rel="stylesheet">
 
 <header>
-    <button>
+    <button @onclick="@(() => filterVis = filterVis == "hidden" ? "visible" : "hidden")">
         <span class="material-icons-outlined">filter_list</span><span>Filter Items</span>
     </button>
     
@@ -32,7 +32,7 @@
     <span id="statusSpan">@status</span>
 </header>
 
-<div id="filter">
+<div id="filter" style="visibility: @filterVis">
     <label><input type="checkbox" @bind="@neitherChecked">Neither</label>
     <label style="color: yellow"><input type="checkbox" @bind="@warningChecked">Warning</label>
     <label style="color: red"><input type="checkbox" @bind="@errorChecked">Error</label>
@@ -107,9 +107,13 @@
     private static List<DateTime> dateTakenList;
     private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
     private static List<bool> alreadyInLib; //True if the item is already on the server (in your library).
+    
+    //Filtering
     private static bool neitherChecked;
     private static bool warningChecked;
     private static bool errorChecked;
+    private static string filterVis;
+    
 
     //Things relating to albums
     private static string toggleBtnIcon;
@@ -136,6 +140,7 @@
         neitherChecked = false;
         warningChecked = false;
         errorChecked = false;
+        filterVis = "hidden";
 
         for (int i = 0; i < allPaths.Count; i++)
         {
