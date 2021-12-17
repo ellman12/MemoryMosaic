@@ -40,6 +40,7 @@
     <label><input type="checkbox" @bind="@neitherChecked">Neither</label>
     <label style="color: yellow"><input type="checkbox" @bind="@warningChecked">Warning</label>
     <label style="color: red"><input type="checkbox" @bind="@errorChecked">Error</label>
+    <label style="color: #93ccdc"><input type="checkbox" @bind="@infoChecked">Show Info</label>
 </div>
 
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
@@ -94,7 +95,7 @@
                 <span title="@name" class="filenameSpan">@name</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                 @if (!alreadyInLib[i]){<input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">}
-                @if (dataPresentList[i]){<span class="infoSpan">@dtSrc[i].ToString()</span>} @*Don't display now if DT is set to now*@
+                @if (infoChecked && dataPresentList[i]){<span class="infoSpan">@dtSrc[i].ToString()</span>} @*Don't display now if DT is set to now*@
                 @if (!dataPresentList[i] && !alreadyInLib[i]){<span class="warnSpan">No DT found. DT set to now.</span>}
                 @if (alreadyInLib[i]){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
@@ -123,6 +124,7 @@
     private static bool neitherChecked;
     private static bool warningChecked;
     private static bool errorChecked;
+    private static bool infoChecked;
 
     //Things relating to albums
     private static string toggleBtnIcon;
@@ -147,11 +149,12 @@
         dtSrc = (from path in allPaths select Metadata.DateTakenSrc.Now).ToList(); //Now = default
         alreadyInLib = (from path in allPaths select new bool()).ToList();
 
+        promptVis = "hidden";
+        filterVis = "hidden";
         neitherChecked = false;
         warningChecked = false;
         errorChecked = false;
-        filterVis = "hidden";
-        promptVis = "hidden";
+        infoChecked = true;
 
         for (int i = 0; i < allPaths.Count; i++)
         {
