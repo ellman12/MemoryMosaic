@@ -14,6 +14,10 @@
     <button @onclick="AddItems">
         <span class="material-icons-outlined">add_photo_alternate</span><span>Add to Library</span>
     </button>
+    
+    <button @onclick="@DeleteErrorsBtnClick">
+        <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
+    </button>
 
     <button @onclick="ToggleAlbums">
         <span class="material-icons-outlined">@toggleBtnIcon</span><span>@albumToggleBtnText</span>
@@ -37,6 +41,8 @@
     <label style="color: yellow"><input type="checkbox" @bind="@warningChecked">Warning</label>
     <label style="color: red"><input type="checkbox" @bind="@errorChecked">Error</label>
 </div>
+
+<TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
 
 @{
     GC.Collect();
@@ -107,13 +113,16 @@
     private static List<DateTime> dateTakenList;
     private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
     private static List<bool> alreadyInLib; //True if the item is already on the server (in your library).
-    private static List<Metadata.DateTakenSrc> dtSrc; 
-
+    private static List<Metadata.DateTakenSrc> dtSrc;
+    
+    private static string promptVis;
+    private static string message;
+    
     //Filtering
+    private static string filterVis;
     private static bool neitherChecked;
     private static bool warningChecked;
     private static bool errorChecked;
-    private static string filterVis;
 
     //Things relating to albums
     private static string toggleBtnIcon;
@@ -137,11 +146,12 @@
         dataPresentList = (from path in allPaths select new bool()).ToList();
         dtSrc = (from path in allPaths select Metadata.DateTakenSrc.Now).ToList(); //Now = default
         alreadyInLib = (from path in allPaths select new bool()).ToList();
-        
+
         neitherChecked = false;
         warningChecked = false;
         errorChecked = false;
         filterVis = "hidden";
+        promptVis = "hidden";
 
         for (int i = 0; i < allPaths.Count; i++)
         {
@@ -149,7 +159,7 @@
             dateTakenList[i] = dateTaken;
             alreadyInLib[i] = ItemExists(Path.GetFileName(allPaths[i]), dateTakenList[i]);
         }
-
+        
         toggleBtnIcon = "image_not_supported";
         albumsDivVisibility = "visible";
         albumToggleBtnText = "Hide Albums";
@@ -212,6 +222,33 @@
             }
         }
         status = $"Added {rowsAffected} items to library";
+    }
+
+    private static void DeleteErrorsBtnClick()
+    {
+        promptVis = "visible";
+        int count = alreadyInLib.Count(c => c); //Get number of items with errors.
+        message = $"Are you sure you want to DELETE all {count} items with errors from pss_upload?";
+    }
+
+    //Permanently deletes every item in the upload folder that is marked with an error (already on server).
+    private void DeleteErrors()
+    {
+        for (int i = 0; i < allPaths.Count; i++)
+        {
+            if (!alreadyInLib[i]) continue;
+            
+            string path = allPaths[i];
+            int index = allPaths.IndexOf(path);
+            allPaths.RemoveAt(index);
+            dateTakenList.RemoveAt(index);
+            dataPresentList.RemoveAt(index);
+            alreadyInLib.RemoveAt(index);
+            File.Delete(path);
+            i--; //Necessary when deleting from Lists iteratively like this: "because if you remove something from the middle of the list then the next item you want to check is at the same index as the one you just deleted"
+        }
+        promptVis = "hidden";
+        StateHasChanged();
     }
 
     //Create a path like this: /2021/10 October/ from a DateTime with values like year: 2021, month: 10, etc. 
