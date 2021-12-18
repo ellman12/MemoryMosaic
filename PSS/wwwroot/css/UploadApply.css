@@ -1,6 +1,8 @@
 * {
     color: white;
     font-family: 'Product Sans', serif;
+    scrollbar-width: none !important;
+    --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
 }
 
 header {
@@ -9,10 +11,10 @@ header {
     align-items: center;
     position: absolute;
     top: 0;
-    left: 146px;
+    left: var(--left-margin);
 }
 
-header button {
+header > button {
     margin-top: 10px;
     margin-right: 12px;
     color: white; /* Icon Color */
@@ -22,30 +24,53 @@ header button {
     display: flex;
     word-break: break-word;
     word-wrap: break-word;
-    -webkit-box-align: center;
     align-items: center;
     letter-spacing: .01785714em;
     font-family: Product Sans, sans-serif;
     font-size: 1rem;
     font-weight: 400;
-    width: 170px;
-    padding-left: 17px;
-    padding-bottom: 11px;
-    padding-top: 11px;
+    padding: 11px 17px;
 }
 
-header button:hover {
+header > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
 /*Add a little space to right of button icon*/
-button span ~ span {
+header > button span ~ span {
     padding-left: 11px;
     text-decoration: none;
 }
 
+#filter {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: var(--left-margin);
+    z-index: 9999;
+    background-color: black;
+    top: 10px;
+    border: 1px solid white;
+}
+
+#filter input, #filter label {
+    margin-right: 6px;
+}
+
+#filter > label {
+    user-select: none;
+    width: 100%;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+#filter > label:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+}
+
 header > input[type="text"] {
+    color: black; /* Font */
     margin-top: 12px;
     margin-left: 0;
     width: 200px;
@@ -53,43 +78,29 @@ header > input[type="text"] {
     margin-right: 11px;
 }
 
-#newAlbumBtn {
-    width: 138px;
-    padding-left: 10px;
-}
-
-#cancelBtn {
-    width: 113px;
-    padding-left: 10px;
-}
-
-#confirmBtn {
-    width: 119px;
-    padding-left: 10px;
-}
-
-#statusSpan {
+header > #statusSpan {
     margin-top: 10px;
-    margin-left: 30px;
+    margin-left: 10px;
 }
 
-#chooseAlbumsSpan {
-    position: absolute;
-    right: 50px;
-    top: 78px;
-    width: 300px;
-    text-align: center;
-}
-
-#albums {
+#textAndAlbums {
+    z-index: 9999;
+    background-color: black;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    border: 1px solid white;
+    align-items: center;
     position: absolute;
-    top: 105px;
-    right: 50px;
-    z-index: 9999;
+    right: 10px;
+    top: 110px;
+    border: 1px solid white;
+    padding: 10px;
+}
+
+#textAndAlbums > #albums {
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid white;
     padding-right: 2px;
     user-select: none;
     width: 300px;
@@ -99,7 +110,7 @@ header > input[type="text"] {
 }
 
 /*Div that groups cover, checkbox, etc. together*/
-.album {
+#textAndAlbums > #albums > .album {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -107,31 +118,33 @@ header > input[type="text"] {
     width: auto;
 }
 
-.album:hover {
+#textAndAlbums > #albums > .album:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
 /*Not sure if good/best solution but used to have every cover same size and aligned*/
-.coverDiv {
+#textAndAlbums > #albums > .album > .coverDiv {
     margin: 0;
     padding: 0;
     display: flex;
 }
 
-.cover {
+#textAndAlbums > #albums > .album > .coverDiv > img {
+    border: 1px solid black;
+    background-color: #212121;
     border-radius: 4px;
     object-fit: cover;
     width: 60px;
     height: 60px;
 }
 
-.album input[type="checkbox"] {
+#textAndAlbums > #albums > .album > input[type="checkbox"] {
     margin-left: 7px;
 }
 
-.album span {
-    margin-top: -1px;
+#textAndAlbums > #albums > .album > span {
+    margin-top: -4px;
     margin-left: 6px;
     white-space: nowrap;
     overflow: hidden;
@@ -144,34 +157,60 @@ header > input[type="text"] {
     top: 71px;
 }
 
-.itemDiv {
+#mainDiv > .itemDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin-bottom: 10px;
 }
 
-.itemDiv img {
+#mainDiv > .itemDiv > button {
+    margin-left: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: none;
+}
+
+#mainDiv > .itemDiv > button:hover {
+    background-color: rgba(211, 211, 211, 0.1);
+    cursor: pointer;
+}
+
+#mainDiv > .itemDiv > img {
     width: 6%;
     vertical-align: middle; /*https://stackoverflow.com/a/489394*/
 }
 
-.itemDiv img:hover { /*https://stackoverflow.com/a/25036868*/
+#mainDiv > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/
     -webkit-transform: scale(1.9);
     transform: scale(1.9);
     cursor: pointer;
 }
 
-.itemDiv span {
+#mainDiv > .itemDiv > span {
     margin-left: 10px;
 }
 
-.itemDiv .warnSpan {
-    color: yellow;
+#mainDiv > .itemDiv > .filenameSpan {
+    width: 60px;
+    overflow: scroll;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.itemDiv .errorSpan {
-    color: red;
-}
-
-input {
+#mainDiv > .itemDiv > input {
+    width: 205px;
     color: black; /*Font color*/
-    margin-left: 10px;
+    margin-left: 11px;
+    border: none;
 }
+
+#mainDiv > .itemDiv > .infoSpan {margin-left: 13px; color: #93ccdc;}
+#mainDiv > .itemDiv > .warnSpan {color: yellow;}
+#mainDiv > .itemDiv > .errorSpan {color: red;}
