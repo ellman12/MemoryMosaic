@@ -106,7 +106,7 @@
 }
 
 @code{
-    private static bool applied;
+    private static bool applied = false;
     private static string status;
     private static List<string> pngPaths;
     private static List<string> jpgPaths;
@@ -140,7 +140,6 @@
 
     protected override void OnInitialized()
     {
-        applied = false;
         pngPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.png", SearchOption.AllDirectories).ToList();
         jpgPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.jp*g", SearchOption.AllDirectories).ToList();
         allPaths = new List<string>(pngPaths.Concat(jpgPaths).ToArray());
@@ -230,6 +229,7 @@
             }
         }
         status = $"Added {rowsAffected} items to library";
+        applied = false;
     }
 
     private static void DeleteErrorsBtnClick()
