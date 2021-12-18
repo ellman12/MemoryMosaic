@@ -49,7 +49,7 @@
     GC.Collect();
     GC.WaitForPendingFinalizers();
     if (applied) return;
-    status = allPaths.Count == 0 ? "No files found to add" : $"{pngPaths.Count + jpgPaths.Count} pictures and {0} videos pending upload";
+    UpdateStatus();
 
     <div id="textAndAlbums" style="visibility: @albumsDivVisibility">
         <span>Add Items to Albums</span>
@@ -174,6 +174,8 @@
         checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
+    private static void UpdateStatus() => status = allPaths.Count == 0 ? "No files found to add" : $"{pngPaths.Count + jpgPaths.Count} pictures and {0} videos pending upload. {dataPresentList.Count(c => !c)} Warnings. {alreadyInLib.Count(c => c)} Errors.";
+
     //Clears an item from the Lists
     private static void DeleteBtnClick(int index, string path)
     {
@@ -182,7 +184,7 @@
         allPaths.RemoveAt(index);
         dateTakenList.RemoveAt(index);
         dataPresentList.RemoveAt(index);
-        status = allPaths.Count == 0 ? "No files found to add" : $"{pngPaths.Count + jpgPaths.Count} pictures and {0} videos pending upload";
+        UpdateStatus();
     }
 
     //Adds all the items to photo library, and, if applicable, any albums.
