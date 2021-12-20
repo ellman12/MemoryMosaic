@@ -32,6 +32,14 @@ namespace PSS.Backend
             NewestAdded
         }
 
+        public enum TrashSortMode
+        {
+            DateDeleted, //Default
+            DateTaken,
+            DateDeletedReversed,
+            DateTakenReversed
+        }
+
         //Represents a record from the albums table.
         public record Album
         {
@@ -458,20 +466,16 @@ namespace PSS.Backend
             {
                 Open();
 
-                //Copy item from media to trash
                 NpgsqlCommand cmd = new("INSERT INTO media_trash SELECT * FROM media WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
 
-                //Remove from media
                 cmd.CommandText = "DELETE FROM media WHERE path=@path";
                 cmd.ExecuteNonQuery();
 
-                //Copy item(s) from album_entries to trash
                 cmd.CommandText = "INSERT INTO album_entries_trash SELECT * FROM album_entries WHERE path=@path";
                 cmd.ExecuteNonQuery();
 
-                //Remove from album_entries
                 cmd.CommandText = "DELETE FROM album_entries WHERE path=@path";
                 cmd.ExecuteNonQuery();
             }
@@ -522,7 +526,7 @@ namespace PSS.Backend
                 Open();
 
                 //Copy item from media to trash
-                NpgsqlCommand cmd = new("INSERT INTO media SELECT * FROM media_trash WHERE path=@path", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media SELECT path, date_taken, date_added, starred, uuid FROM media_trash WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
 
@@ -717,13 +721,23 @@ namespace PSS.Backend
             return media;
         }
 
-        public static List<MediaRow> LoadMediaTrashTable()
+        public static List<MediaRow> LoadMediaTrashTable(TrashSortMode mode = TrashSortMode.DateDeleted)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+
+            string orderBy = mode switch
+            {
+                TrashSortMode.DateDeleted => "date_deleted ASC",
+                TrashSortMode.DateTaken => "date_taken ASC",
+                TrashSortMode.DateDeletedReversed => "date_deleted DESC",
+                TrashSortMode.DateTakenReversed => "date_taken DESC",
+                _ => "date_deleted ASC"
+            };
+            
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT * FROM media_trash ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, date_deleted FROM media_trash ORDER BY " + orderBy, connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 

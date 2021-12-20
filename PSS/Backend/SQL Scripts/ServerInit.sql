@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS public.media_trash
     date_added timestamp without time zone NOT NULL,
     starred boolean NOT NULL,
     uuid uuid NOT NULL,
+    date_deleted timestamp without time zone NOT NULL DEFAULT now(),
     CONSTRAINT media_trash_pkey PRIMARY KEY (path, uuid)
     )
 
