@@ -1,4 +1,4 @@
-﻿/* This stuff is shared throughout the project */
+/* This stuff is shared throughout the project */
 /* Product Sans is the font throughout the project, and .material-icons is used for every icon I get from Google's fonts/icons website. */
 
 /*This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg*/
@@ -11,6 +11,7 @@
 
 * {
     --hover-color: rgba(211, 211, 211, 0.1);
+    font-family: Product Sans, serif;
 }
 
 .iconBtn { /* Button with just an icon and no text */
@@ -23,6 +24,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.textBtn { /* Button with an icon and text (span inside button tag) */
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 11px 17px;
 }
 
 .iconBtn:hover {
