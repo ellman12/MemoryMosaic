@@ -8,16 +8,3 @@
     font-weight: 400;
     src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2) format('woff2');
 }
-
-.material-icons {
-    font-family: 'Material Icons', 'Product Sans', sans-serif;
-    line-height: 1;
-    text-transform: none;
-    letter-spacing: normal;
-    word-wrap: normal;
-    white-space: nowrap;
-    direction: ltr;
-    -webkit-font-smoothing: antialiased; /* Support for all WebKit browsers. */
-    text-rendering: optimizeLegibility; /* Support for Safari and Chrome. */
-    -moz-osx-font-smoothing: grayscale; /* Support for Firefox. */
-}
