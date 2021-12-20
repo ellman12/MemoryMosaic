@@ -8,13 +8,13 @@
 @{
     <header>
         <div id="buttons" style="visibility: @headerVis">
-            <button @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
-            <button title="Remove Stars From Selected" @onclick="@(() => UpdateStars(false))"><span class="material-icons-outlined">star_outline</span></button>
-            <button><span class="material-icons-outlined">archive</span></button>
-            <button><span class="material-icons-outlined">perm_media</span></button>
-            <button @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <button class="iconBtn" @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
+            <button class="iconBtn" title="Remove Stars From Selected" @onclick="@(() => UpdateStars(false))"><span class="material-icons-outlined">star_outline</span></button>
+            <button class="iconBtn"><span class="material-icons-outlined">archive</span></button>
+            <button class="iconBtn"><span class="material-icons-outlined">perm_media</span></button>
+            <button class="iconBtn" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         </div>
-        <button style="visibility: @headerVis" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <button class="iconBtn" style="visibility: @headerVis" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span style="visibility: @headerVis" id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
         <span id="starredText">Starred</span>
     </header>
