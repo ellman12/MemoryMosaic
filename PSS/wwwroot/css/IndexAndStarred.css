@@ -1,7 +1,6 @@
 /* Index and Starred are basically the exact same page */
 * {
     user-select: none;
-    color: white;
 }
 
 header {
@@ -42,7 +41,6 @@ header > #starredText {
 }
 
 h1 {
-    color: white;
     position: absolute;
     top: 40%;
     left: 50%;
