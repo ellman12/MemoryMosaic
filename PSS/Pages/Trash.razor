@@ -97,12 +97,14 @@
         };
     }
     
-    private static void ChangeOrder(TrashSortMode newMode)
+    private async void ChangeOrder(TrashSortMode newMode)
     {
         mode = newMode;
         mediaTrashList = LoadMediaTrashTable(newMode);
         SetSortBtnText();
         sortDivVis = "hidden";
+        await ClearChecks();
+        StateHasChanged();
     }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
