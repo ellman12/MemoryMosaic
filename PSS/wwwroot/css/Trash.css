@@ -72,7 +72,6 @@ header > div > .textBtn {
     display: flex;
     word-break: break-word;
     word-wrap: break-word;
-    -webkit-box-align: center;
     align-items: center;
     letter-spacing: .01785714em;
     font-family: Product Sans, serif;
@@ -84,6 +83,31 @@ header > div > .textBtn {
 button span ~ span {
     padding-left: 11px;
     text-decoration: none;
+}
+
+#sortDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    position: absolute;
+    top: 67px;
+    right: 216px;
+    background-color: black;
+    border: 1px solid white;
+    padding-right: 12px;
+}
+
+#sortDiv > button {
+    width: 100%;
+    border: none;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    letter-spacing: .01785714em;
+    font-family: Product Sans, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 11px 11px 11px 10px;
 }
 
 #mainDiv {

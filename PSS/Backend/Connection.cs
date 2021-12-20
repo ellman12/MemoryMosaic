@@ -32,6 +32,14 @@ namespace PSS.Backend
             NewestAdded
         }
 
+        public enum TrashSortMode
+        {
+            DateDeleted,
+            DateTaken,
+            DateDeletedReversed,
+            DateTakenReversed
+        }
+
         //Represents a record from the albums table.
         public record Album
         {

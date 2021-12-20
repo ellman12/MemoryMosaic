@@ -10,10 +10,30 @@
         <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")">@selectedItems.Count selected</span>
         <div>
+            <button class="textBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")"><span class="material-icons-outlined">sort</span><span>sdgh</span></button>
             <button class="textBtn" @onclick="RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")</span></button>
             <button class="textBtn" @onclick="DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
     </header>
+    
+    <div id="sortDiv" style="visibility: @sortDivVis">
+        <button @onclick="@(() => ChangeOrder(TrashSortMode.DateDeleted))">
+            <span class="material-icons-outlined" style="@(mode == TrashSortMode.DateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == TrashSortMode.DateDeleted ? "#1a73e8" : "white")">Date Deleted</span>
+        </button>
+        <button @onclick="@(() => ChangeOrder(TrashSortMode.DateTaken))">
+            <span class="material-icons-outlined" style="@(mode == TrashSortMode.DateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == TrashSortMode.DateTaken ? "#1a73e8" : "white")">Date Taken</span>
+        </button>
+        <button @onclick="@(() => ChangeOrder(TrashSortMode.DateDeletedReversed))">
+            <span class="material-icons-outlined" style="@(mode == TrashSortMode.DateDeletedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == TrashSortMode.DateDeletedReversed ? "#1a73e8" : "white")">Date Deleted Reversed</span>
+        </button>
+        <button @onclick="@(() => ChangeOrder(TrashSortMode.DateTakenReversed))">
+            <span class="material-icons-outlined" style="@(mode == TrashSortMode.DateTakenReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == TrashSortMode.DateTakenReversed ? "#1a73e8" : "white")">Date Taken Reversed</span>
+        </button>
+    </div>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@yesBtnFunc" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
 
@@ -40,6 +60,10 @@
     private static List<MediaRow> mediaTrashList;
     private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
 
+    private static string sortBtnText;
+    private static string sortDivVis;
+    private static TrashSortMode mode;
+
     private static string choiceVis;
     private static Action yesBtnFunc;
     private static string choiceMsg;
@@ -56,6 +80,28 @@
         mediaTrashList = LoadMediaTrashTable();
         selectedItems = new List<string>(); //Reset on page load/refresh
         choiceVis = "hidden";
+        sortDivVis = "hidden";
+        SetSortBtnText();
+    }
+
+    private static void SetSortBtnText()
+    {
+        sortBtnText = mode switch
+        {
+            TrashSortMode.DateDeleted => "Date Deleted",
+            TrashSortMode.DateTaken => "Date Taken",
+            TrashSortMode.DateDeletedReversed => "Date Deleted Reversed",
+            TrashSortMode.DateTakenReversed => "Date Taken Reversed",
+            _ => "Date Deleted"
+        };
+    }
+    
+    private static void ChangeOrder(TrashSortMode newMode)
+    {
+        mode = newMode;
+        mediaTrashList = LoadMediaTrashTable();
+    SetSortBtnText();
+        sortDivVis = "hidden";
     }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
