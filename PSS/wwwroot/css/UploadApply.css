@@ -186,7 +186,6 @@ header > #statusSpan {
 }
 
 #mainDiv > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/
-    -webkit-transform: scale(1.9);
     transform: scale(1.9);
     cursor: pointer;
 }

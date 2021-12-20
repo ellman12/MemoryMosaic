@@ -15,6 +15,3 @@ make settings buttons look like buttons elsewhere. Also add this to starred:
 button:hover {
     background-color: var(--hover-color);
 }
-
-
-remove any weird webkit things like -webkit-transform: translate(-50%, -50%); etc
