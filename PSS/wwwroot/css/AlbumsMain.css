@@ -34,7 +34,6 @@ header > button {
     display: flex;
     word-break: break-word;
     word-wrap: break-word;
-    -webkit-box-align: center;
     align-items: center;
     letter-spacing: .01785714em;
     font-size: 1rem;

@@ -5,7 +5,6 @@
     position: fixed;
     left: 50%;
     top: 50%;
-    -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     background-color: black;
     width: 440px;
@@ -41,7 +40,6 @@
     padding-right: 2px;
     left: 50%;
     top: 54%;
-    -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     width: 405px;
     height: 420px;
