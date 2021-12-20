@@ -1,6 +1,5 @@
 /* Index and Starred are basically the exact same page */
 * {
-    font-family: 'Product Sans', sans-serif;
     user-select: none;
     color: white;
 }
@@ -44,7 +43,6 @@ header > #starredText {
 
 h1 {
     color: white;
-    font-family: 'Product Sans', sans-serif;
     position: absolute;
     top: 40%;
     left: 50%;

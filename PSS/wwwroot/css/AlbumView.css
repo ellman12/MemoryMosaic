@@ -1,11 +1,9 @@
 * {
     color: white;
     user-select: none;
-    font-family: 'Product Sans', sans-serif;
 }
 
 h1 {
-    font-family: 'Product Sans', sans-serif;
     text-align: center;
     position: absolute;
     left: 50%;
@@ -81,7 +79,6 @@ header > button:hover, header > #buttons > button:hover, #albumRenameDiv > butto
     display: flex;
     align-items: center;
     letter-spacing: .01785714em;
-    font-family: Product Sans, sans-serif;
     font-size: 1rem;
     font-weight: 400;
     padding: 11px 12px 11px 10px;
