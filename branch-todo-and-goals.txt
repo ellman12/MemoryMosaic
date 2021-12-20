@@ -18,7 +18,3 @@ button:hover {
 
 
 remove any weird webkit things like -webkit-transform: translate(-50%, -50%); etc
-
-remove
-	font-family: Product Sans, serif; from everywhere except shared
-	and maybe color: white from all the * selectors

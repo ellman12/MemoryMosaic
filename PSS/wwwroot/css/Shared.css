@@ -12,6 +12,7 @@
 * {
     --hover-color: rgba(211, 211, 211, 0.1);
     font-family: Product Sans, serif;
+    color: white;
 }
 
 .iconBtn { /* Button with just an icon and no text */
