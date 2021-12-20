@@ -22,7 +22,6 @@ header {
     top: 0;
     left: 146px;
     position: fixed;
-    height: 64px;
     right: 0;
     padding-top: 4px;
     padding-right: 100px;
@@ -56,6 +55,7 @@ button:hover, .textBtn:hover {
 }
 
 header > div {
+    margin-top: 6px;
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -117,7 +117,7 @@ button span ~ span {
     flex-wrap: wrap;
     position: absolute;
     left: 145px;
-    top: 60px;
+    top: 64px;
 }
 
 #mainDiv > .thumbnail {
