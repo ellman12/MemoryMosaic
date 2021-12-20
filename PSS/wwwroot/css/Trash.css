@@ -37,11 +37,6 @@ header .iconBtn {
     background: none;
 }
 
-button:hover, .textBtn:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
-
 #selectedAmtText {
     font-size: 20px;
     color: white;
@@ -65,11 +60,6 @@ header > div {
 
 header > div > .textBtn {
     margin-left: 10px;
-}
-
-button span ~ span {
-    padding-left: 11px;
-    text-decoration: none;
 }
 
 #sortDiv {

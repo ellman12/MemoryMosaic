@@ -37,7 +37,10 @@
     padding: 11px;
 }
 
-.iconBtn:hover {
+/* Add space to right of button icon */
+.textBtn > span ~ span {padding-left: 11px;}
+
+.iconBtn:hover, .textBtn:hover {
     background-color: var(--hover-color);
     cursor: pointer;
 }
