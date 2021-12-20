@@ -1,3 +1,4 @@
+/* Index and Starred are basically the exact same page */
 * {
     font-family: 'Product Sans', sans-serif;
     user-select: none;
@@ -35,6 +36,7 @@ header > #selectedAmtText {
     margin-right: 20px;
 }
 
+/* Only used for Starred obv */
 header > #starredText {
     position: absolute;
     left: 43%;
