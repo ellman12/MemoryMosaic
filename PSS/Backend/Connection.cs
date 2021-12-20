@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using Npgsql;
+using PSS.Pages;
 
 namespace PSS.Backend
 {
@@ -768,19 +769,42 @@ namespace PSS.Backend
                 Close();
             }
         }
-
-        //Update path's DateTaken in media and album_entries tables.
-        public static void UpdateDateTaken(string path, DateTime newDateTaken)
+        
+        /// <summary>
+        /// Update when an item was taken and also update its path and move it to the new path.
+        /// </summary>
+        /// <param name="shortPath">The path to the item that is stored in the database</param>
+        /// <param name="newDateTaken">The new date taken for this item</param>
+        public static void UpdateDateTaken(string shortPath, DateTime newDateTaken)
         {
             try
             {
                 Open();
 
-                //Update media
-                NpgsqlCommand cmd = new("UPDATE media SET date_taken=@newDateTaken WHERE path=@path", connection);
-                cmd.Parameters.AddWithValue("@path", path);
+                //1. Update date taken in media.
+                NpgsqlCommand cmd = new("UPDATE media SET date_taken=@newDateTaken WHERE path=@shortPath", connection);
+                cmd.Parameters.AddWithValue("@shortPath", shortPath);
                 cmd.Parameters.AddWithValue("@newDateTaken", newDateTaken);
                 cmd.ExecuteNonQuery();
+
+                //2. Update shortPath in media.
+                string filename = Path.GetFileName(shortPath);
+                string newPath = Path.Combine(UploadApply.GenerateDatePath(newDateTaken), filename); //Don't need full path, just the short path (/2021/10 October/...).
+                cmd.CommandText = "UPDATE media SET path=@newPath WHERE path=@shortPath";
+                cmd.Parameters.AddWithValue("@newPath", newPath);
+                cmd.Parameters.AddWithValue("@shortPath", shortPath);
+                cmd.ExecuteNonQuery();
+                
+                //3. Update path(s) in Album_Entries table.
+                cmd.CommandText = "UPDATE album_entries SET path=@newPath WHERE path=@shortPath";
+                cmd.ExecuteNonQuery();
+
+                //4. Move item to new path on server.
+                string originalFullPath = Path.Combine(Settings.libFolderFullPath, shortPath);
+                string newFullDir = UploadApply.GenerateSortedDir(newDateTaken);
+                string newFullPath = Path.Combine(newFullDir, filename);
+                Directory.CreateDirectory(newFullDir); //Create in case it doesn't exist.
+                File.Move(originalFullPath, newFullPath);
             }
             catch (NpgsqlException e)
             {

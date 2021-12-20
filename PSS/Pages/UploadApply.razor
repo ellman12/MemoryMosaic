@@ -259,11 +259,11 @@
         StateHasChanged();
     }
 
-    //Create a path like this: /2021/10 October/ from a DateTime with values like year: 2021, month: 10, etc. 
-    private static string GenerateDatePath(DateTime dateTaken) => Path.Combine(dateTaken.Year.ToString(), $"{dateTaken.Month} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
+    //Create a short path like this: /2021/10 October/ from a DateTime with values like year: 2021, month: 10, etc. This is what the database stores.
+    public static string GenerateDatePath(DateTime dateTaken) => Path.Combine(dateTaken.Year.ToString(), $"{dateTaken.Month} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
     
-    //This is for moving the file to its new home on the server.
-    private static string GenerateSortedDir(DateTime dateTaken) => Path.Combine(PSS.Settings.libFolderFullPath, GenerateDatePath(dateTaken));
+    //This is for moving the file to its new home on the server. This is the full path to the item on the server.
+    public static string GenerateSortedDir(DateTime dateTaken) => Path.Combine(PSS.Settings.libFolderFullPath, GenerateDatePath(dateTaken));
     
     //Get if an item is already on the server (already in your library).
     private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));
