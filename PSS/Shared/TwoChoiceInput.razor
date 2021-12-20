@@ -18,8 +18,8 @@
 <div id="inputDiv" style="visibility: @TwoChoiceVis; @PositioningStyle">
     <span id="message">@Message</span>
     <div id="buttons">
-        <button @onclick="@(() => NoBtnClick.Invoke())"><span class="material-icons-outlined">@NoBtnIcon</span><span>@NoBtnText</span></button>
-        <button @onclick="@(() => YesBtnClick.Invoke())"><span class="material-icons-outlined">@YesBtnIcon</span><span>@YesBtnText</span></button>
+        <button class="textBtn" @onclick="@(() => NoBtnClick.Invoke())"><span class="material-icons-outlined">@NoBtnIcon</span><span>@NoBtnText</span></button>
+        <button class="textBtn" @onclick="@(() => YesBtnClick.Invoke())"><span class="material-icons-outlined">@YesBtnIcon</span><span>@YesBtnText</span></button>
     </div>
 </div>
 
