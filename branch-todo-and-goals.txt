@@ -1,0 +1,8 @@
+Todo/goals:
+less CSS repetition
+	make classes for icon buttons
+	"" for icon and text buttons
+	put in shared.CSS
+
+at the same time fix CSS for icon buttons and possibly text/icon buttons and make sure everything is perfectly centered, etc.
+
