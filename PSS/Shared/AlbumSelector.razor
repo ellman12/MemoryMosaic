@@ -3,8 +3,8 @@
 <link href="/css/components/AlbumSelector.css" rel="stylesheet">
 
 <div id="albumSelector" style="visibility: @AlbumsVis">
-     <button id="closeBtn" @onclick="CloseBtnClick"><span class="material-icons-outlined">close</span></button>
-     <button id="confirmBtn" @onclick="ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+     <button class="iconBtn" id="closeBtn" @onclick="CloseBtnClick"><span class="material-icons-outlined">close</span></button>
+     <button class="iconBtn" id="confirmBtn" @onclick="ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
      <span id="addToText">Add to</span>
      <div id="albums">
          @for (int i = 0; i < albums.Count; i++)
