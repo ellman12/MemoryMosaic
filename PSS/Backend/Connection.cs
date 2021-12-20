@@ -458,20 +458,16 @@ namespace PSS.Backend
             {
                 Open();
 
-                //Copy item from media to trash
                 NpgsqlCommand cmd = new("INSERT INTO media_trash SELECT * FROM media WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
 
-                //Remove from media
                 cmd.CommandText = "DELETE FROM media WHERE path=@path";
                 cmd.ExecuteNonQuery();
 
-                //Copy item(s) from album_entries to trash
                 cmd.CommandText = "INSERT INTO album_entries_trash SELECT * FROM album_entries WHERE path=@path";
                 cmd.ExecuteNonQuery();
 
-                //Remove from album_entries
                 cmd.CommandText = "DELETE FROM album_entries WHERE path=@path";
                 cmd.ExecuteNonQuery();
             }
@@ -522,7 +518,7 @@ namespace PSS.Backend
                 Open();
 
                 //Copy item from media to trash
-                NpgsqlCommand cmd = new("INSERT INTO media SELECT * FROM media_trash WHERE path=@path", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media SELECT path, date_taken, date_added, starred, uuid FROM media_trash WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
 
@@ -723,7 +719,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT * FROM media_trash ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, date_deleted FROM media_trash ORDER BY date_deleted DESC", connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
