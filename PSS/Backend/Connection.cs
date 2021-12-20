@@ -34,7 +34,7 @@ namespace PSS.Backend
 
         public enum TrashSortMode
         {
-            DateDeleted,
+            DateDeleted, //Default
             DateTaken,
             DateDeletedReversed,
             DateTakenReversed
@@ -721,13 +721,23 @@ namespace PSS.Backend
             return media;
         }
 
-        public static List<MediaRow> LoadMediaTrashTable()
+        public static List<MediaRow> LoadMediaTrashTable(TrashSortMode mode = TrashSortMode.DateDeleted)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+
+            string orderBy = mode switch
+            {
+                TrashSortMode.DateDeleted => "date_deleted ASC",
+                TrashSortMode.DateTaken => "date_taken ASC",
+                TrashSortMode.DateDeletedReversed => "date_deleted DESC",
+                TrashSortMode.DateTakenReversed => "date_taken DESC",
+                _ => "date_deleted ASC"
+            };
+            
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, date_deleted FROM media_trash ORDER BY date_deleted DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, date_deleted FROM media_trash ORDER BY " + orderBy, connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 

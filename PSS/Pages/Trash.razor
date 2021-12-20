@@ -10,7 +10,7 @@
         <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")">@selectedItems.Count selected</span>
         <div>
-            <button class="textBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")"><span class="material-icons-outlined">sort</span><span>sdgh</span></button>
+            <button class="textBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
             <button class="textBtn" @onclick="RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")</span></button>
             <button class="textBtn" @onclick="DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
@@ -79,9 +79,10 @@
     {
         mediaTrashList = LoadMediaTrashTable();
         selectedItems = new List<string>(); //Reset on page load/refresh
+        SetSortBtnText();
+        mode = TrashSortMode.DateDeleted; //Default sort mode
         choiceVis = "hidden";
         sortDivVis = "hidden";
-        SetSortBtnText();
     }
 
     private static void SetSortBtnText()
@@ -99,8 +100,8 @@
     private static void ChangeOrder(TrashSortMode newMode)
     {
         mode = newMode;
-        mediaTrashList = LoadMediaTrashTable();
-    SetSortBtnText();
+        mediaTrashList = LoadMediaTrashTable(newMode);
+        SetSortBtnText();
         sortDivVis = "hidden";
     }
 
