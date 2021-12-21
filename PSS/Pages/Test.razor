@@ -2,10 +2,23 @@
 @page "/test"
 @using static PSS.Backend.Connection
 @using PSS.Backend
+@using System.IO
 @* @layout EmptyLayout *@
 
 <title>Test</title>
-
+@* *@
+@* @{ *@
+@*     string[] yes = Directory.GetFiles(@"C:\Users\Elliott\Videos\tmp", "*", SearchOption.AllDirectories); *@
+@* *@
+@*     foreach (var y in yes) *@
+@*     { *@
+@*         Console.WriteLine(y); *@
+@*     } *@
+@*     Console.WriteLine($"Size is {yes.Length}"); *@
+@* } *@
+@{
+    Console.WriteLine(Maintenance.IsFolderEmpty(@"C:\Users\Elliott\Videos\tmp"));
+}
 <button style="margin-left: 50%;" @onclick="@(() => UpdateDateTaken(GetPathFromUuid("2dc3492e-6139-11ec-90c6-04421acfc461"), new DateTime(2013, 4, 5)))">click me</button>
 
 @code {
