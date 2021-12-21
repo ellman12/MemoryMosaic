@@ -34,9 +34,9 @@
         <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
     </div>
 
-    <button @onclick="@ApplyBtnClicked">Apply</button>
-    <button @onclick="@CancelBtnClicked">Cancel</button>
-    <button @onclick="@ResetBtnClicked">Reset</button>
+    <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
+    <button class="textBtn" @onclick="@CancelBtnClicked"><span class="material-icons-outlined">close</span><span>Cancel</span></button>
+    <button class="textBtn" @onclick="@ResetBtnClicked"><span class="material-icons-outlined">restart_alt</span><span>Reset</span></button>
 </div>
 
 @code {
