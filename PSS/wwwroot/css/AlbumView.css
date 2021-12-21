@@ -31,29 +31,16 @@ header > #buttons {
     right: 55px;
 }
 
-header > button, header > #buttons > button, #albumRenameDiv > button {
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
-}
-
 header > span {
     font-size: 20px;
 }
 
 header > #selectedAmtText {
-    font-size: 20px;
     margin-left: 20px;
     margin-right: 20px;
 }
 
-header > button:hover, header > #buttons > button:hover, #albumRenameDiv > button:hover, #moreOptionsDiv > button:hover, #albumRenameDiv > button:hover { /* IDK why background color doesn't work when I just do header button:hover... */
+#moreOptionsDiv > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
@@ -80,11 +67,6 @@ header > button:hover, header > #buttons > button:hover, #albumRenameDiv > butto
     font-size: 1rem;
     font-weight: 400;
     padding: 11px 12px 11px 10px;
-}
-
-button span ~ span, button svg ~ span {
-    padding-left: 11px;
-    text-decoration: none;
 }
 
 header > #albumRenameDiv {
