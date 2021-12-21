@@ -1,7 +1,12 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace PSS.Backend
 {
+    /// <summary>
+    /// Functions for server maintenance.
+    /// </summary>
     public static class Maintenance
     {
         /// <summary>
@@ -11,5 +16,23 @@ namespace PSS.Backend
         /// </summary>
         /// <returns>True if empty.</returns>
         public static bool IsFolderEmpty(string path) => Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
+
+        /// <summary>
+        /// Loop through library folder and return List of short paths to items NOT in the database but that are in library folder for whatever reason.
+        /// </summary>
+        public static List<string> GetUntrackedLibFiles()
+        {
+            List<string> untrackedPaths = new(); //Items in lib folder but not in database
+            string[] paths = Directory.GetFiles(Settings.libFolderFullPath, "*", SearchOption.AllDirectories);
+            List<string> mediaListPaths = Connection.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
+
+            foreach (string path in paths)
+            {
+                string shortPath = path.Replace(Settings.libFolderFullPath, "");
+                if (shortPath.StartsWith('\\') || shortPath.StartsWith('/')) shortPath = shortPath[1..];
+                if (!mediaListPaths.Contains(shortPath)) untrackedPaths.Add(shortPath); //If find an item not in DB add to list
+            }
+            return untrackedPaths;
+        }
     }
 }

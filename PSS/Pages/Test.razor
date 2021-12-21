@@ -17,7 +17,22 @@
 @*     Console.WriteLine($"Size is {yes.Length}"); *@
 @* } *@
 @{
-    Console.WriteLine(Maintenance.IsFolderEmpty(@"C:\Users\Elliott\Videos\tmp"));
+    // Console.WriteLine(Maintenance.IsFolderEmpty(@"C:\Users\Elliott\Videos\tmp"));
+    // foreach (MediaRow yes in LoadMediaTable())
+    // {
+    //     Console.WriteLine(yes.ToString());
+    // }
+    // Console.WriteLine();
+    var yes2 = Maintenance.GetUntrackedLibFiles();
+
+    foreach (var yes in yes2)
+    {
+        Console.WriteLine(yes);
+        string path = Path.Combine(PSS.Settings.libFolderFullPath, yes);
+        Console.WriteLine(path);
+        File.Delete(path);
+    }
+    Console.WriteLine();
 }
 <button style="margin-left: 50%;" @onclick="@(() => UpdateDateTaken(GetPathFromUuid("2dc3492e-6139-11ec-90c6-04421acfc461"), new DateTime(2013, 4, 5)))">click me</button>
 
