@@ -1,7 +1,5 @@
 * {
-    color: white;
     user-select: none;
-    font-family: 'Product Sans', sans-serif;
 }
 
 /*Buttons div in top right corner*/
@@ -15,18 +13,7 @@
 }
 
 button {
-    background: none;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
     margin: 3px;
-}
-
-button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
 }
 
 /* Div below the i button */
@@ -122,7 +109,6 @@ button:hover {
     position: fixed;
     left: 50%;
     top: 50%;
-    -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     background-color: black;
     height: 125px;
@@ -147,12 +133,6 @@ button:hover {
 }
 
 #datePicker > #buttons > button {
-    color: white;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
     margin-top: 10px;
     margin-right: 5px;
     margin-bottom: 5px;
@@ -177,6 +157,9 @@ button:hover {
     height: 56px;
     width: 56px;
     z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sideBtn:hover {
@@ -185,9 +168,6 @@ button:hover {
 
 .sideBtn > svg {
     fill: white;
-    position: absolute;
-    left: 10px;
-    top: 10px;
 }
 
 #leftBtn {left: 10px;}
@@ -201,7 +181,6 @@ button:hover {
     position: absolute;
     left: 50%;
     top: 50%;
-    -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     outline: none; /* Remove focus outline */
 }

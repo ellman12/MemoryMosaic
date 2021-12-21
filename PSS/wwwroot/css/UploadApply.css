@@ -1,5 +1,4 @@
 * {
-    color: white;
     font-family: 'Product Sans', serif;
     scrollbar-width: none !important;
     --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
@@ -18,7 +17,6 @@ header {
 header > button {
     margin-top: 10px;
     margin-right: 12px;
-    color: white; /* Icon Color */
     background-color: black;
     border: 1px solid white;
     border-radius: 4px;
@@ -27,7 +25,6 @@ header > button {
     word-wrap: break-word;
     align-items: center;
     letter-spacing: .01785714em;
-    font-family: Product Sans, sans-serif;
     font-size: 1rem;
     font-weight: 400;
     padding: 11px 17px;
@@ -36,12 +33,6 @@ header > button {
 header > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
-}
-
-/*Add a little space to right of button icon*/
-header > button span ~ span {
-    padding-left: 11px;
-    text-decoration: none;
 }
 
 #filter {
@@ -189,7 +180,6 @@ header > #statusSpan {
 }
 
 #mainDiv > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/
-    -webkit-transform: scale(1.9);
     transform: scale(1.9);
     cursor: pointer;
 }

@@ -1,4 +1,4 @@
-@*Reusable component used for viewing an item in either Index or AlbumView.
+@*Reusable component used for viewing a full-size item.
 Required Parameters:
     1. string id (uuid) to display
     2. List of items that the currently viewed item is a part of.
@@ -28,26 +28,26 @@ Required Parameters:
         
         @*Stuff in top right corner*@
         <div id="buttons">
-            <button @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
-            <button @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-            <button @onclick="@(() => ToggleDropdown(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
+            <button class="iconBtn" @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
+            <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <button class="iconBtn" @onclick="@(() => ToggleDropdown(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
         </div>
         
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
-            <button @onclick="@(() => albumsVis = "visible")" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
+            <button class="iconBtn" @onclick="@(() => albumsVis = "visible")" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
             
-            <button @onclick="@(() => Connection.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
+            <button class="iconBtn" @onclick="@(() => Connection.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
             </button>
-            <button title="Archive"><span class="material-icons-outlined">archive</span></button>
-            <button title="Add to Folder"><span class="material-icons-outlined">perm_media</span></button>
+            <button class="iconBtn" title="Archive"><span class="material-icons-outlined">archive</span></button>
+            <button class="iconBtn" title="Add to Folder"><span class="material-icons-outlined">perm_media</span></button>
         </div>
         
         <div id="infoDiv" style="visibility: @infoVis">
             <div class="dataDiv" title="Date Taken">
                 <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
                 <span>@ogDateTaken.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
-                <button @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+                <button class="iconBtn" @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
             </div>
             
             <div class="dataDiv" title="Date Added">
@@ -81,16 +81,16 @@ Required Parameters:
         
         <AlbumSelector SelectedItems="@(new List<string> {path})" @bind-AlbumsVis="@albumsVis"/>
         
-        <div id="datePicker" style="visibility: @editDateDivVis;">
+        <div id="datePicker" style="visibility: @editDateDivVis">
             <span>Enter new date taken:</span>
             <input title="" type="datetime-local" @bind="@newDateTaken" required/>
             <div id="buttons">
-                <button @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
-                <button @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+                <button class="iconBtn" @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
+                <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
             </div>
         </div>
         
-        <button id="backBtn" onclick="location.href='@ReturnPath'"><span class="material-icons-outlined">keyboard_backspace</span></button>
+        <button class="iconBtn" id="backBtn" onclick="location.href='@ReturnPath'"><span class="material-icons-outlined">keyboard_backspace</span></button>
 
         if (index - 1 >= 0) //Don't go outside array
         {

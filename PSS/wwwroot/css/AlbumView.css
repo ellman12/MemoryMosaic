@@ -1,16 +1,12 @@
 * {
-    color: white;
     user-select: none;
-    font-family: 'Product Sans', sans-serif;
 }
 
 h1 {
-    font-family: 'Product Sans', sans-serif;
     text-align: center;
     position: absolute;
     left: 50%;
     top: 40%;
-    -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
 
@@ -35,29 +31,16 @@ header > #buttons {
     right: 55px;
 }
 
-header > button, header > #buttons > button, #albumRenameDiv > button {
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
-}
-
 header > span {
     font-size: 20px;
 }
 
 header > #selectedAmtText {
-    font-size: 20px;
     margin-left: 20px;
     margin-right: 20px;
 }
 
-header > button:hover, header > #buttons > button:hover, #albumRenameDiv > button:hover, #moreOptionsDiv > button:hover, #albumRenameDiv > button:hover { /* IDK why background color doesn't work when I just do header button:hover... */
+#moreOptionsDiv > button:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
@@ -81,15 +64,9 @@ header > button:hover, header > #buttons > button:hover, #albumRenameDiv > butto
     display: flex;
     align-items: center;
     letter-spacing: .01785714em;
-    font-family: Product Sans, sans-serif;
     font-size: 1rem;
     font-weight: 400;
     padding: 11px 12px 11px 10px;
-}
-
-button span ~ span, button svg ~ span {
-    padding-left: 11px;
-    text-decoration: none;
 }
 
 header > #albumRenameDiv {
@@ -102,7 +79,6 @@ header > #albumRenameDiv {
 }
 
 #albumRenameDiv > input[type="text"] {
-    color: white;
     background-color: black;
     border: 2px solid black;
     outline: none;
