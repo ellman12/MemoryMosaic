@@ -35,12 +35,6 @@ header > button:hover {
     cursor: pointer;
 }
 
-/*Add a little space to right of button icon*/
-header > button span ~ span {
-    padding-left: 11px;
-    text-decoration: none;
-}
-
 #filter {
     display: flex;
     flex-direction: column;
