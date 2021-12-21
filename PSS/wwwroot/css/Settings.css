@@ -10,6 +10,11 @@
     border-radius: 20px;
 }
 
+#settings-div > button {
+    display: inline-flex;
+    margin-right: 5px;
+}
+
 #settings-div > div > span {
     font-family: 'Product Sans', serif;
     margin: 5px 0 0;
