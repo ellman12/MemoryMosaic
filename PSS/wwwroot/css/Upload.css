@@ -1,7 +1,3 @@
-* {
-    font-family: 'Product Sans', serif;
-}
-
 #baseContainer { /*https://stackoverflow.com/a/14816807*/
     width: 1400px;
     height: 900px;
