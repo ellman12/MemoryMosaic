@@ -1,7 +1,7 @@
 @*A blank page just for testing stuff*@
 @page "/test"
 @using static PSS.Backend.Connection
-@using PSS.Backend
+@using static PSS.Backend.Maintenance
 @using System.IO
 @* @layout EmptyLayout *@
 
@@ -23,7 +23,7 @@
     //     Console.WriteLine(yes.ToString());
     // }
     // Console.WriteLine();
-    var yes2 = Maintenance.GetUntrackedLibFiles();
+    var yes2 = GetUntrackedLibFiles();
 
     foreach (var yes in yes2)
     {
