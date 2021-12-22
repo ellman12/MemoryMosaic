@@ -23,14 +23,14 @@
     //     Console.WriteLine(yes.ToString());
     // }
     // Console.WriteLine();
-    var yes2 = GetUntrackedLibFiles();
+    List<string> yes2 = GetUntrackedLibFiles();
 
-    foreach (var yes in yes2)
+    foreach (string yes in yes2)
     {
         Console.WriteLine(yes);
-        string path = Path.Combine(PSS.Settings.libFolderFullPath, yes);
-        Console.WriteLine(path);
-        File.Delete(path);
+        // string path = Path.Combine(PSS.Settings.libFolderFullPath, yes);
+        // Console.WriteLine(path);
+        // File.Delete(path);
     }
     Console.WriteLine();
 }

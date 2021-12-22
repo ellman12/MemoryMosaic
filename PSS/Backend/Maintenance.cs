@@ -18,19 +18,22 @@ namespace PSS.Backend
         public static bool IsFolderEmpty(string path) => Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
 
         /// <summary>
-        /// Loop through library folder and return List of short paths to items NOT in the database but that are in library folder for whatever reason.
+        /// Search library folder and if an item is not in the media or media_trash tables, add it to the List of shortPaths that is returned. 
         /// </summary>
         public static List<string> GetUntrackedLibFiles()
         {
             List<string> untrackedPaths = new(); //Items in lib folder but not in database
             string[] paths = Directory.GetFiles(Settings.libFolderFullPath, "*", SearchOption.AllDirectories);
-            List<string> mediaListPaths = Connection.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
+            List<string> mediaPaths = Connection.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
+            List<string> mediaTrashPaths = Connection.LoadMediaTrashTable().Select(media => media.path).ToList();
 
             foreach (string path in paths)
             {
                 string shortPath = path.Replace(Settings.libFolderFullPath, "");
                 if (shortPath.StartsWith('\\') || shortPath.StartsWith('/')) shortPath = shortPath[1..];
-                if (!mediaListPaths.Contains(shortPath)) untrackedPaths.Add(shortPath); //If find an item not in DB add to list
+                
+                if (!mediaPaths.Contains(shortPath) && !mediaTrashPaths.Contains(shortPath)) //If find an item not in library add to list
+                    untrackedPaths.Add(shortPath);
             }
             return untrackedPaths;
         }
