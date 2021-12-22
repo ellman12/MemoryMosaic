@@ -39,7 +39,7 @@
 }
 
 /* Add space to right of button icon */
-button span ~ span, button svg ~ span {padding-left: 11px;}
+button span ~ * {padding-left: 11px; text-decoration: none;}
 
 .iconBtn:hover, .textBtn:hover {
     background-color: var(--hover-color);
