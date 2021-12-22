@@ -3,40 +3,47 @@
 <title>Settings</title>
 <link href="css/Settings.css" rel="stylesheet"/>
 
-<div id="settings-div">
-    <div class="settings-pair">
-        <span>SSH Username</span>
-        <input type="text" class="settings-pair" @bind="@username"/>
+<div id="body">
+    <div>
+        <span class="header">Settings</span>
+        <div class="settings-pair">
+            <span>SSH Username</span>
+            <input type="text" class="settings-pair" @bind="@username"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Server IP Address</span>
+            <input type="text" class="settings-pair" @bind="@serverIP"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>scp Flags</span>
+            <input type="text" class="settings-pair" @bind="@scpFlags"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Where to upload items for applying</span>
+            <input type="text" class="settings-pair" @bind="@uploadRootPath"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Root path to library folder</span>
+            <input type="text" class="settings-pair" @bind="@libraryRootPath"/>
+        </div>
+
+        <div class="settings-pair">
+            <span style="display: inline">Show Prompts?</span>
+            <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
+        </div>
+
+        <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
+        <button class="textBtn" @onclick="@CancelBtnClicked"><span class="material-icons-outlined">close</span><span>Cancel</span></button>
+        <button class="textBtn" @onclick="@ResetBtnClicked"><span class="material-icons-outlined">restart_alt</span><span>Reset</span></button>
     </div>
 
-    <div class="settings-pair">
-        <span>Server IP Address</span>
-        <input type="text" class="settings-pair" @bind="@serverIP"/>
+    <div>
+        <span class="header">Maintenance</span>
     </div>
-
-    <div class="settings-pair">
-        <span>scp Flags</span>
-        <input type="text" class="settings-pair" @bind="@scpFlags"/>
-    </div>
-
-    <div class="settings-pair">
-        <span>Where to upload items for applying</span>
-        <input type="text" class="settings-pair" @bind="@uploadRootPath"/>
-    </div>
-
-    <div class="settings-pair">
-        <span>Root path to library folder</span>
-        <input type="text" class="settings-pair" @bind="@libraryRootPath"/>
-    </div>
-
-    <div class="settings-pair">
-        <span>Show Prompts?</span>
-        <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
-    </div>
-
-    <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
-    <button class="textBtn" @onclick="@CancelBtnClicked"><span class="material-icons-outlined">close</span><span>Cancel</span></button>
-    <button class="textBtn" @onclick="@ResetBtnClicked"><span class="material-icons-outlined">restart_alt</span><span>Reset</span></button>
 </div>
 
 @code {

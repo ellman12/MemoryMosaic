@@ -1,27 +1,43 @@
-#settings-div {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    height: auto;
-    border: 3px solid white;
-    padding: 20px 10px;
-    border-radius: 20px;
+#body {
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-#settings-div > button {
+#body > div {
+    width: 500px;
+    border: 3px solid white;
+    padding: 13px 15px 13px 10px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+}
+
+#body > div > .header {
+    display: block;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+#body > div > button {
     display: inline-flex;
     margin-right: 5px;
 }
 
-#settings-div > div > span {
-    font-family: 'Product Sans', serif;
-    margin: 5px 0 0;
+#body > div > .settings-pair {
+    margin-top: 4px;
+    margin-bottom: 10px;
+}
+
+#body > div > .settings-pair > span {
+    display: block;
+    margin-bottom: 7px;
     padding: 0;
 }
 
-#settings-div > div > input {color: black;}
-
-.settings-pair {margin-top: 4px;}
-div > button {margin-top: 10px;}
+#body > div > .settings-pair > input[type="text"] {
+    color: black;
+    width: 100%;
+}
