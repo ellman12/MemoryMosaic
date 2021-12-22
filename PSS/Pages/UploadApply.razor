@@ -7,29 +7,29 @@
 <link href="css/UploadApply.css" rel="stylesheet">
 
 <header>
-    <button @onclick="@(() => filterVis = filterVis == "hidden" ? "visible" : "hidden")" title="This filter thing sucks I know but how it works is check neither, warning, or error (just 1 at a time) to show just those items">
+    <button class="textBtn" @onclick="@(() => filterVis = filterVis == "hidden" ? "visible" : "hidden")" title="This filter thing sucks I know but how it works is check neither, warning, or error (just 1 at a time) to show just those items">
         <span class="material-icons-outlined">filter_list</span><span>Filter Items</span>
     </button>
     
-    <button @onclick="AddItems">
+    <button class="textBtn" @onclick="AddItems">
         <span class="material-icons-outlined">add_photo_alternate</span><span>Add to Library</span>
     </button>
     
-    <button @onclick="@DeleteErrorsBtnClick">
+    <button class="textBtn" @onclick="@DeleteErrorsBtnClick">
         <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
     </button>
 
-    <button @onclick="ToggleAlbums">
+    <button class="textBtn" @onclick="ToggleAlbums">
         <span class="material-icons-outlined">@toggleBtnIcon</span><span>@albumToggleBtnText</span>
     </button>
 
-    <button @onclick="NewAlbumBtnClick">
+    <button class="textBtn" @onclick="NewAlbumBtnClick">
         <span class="material-icons-outlined">@newAlbumBtnIcon</span><span>@newAlbumBtnText</span>
     </button>
 
     <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
 
-    <button @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn">
+    <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn">
         <span class="material-icons-outlined">check</span><span>Confirm</span>
     </button>
 
@@ -99,7 +99,7 @@
                 @if (!dataPresentList[i] && !alreadyInLib[i]){<span class="warnSpan">No DT found. DT set to now.</span>}
                 @if (alreadyInLib[i]){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
-                <button title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii, allPaths[ii]))" class="material-icons">close</button>
+                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii, allPaths[ii]))"><span class="material-icons">close</span></button>
             </div>
         }
     </div>

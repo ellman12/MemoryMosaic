@@ -16,22 +16,6 @@ header {
 header > button {
     margin-top: 10px;
     margin-right: 12px;
-    background-color: black;
-    border: 1px solid white;
-    border-radius: 4px;
-    display: flex;
-    word-break: break-word;
-    word-wrap: break-word;
-    align-items: center;
-    letter-spacing: .01785714em;
-    font-size: 1rem;
-    font-weight: 400;
-    padding: 11px 17px;
-}
-
-header > button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
 }
 
 #filter {
@@ -157,20 +141,6 @@ header > #statusSpan {
 
 #mainDiv > .itemDiv > button {
     margin-left: 4px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
-}
-
-#mainDiv > .itemDiv > button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
 }
 
 #mainDiv > .itemDiv > img {
