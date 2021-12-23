@@ -38,8 +38,9 @@
     padding: 11px;
 }
 
-/* Add space to right of button icon */
-button span ~ * {padding-left: 11px; text-decoration: none;}
+/* Add space to right of textBtn icon (which is either an svg like the trash icon or a span) */
+.textBtn * ~ span {padding-left: 11px; text-decoration: none;}
+
 .iconBtn svg, .textBtn svg {fill: white}
 
 .iconBtn:hover, .textBtn:hover {
