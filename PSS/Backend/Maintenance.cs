@@ -18,7 +18,7 @@ namespace PSS.Backend
         public static bool IsFolderEmpty(string path) => Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
 
         /// <summary>
-        /// Search library folder and if an item is not in the media or media_trash tables, add it to the List of shortPaths that is returned. 
+        /// Search library folder and if an item is not in the media or media_trash tables, add it to the List of full paths that is returned. 
         /// </summary>
         public static List<string> GetUntrackedLibFiles()
         {
@@ -27,13 +27,13 @@ namespace PSS.Backend
             List<string> mediaPaths = Connection.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
             List<string> mediaTrashPaths = Connection.LoadMediaTrashTable().Select(media => media.path).ToList();
 
-            foreach (string path in paths)
+            foreach (string fullPath in paths)
             {
-                string shortPath = path.Replace(Settings.libFolderFullPath, "");
+                string shortPath = fullPath.Replace(Settings.libFolderFullPath, "");
                 if (shortPath.StartsWith('\\') || shortPath.StartsWith('/')) shortPath = shortPath[1..];
                 
                 if (!mediaPaths.Contains(shortPath) && !mediaTrashPaths.Contains(shortPath)) //If find an item not in library add to list
-                    untrackedPaths.Add(shortPath);
+                    untrackedPaths.Add(fullPath);
             }
             return untrackedPaths;
         }
