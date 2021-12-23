@@ -43,7 +43,7 @@
 
     <div>
         <span class="header">Maintenance</span>
-        <button class="textBtn"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files</a></button>
+        <button class="textBtn"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
         <button class="textBtn"><span class="material-icons-outlined">folder</span><a href="maintenance/empty-folders">Empty Folders</a></button>
     </div>
 </div>
@@ -55,6 +55,13 @@
     private static string uploadRootPath = PSS.Settings.uploadRootPath;
     private static string libraryRootPath = PSS.Settings.libFolderFullPath;
     private static bool showPrompts = PSS.Settings.showPrompts;
+    
+    private static List<string> untrackedPaths;
+
+    protected override void OnInitialized()
+    {
+        untrackedPaths = Backend.Maintenance.GetUntrackedLibFiles();
+    }
 
     private static void ApplyBtnClicked()
     {
