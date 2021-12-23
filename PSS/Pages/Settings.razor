@@ -45,7 +45,7 @@
     <div>
         <span class="header">Maintenance</span>
         <button class="textBtn"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
-        <button class="textBtn"><span class="material-icons-outlined">folder</span><a href="maintenance/empty-folders">Empty Folders (@emptyFolders.Count)</a></button>
+        <button class="textBtn" @onclick="@EmptyFoldersBtnClick"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
     </div>
 </div>
 
@@ -97,5 +97,13 @@
     {
         PSS.Settings.ResetSettings();
         CancelBtnClicked();
+    }
+
+    //Delete all empty folders
+    private static void EmptyFoldersBtnClick()
+    {
+        emptyFolders.Reverse(); //Start at deepest folder and work up (to avoid dir not found errors).
+        foreach (string path in emptyFolders) Directory.Delete(path);
+        emptyFolders.Clear();
     }
 }
