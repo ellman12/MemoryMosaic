@@ -36,7 +36,6 @@ button {
 }
 
 #infoDiv > .dataDiv > svg {
-    fill: white;
     margin-left: 15px;
     margin-right: 15px;
 }
@@ -164,10 +163,6 @@ button {
 
 .sideBtn:hover {
     cursor: pointer;
-}
-
-.sideBtn > svg {
-    fill: white;
 }
 
 #leftBtn {left: 10px;}
