@@ -1,4 +1,5 @@
 @page "/settings"
+@using System.IO
 
 <title>Settings</title>
 <link href="css/Settings.css" rel="stylesheet"/>
@@ -44,7 +45,7 @@
     <div>
         <span class="header">Maintenance</span>
         <button class="textBtn"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
-        <button class="textBtn"><span class="material-icons-outlined">folder</span><a href="maintenance/empty-folders">Empty Folders</a></button>
+        <button class="textBtn"><span class="material-icons-outlined">folder</span><a href="maintenance/empty-folders">Empty Folders (@emptyFolders.Count)</a></button>
     </div>
 </div>
 
@@ -58,9 +59,17 @@
     
     private static List<string> untrackedPaths;
 
+    //Get all folders in Library and Upload
+    private static string[] folderPaths;
+    private static readonly List<string> emptyFolders = new();
+
     protected override void OnInitialized()
     {
         untrackedPaths = Backend.Maintenance.GetUntrackedLibFiles();
+        
+        folderPaths = Directory.GetDirectories(PSS.Settings.libFolderFullPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(PSS.Settings.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
+        foreach (string path in folderPaths)
+            if (Backend.Maintenance.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
     }
 
     private static void ApplyBtnClicked()

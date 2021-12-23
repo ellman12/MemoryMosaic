@@ -5,9 +5,10 @@
 <title>Test</title>
 
 @{
-    string[] paths = Directory.GetDirectories(PSS.Settings.uploadRootPath, "*", SearchOption.AllDirectories);
+    // string[] paths = Directory.GetDirectories(PSS.Settings.libFolderFullPath, "*", SearchOption.AllDirectories);
+    // paths = paths.Concat(Directory.GetDirectories(PSS.Settings.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
 
-    paths = paths.Reverse().ToArray(); //Start at deepest folder and work up (to avoid dir not found errors).
-    foreach (string path in paths)
-        if (Backend.Maintenance.IsFolderEmpty(path)) Directory.Delete(path, true);
+    // paths = paths.Reverse().ToArray(); //Start at deepest folder and work up (to avoid dir not found errors).
+    // foreach (string path in paths)
+        // if (Backend.Maintenance.IsFolderEmpty(path)) Directory.Delete(path, true);
 }
