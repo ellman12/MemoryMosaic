@@ -9,21 +9,25 @@
     <button class="textBtn">
         <span class="material-icons-outlined">&#xe2c3;</span><span>Move to Upload</span>
     </button>
-    
-    <button class="textBtn">
-        <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete All</span>
+
+    <button class="textBtn" @onclick="@DeleteAll">
+        <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24">
+            <path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path>
+        </svg><span>Delete All</span>
     </button>
 </header>
 
 <div id="mainDiv">
-    @foreach (string path in untrackedPaths)
+    @for (int i = 0; i < untrackedPaths.Count; i++)
     {
+        int ii = i;
+        string path = untrackedPaths[i];
         string ext = Path.GetExtension(path);
         string name = Path.GetFileName(path);
-        
+
         string shortPath = path.Replace(Settings.libFolderFullPath, "").Replace('\\', '/');
         shortPath = Path.GetFileName(Settings.libFolderFullPath) + shortPath;
-        
+
         <div class="itemDiv">
             @if (ext is ".jpg" or ".jpeg" or ".png")
             {
@@ -31,12 +35,33 @@
             }
 
             <span title="@name" class="filenameSpan">@name</span>
-                
-            <button class="iconBtn" title="Delete Item"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+
+            <button class="iconBtn" title="Delete Item From Server" @onclick="@(() => DeleteBtnClick(ii))">
+                <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24">
+                    <path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path>
+                </svg>
+            </button>
         </div>
     }
 </div>
 
 @code {
-    private static readonly List<string> untrackedPaths = Maintenance.GetUntrackedLibFiles();
+    private static List<string> untrackedPaths;
+
+    protected override void OnInitialized()
+    {
+        untrackedPaths = Maintenance.GetUntrackedLibFiles();
+    }
+
+    private static void DeleteBtnClick(int index)
+    {
+        File.Delete(untrackedPaths[index]);
+        untrackedPaths.RemoveAt(index);
+    }
+
+    private static void DeleteAll()
+    {
+        foreach (string path in untrackedPaths) File.Delete(path);
+        untrackedPaths.Clear();
+    }
 }
