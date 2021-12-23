@@ -17,37 +17,45 @@
     </button>
 </header>
 
-<div id="mainDiv">
-    @for (int i = 0; i < untrackedPaths.Count; i++)
+@{
+    if (untrackedPaths.Count == 0)
     {
-        int ii = i;
-        string path = untrackedPaths[i];
-        string ext = Path.GetExtension(path);
-        string name = Path.GetFileName(path);
-
-        string shortPath = path.Replace(Settings.libFolderFullPath, "").Replace('\\', '/');
-        shortPath = Path.GetFileName(Settings.libFolderFullPath) + shortPath;
-
-        <div class="itemDiv">
-            @if (ext is ".jpg" or ".jpeg" or ".png")
-            {
-                <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
-            }
-
-            <span title="@name" class="filenameSpan">@name</span>
-
-            <button class="iconBtn" title="Move Item to Upload Folder" @onclick="@(() => MoveBtnClick(ii))">
-                <span class="material-icons-outlined">drive_file_move</span>
-            </button>
-            
-            <button class="iconBtn" title="Delete Item From Server" @onclick="@(() => DeleteBtnClick(ii))">
-                <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24">
-                    <path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path>
-                </svg>
-            </button>
-        </div>
+        <h1>No Untracked Items</h1>
+        return;
     }
-</div>
+    
+    <div id="mainDiv">
+        @for (int i = 0; i < untrackedPaths.Count; i++)
+        {
+            int ii = i;
+            string path = untrackedPaths[i];
+            string ext = Path.GetExtension(path);
+            string name = Path.GetFileName(path);
+
+            string shortPath = path.Replace(Settings.libFolderFullPath, "").Replace('\\', '/');
+            shortPath = Path.GetFileName(Settings.libFolderFullPath) + shortPath;
+
+            <div class="itemDiv">
+                @if (ext is ".jpg" or ".jpeg" or ".png")
+                {
+                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
+                }
+
+                <span title="@name" class="filenameSpan">@name</span>
+
+                <button class="iconBtn" title="Move Item to Upload Folder" @onclick="@(() => MoveBtnClick(ii))">
+                    <span class="material-icons-outlined">drive_file_move</span>
+                </button>
+
+                <button class="iconBtn" title="Delete Item From Server" @onclick="@(() => DeleteBtnClick(ii))">
+                    <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24">
+                        <path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path>
+                    </svg>
+                </button>
+            </div>
+        }
+    </div>
+}
 
 @code {
     private static List<string> untrackedPaths;
