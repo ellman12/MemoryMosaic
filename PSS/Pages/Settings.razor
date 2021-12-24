@@ -1,5 +1,7 @@
 @page "/settings"
 @using System.IO
+@using PSS.Backend
+@using C = Backend.Connection;
 @using M = Backend.Maintenance;
 
 <title>Settings</title>
@@ -49,6 +51,16 @@
         <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@media_missing.Count)</a></button>
         <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Upload"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
     </div>
+    
+    <div id="statsDiv">
+        <span class="header">Stats</span>
+        <button class="textBtn" @onclick="@GetStats" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>
+        @if (statsLoaded)
+        {
+            <span>@mediaRows.Count Items in Library</span>
+            <span>@albums.Count Albums</span>
+        }
+    </div>
 </div>
 
 @code {
@@ -67,10 +79,15 @@
     private static readonly List<string> emptyFolders = new();
     
     //Missing Files stuff
-    private static List<string> media_missing;
-    private static List<string> media_trash_missing;
-    private static List<string> album_entries_missing;
-    private static List<string> album_entries_trash_missing;
+    private static List<string> media_missing = new();
+    private static List<string> media_trash_missing = new();
+    private static List<string> album_entries_missing = new();
+    private static List<string> album_entries_trash_missing = new();
+    
+    //Stats
+    private static bool statsLoaded;
+    private static List<C.MediaRow> mediaRows = new();
+    private static List<C.Album> albums = new();
 
     protected override void OnInitialized()
     {
@@ -120,5 +137,12 @@
         emptyFolders.Reverse(); //Start at deepest folder and work up (to avoid dir not found errors).
         foreach (string path in emptyFolders) Directory.Delete(path);
         emptyFolders.Clear();
+    }
+
+    private static void GetStats()
+    {
+        statsLoaded = true;
+        mediaRows = C.LoadMediaTable(); //This could definitely be shortened to just path or something...
+        albums = C.GetAlbumsTable();
     }
 }

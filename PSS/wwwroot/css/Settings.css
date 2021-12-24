@@ -36,7 +36,7 @@
     margin-bottom: 10px;
 }
 
-#body > div > .settings-pair > span {
+#body > div > .settings-pair > span, #statsDiv > span {
     display: block;
     margin-bottom: 7px;
     padding: 0;
