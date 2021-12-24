@@ -46,12 +46,13 @@
     <div>
         <span class="header">Maintenance</span>
         <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
-        <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@media.Count)</a></button>
+        <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@media_missing.Count)</a></button>
         <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Upload"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
     </div>
 </div>
 
 @code {
+    //Settings
     private static string username = PSS.Settings.username;
     private static string serverIP = PSS.Settings.serverIP;
     private static string scpFlags = PSS.Settings.scpFlags;
@@ -65,10 +66,11 @@
     private static string[] folderPaths;
     private static readonly List<string> emptyFolders = new();
     
-    private static List<string> media;
-    private static List<string> media_trash;
-    private static List<string> album_entries;
-    private static List<string> album_entries_trash;
+    //Missing Files stuff
+    private static List<string> media_missing;
+    private static List<string> media_trash_missing;
+    private static List<string> album_entries_missing;
+    private static List<string> album_entries_trash_missing;
 
     protected override void OnInitialized()
     {
@@ -78,11 +80,11 @@
         foreach (string path in folderPaths)
             if (Backend.Maintenance.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
         
-        media = M.GetMissingFiles(M.MissingFilesTable.media);
-        media_trash = M.GetMissingFiles(M.MissingFilesTable.media_trash);
-        album_entries = M.GetMissingFiles(M.MissingFilesTable.album_entries);
-        album_entries_trash = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
-        media = media.Concat(media_trash).Concat(album_entries).Concat(album_entries_trash).ToList();
+        media_missing = M.GetMissingFiles(M.MissingFilesTable.media);
+        media_trash_missing = M.GetMissingFiles(M.MissingFilesTable.media_trash);
+        album_entries_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries);
+        album_entries_trash_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
+        media_missing = media_missing.Concat(media_trash_missing).Concat(album_entries_missing).Concat(album_entries_trash_missing).ToList();
     }
 
     private static void ApplyBtnClicked()
