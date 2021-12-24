@@ -1,10 +1,31 @@
 @page "/maintenance/missing-files"
 @using PSS.Backend
 
+<title>Missing Files — Maintenance</title>
+
 @{
-    List<string> yes = Maintenance.GetMissingFiles(Maintenance.MissingFilesTable.media);
-    foreach(string yes2 in yes) Console.WriteLine(yes2);
+    List<string> media = Maintenance.GetMissingFiles(Maintenance.MissingFilesTable.media);
+    List<string> media_trash = Maintenance.GetMissingFiles(Maintenance.MissingFilesTable.media_trash);
+    List<string> album_entries = Maintenance.GetMissingFiles(Maintenance.MissingFilesTable.album_entries);
+    List<string> album_entries_trash = Maintenance.GetMissingFiles(Maintenance.MissingFilesTable.album_entries_trash);
+    
+    foreach(string m in media) Console.WriteLine($"media: {m}");
     Console.WriteLine();
+    
+    foreach(string m in media_trash) Console.WriteLine($"media_trash: {m}");
+    Console.WriteLine();
+    
+    foreach(string m in album_entries) Console.WriteLine($"album_entries: {m}");
+    Console.WriteLine();
+    
+    foreach(string m in album_entries_trash) Console.WriteLine($"album_entries_trash: {m}");
+    Console.WriteLine();
+    
+    Maintenance.RemoveMissingFiles(media, Maintenance.MissingFilesTable.media);
+    Maintenance.RemoveMissingFiles(media_trash, Maintenance.MissingFilesTable.media_trash);
+    Maintenance.RemoveMissingFiles(album_entries, Maintenance.MissingFilesTable.album_entries);
+    Maintenance.RemoveMissingFiles(album_entries_trash, Maintenance.MissingFilesTable.album_entries_trash);
+    
 }
 
 @code{

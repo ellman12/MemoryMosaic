@@ -84,5 +84,32 @@ namespace PSS.Backend
 
             return missingFiles;
         }
+
+        /// <summary>
+        /// Loop through List and delete these paths from table that are in the DB but don't exist as files.
+        /// </summary>
+        /// <param name="paths">List of shortPaths retrieved with GetMissingFiles()</param>
+        /// <param name="table">The table to delete from</param>
+        public static void RemoveMissingFiles(List<string> paths, MissingFilesTable table)
+        {
+            try
+            {
+                Connection.Open();
+                foreach (string path in paths)
+                {
+                    NpgsqlCommand cmd = new("DELETE FROM " + table + " WHERE path=@path", Connection.connection);
+                    cmd.Parameters.AddWithValue("@path", path);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Connection.Close();
+            }
+        }
     }
 }
