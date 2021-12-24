@@ -1,2 +1,12 @@
 @page "/maintenance/missing-files"
+@using PSS.Backend
 
+@{
+    List<string> yes = Maintenance.GetMissingFiles(Maintenance.MissingFilesTable.media);
+    foreach(string yes2 in yes) Console.WriteLine(yes2);
+    Console.WriteLine();
+}
+
+@code{
+    
+}

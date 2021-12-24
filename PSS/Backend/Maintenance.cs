@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Npgsql;
 
 namespace PSS.Backend
 {
@@ -36,6 +38,51 @@ namespace PSS.Backend
                     untrackedPaths.Add(fullPath);
             }
             return untrackedPaths;
+        }
+
+        /// The table to search for missing files.        
+        public enum MissingFilesTable
+        {
+            media,
+            media_trash,
+            album_entries,
+            album_entries_trash
+        }
+
+        /// <summary>
+        /// Return string List of all shortPaths from the table specified that don't have existing files in the photo library.
+        /// </summary>
+        public static List<string> GetMissingFiles(MissingFilesTable table)
+        {
+            string tableStr = table.ToString();
+            List<string> missingFiles = new();
+
+            try
+            {
+                Connection.Open();
+                NpgsqlCommand cmd = new("SELECT path FROM " + tableStr, Connection.connection);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string shortPath = reader.GetString(0);
+                    string fullPath = Path.Combine(Settings.libFolderFullPath, shortPath);
+                    if (!File.Exists(fullPath))
+                        missingFiles.Add(shortPath);
+                }
+                reader.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Connection.Close();
+            }
+
+            return missingFiles;
         }
     }
 }
