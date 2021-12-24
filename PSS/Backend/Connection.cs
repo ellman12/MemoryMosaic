@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using Npgsql;
-using PSS.Pages;
 
 namespace PSS.Backend
 {
@@ -803,7 +802,7 @@ namespace PSS.Backend
 
                 //2. Update shortPath in media.
                 string filename = Path.GetFileName(shortPath);
-                string newPath = Path.Combine(UploadApply.GenerateDatePath(newDateTaken), filename); //Don't need full path, just the short path (/2021/10 October/...).
+                string newPath = Path.Combine(Pages.UploadApply.GenerateDatePath(newDateTaken), filename); //Don't need full path, just the short path (/2021/10 October/...).
                 cmd.CommandText = "UPDATE media SET path=@newPath WHERE path=@shortPath";
                 cmd.Parameters.AddWithValue("@newPath", newPath);
                 cmd.Parameters.AddWithValue("@shortPath", shortPath);
@@ -815,7 +814,7 @@ namespace PSS.Backend
 
                 //4. Move item to new path on server.
                 string originalFullPath = Path.Combine(Settings.libFolderFullPath, shortPath);
-                string newFullDir = UploadApply.GenerateSortedDir(newDateTaken);
+                string newFullDir = Pages.UploadApply.GenerateSortedDir(newDateTaken);
                 string newFullPath = Path.Combine(newFullDir, filename);
                 Directory.CreateDirectory(newFullDir); //Create in case it doesn't exist.
                 File.Move(originalFullPath, newFullPath);
