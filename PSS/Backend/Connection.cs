@@ -11,7 +11,7 @@ namespace PSS.Backend
     /// </summary>
     public static class Connection
     {
-        private static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
+        public static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
 
         //AM = AlbumsMain
         public enum AMSortMode
@@ -90,13 +90,13 @@ namespace PSS.Backend
             }
         }
 
-        private static void Open()
+        public static void Open()
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
         }
 
-        private static void Close()
+        public static void Close()
         {
             if (connection.State == ConnectionState.Open)
                 connection.Close();
