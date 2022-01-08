@@ -49,14 +49,18 @@
 
     <div>
         <span class="header">Maintenance</span>
-        <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
-        <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@media_missing.Count)</a></button>
-        <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Upload"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
+        @if (!maintenanceLoaded) {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
+        @if (maintenanceLoaded)
+        {
+            <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
+            <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@media_missing.Count)</a></button>
+            <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Upload"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
+        }
     </div>
     
     <div id="statsDiv">
         <span class="header">Stats</span>
-        <button class="textBtn" @onclick="@GetStats" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>
+        @if (!statsLoaded) {<button class="textBtn" @onclick="@GetStats" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>}
         @if (statsLoaded)
         {
             <span>@mediaRowCount Items in Library</span>
@@ -74,6 +78,8 @@
     private static string libraryRootPath = PSS.Settings.libFolderFullPath;
     private static bool showPrompts = PSS.Settings.showPrompts;
     
+    //Maintenance
+    private static bool maintenanceLoaded;
     private static List<string> untrackedPaths;
 
     //Get all folders in Library and Upload
@@ -88,22 +94,30 @@
     
     //Stats
     private static bool statsLoaded;
-    private static long mediaRowCount = 0;
-    private static long albumsCount = 0;
+    private static long mediaRowCount;
+    private static long albumsCount;
 
     protected override void OnInitialized()
     {
-        untrackedPaths = Backend.Maintenance.GetUntrackedLibFiles();
+        maintenanceLoaded = false;
         
+        //Items in lib folder but not DB.
+        untrackedPaths = new List<string>();
+
+        //Items in database but no file on server
+        media_missing = new List<string>();
+        media_trash_missing = new List<string>();
+        album_entries_missing = new List<string>();
+        album_entries_trash_missing = new List<string>();
+
+        //Empty folders
         folderPaths = Directory.GetDirectories(PSS.Settings.libFolderFullPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(PSS.Settings.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (Backend.Maintenance.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
         
-        media_missing = M.GetMissingFiles(M.MissingFilesTable.media);
-        media_trash_missing = M.GetMissingFiles(M.MissingFilesTable.media_trash);
-        album_entries_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries);
-        album_entries_trash_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
-        media_missing = media_missing.Concat(media_trash_missing).Concat(album_entries_missing).Concat(album_entries_trash_missing).ToList();
+        statsLoaded = false;
+        mediaRowCount = 0;
+        albumsCount = 0;
     }
 
     private static void ApplyBtnClicked()
@@ -139,6 +153,22 @@
         emptyFolders.Reverse(); //Start at deepest folder and work up (to avoid dir not found errors).
         foreach (string path in emptyFolders) Directory.Delete(path);
         emptyFolders.Clear();
+    }
+
+    private static void RunMaintenanceCheck()
+    {
+        maintenanceLoaded = true;
+        untrackedPaths = Backend.Maintenance.GetUntrackedLibFiles();
+
+        media_missing = M.GetMissingFiles(M.MissingFilesTable.media);
+        media_trash_missing = M.GetMissingFiles(M.MissingFilesTable.media_trash);
+        album_entries_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries);
+        album_entries_trash_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
+        media_missing = media_missing.Concat(media_trash_missing).Concat(album_entries_missing).Concat(album_entries_trash_missing).ToList();
+
+        folderPaths = Directory.GetDirectories(PSS.Settings.libFolderFullPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(PSS.Settings.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
+        foreach (string path in folderPaths)
+            if (Backend.Maintenance.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
     }
 
     private static void GetStats()
