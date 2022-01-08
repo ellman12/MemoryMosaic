@@ -1,8 +1,10 @@
 @page "/settings"
 @using System.IO
+@using Npgsql
 @using PSS.Backend
 @using C = Backend.Connection;
 @using M = Backend.Maintenance;
+@using System.Diagnostics
 
 <title>Settings</title>
 <link href="css/Settings.css" rel="stylesheet"/>
@@ -57,7 +59,7 @@
         <button class="textBtn" @onclick="@GetStats" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>
         @if (statsLoaded)
         {
-            <span>@mediaRows.Count Items in Library</span>
+            <span>@mediaRowCount Items in Library</span>
             <span>@albums.Count Albums</span>
         }
     </div>
@@ -86,7 +88,7 @@
     
     //Stats
     private static bool statsLoaded;
-    private static List<C.MediaRow> mediaRows = new();
+    private static long mediaRowCount = 0;
     private static List<C.Album> albums = new();
 
     protected override void OnInitialized()
@@ -142,7 +144,30 @@
     private static void GetStats()
     {
         statsLoaded = true;
-        mediaRows = C.LoadMediaTable(); //This could definitely be shortened to just path or something...
+        mediaRowCount = CountMediaRows();
         albums = C.GetAlbumsTable();
+    }
+
+    private static long CountMediaRows()
+    {
+        long rows = 0;
+        try
+        {
+            Connection.Open();
+            NpgsqlCommand cmd = new("SELECT path FROM media", Connection.connection);
+            cmd.ExecuteNonQuery();
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read()) rows++;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine("Counting media rows error. " + e.Message);
+        }
+        finally
+        {
+            Connection.Close();
+        }
+        return rows;
     }
 }
