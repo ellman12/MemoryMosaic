@@ -60,7 +60,7 @@
         @if (statsLoaded)
         {
             <span>@mediaRowCount Items in Library</span>
-            <span>@albums.Count Albums</span>
+            <span>@albumsCount Albums</span>
         }
     </div>
 </div>
@@ -89,7 +89,7 @@
     //Stats
     private static bool statsLoaded;
     private static long mediaRowCount = 0;
-    private static List<C.Album> albums = new();
+    private static long albumsCount = 0;
 
     protected override void OnInitialized()
     {
@@ -145,7 +145,7 @@
     {
         statsLoaded = true;
         mediaRowCount = CountMediaRows();
-        albums = C.GetAlbumsTable();
+        albumsCount = CountAlbums();
     }
 
     private static long CountMediaRows()
@@ -163,6 +163,29 @@
         catch (NpgsqlException e)
         {
             Console.WriteLine("Counting media rows error. " + e.Message);
+        }
+        finally
+        {
+            Connection.Close();
+        }
+        return rows;
+    }
+
+    private static long CountAlbums()
+    {
+        long rows = 0;
+        try
+        {
+            Connection.Open();
+            NpgsqlCommand cmd = new("SELECT id FROM albums", Connection.connection);
+            cmd.ExecuteNonQuery();
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read()) rows++;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine("Counting albums rows error. " + e.Message);
         }
         finally
         {
