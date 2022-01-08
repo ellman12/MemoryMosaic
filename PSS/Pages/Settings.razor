@@ -65,6 +65,9 @@
         {
             <span>@mediaRowCount Items in Library</span>
             <span>@albumsCount Albums</span>
+            <span>Library Drive Total Size (Usable): @Functions.FormatBytes(totalUsableDriveSize)</span>
+            <span>Library Drive Free Space: @Functions.FormatBytes(freeDriveSpace)</span>
+            <span>Library Size: @Functions.FormatBytes(librarySize)</span>
         }
     </div>
 </div>
@@ -96,6 +99,9 @@
     private static bool statsLoaded;
     private static long mediaRowCount;
     private static long albumsCount;
+    private static long totalUsableDriveSize; //How much space the drive pss_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
+    private static long freeDriveSpace; //Bytes
+    private static long librarySize; //Bytes
 
     protected override void OnInitialized()
     {
@@ -115,9 +121,13 @@
         foreach (string path in folderPaths)
             if (Backend.Maintenance.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
         
+        //Stats
         statsLoaded = false;
         mediaRowCount = 0;
         albumsCount = 0;
+        totalUsableDriveSize = 0;
+        freeDriveSpace = 0;
+        librarySize = 0;
     }
 
     private static void ApplyBtnClicked()
@@ -176,5 +186,12 @@
         statsLoaded = true;
         mediaRowCount = Stats.CountMediaRows();
         albumsCount = Stats.CountAlbums();
+        
+        DriveInfo driveInfo = new(PSS.Settings.libFolderFullPath);
+        totalUsableDriveSize = driveInfo.TotalSize;
+        freeDriveSpace = driveInfo.TotalFreeSpace;
+        
+        DirectoryInfo dirInfo = new(PSS.Settings.libFolderFullPath);
+        librarySize = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
     }
 }
