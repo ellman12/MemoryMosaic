@@ -68,6 +68,8 @@
             <span>Library Drive Total Size (Usable): @Functions.FormatBytes(totalUsableDriveSize)</span>
             <span>Library Drive Free Space: @Functions.FormatBytes(freeDriveSpace)</span>
             <span>Library Size: @Functions.FormatBytes(librarySize)</span>
+            string url = $"/view/{oldestItem.uuid}";
+            <span><a target="_blank" rel="noopener noreferrer" href="@url">Oldest Item in Library, Taken on @oldestItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
         }
     </div>
 </div>
@@ -102,6 +104,7 @@
     private static long totalUsableDriveSize; //How much space the drive pss_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
     private static long freeDriveSpace; //Bytes
     private static long librarySize; //Bytes
+    private static Connection.MediaRow oldestItem, newestItem;
 
     protected override void OnInitialized()
     {
@@ -128,6 +131,9 @@
         totalUsableDriveSize = 0;
         freeDriveSpace = 0;
         librarySize = 0;
+
+        oldestItem = new Connection.MediaRow("", DateTime.Now, DateTime.Now, false, Guid.Empty);
+        newestItem = new Connection.MediaRow("", DateTime.Now, DateTime.Now, false, Guid.Empty);
     }
 
     private static void ApplyBtnClicked()
@@ -193,5 +199,7 @@
         
         DirectoryInfo dirInfo = new(PSS.Settings.libFolderFullPath);
         librarySize = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+
+        oldestItem = Stats.FindOldestItem();
     }
 }
