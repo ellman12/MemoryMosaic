@@ -144,53 +144,7 @@
     private static void GetStats()
     {
         statsLoaded = true;
-        mediaRowCount = CountMediaRows();
-        albumsCount = CountAlbums();
-    }
-
-    private static long CountMediaRows()
-    {
-        long rows = 0;
-        try
-        {
-            Connection.Open();
-            NpgsqlCommand cmd = new("SELECT path FROM media", Connection.connection);
-            cmd.ExecuteNonQuery();
-            NpgsqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read()) rows++;
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine("Counting media rows error. " + e.Message);
-        }
-        finally
-        {
-            Connection.Close();
-        }
-        return rows;
-    }
-
-    private static long CountAlbums()
-    {
-        long rows = 0;
-        try
-        {
-            Connection.Open();
-            NpgsqlCommand cmd = new("SELECT id FROM albums", Connection.connection);
-            cmd.ExecuteNonQuery();
-            NpgsqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read()) rows++;
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine("Counting albums rows error. " + e.Message);
-        }
-        finally
-        {
-            Connection.Close();
-        }
-        return rows;
+        mediaRowCount = Stats.CountMediaRows();
+        albumsCount = Stats.CountAlbums();
     }
 }
