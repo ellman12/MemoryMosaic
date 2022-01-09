@@ -19,9 +19,15 @@ namespace PSS.Backend
         /// </summary>
         public static void BackupServer()
         {
-            FileSystem.CopyDirectory(Settings.libFolderFullPath, Path.Combine(Settings.backupFolderPath, $"PSS Media Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}"));
-
-            Process process = new();
+            //Clear backup folder to remove old backup: https://stackoverflow.com/a/12297082
+            DirectoryInfo di = new(Settings.backupFolderPath);
+            di.Delete(true);
+            Directory.CreateDirectory(Settings.backupFolderPath); 
+            
+            FileSystem.CopyDirectory(Settings.libFolderFullPath, Path.Combine(Settings.backupFolderPath, "PSS Media Backup"));
+            File.WriteAllText(Path.Combine(Settings.backupFolderPath, "Backed up on.txt"), DateTime.Now.ToString("M-d-yyyy h:mm:ss tt"));
+            
+            Process process = new(); //Backup entire database to a file
             ProcessStartInfo startInfo = new()
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
