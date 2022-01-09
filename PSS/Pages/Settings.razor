@@ -1,10 +1,8 @@
 @page "/settings"
 @using System.IO
-@using Npgsql
 @using PSS.Backend
 @using C = Backend.Connection;
 @using M = Backend.Maintenance;
-@using System.Diagnostics
 
 <title>Settings</title>
 <link href="css/Settings.css" rel="stylesheet"/>
@@ -54,9 +52,10 @@
 
     <div>
         <span class="header">Maintenance</span>
-        <button class="textBtn" @onclick="@M.BackupServer"><span class="material-icons-outlined">backup</span><span>Backup Server</span></button>
+        <button class="textBtn" title="Last backed up on @lastBackedUp.ToString("MMM d, yyyy h:mm:ss tt")" @onclick="@M.BackupServer"><span class="material-icons-outlined">backup</span><span>Backup Server</span></button>
         <button class="textBtn" @onclick="@M.RestoreBackup"><span class="material-icons-outlined">restore</span><span>Restore Backup</span></button>
-        @if (!maintenanceLoaded) {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
+        @if (!maintenanceLoaded)
+        {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
         @if (maintenanceLoaded)
         {
             <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
@@ -97,6 +96,7 @@
     
     //Maintenance
     private static bool maintenanceLoaded;
+    private static DateTime lastBackedUp;
     private static List<string> untrackedPaths;
 
     //Get all folders in Library and Upload
@@ -122,10 +122,11 @@
     protected override void OnInitialized()
     {
         maintenanceLoaded = false;
-        
+        lastBackedUp = DateTime.Parse(File.ReadAllText(Path.Combine(PSS.Settings.backupFolderPath, "Backed up on.txt")));
+
         //Items in lib folder but not DB.
         untrackedPaths = new List<string>();
-
+        
         //Items in database but no file on server
         media_missing = new List<string>();
         media_trash_missing = new List<string>();
