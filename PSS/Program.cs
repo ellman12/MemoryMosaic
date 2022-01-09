@@ -20,6 +20,8 @@ namespace PSS
             else
                 Settings.ResetSettings();
 
+            Pages.Settings.whenWentOnline = DateTime.Now;
+
             CreateHostBuilder(args).Build().Run();
         }
 
