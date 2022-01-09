@@ -25,6 +25,11 @@ namespace PSS
         [JsonProperty] public static string libFolderFullPath;
 
         /// <summary>
+        /// Where to backup library and database.
+        /// </summary>
+        [JsonProperty] public static string backupFolderPath;
+        
+        /// <summary>
         /// Should prompts be shown when doing things like deleting items and albums, etc.?
         /// </summary>
         [JsonProperty] public static bool showPrompts;
@@ -48,6 +53,7 @@ namespace PSS
             JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json"));
             uploadRootPath = uploadRootPath.Replace('\\', '/');
             libFolderFullPath = libFolderFullPath.Replace('\\', '/');
+            backupFolderPath = backupFolderPath.Replace('\\', '/');
         }
 
         //Delete .json file and reset settings to default.
@@ -58,6 +64,7 @@ namespace PSS
             scpFlags = "-r";
             uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload"; //TODO: temp
             libFolderFullPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_library"; //TODO: temp
+            backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_backup"; //TODO: temp
             showPrompts = true;
             File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings()));
         }
