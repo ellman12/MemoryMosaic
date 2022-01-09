@@ -77,6 +77,7 @@
             <span>Library Size: @Functions.FormatBytes(librarySize)</span>
             string url = $"/view/{oldestItem.uuid}";
             <span><a target="_blank" rel="noopener noreferrer" href="@url">Oldest Item in Library, Taken on @oldestItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+            url = $"/view/{newestItem.uuid}";
             <span><a target="_blank" rel="noopener noreferrer" href="@url">Newest Item in Library, Taken on @newestItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
             <span>Server went online at @whenWentOnline</span>
             <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>
