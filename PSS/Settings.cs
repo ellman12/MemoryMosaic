@@ -39,6 +39,11 @@ namespace PSS
         /// </summary>
         public const string requestPath = "/pss_library";
 
+        /// <summary>
+        /// The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
+        /// </summary>
+        public static string databaseBackupCommand;
+
         public static void WriteSettings()
         {
             //https://stackoverflow.com/a/16921677
@@ -54,6 +59,10 @@ namespace PSS
             uploadRootPath = uploadRootPath.Replace('\\', '/');
             libFolderFullPath = libFolderFullPath.Replace('\\', '/');
             backupFolderPath = backupFolderPath.Replace('\\', '/');
+            
+            //Can't assign this until backupFolderPath is read in
+            //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+            databaseBackupCommand = $"pg_dump.exe \"host={serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{backupFolderPath}/PSS DB Backup.bak\"";
         }
 
         //Delete .json file and reset settings to default.

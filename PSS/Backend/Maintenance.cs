@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Npgsql;
+using Microsoft.VisualBasic.FileIO;
+using SearchOption = System.IO.SearchOption;
 
 namespace PSS.Backend
 {
@@ -11,6 +14,26 @@ namespace PSS.Backend
     /// </summary>
     public static class Maintenance
     {
+        /// <summary>
+        /// Backup library and database on server.
+        /// </summary>
+        public static void BackupServer()
+        {
+            FileSystem.CopyDirectory(Settings.libFolderFullPath, Path.Combine(Settings.backupFolderPath, $"PSS Media Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}"));
+
+            Process process = new();
+            ProcessStartInfo startInfo = new()
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                WorkingDirectory = "C:/Program Files/PostgreSQL/14/bin/",
+                FileName = "cmd.exe",
+                Arguments = $"/C {Settings.databaseBackupCommand}"
+            };
+            process.StartInfo = startInfo;
+            process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+            process.WaitForExit();
+        }
+        
         /// <summary>
         /// Return if a folder is empty (has 0 files in folder or subfolders). Subfolders inside path aren't counted unless they have stuff inside.
         /// If root/ has 2 subfolders and 3 files it would only find 3 files and thus it wouldn't be counted as empty.
