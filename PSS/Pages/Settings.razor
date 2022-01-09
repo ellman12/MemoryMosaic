@@ -52,7 +52,7 @@
 
     <div>
         <span class="header">Maintenance</span>
-        <button class="textBtn" title="Last backed up on @lastBackedUp.ToString("MMM d, yyyy h:mm:ss tt")" @onclick="@M.BackupServer"><span class="material-icons-outlined">backup</span><span>Backup Server</span></button>
+        <button class="textBtn" title="Last backed up on @lastBackedUp" @onclick="@M.BackupServer"><span class="material-icons-outlined">backup</span><span>Backup Server</span></button>
         <button class="textBtn" @onclick="@M.RestoreBackup"><span class="material-icons-outlined">restore</span><span>Restore Backup</span></button>
         @if (!maintenanceLoaded)
         {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
@@ -96,7 +96,7 @@
     
     //Maintenance
     private static bool maintenanceLoaded;
-    private static DateTime lastBackedUp;
+    private static string lastBackedUp;
     private static List<string> untrackedPaths;
 
     //Get all folders in Library and Upload
@@ -122,8 +122,9 @@
     protected override void OnInitialized()
     {
         maintenanceLoaded = false;
-        lastBackedUp = DateTime.Parse(File.ReadAllText(Path.Combine(PSS.Settings.backupFolderPath, "Backed up on.txt")));
-
+        string datePath = Path.Combine(PSS.Settings.backupFolderPath, "Backed up on.txt");
+        lastBackedUp = File.Exists(datePath) ? DateTime.Parse(File.ReadAllText(datePath)).ToString("MMM d, yyyy h:mm:ss tt") : "Never";
+        
         //Items in lib folder but not DB.
         untrackedPaths = new List<string>();
         
