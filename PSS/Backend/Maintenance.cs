@@ -39,6 +39,24 @@ namespace PSS.Backend
             process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
             process.WaitForExit();
         }
+
+        public static void RestoreBackup()
+        {
+            //Kept getting a stupid error like OP did when trying to do it the normal way but luckily SO comes in to save the day: https://serverfault.com/a/260610
+            FileSystem.CopyDirectory(Path.Combine(Settings.backupFolderPath, "PSS Media Backup"), Settings.libFolderFullPath);
+
+            Process process = new(); //Backup entire database to a file
+            ProcessStartInfo startInfo = new()
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                WorkingDirectory = Settings.backupFolderPath,
+                FileName = "cmd.exe",
+                Arguments = $"/C {Settings.databaseRestoreCommand}"
+            };
+            process.StartInfo = startInfo;
+            process.Start();
+            process.WaitForExit();
+        }
         
         /// <summary>
         /// Return if a folder is empty (has 0 files in folder or subfolders). Subfolders inside path aren't counted unless they have stuff inside.
