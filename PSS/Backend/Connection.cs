@@ -520,7 +520,7 @@ namespace PSS.Backend
                 Open();
 
                 //Copy item from media to trash
-                NpgsqlCommand cmd = new("INSERT INTO media SELECT * FROM media_trash WHERE path=@path", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media SELECT path, date_taken, date_added, starred, separate, uuid FROM media_trash WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
 
