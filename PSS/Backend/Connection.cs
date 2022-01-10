@@ -1065,5 +1065,39 @@ namespace PSS.Backend
 
             return dateTaken;
         }
+
+        /// <summary>
+        /// Return if an album is a folder.
+        /// </summary>
+        public static bool IsFolder(int albumID)
+        {
+            bool isFolder = false;
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT folder FROM albums WHERE id=@albumID", connection);
+                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    isFolder = reader.GetBoolean(0);
+                    reader.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return isFolder;
+        }
     }
 }
