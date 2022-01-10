@@ -103,16 +103,17 @@ namespace PSS.Backend
         }
 
         //For inserting a photo or video into the media table (the main table). Will not insert duplicates.
-        public static int InsertMedia(string path, DateTime dateTaken, bool starred = false)
+        public static int InsertMedia(string path, DateTime dateTaken, bool starred = false, bool separate = false)
         {
             int rowsAffected = 0;
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now(), @starred) ON CONFLICT (path) DO NOTHING", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate) ON CONFLICT (path) DO NOTHING", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
                 cmd.Parameters.AddWithValue("@starred", starred);
+                cmd.Parameters.AddWithValue("@separate", separate);
                 rowsAffected = cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -128,13 +129,14 @@ namespace PSS.Backend
         }
 
         //Create a new album and add it to the table of album names and IDs. ID is auto incrementing.
-        public static void CreateAlbum(string name)
+        public static void CreateAlbum(string name, bool folder = false)
         {
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated) VALUES (@name, now())", connection);
+                NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated, separate) VALUES (@name, now(), @separate)", connection);
                 cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@folder", folder);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -168,7 +170,7 @@ namespace PSS.Backend
         }
 
         //This has 3 different use cases: give an album a cover if it doesn't have a cover,
-        //update an existing cover, or remove an album cover (supply literal 'null' as path).
+        //update an existing cover, or remove an album cover (supply literal null as path).
         //Albums aren't required to have an album cover.
         public static void UpdateAlbumCover(string albumName, string path)
         {
@@ -518,7 +520,7 @@ namespace PSS.Backend
                 Open();
 
                 //Copy item from media to trash
-                NpgsqlCommand cmd = new("INSERT INTO media SELECT path, date_taken, date_added, starred, uuid FROM media_trash WHERE path=@path", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media SELECT * FROM media_trash WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
 
@@ -544,14 +546,17 @@ namespace PSS.Backend
             }
         }
 
-        //Loads everything in the media table in descending order.
+        /// <summary>
+        /// Loads everything in the media table into a List of the rows. Does not store separate column. Also only selects ones where separate==false
+        /// </summary>
+        /// <returns></returns>
         public static List<MediaRow> LoadMediaTable()
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT * FROM media ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
@@ -572,7 +577,9 @@ namespace PSS.Backend
             return media;
         }
         
-        ///<summary>Load only starred items from the media table.</summary>
+        ///<summary>
+        /// Load only starred items from the media table. Doesn't bother selecting the starred column because it does SELECT WHERE starred == true.
+        /// </summary>
         ///<returns>Row(s) retrieved in a List&lt;MediaRow&gt;</returns>
         public static List<MediaRow> LoadStarred()
         {
@@ -580,12 +587,12 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT * FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), true, reader.GetGuid(4)));
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), true, reader.GetGuid(3)));
 
                 reader.Close();
             }
