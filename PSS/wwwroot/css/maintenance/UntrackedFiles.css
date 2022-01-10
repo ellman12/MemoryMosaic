@@ -1,0 +1,62 @@
+﻿* {
+    scrollbar-width: none !important;
+    --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: var(--left-margin);
+}
+
+header > button {
+    margin-top: 10px;
+    margin-right: 12px;
+}
+
+h1 {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+    user-select: none;
+}
+
+#mainDiv {
+    position: absolute;
+    left: 145px;
+    top: 71px;
+}
+
+#mainDiv > .itemDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#mainDiv > .itemDiv > img {
+    width: 6%;
+}
+
+#mainDiv > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/
+    transform: scale(1.9);
+    cursor: pointer;
+}
+
+#mainDiv > .itemDiv > span {
+    margin-left: 10px;
+    width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#mainDiv > .itemDiv > button {
+    margin-left: 4px;
+}

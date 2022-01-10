@@ -1,13 +1,18 @@
 @*A blank page just for testing stuff*@
 @page "/test"
-@using static PSS.Backend.Connection
+@using System.IO
 @using PSS.Backend
-@* @layout EmptyLayout *@
 
 <title>Test</title>
 
-<button style="margin-left: 50%;" @onclick="@(() => UpdateDateTaken(GetPathFromUuid("2dc3492e-6139-11ec-90c6-04421acfc461"), new DateTime(2013, 4, 5)))">click me</button>
+@{
+    //Generate dummy data
+    // for (int i = 0; i < 40; i++) Connection.InsertMedia("item " + i, DateTime.Now);
+    
+    // string[] paths = Directory.GetDirectories(PSS.Settings.libFolderFullPath, "*", SearchOption.AllDirectories);
+    // paths = paths.Concat(Directory.GetDirectories(PSS.Settings.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
 
-@code {
-   
+    // paths = paths.Reverse().ToArray(); //Start at deepest folder and work up (to avoid dir not found errors).
+    // foreach (string path in paths)
+        // if (Backend.Maintenance.IsFolderEmpty(path)) Directory.Delete(path, true);
 }

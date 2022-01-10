@@ -1,51 +1,155 @@
 @page "/settings"
+@using System.IO
+@using PSS.Backend
+@using C = Backend.Connection;
+@using M = Backend.Maintenance;
 
 <title>Settings</title>
 <link href="css/Settings.css" rel="stylesheet"/>
 
-<div id="settings-div">
-    <div class="settings-pair">
-        <span>SSH Username</span>
-        <input type="text" class="settings-pair" @bind="@username"/>
+<div id="body">
+    <div>
+        <span class="header">Settings</span>
+        <div class="settings-pair">
+            <span>SSH Username</span>
+            <input type="text" class="settings-pair" @bind="@username"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Server IP Address</span>
+            <input type="text" class="settings-pair" @bind="@serverIP"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>scp Flags</span>
+            <input type="text" class="settings-pair" @bind="@scpFlags"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Where to upload items for applying</span>
+            <input type="text" class="settings-pair" @bind="@uploadRootPath"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Root path to library folder</span>
+            <input type="text" class="settings-pair" @bind="@libraryRootPath"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Where to backup library and database</span>
+            <input type="text" class="settings-pair" @bind="@backupFolderPath"/>
+        </div>
+        
+        <div class="settings-pair">
+            <span style="display: inline">Show Prompts?</span>
+            <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
+        </div>
+
+        <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
+        <button class="textBtn" @onclick="@CancelBtnClicked"><span class="material-icons-outlined">close</span><span>Cancel</span></button>
+        <button class="textBtn" @onclick="@ResetBtnClicked"><span class="material-icons-outlined">restart_alt</span><span>Reset</span></button>
     </div>
 
-    <div class="settings-pair">
-        <span>Server IP Address</span>
-        <input type="text" class="settings-pair" @bind="@serverIP"/>
+    <div>
+        <span class="header">Maintenance</span>
+        <button class="textBtn" title="Last backed up on @lastBackedUp" @onclick="@M.BackupServer"><span class="material-icons-outlined">backup</span><span>Backup Server</span></button>
+        <button class="textBtn" @onclick="@M.RestoreBackup"><span class="material-icons-outlined">restore</span><span>Restore Backup</span></button>
+        @if (!maintenanceLoaded)
+        {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
+        @if (maintenanceLoaded)
+        {
+            <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
+            <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@media_missing.Count)</a></button>
+            <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Upload"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
+        }
     </div>
-
-    <div class="settings-pair">
-        <span>scp Flags</span>
-        <input type="text" class="settings-pair" @bind="@scpFlags"/>
+    
+    <div id="statsDiv">
+        <span class="header">Stats</span>
+        @if (!statsLoaded) {<button class="textBtn" @onclick="@GetStats" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>}
+        @if (statsLoaded)
+        {
+            <span>@mediaRowCount Items in Library</span>
+            <span>@albumsCount Albums</span>
+            <span>Library Drive Total Size (Usable): @Functions.FormatBytes(totalUsableDriveSize)</span>
+            <span>Library Drive Free Space: @Functions.FormatBytes(freeDriveSpace)</span>
+            <span>Library Size: @Functions.FormatBytes(librarySize)</span>
+            string url = $"/view/{oldestItem.uuid}";
+            <span><a target="_blank" rel="noopener noreferrer" href="@url">Oldest Item in Library, Taken on @oldestItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+            url = $"/view/{newestItem.uuid}";
+            <span><a target="_blank" rel="noopener noreferrer" href="@url">Newest Item in Library, Taken on @newestItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+            <span>Server went online at @whenWentOnline</span>
+            <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>
+        }
     </div>
-
-    <div class="settings-pair">
-        <span>Where to upload items for applying</span>
-        <input type="text" class="settings-pair" @bind="@uploadRootPath"/>
-    </div>
-
-    <div class="settings-pair">
-        <span>Root path to library folder</span>
-        <input type="text" class="settings-pair" @bind="@libraryRootPath"/>
-    </div>
-
-    <div class="settings-pair">
-        <span>Show Prompts?</span>
-        <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
-    </div>
-
-    <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
-    <button class="textBtn" @onclick="@CancelBtnClicked"><span class="material-icons-outlined">close</span><span>Cancel</span></button>
-    <button class="textBtn" @onclick="@ResetBtnClicked"><span class="material-icons-outlined">restart_alt</span><span>Reset</span></button>
 </div>
 
 @code {
+    //Settings
     private static string username = PSS.Settings.username;
     private static string serverIP = PSS.Settings.serverIP;
     private static string scpFlags = PSS.Settings.scpFlags;
     private static string uploadRootPath = PSS.Settings.uploadRootPath;
     private static string libraryRootPath = PSS.Settings.libFolderFullPath;
     private static bool showPrompts = PSS.Settings.showPrompts;
+    private static string backupFolderPath = PSS.Settings.backupFolderPath;
+    
+    //Maintenance
+    private static bool maintenanceLoaded;
+    private static string lastBackedUp;
+    private static List<string> untrackedPaths;
+
+    //Get all folders in Library and Upload
+    private static string[] folderPaths;
+    private static readonly List<string> emptyFolders = new();
+    
+    //Missing Files stuff
+    private static List<string> media_missing = new();
+    private static List<string> media_trash_missing = new();
+    private static List<string> album_entries_missing = new();
+    private static List<string> album_entries_trash_missing = new();
+    
+    //Stats
+    private static bool statsLoaded;
+    private static long mediaRowCount;
+    private static long albumsCount;
+    private static long totalUsableDriveSize; //How much space the drive pss_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
+    private static long freeDriveSpace; //Bytes
+    private static long librarySize; //Bytes
+    private static Connection.MediaRow oldestItem, newestItem;
+    public static DateTime whenWentOnline; //When did the server go online?
+
+    protected override void OnInitialized()
+    {
+        maintenanceLoaded = false;
+        string datePath = Path.Combine(PSS.Settings.backupFolderPath, "Backed up on.txt");
+        lastBackedUp = File.Exists(datePath) ? DateTime.Parse(File.ReadAllText(datePath)).ToString("MMM d, yyyy h:mm:ss tt") : "Never";
+        
+        //Items in lib folder but not DB.
+        untrackedPaths = new List<string>();
+        
+        //Items in database but no file on server
+        media_missing = new List<string>();
+        media_trash_missing = new List<string>();
+        album_entries_missing = new List<string>();
+        album_entries_trash_missing = new List<string>();
+
+        //Empty folders
+        folderPaths = Directory.GetDirectories(PSS.Settings.libFolderFullPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(PSS.Settings.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
+        foreach (string path in folderPaths)
+            if (Backend.Maintenance.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
+        
+        //Stats
+        statsLoaded = false;
+        mediaRowCount = 0;
+        albumsCount = 0;
+        totalUsableDriveSize = 0;
+        freeDriveSpace = 0;
+        librarySize = 0;
+
+        oldestItem = new Connection.MediaRow("", DateTime.Now, DateTime.Now, false, Guid.Empty);
+        newestItem = new Connection.MediaRow("", DateTime.Now, DateTime.Now, false, Guid.Empty);
+    }
 
     private static void ApplyBtnClicked()
     {
@@ -55,6 +159,7 @@
         PSS.Settings.uploadRootPath = uploadRootPath;
         PSS.Settings.libFolderFullPath = libraryRootPath;
         PSS.Settings.showPrompts = showPrompts;
+        PSS.Settings.backupFolderPath = backupFolderPath;
         PSS.Settings.WriteSettings();
     }
 
@@ -66,11 +171,53 @@
         uploadRootPath = PSS.Settings.uploadRootPath;
         libraryRootPath = PSS.Settings.libFolderFullPath;
         showPrompts = PSS.Settings.showPrompts;
+        backupFolderPath = PSS.Settings.backupFolderPath;
     }
 
     private static void ResetBtnClicked()
     {
         PSS.Settings.ResetSettings();
         CancelBtnClicked();
+    }
+
+    //Delete all empty folders
+    private static void EmptyFoldersBtnClick()
+    {
+        emptyFolders.Reverse(); //Start at deepest folder and work up (to avoid dir not found errors).
+        foreach (string path in emptyFolders) Directory.Delete(path);
+        emptyFolders.Clear();
+    }
+
+    private static void RunMaintenanceCheck()
+    {
+        maintenanceLoaded = true;
+        untrackedPaths = Backend.Maintenance.GetUntrackedLibFiles();
+
+        media_missing = M.GetMissingFiles(M.MissingFilesTable.media);
+        media_trash_missing = M.GetMissingFiles(M.MissingFilesTable.media_trash);
+        album_entries_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries);
+        album_entries_trash_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
+        media_missing = media_missing.Concat(media_trash_missing).Concat(album_entries_missing).Concat(album_entries_trash_missing).ToList();
+
+        folderPaths = Directory.GetDirectories(PSS.Settings.libFolderFullPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(PSS.Settings.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
+        foreach (string path in folderPaths)
+            if (Backend.Maintenance.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
+    }
+
+    private static void GetStats()
+    {
+        statsLoaded = true;
+        mediaRowCount = Stats.CountMediaRows();
+        albumsCount = Stats.CountAlbums();
+        
+        DriveInfo driveInfo = new(PSS.Settings.libFolderFullPath);
+        totalUsableDriveSize = driveInfo.TotalSize;
+        freeDriveSpace = driveInfo.TotalFreeSpace;
+        
+        DirectoryInfo dirInfo = new(PSS.Settings.libFolderFullPath);
+        librarySize = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+
+        oldestItem = Stats.FindOldestItem();
+        newestItem = Stats.FindNewestItem();
     }
 }

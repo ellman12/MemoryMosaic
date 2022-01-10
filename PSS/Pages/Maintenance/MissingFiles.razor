@@ -1,0 +1,73 @@
+@page "/maintenance/missing-files"
+@using M = Backend.Maintenance;
+
+<title>Missing Files — Maintenance</title>
+
+<style>
+    header {
+        background-color: black;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        align-content: center;
+        position: fixed;
+        left: 146px;
+        right: 0;
+        top: 4px;
+        z-index: 999;
+    }
+    
+    #mainDiv {
+        position: absolute;
+        left: 145px;
+        top: 70px;
+    }
+</style>
+
+<header>
+    <button class="textBtn" @onclick="@DeleteMissingPaths">
+        <svg width="24px" height="24px" class="material-icons" style="fill: white;" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg>
+        <span>Delete All Paths From DB</span>
+    </button>
+</header>
+
+<div id="mainDiv">
+    <span>media</span><br>
+    @foreach (string path in media){<span>@path</span><br>}
+    
+    <br><span>media_trash</span><br>
+    @foreach (string path in media_trash){<span>@path</span><br>}
+
+    <br><span>album_entries</span><br>
+    @foreach (string path in album_entries){<span>@path</span><br>}
+
+    <br><span>album_entries_trash</span><br>
+    @foreach (string path in album_entries_trash){<span>@path</span><br>}
+</div>
+
+@code{
+    private static List<string> media;
+    private static List<string> media_trash;
+    private static List<string> album_entries;
+    private static List<string> album_entries_trash;
+
+    protected override void OnInitialized()
+    {
+        media = M.GetMissingFiles(M.MissingFilesTable.media);
+        media_trash = M.GetMissingFiles(M.MissingFilesTable.media_trash);
+        album_entries = M.GetMissingFiles(M.MissingFilesTable.album_entries);
+        album_entries_trash = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
+    }
+
+    private static void DeleteMissingPaths()
+    {
+        M.RemoveMissingFiles(media, M.MissingFilesTable.media);
+        M.RemoveMissingFiles(media_trash, M.MissingFilesTable.media_trash);
+        M.RemoveMissingFiles(album_entries, M.MissingFilesTable.album_entries);
+        M.RemoveMissingFiles(album_entries_trash, M.MissingFilesTable.album_entries_trash);
+        media.Clear();
+        media_trash.Clear();
+        album_entries.Clear();
+        album_entries_trash.Clear();
+    }
+}
