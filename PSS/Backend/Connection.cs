@@ -134,7 +134,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated, separate) VALUES (@name, now(), @separate)", connection);
+                NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated, folder) VALUES (@name, now(), @folder)", connection);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.Parameters.AddWithValue("@folder", folder);
                 cmd.ExecuteNonQuery();
