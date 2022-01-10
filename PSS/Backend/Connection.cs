@@ -127,13 +127,6 @@ namespace PSS.Backend
             return rowsAffected;
         }
 
-        //Add an item to media (main table) and an album.
-        public static void MediaAndAlbumInsert(string path, int albumID, DateTime dateTaken)
-        {
-            InsertMedia(path, dateTaken);
-            AddToAlbum(path, albumID);
-        }
-
         //Create a new album and add it to the table of album names and IDs. ID is auto incrementing.
         public static void CreateAlbum(string name)
         {
