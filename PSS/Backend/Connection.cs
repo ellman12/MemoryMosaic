@@ -601,6 +601,9 @@ namespace PSS.Backend
             return media;
         }
 
+        /// <summary>
+        /// Get if a path is starred or not.
+        /// </summary>
         public static bool GetStarred(string path)
         {
             bool starred = false;
@@ -677,6 +680,9 @@ namespace PSS.Backend
             }
         }
         
+        /// <summary>
+        /// Loads the contents of an album (or folder) into a List of MediaRows
+        /// </summary>
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
@@ -713,6 +719,9 @@ namespace PSS.Backend
             return media;
         }
 
+        /// <summary>
+        /// Load everything in media_trash into a List of MediaRows.
+        /// </summary>
         public static List<MediaRow> LoadMediaTrashTable(TrashSortMode mode = TrashSortMode.DateDeleted)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
@@ -822,7 +831,9 @@ namespace PSS.Backend
             }
         }
 
-        //Gets an item's path from its uuid.
+        /// <summary>
+        /// Gets an item's path from its (string) uuid.
+        /// </summary>
         public static string GetPathFromUuid(string uuid)
         {
             string path = "";
@@ -856,6 +867,9 @@ namespace PSS.Backend
             return path;
         }
 
+        /// <summary>
+        /// Gets an item's path from its Guid uuid.
+        /// </summary>
         public static string GetPathFromUuid(Guid uuid)
         {
             string path = "";
