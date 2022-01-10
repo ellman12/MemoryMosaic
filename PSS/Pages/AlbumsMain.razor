@@ -11,6 +11,11 @@
     <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
     <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
     
+    <div style="display: @confirmBtnDisplay" >
+        <input style="margin-left: 12px;" type="checkbox" @bind="@folderChecked">
+        <span @onclick="@(() => folderChecked = !folderChecked)" style="margin-left: 1px;">Folder?</span>
+    </div>
+    
     <button class="textBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
     <div id="sortDiv" style="visibility: @sortDivVis"> @* This is ugly but I think it works well *@
         <button class="textBtn" @onclick="@(() => ChangeOrder(AMSortMode.Title))">
@@ -53,6 +58,8 @@
     private static string newAlbumBtnId;
     private static string newAlbumName;
     private static string albumInputDisplay;
+    private static bool folderChecked;
+    
     private static string confirmBtnDisplay;
     private static string sortBtnText;
     private static string sortDivVis;
@@ -65,6 +72,8 @@
         newAlbumBtnText = "New Album";
         newAlbumBtnId = "newAlbumBtn";
         albumInputDisplay = "none";
+        folderChecked = false;
+        
         confirmBtnDisplay = "none";
         SetSortBtnText();
         sortDivVis = "hidden";
@@ -88,21 +97,27 @@
             newAlbumBtnText = "New Album";
             albumInputDisplay = "none";
             confirmBtnDisplay = "none";
+            newAlbumName = "";
         }
     }
 
     private static void ConfirmBtnClick()
     {
+        if (String.IsNullOrWhiteSpace(newAlbumName) || albums.Select(n => n.name).Contains(newAlbumName))
+        {
+            newAlbumName = "Invalid Album Name!";
+            return;
+        }
+        
+        CreateAlbum(newAlbumName, folderChecked);
+        albums = GetAlbumsTable(mode);
+        newAlbumName = ""; //Reset for next time
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
         newAlbumBtnId = "newAlbumBtn";
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
-
-        //TODO: test for "" and duplicate album name on input...
-        CreateAlbum(newAlbumName);
-        albums = GetAlbumsTable(mode);
-        newAlbumName = ""; //Reset for next time
+        folderChecked = false;
     }
 
     private static void SetSortBtnText()
