@@ -48,7 +48,12 @@
 
     if (albumMedia.Count == 0)
     {
-        <h1>Album is empty</h1>
+        if (IsFolder(statAlbumID)) {
+            <h1>Folder is empty</h1>
+        }
+        else {
+            <h1>Album is empty</h1>
+        }
     }
     else
     {
