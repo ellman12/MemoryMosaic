@@ -385,7 +385,7 @@ namespace PSS.Backend
             }
         }
 
-        public static List<Album> GetAlbumsTable(AMSortMode mode = AMSortMode.Title)
+        public static List<Album> GetAlbumsTable(bool showAlbums, bool showFolders, AMSortMode mode = AMSortMode.Title)
         {
             List<Album> albums = new();
 
@@ -398,10 +398,21 @@ namespace PSS.Backend
                 _ => "name ASC"
             };
 
+            //If both true, show albums and folders and thus no need for a where clause.
+            string where;
+            if (showAlbums && showFolders)
+                where = "";
+            else if (showAlbums)
+                where = "WHERE folder = false";
+            else if (showFolders)
+                where = "WHERE folder = true";
+            else
+                where = "WHERE folder = true and folder = false";
+
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums " + where + " ORDER BY " + orderBy, connection);
                 //cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();

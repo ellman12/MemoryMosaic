@@ -169,7 +169,7 @@
         confirmBtnDisplay = "none";
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
-        albums = Connection.GetAlbumsTable();
+        albums = Connection.GetAlbumsTable(true, true);
         checkedAlbums = (from album in albums select new bool()).ToList();
     }
 

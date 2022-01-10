@@ -50,7 +50,7 @@
     {
         AlbumsVis = "hidden";
         HeaderVis = "hidden";
-        albums = GetAlbumsTable();
+        albums = GetAlbumsTable(true, true);
         checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
