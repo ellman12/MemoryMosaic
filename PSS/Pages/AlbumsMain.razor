@@ -7,12 +7,12 @@
 
 <header>
     <span id="albumsText">Albums</span>
-    <button class="textBtn" @onclick="NewAlbumBtnClick" id="@newAlbumBtnId"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
+    <button class="textBtn" @onclick="NewAlbumBtnClick"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
     <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
-    <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
+    <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
     
     <div style="display: @confirmBtnDisplay" >
-        <input style="margin-left: 12px;" type="checkbox" @bind="@folderChecked">
+        <input style="margin-left: 12px" type="checkbox" @bind="@folderChecked">
         <span @onclick="@(() => folderChecked = !folderChecked)" style="margin-left: 1px;">Folder?</span>
     </div>
     
@@ -55,7 +55,6 @@
     private static List<Album> albums;
     private static string newAlbumBtnIcon;
     private static string newAlbumBtnText;
-    private static string newAlbumBtnId;
     private static string newAlbumName;
     private static string albumInputDisplay;
     private static bool folderChecked;
@@ -70,7 +69,6 @@
         albums = GetAlbumsTable(mode);
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
-        newAlbumBtnId = "newAlbumBtn";
         albumInputDisplay = "none";
         folderChecked = false;
         
@@ -84,7 +82,6 @@
     {
         if (newAlbumBtnText == "New Album")
         {
-            newAlbumBtnId = "cancelBtn";
             newAlbumBtnIcon = "close";
             newAlbumBtnText = "Cancel";
             albumInputDisplay = "inline";
@@ -92,7 +89,6 @@
         }
         else if (newAlbumBtnText == "Cancel")
         {
-            newAlbumBtnId = "newAlbumBtn";
             newAlbumBtnIcon = "library_add";
             newAlbumBtnText = "New Album";
             albumInputDisplay = "none";
@@ -114,7 +110,6 @@
         newAlbumName = ""; //Reset for next time
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
-        newAlbumBtnId = "newAlbumBtn";
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
         folderChecked = false;
