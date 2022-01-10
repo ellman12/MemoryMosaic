@@ -1,6 +1,7 @@
 @* Show all albums and allow user to sort them and make new ones *@
 @page "/albums"
 @using static PSS.Backend.Connection
+@using PSS.Backend
 
 <title>Albums</title>
 <link href="css/AlbumsMain.css" rel="stylesheet">
@@ -10,12 +11,23 @@
     <button class="textBtn" @onclick="NewAlbumBtnClick"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
     <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
     <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
-    
-    <div style="display: @confirmBtnDisplay" >
+
+    <div style="display: @confirmBtnDisplay">
         <input style="margin-left: 12px" type="checkbox" @bind="@folderChecked">
         <span @onclick="@(() => folderChecked = !folderChecked)" style="margin-left: 1px;">Folder?</span>
     </div>
     
+    <div id="checkboxes">
+        <div>
+            <input type="checkbox" @bind="@showAlbums">
+            <span @onclick="@(() => { showAlbums = !showAlbums; GetAlbumsTable(); })">Show Albums</span>
+        </div>
+        <div>
+            <input type="checkbox" @bind="@showFolders">
+            <span @onclick="@(() => { showFolders = !showFolders; GetAlbumsTable(); })">Show Folders</span>
+        </div>
+    </div>
+
     <button class="textBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
     <div id="sortDiv" style="visibility: @sortDivVis"> @* This is ugly but I think it works well *@
         <button class="textBtn" @onclick="@(() => ChangeOrder(AMSortMode.Title))">
@@ -64,19 +76,28 @@
     private static string sortDivVis;
     private static AMSortMode mode;
 
+    private static bool showAlbums;
+    private static bool showFolders;
+
     protected override void OnInitialized()
     {
-        albums = GetAlbumsTable(mode);
+        GetAlbumsTable();
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
         albumInputDisplay = "none";
         folderChecked = false;
         
+        mode = AMSortMode.LastModified; //Default sort mode
+        
         confirmBtnDisplay = "none";
         SetSortBtnText();
         sortDivVis = "hidden";
-        mode = AMSortMode.LastModified; //Default sort mode
+
+        showAlbums = true;
+        showFolders = false;
     }
+
+    private static void GetAlbumsTable() => albums = Connection.GetAlbumsTable(showAlbums, showFolders, mode);
 
     private static void NewAlbumBtnClick()
     {
@@ -106,7 +127,7 @@
         }
         
         CreateAlbum(newAlbumName, folderChecked);
-        albums = GetAlbumsTable(mode);
+        GetAlbumsTable();
         newAlbumName = ""; //Reset for next time
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
@@ -130,7 +151,7 @@
     private static void ChangeOrder(AMSortMode newMode)
     {
         mode = newMode;
-        albums = GetAlbumsTable(mode);
+        GetAlbumsTable();
         SetSortBtnText();
         sortDivVis = "hidden";
     }

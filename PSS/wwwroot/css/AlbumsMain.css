@@ -35,12 +35,33 @@ header > input[type="text"] {
     color: black; /* Font color */
 }
 
-#sortBtn {
+header > #checkboxes {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    right: 470px;
+    width: 150px;
+}
+
+header > #checkboxes > div {
+    width: 130px;
+    display: flex;
+    align-items: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+header > #checkboxes > div > span {
+    margin-left: 1px;
+}
+
+header > #sortBtn {
     position: absolute;
     right: 250px;
 }
 
-#sortDiv {
+header > #sortDiv {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
