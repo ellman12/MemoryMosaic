@@ -703,6 +703,7 @@ namespace PSS.Backend
         /// </summary>
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
+            bool isFolder = IsFolder(albumID);
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
             
             string orderBy = mode switch
@@ -717,7 +718,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
