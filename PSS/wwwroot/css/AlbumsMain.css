@@ -128,27 +128,6 @@ header > #sortDiv {
     background-color: #212121;
 }
 
-.thumbnail .dotsBtn {
-    opacity: 0;
-    position: absolute;
-    top: 2px;
-    right: 3px;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
-}
-
-.dotsBtn span {
-    text-align: center;
-}
-
-.thumbnail > .dotsBtn:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
-
 #mainDiv > .album > .albumName {
     width: 200px;
     overflow: hidden;

@@ -53,17 +53,15 @@
     @foreach (Album album in albums)
     { 
         <div class="album" onclick="location.href='/album-view/@album.id'"> @*Text and album thumbnail*@
-            <div class="thumbnail"> @*img and 3 dots*@
+            <div class="thumbnail">
                 <img src="@PSS.Settings.requestPath/@album.albumCover" alt=""/>
-                <button class="dotsBtn"><span class="material-icons-outlined">more_vert</span></button>
             </div>
             <span class="albumName">@album.name</span>
         </div>
     }
 </div>
 
-@code
-{
+@code {
     private static List<Album> albums;
     private static string newAlbumBtnIcon;
     private static string newAlbumBtnText;
