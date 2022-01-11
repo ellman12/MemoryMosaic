@@ -338,9 +338,24 @@ namespace PSS.Backend
         //Add a single path to an album in album_entries.
         public static void AddToAlbum(string path, int albumID)
         {
+            bool isFolder = IsFolder(albumID);
+            
             try
             {
                 Open();
+
+                if (isFolder)
+                {
+                    //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first.
+                    NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE path=@path", connection);
+                    delCmd.Parameters.AddWithValue("@path", path);
+                    delCmd.ExecuteNonQuery();
+
+                    //Mark this item as in a folder (separate).
+                    NpgsqlCommand separateCmd = new("UPDATE media SET separate=true WHERE path=@path", connection);
+                    separateCmd.Parameters.AddWithValue("@path", path);
+                    separateCmd.ExecuteNonQuery();
+                }
 
                 NpgsqlCommand cmd = new("INSERT INTO album_entries VALUES (@path, @albumID, @date_added_to_album) ON CONFLICT (path, album_id) DO NOTHING", connection);
                 cmd.Parameters.AddWithValue("@path", path);
