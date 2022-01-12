@@ -27,14 +27,6 @@ header > #albumsText {
     margin-right: 40px;
 }
 
-header > input[type="text"] {
-    width: 200px;
-    font-size: 16px;
-    margin-left: 12px;
-    margin-right: 12px;
-    color: black; /* Font color */
-}
-
 header > #checkboxes {
     display: flex;
     align-items: center;
@@ -73,7 +65,7 @@ header > #sortDiv {
     padding-right: 12px;
 }
 
-#sortDiv > button {
+header > #sortDiv > button {
     width: 100%;
     border: none;
     display: flex;

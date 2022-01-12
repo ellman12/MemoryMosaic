@@ -8,14 +8,7 @@
 
 <header>
     <span id="albumsText">Albums</span>
-    <button class="textBtn" @onclick="NewAlbumBtnClick"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
-    <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
-    <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
-
-    <div style="display: @confirmBtnDisplay">
-        <input style="margin-left: 12px" type="checkbox" @bind="@folderChecked">
-        <span @onclick="@(() => folderChecked = !folderChecked)" style="margin-left: 1px;">Folder?</span>
-    </div>
+    <AlbumCreator Albums="@albums"/>
     
     <div id="checkboxes">
         <div>
@@ -63,13 +56,7 @@
 
 @code {
     private static List<Album> albums;
-    private static string newAlbumBtnIcon;
-    private static string newAlbumBtnText;
-    private static string newAlbumName;
-    private static string albumInputDisplay;
-    private static bool folderChecked;
     
-    private static string confirmBtnDisplay;
     private static string sortBtnText;
     private static string sortDivVis;
     private static AMSortMode mode;
@@ -80,14 +67,9 @@
     protected override void OnInitialized()
     {
         GetAlbumsTable();
-        newAlbumBtnIcon = "library_add";
-        newAlbumBtnText = "New Album";
-        albumInputDisplay = "none";
-        folderChecked = false;
         
         mode = AMSortMode.LastModified; //Default sort mode
         
-        confirmBtnDisplay = "none";
         SetSortBtnText();
         sortDivVis = "hidden";
 
@@ -96,43 +78,6 @@
     }
 
     private static void GetAlbumsTable() => albums = Connection.GetAlbumsTable(showAlbums, showFolders, mode);
-
-    private static void NewAlbumBtnClick()
-    {
-        if (newAlbumBtnText == "New Album")
-        {
-            newAlbumBtnIcon = "close";
-            newAlbumBtnText = "Cancel";
-            albumInputDisplay = "inline";
-            confirmBtnDisplay = "flex";
-        }
-        else if (newAlbumBtnText == "Cancel")
-        {
-            newAlbumBtnIcon = "library_add";
-            newAlbumBtnText = "New Album";
-            albumInputDisplay = "none";
-            confirmBtnDisplay = "none";
-            newAlbumName = "";
-        }
-    }
-
-    private static void ConfirmBtnClick()
-    {
-        if (String.IsNullOrWhiteSpace(newAlbumName) || albums.Select(n => n.name).Contains(newAlbumName))
-        {
-            newAlbumName = "Invalid Album Name!";
-            return;
-        }
-        
-        CreateAlbum(newAlbumName, folderChecked);
-        GetAlbumsTable();
-        newAlbumName = ""; //Reset for next time
-        newAlbumBtnIcon = "library_add";
-        newAlbumBtnText = "New Album";
-        albumInputDisplay = "none";
-        confirmBtnDisplay = "none";
-        folderChecked = false;
-    }
 
     private static void SetSortBtnText()
     {
