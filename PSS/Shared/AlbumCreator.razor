@@ -5,7 +5,7 @@
 <div id="albumCreator">
     <button class="textBtn" @onclick="NewAlbumBtnClick"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
     <input type="text" placeholder="@("Enter new " + (folderChecked ? "folder" : "album") + " name")" @bind="newAlbumName" style="display: @albumInputDisplay"/>
-    <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
+    <button class="iconBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span></button>
 
     <div style="display: @confirmBtnDisplay">
         <input style="margin-left: 12px" type="checkbox" @bind="@folderChecked">
