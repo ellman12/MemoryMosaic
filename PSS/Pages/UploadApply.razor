@@ -11,16 +11,16 @@
         <span class="material-icons-outlined">filter_list</span><span>Filter Items</span>
     </button>
     
-    <button class="textBtn" @onclick="@AddItems">
+    <button class="textBtn" @onclick="AddItems">
         <span class="material-icons-outlined">add_photo_alternate</span><span>Add to Library</span>
     </button>
     
-    <button class="textBtn" @onclick="@DeleteErrorsBtnClick">
+    <button class="textBtn" @onclick="DeleteErrorsBtnClick">
         <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
     </button>
 
-    <button class="textBtn" @onclick="ToggleAlbums">
-        <span class="material-icons-outlined">@toggleBtnIcon</span><span>@albumToggleBtnText</span>
+    <button class="textBtn" @onclick="@(() => albumSelectorVis = albumSelectorVis == "visible" ? "hidden" : "visible")">
+        <span class="material-icons-outlined">@(albumSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(albumSelectorVis == "visible" ? "Hide Albums" : "Show Albums")</span>
     </button>
 
     <span id="statusSpan">@status</span>
@@ -34,7 +34,7 @@
 </div>
 
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
-<AlbumSelector @ref="@albumSelector" AlbumsVis="@albumsDivVisibility" SelectedItems="@allPaths" ShowCheckCancelButtons="false"/>
+<AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allShortPaths" ShowCheckCancelButtons="false"/>
 
 @{
     GC.Collect();
@@ -82,11 +82,12 @@
 @code{
     AlbumSelector albumSelector = new();
 
-    private static bool applied = false;
+    private static bool applied;
     private static string status;
     private static List<string> pngPaths;
     private static List<string> jpgPaths;
     private static List<string> allPaths;
+    private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<DateTime> dateTakenList;
     private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
     private static List<bool> alreadyInLib; //True if the item is already on the server (in your library).
@@ -102,18 +103,14 @@
     private static bool errorChecked;
     private static bool infoChecked;
 
-    //Things relating to albums
-    private static string toggleBtnIcon;
-    private static string albumsDivVisibility;
-    private static string albumToggleBtnText;
-    private static List<Connection.Album> albums;
-    private static List<bool> checkedAlbums;
+    private static string albumSelectorVis;
 
     protected override void OnInitialized()
     {
         pngPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.png", SearchOption.AllDirectories).ToList();
         jpgPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.jp*g", SearchOption.AllDirectories).ToList();
         allPaths = new List<string>(pngPaths.Concat(jpgPaths).ToArray());
+        allShortPaths = new List<string>();
         dateTakenList = (from path in allPaths select new DateTime()).ToList();
         dataPresentList = (from path in allPaths select new bool()).ToList();
         dtSrc = (from path in allPaths select Metadata.DateTakenSrc.Now).ToList(); //Now = default
@@ -132,12 +129,6 @@
             dateTakenList[i] = dateTaken;
             alreadyInLib[i] = ItemExists(Path.GetFileName(allPaths[i]), dateTakenList[i]);
         }
-        
-        toggleBtnIcon = "image_not_supported";
-        albumsDivVisibility = "visible";
-        albumToggleBtnText = "Hide Albums";
-        albums = Connection.GetAlbumsTable(true, true);
-        checkedAlbums = (from album in albums select new bool()).ToList();
     }
 
     private static void UpdateStatus() => status = allPaths.Count == 0 ? "No files found to add" : $"{pngPaths.Count + jpgPaths.Count} pictures and {0} videos pending upload. {dataPresentList.Count(c => !c)} Warnings. {alreadyInLib.Count(c => c)} Errors.";
@@ -158,6 +149,7 @@
     {
         applied = true;
         int rowsAffected = 0;
+        
         for (int p = 0; p < allPaths.Count; p++)
         {
             if (alreadyInLib[p]) continue; //Ignore duplicates
@@ -167,6 +159,7 @@
             string newPath = Path.Combine(newDir, filename); //Used for moving to new home on server.
             
             string newShortPath = Path.Combine(GenerateDatePath(dateTakenList[p]), filename); //Don't need full path, just the short path (/2021/10 October/...).
+            allShortPaths.Add(newShortPath);
             Directory.CreateDirectory(newDir);
 
             GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
@@ -223,20 +216,4 @@
     
     //Get if an item is already on the server (already in your library).
     private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));
-
-    private static void ToggleAlbums()
-    {
-        if (albumsDivVisibility == "hidden")
-        {
-            toggleBtnIcon = "image_not_supported";
-            albumToggleBtnText = "Hide Albums";
-            albumsDivVisibility = "visible";
-        }
-        else
-        {
-            toggleBtnIcon = "image";
-            albumToggleBtnText = "Show Albums";
-            albumsDivVisibility = "hidden";
-        }
-    }
 }

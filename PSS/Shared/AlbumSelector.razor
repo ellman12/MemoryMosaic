@@ -138,7 +138,10 @@
                     AddToAlbum(item, albums[c].id);
             }
         }
+
         await CloseBtnClick();
-        await ClearChecks();
+
+        if (!ShowCheckCancelButtons) return; //Needed for UploadApply. Can't run these because no checks to clear.
+            await ClearChecks();
     }
 }
