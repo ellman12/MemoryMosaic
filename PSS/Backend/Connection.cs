@@ -391,6 +391,9 @@ namespace PSS.Backend
 
                 cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
                 cmd.ExecuteNonQuery();
+
+                cmd.CommandText = "UPDATE media SET separate = false WHERE path=@path AND separate = true";
+                cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
             {
