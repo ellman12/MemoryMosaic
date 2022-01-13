@@ -61,8 +61,8 @@
     private static string sortDivVis;
     private static AMSortMode mode;
 
-    private static bool showAlbums;
-    private static bool showFolders;
+    private static bool showAlbums = true;
+    private static bool showFolders = false;
 
     protected override void OnInitialized()
     {
@@ -72,9 +72,6 @@
         
         SetSortBtnText();
         sortDivVis = "hidden";
-
-        showAlbums = true;
-        showFolders = false;
     }
 
     private static void GetAlbumsTable() => albums = Connection.GetAlbumsTable(showAlbums, showFolders, mode);
