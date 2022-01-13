@@ -886,8 +886,12 @@ namespace PSS.Backend
                 //3. Update path(s) in Album_Entries table.
                 cmd.CommandText = "UPDATE album_entries SET path=@newPath WHERE path=@shortPath";
                 cmd.ExecuteNonQuery();
-
-                //4. Move item to new path on server.
+                
+                //4. Update album cover(s).
+                cmd.CommandText = "UPDATE albums SET album_cover=@newPath WHERE album_cover=@shortPath";
+                cmd.ExecuteNonQuery();
+                
+                //5. Move item to new path on server.
                 string originalFullPath = Path.Combine(Settings.libFolderFullPath, shortPath);
                 string newFullDir = Pages.UploadApply.GenerateSortedDir(newDateTaken);
                 string newFullPath = Path.Combine(newFullDir, filename);
