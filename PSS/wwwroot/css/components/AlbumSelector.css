@@ -67,7 +67,6 @@
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    width: auto;
 }
 
 .albumsList .album:hover {
@@ -76,13 +75,12 @@
 }
 
 .albumsList .coverDiv {
-    margin: 0;
-    padding: 0;
     display: flex;
+    width: 60px;
+    height: 60px;
 }
 
-.albumsList .cover {
-    border-radius: 4px;
+.albumsList img {
     object-fit: cover;
     width: 60px;
     height: 60px;
