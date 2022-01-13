@@ -39,8 +39,6 @@ Required Parameters:
             <button class="iconBtn" @onclick="@(() => Connection.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
             </button>
-            <button class="iconBtn" title="Archive"><span class="material-icons-outlined">archive</span></button>
-            <button class="iconBtn" title="Add to Folder"><span class="material-icons-outlined">perm_media</span></button>
         </div>
         
         <div id="infoDiv" style="visibility: @infoVis">

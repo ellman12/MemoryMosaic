@@ -1,5 +1,5 @@
-delete from media;
-delete from media_trash;
-delete from albums;
-delete from album_entries;
-delete from album_entries_trash;
+DELETE FROM media;
+DELETE FROM media_trash;
+DELETE FROM albums;
+DELETE FROM album_entries;
+DELETE FROM album_entries_trash;

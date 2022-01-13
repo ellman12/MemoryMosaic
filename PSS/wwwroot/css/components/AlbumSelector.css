@@ -1,82 +1,96 @@
 #albumSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     background-color: black;
-    width: 440px;
-    height: 500px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    width: 490px;
+    height: 620px;
     z-index: 999;
     border: 1px solid white;
-    padding-right: 2px;
 }
 
-#addToText {
-    position: absolute;
-    top: 20px;
-    left: 18px;
+#albumSelector > #header {
+    height: 50px;
+    padding-top: 4px;
+    padding-left: 10px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
-#closeBtn {
+#albumSelector > #header > #buttons {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    right: 13px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
-#confirmBtn {
+#albumSelector > #albumCreatorDiv {
+    display: flex;
+    align-items: center;
     position: absolute;
-    top: 5px;
-    right: 60px;
+    height: 60px;
+    width: 100%;
+    left: 6px;
+    top: 45px;
 }
 
-#albums {
+.albumsAndFolders {
+    display: flex;
+    flex-direction: column;
     position: absolute;
+    top: 110px;
+    left: 6px;
+    width: 97.5%;
+    height: 100%;
+}
+
+.albumsAndFolders > span {
+    margin-bottom: 8px;
+}
+
+.albumsList {
+    margin-bottom: 12px;
     border: 1px solid white;
     padding-right: 2px;
-    left: 50%;
-    top: 54%;
-    transform: translate(-50%, -50%);
-    width: 405px;
-    height: 420px;
+    height: 217px;
     overflow-y: scroll;
 }
 
-#albums .album {
+.albumsList .album {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    width: auto;
 }
 
-#albums .album:hover {
+.albumsList .album:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
-#albums .coverDiv {
-    margin: 0;
-    padding: 0;
+.albumsList .coverDiv {
     display: flex;
+    width: 60px;
+    height: 60px;
 }
 
-#albums .cover {
-    border-radius: 4px;
+.albumsList img {
     object-fit: cover;
     width: 60px;
     height: 60px;
 }
 
-#albums .album input[type="checkbox"] {
+.albumsList .album input[type="checkbox"] {
     margin-left: 7px;
 }
 
-#albums .album span {
+.albumsList .album span {
     margin-top: -1px;
     margin-left: 6px;
     white-space: nowrap;

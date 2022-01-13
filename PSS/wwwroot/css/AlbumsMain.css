@@ -27,20 +27,33 @@ header > #albumsText {
     margin-right: 40px;
 }
 
-header > input[type="text"] {
-    width: 200px;
-    font-size: 16px;
-    margin-left: 12px;
-    margin-right: 12px;
-    color: black; /* Font color */
+header > #checkboxes {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    right: 470px;
+    width: 150px;
 }
 
-#sortBtn {
+header > #checkboxes > div {
+    width: 130px;
+    display: flex;
+    align-items: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+header > #checkboxes > div > span {
+    margin-left: 1px;
+}
+
+header > #sortBtn {
     position: absolute;
     right: 250px;
 }
 
-#sortDiv {
+header > #sortDiv {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -52,7 +65,7 @@ header > input[type="text"] {
     padding-right: 12px;
 }
 
-#sortDiv > button {
+header > #sortDiv > button {
     width: 100%;
     border: none;
     display: flex;
@@ -96,36 +109,16 @@ header > input[type="text"] {
     margin: 0;
     padding: 0;
     display: flex;
+    width: 200px;
+    height: 200px;
+    background-color: #212121;
+    border-radius: 4px;
 }
 
 .thumbnail > img {
-    border-radius: 4px;
     object-fit: cover;
     width: 200px;
     height: 200px;
-    border: 1px solid #212121; /* There's this weird border around images that gets hidden with this */
-    background-color: #212121;
-}
-
-.thumbnail .dotsBtn {
-    opacity: 0;
-    position: absolute;
-    top: 2px;
-    right: 3px;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
-}
-
-.dotsBtn span {
-    text-align: center;
-}
-
-.thumbnail > .dotsBtn:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
 }
 
 #mainDiv > .album > .albumName {

@@ -1,16 +1,26 @@
 @* Show all albums and allow user to sort them and make new ones *@
 @page "/albums"
 @using static PSS.Backend.Connection
+@using PSS.Backend
 
 <title>Albums</title>
 <link href="css/AlbumsMain.css" rel="stylesheet">
 
 <header>
     <span id="albumsText">Albums</span>
-    <button class="textBtn" @onclick="NewAlbumBtnClick" id="@newAlbumBtnId"><span class="material-icons-outlined">@newAlbumBtnIcon</span><span class="btnText">@newAlbumBtnText</span></button>
-    <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
-    <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn"><span class="material-icons-outlined">check</span><span class="btnText">Confirm</span></button>
+    <AlbumCreator Albums="@albums"/>
     
+    <div id="checkboxes">
+        <div>
+            <input type="checkbox" @bind="@showAlbums">
+            <span @onclick="@(() => { showAlbums = !showAlbums; GetAlbumsTable(); })">Show Albums</span>
+        </div>
+        <div>
+            <input type="checkbox" @bind="@showFolders">
+            <span @onclick="@(() => { showFolders = !showFolders; GetAlbumsTable(); })">Show Folders</span>
+        </div>
+    </div>
+
     <button class="textBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
     <div id="sortDiv" style="visibility: @sortDivVis"> @* This is ugly but I think it works well *@
         <button class="textBtn" @onclick="@(() => ChangeOrder(AMSortMode.Title))">
@@ -36,74 +46,35 @@
     @foreach (Album album in albums)
     { 
         <div class="album" onclick="location.href='/album-view/@album.id'"> @*Text and album thumbnail*@
-            <div class="thumbnail"> @*img and 3 dots*@
-                <img src="@PSS.Settings.requestPath/@album.albumCover" alt=""/>
-                <button class="dotsBtn"><span class="material-icons-outlined">more_vert</span></button>
+            <div class="thumbnail">
+                @if (album.albumCover != ""){<img src="@PSS.Settings.requestPath/@album.albumCover" alt=""/>}
             </div>
             <span class="albumName">@album.name</span>
         </div>
     }
 </div>
 
-@code
-{
+@code {
     private static List<Album> albums;
-    private static string newAlbumBtnIcon;
-    private static string newAlbumBtnText;
-    private static string newAlbumBtnId;
-    private static string newAlbumName;
-    private static string albumInputDisplay;
-    private static string confirmBtnDisplay;
+    
     private static string sortBtnText;
     private static string sortDivVis;
     private static AMSortMode mode;
 
+    private static bool showAlbums = true;
+    private static bool showFolders = false;
+
     protected override void OnInitialized()
     {
-        albums = GetAlbumsTable(mode);
-        newAlbumBtnIcon = "library_add";
-        newAlbumBtnText = "New Album";
-        newAlbumBtnId = "newAlbumBtn";
-        albumInputDisplay = "none";
-        confirmBtnDisplay = "none";
+        GetAlbumsTable();
+        
+        mode = AMSortMode.LastModified; //Default sort mode
+        
         SetSortBtnText();
         sortDivVis = "hidden";
-        mode = AMSortMode.LastModified; //Default sort mode
     }
 
-    private static void NewAlbumBtnClick()
-    {
-        if (newAlbumBtnText == "New Album")
-        {
-            newAlbumBtnId = "cancelBtn";
-            newAlbumBtnIcon = "close";
-            newAlbumBtnText = "Cancel";
-            albumInputDisplay = "inline";
-            confirmBtnDisplay = "flex";
-        }
-        else if (newAlbumBtnText == "Cancel")
-        {
-            newAlbumBtnId = "newAlbumBtn";
-            newAlbumBtnIcon = "library_add";
-            newAlbumBtnText = "New Album";
-            albumInputDisplay = "none";
-            confirmBtnDisplay = "none";
-        }
-    }
-
-    private static void ConfirmBtnClick()
-    {
-        newAlbumBtnIcon = "library_add";
-        newAlbumBtnText = "New Album";
-        newAlbumBtnId = "newAlbumBtn";
-        albumInputDisplay = "none";
-        confirmBtnDisplay = "none";
-
-        //TODO: test for "" and duplicate album name on input...
-        CreateAlbum(newAlbumName);
-        albums = GetAlbumsTable(mode);
-        newAlbumName = ""; //Reset for next time
-    }
+    private static void GetAlbumsTable() => albums = Connection.GetAlbumsTable(showAlbums, showFolders, mode);
 
     private static void SetSortBtnText()
     {
@@ -120,7 +91,7 @@
     private static void ChangeOrder(AMSortMode newMode)
     {
         mode = newMode;
-        albums = GetAlbumsTable(mode);
+        GetAlbumsTable();
         SetSortBtnText();
         sortDivVis = "hidden";
     }

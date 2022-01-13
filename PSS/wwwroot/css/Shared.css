@@ -39,7 +39,7 @@
 }
 
 /* Add space to right of textBtn icon (which is either an svg like the trash icon or a span) */
-.textBtn span ~ * {padding-left: 11px; text-decoration: none;}
+.textBtn * ~ * {padding-left: 11px; text-decoration: none;}
 
 svg {fill: white;}
 

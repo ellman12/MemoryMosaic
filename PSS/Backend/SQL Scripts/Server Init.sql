@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS public.albums
     name text COLLATE pg_catalog."default" NOT NULL,
     album_cover text COLLATE pg_catalog."default",
     last_updated timestamp without time zone NOT NULL,
+    folder boolean NOT NULL,
     CONSTRAINT albums_pkey PRIMARY KEY (id),
     CONSTRAINT albums_name_key UNIQUE (name)
 )
@@ -58,6 +59,7 @@ CREATE TABLE IF NOT EXISTS public.media
     date_taken timestamp without time zone NOT NULL,
     date_added timestamp without time zone NOT NULL,
     starred boolean NOT NULL,
+    separate boolean NOT NULL,
     uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
     CONSTRAINT media_pkey PRIMARY KEY (path, uuid),
     CONSTRAINT path_key UNIQUE (path)
@@ -75,6 +77,7 @@ CREATE TABLE IF NOT EXISTS public.media_trash
     date_taken timestamp without time zone NOT NULL,
     date_added timestamp without time zone NOT NULL,
     starred boolean NOT NULL,
+    separate boolean NOT NULL,
     uuid uuid NOT NULL,
     date_deleted timestamp without time zone NOT NULL DEFAULT now(),
     CONSTRAINT media_trash_pkey PRIMARY KEY (path, uuid)
