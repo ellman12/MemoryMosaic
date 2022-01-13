@@ -311,7 +311,12 @@ namespace PSS.Backend
             try
             {
                 Open();
-
+                
+                //Set all items to no longer being separate (only matters if this was a folder).
+                NpgsqlCommand cmd = new("UPDATE media SET separate=false FROM album_entries WHERE album_id=@albumID AND album_entries.path=media.path", connection);
+                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.ExecuteNonQuery();
+                
                 //Remove all corresponding items from album_entries table.
                 NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE album_id=@id", connection);
                 delCmd.Parameters.AddWithValue("@id", albumID);
