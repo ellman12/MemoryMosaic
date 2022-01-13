@@ -23,16 +23,6 @@
         <span class="material-icons-outlined">@toggleBtnIcon</span><span>@albumToggleBtnText</span>
     </button>
 
-    <button class="textBtn" @onclick="NewAlbumBtnClick">
-        <span class="material-icons-outlined">@newAlbumBtnIcon</span><span>@newAlbumBtnText</span>
-    </button>
-
-    <input type="text" placeholder="Enter new album name" @bind="newAlbumName" style="display: @albumInputDisplay"/>
-
-    <button class="textBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay" id="confirmBtn">
-        <span class="material-icons-outlined">check</span><span>Confirm</span>
-    </button>
-
     <span id="statusSpan">@status</span>
 </header>
 
@@ -130,11 +120,6 @@
     private static string toggleBtnIcon;
     private static string albumsDivVisibility;
     private static string albumToggleBtnText;
-    private static string albumInputDisplay;
-    private static string confirmBtnDisplay;
-    private static string newAlbumBtnIcon;
-    private static string newAlbumBtnText;
-    private static string newAlbumName;
     private static List<Connection.Album> albums;
     private static List<bool> checkedAlbums;
 
@@ -165,10 +150,6 @@
         toggleBtnIcon = "image_not_supported";
         albumsDivVisibility = "visible";
         albumToggleBtnText = "Hide Albums";
-        albumInputDisplay = "none";
-        confirmBtnDisplay = "none";
-        newAlbumBtnIcon = "library_add";
-        newAlbumBtnText = "New Album";
         albums = Connection.GetAlbumsTable(true, true);
         checkedAlbums = (from album in albums select new bool()).ToList();
     }
@@ -282,55 +263,5 @@
             albumToggleBtnText = "Show Albums";
             albumsDivVisibility = "hidden";
         }
-    }
-
-    private static void NewAlbumBtnClick()
-    {
-        if (newAlbumBtnText == "New Album")
-        {
-            toggleBtnIcon = "image_not_supported";
-            albumToggleBtnText = "Hide Albums";
-            albumsDivVisibility = "visible";
-
-            newAlbumBtnIcon = "close";
-            newAlbumBtnText = "Cancel";
-            albumInputDisplay = "inline";
-            confirmBtnDisplay = "flex";
-        }
-        else if (newAlbumBtnText == "Cancel")
-        {
-            newAlbumBtnIcon = "library_add";
-            newAlbumBtnText = "New Album";
-            albumInputDisplay = "none";
-            confirmBtnDisplay = "none";
-        }
-    }
-
-    private static void ConfirmBtnClick()
-    {
-        newAlbumBtnIcon = "library_add";
-        newAlbumBtnText = "New Album";
-
-        albumInputDisplay = "none";
-        confirmBtnDisplay = "none";
-
-        if (String.IsNullOrWhiteSpace(newAlbumName))
-        {
-            status = "Cannot have blank album name!";
-            newAlbumName = "";
-            return;
-        }
-        if (albums.Any(album => album.name == newAlbumName))
-        {
-            status = $"Album name \"{newAlbumName}\" already taken!";
-            newAlbumName = "";
-            return;
-        }
-
-        Connection.CreateAlbum(newAlbumName);
-        albums.Add(new Connection.Album(Connection.GetAlbumID(newAlbumName), newAlbumName, null, DateTime.Now));
-        checkedAlbums.Add(new bool());
-        status = $"Successfully created album \"{newAlbumName}\"";
-        newAlbumName = ""; //Reset for next time
     }
 }
