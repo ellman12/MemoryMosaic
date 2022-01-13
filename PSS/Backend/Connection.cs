@@ -335,7 +335,9 @@ namespace PSS.Backend
             }
         }
 
-        //Add a single path to an album in album_entries.
+        /// <summary>
+        /// Add a single path to an album in album_entries. If it's a folder it handles all that automatically.
+        /// </summary>
         public static void AddToAlbum(string path, int albumID)
         {
             bool isFolder = IsFolder(albumID);
