@@ -2,7 +2,7 @@
 @using static PSS.Backend.Connection
 <link href="/css/components/AlbumSelector.css" rel="stylesheet">
 
-<div id="albumSelector" style="visibility: visible">
+<div id="albumSelector" style="visibility: @AlbumsVis">
 
     <div id="header">
         <span>Add to</span>
@@ -92,7 +92,8 @@
     {
         AlbumsVis = "hidden";
         await AlbumsVisChanged.InvokeAsync("hidden");
-        for (int index = 0; index < checkedAlbums.Count; index++) checkedAlbums[index] = false;
+        ClearAlbumChecks();
+        ClearFolderChecks();
     }
     
     private async Task ClearChecks()
@@ -115,17 +116,20 @@
     {
         for (int i = 0; i < checkedFolders.Count; i++) checkedFolders[i] = false;
     }
-    
-    //Add item(s) to album(s) selected.
+
+    //Add item(s) to album(s) or folder selected.
     private async void ConfirmBtnClick()
     {
-        for (int c = 0; c < checkedAlbums.Count; c++)
+        if (checkedFolderIndex != -1) //If a folder is selected this won't be -1
+            foreach (string item in SelectedItems) AddToAlbum(item, folders[checkedFolderIndex].id);
+        else
         {
-            if (checkedAlbums[c] == false) continue;
-
-            foreach (string item in SelectedItems)
+            for (int c = 0; c < checkedAlbums.Count; c++)
             {
-                AddToAlbum(item, albums[c].id);
+                if (checkedAlbums[c] == false) continue;
+
+                foreach (string item in SelectedItems)
+                    AddToAlbum(item, albums[c].id);
             }
         }
         await CloseBtnClick();
