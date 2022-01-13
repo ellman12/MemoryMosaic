@@ -39,7 +39,6 @@
 @{
     GC.Collect();
     GC.WaitForPendingFinalizers();
-    if (applied) return;
     UpdateStatus();
 
     <div id="mainDiv">
@@ -82,7 +81,6 @@
 @code{
     AlbumSelector albumSelector = new();
 
-    private static bool applied;
     private static string status;
     private static List<string> pngPaths;
     private static List<string> jpgPaths;
@@ -147,7 +145,6 @@
     //Adds all the items to photo library, and, if applicable, any albums.
     private void AddItems()
     {
-        applied = true;
         int rowsAffected = 0;
         
         for (int p = 0; p < allPaths.Count; p++)
@@ -176,9 +173,9 @@
         }
         
         albumSelector.ConfirmBtnClick();
-        
         status = $"Added {rowsAffected} items to library";
-        applied = false;
+        allPaths.Clear();
+        albumSelectorVis = "hidden";
     }
 
     private static void DeleteErrorsBtnClick()
