@@ -47,7 +47,7 @@
     { 
         <div class="album" onclick="location.href='/album-view/@album.id'"> @*Text and album thumbnail*@
             <div class="thumbnail">
-                <img src="@PSS.Settings.requestPath/@album.albumCover" alt=""/>
+                @if (album.albumCover != ""){<img src="@PSS.Settings.requestPath/@album.albumCover" alt=""/>}
             </div>
             <span class="albumName">@album.name</span>
         </div>

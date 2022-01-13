@@ -109,15 +109,16 @@ header > #sortDiv > button {
     margin: 0;
     padding: 0;
     display: flex;
+    width: 200px;
+    height: 200px;
+    background-color: #212121;
+    border-radius: 4px;
 }
 
 .thumbnail > img {
-    border-radius: 4px;
     object-fit: cover;
     width: 200px;
     height: 200px;
-    border: 1px solid #212121; /* There's this weird border around images that gets hidden with this */
-    background-color: #212121;
 }
 
 #mainDiv > .album > .albumName {
