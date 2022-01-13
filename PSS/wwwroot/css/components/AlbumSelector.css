@@ -5,9 +5,7 @@
     transform: translate(-50%, -50%);
     background-color: black;
     width: 490px;
-    height: 500px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    height: 620px;
     z-index: 999;
     border: 1px solid white;
 }
@@ -39,22 +37,32 @@
     height: 60px;
     width: 100%;
     left: 6px;
-    top: 50px;
+    top: 45px;
 }
 
-#albums {
+.albumsAndFolders {
+    display: flex;
+    flex-direction: column;
     position: absolute;
+    top: 110px;
+    left: 6px;
+    width: 97.5%;
+    height: 100%;
+}
+
+.albumsAndFolders > span {
+    margin-bottom: 8px;
+}
+
+.albumsList {
+    margin-bottom: 12px;
     border: 1px solid white;
     padding-right: 2px;
-    left: 50%;
-    top: 54%;
-    transform: translate(-50%, -50%);
-    width: 405px;
-    height: 420px;
+    height: 217px;
     overflow-y: scroll;
 }
 
-#albums .album {
+.albumsList .album {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -62,29 +70,29 @@
     width: auto;
 }
 
-#albums .album:hover {
+.albumsList .album:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
-#albums .coverDiv {
+.albumsList .coverDiv {
     margin: 0;
     padding: 0;
     display: flex;
 }
 
-#albums .cover {
+.albumsList .cover {
     border-radius: 4px;
     object-fit: cover;
     width: 60px;
     height: 60px;
 }
 
-#albums .album input[type="checkbox"] {
+.albumsList .album input[type="checkbox"] {
     margin-left: 7px;
 }
 
-#albums .album span {
+.albumsList .album span {
     margin-top: -1px;
     margin-left: 6px;
     white-space: nowrap;
