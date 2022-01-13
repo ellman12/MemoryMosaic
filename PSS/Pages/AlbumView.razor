@@ -254,7 +254,7 @@
 
         yesBtnFunc = DeleteAlbum;
         choiceVis = "visible";
-        choiceMsg = $"Permanently Delete Album \"{albumName}\"?";
+        choiceMsg = "Permanently Delete " + (isFolder ? "Folder" : "Album") + $" \"{albumName}\"?";
     }
     
     private void DeleteAlbum()
