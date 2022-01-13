@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExifLib" Version="1.7.0" />
+    <PackageReference Include="ExifLib" Version="1.7.0">
+      <NoWarn>NU1701</NoWarn> <!--https://stackoverflow.com/a/44999938-->
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql" Version="6.0.0" />
   </ItemGroup>
