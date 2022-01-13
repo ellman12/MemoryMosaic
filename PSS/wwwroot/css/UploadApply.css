@@ -71,61 +71,6 @@ header > #statusSpan {
     padding: 10px;
 }
 
-#textAndAlbums > #albums {
-    margin-top: 4px;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid white;
-    padding-right: 2px;
-    user-select: none;
-    width: 300px;
-    height: 400px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/*Div that groups cover, checkbox, etc. together*/
-#textAndAlbums > #albums > .album {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    width: auto;
-}
-
-#textAndAlbums > #albums > .album:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
-
-/*Not sure if good/best solution but used to have every cover same size and aligned*/
-#textAndAlbums > #albums > .album > .coverDiv {
-    margin: 0;
-    padding: 0;
-    display: flex;
-}
-
-#textAndAlbums > #albums > .album > .coverDiv > img {
-    border: 1px solid black;
-    background-color: #212121;
-    border-radius: 4px;
-    object-fit: cover;
-    width: 60px;
-    height: 60px;
-}
-
-#textAndAlbums > #albums > .album > input[type="checkbox"] {
-    margin-left: 7px;
-}
-
-#textAndAlbums > #albums > .album > span {
-    margin-top: -4px;
-    margin-left: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 #mainDiv {
     position: absolute;
     left: 145px;
