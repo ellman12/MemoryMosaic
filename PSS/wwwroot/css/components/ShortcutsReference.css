@@ -35,6 +35,12 @@
     margin-bottom: 12px;
 }
 
+#reference > #allShortcuts > .shortcut > code {
+    display: inline-block;
+    text-align: right;
+    width: 45px;
+}
+
 #reference > #allShortcuts > .shortcut > span {
     margin-left: 10px;
 }
