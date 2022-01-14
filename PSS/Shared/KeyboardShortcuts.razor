@@ -1,4 +1,4 @@
-﻿@implements IDisposable 
+@implements IDisposable 
 @using Toolbelt.Blazor.HotKeys
 @inject HotKeys HotKeys
 
@@ -14,9 +14,6 @@
     public Action CtrlE { get; set; }
     
     [Parameter]
-    public Action CtrlSlash { get; set; }
-    
-    [Parameter]
     public Action AltA { get; set; }
     
     [Parameter]
@@ -27,7 +24,7 @@
         HotKeysContext = HotKeys.CreateContext()
             .Add(ModKeys.Ctrl, Keys.D, CtrlD)
             .Add(ModKeys.Ctrl, Keys.E, CtrlE)
-            .Add(ModKeys.Ctrl, Keys.Slash, CtrlSlash)
+            .Add(ModKeys.Ctrl, Keys.Slash, () => ShortcutsReference.visibility = ShortcutsReference.visibility == "hidden" ? "visible" : "hidden")
             .Add(ModKeys.Alt, Keys.A, AltA)
             .Add(ModKeys.Alt, Keys.S, AltS);        
     }
