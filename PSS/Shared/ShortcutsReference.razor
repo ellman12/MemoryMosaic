@@ -47,7 +47,7 @@
 </div>
 
 @code {
-    public static string visibility = "hidden";
+    public static string visibility;
     
     [Parameter]
     public string CtrlDText {get; set; }
@@ -60,4 +60,10 @@
     
     [Parameter]
     public string AltSText {get; set; }
+
+    protected override void OnInitialized()
+    {
+        visibility = "hidden";
+    }
+
 }
