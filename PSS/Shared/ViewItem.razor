@@ -33,6 +33,8 @@ Required Parameters:
             altS="@(() => Connection.UpdateStarred(path, !starred))"
         />
         
+        <ShortcutsReference></ShortcutsReference>
+        
         @*Stuff in top right corner*@
         <div id="buttons">
             <button class="iconBtn" @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>

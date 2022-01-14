@@ -1,0 +1,24 @@
+#reference {
+    width: 500px;
+    height: 500px;
+    z-index: 9999;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    border: 2px solid white;
+}
+
+#reference > #header {
+    position: fixed;
+    width: 100%;
+    height: 65px;
+    display: flex;
+    align-items: center;
+}
+
+#reference > #header > span {
+    margin-left: 36px;
+    font-size: 20px;
+}
