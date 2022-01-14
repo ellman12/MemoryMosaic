@@ -27,14 +27,18 @@ Required Parameters:
         bool starred = Connection.GetStarred(path);
         
         <KeyboardShortcuts
+            CtrlSlash="@(() => ShortcutsReference.visibility = ShortcutsReference.visibility == "hidden" ? "visible" : "hidden")"
             CtrlD="@DeleteBtnClick"
             CtrlE="@(() => editDateDivVis = "visible")"
             AltA="@(() => albumsVis = "visible")"
             AltS="@(() => Connection.UpdateStarred(path, !starred))"
         />
-        
-        if (true){<ShortcutsReference></ShortcutsReference>}
-        
+
+        if (ShortcutsReference.visibility == "visible")
+        {
+            <ShortcutsReference CtrlDText="Delete this item" CtrlEText="Edit Date Taken" AltAText="Add to album" AltSText="Star/Unstar"/>
+        }
+
         @*Stuff in top right corner*@
         <div id="buttons">
             <button class="iconBtn" @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>

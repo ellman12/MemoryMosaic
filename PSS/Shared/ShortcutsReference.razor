@@ -9,23 +9,55 @@
     <div id="allShortcuts">
         <div class="shortcut">
             <code>Ctrl /</code>
-            <span>Show this</span>
+            <span>Shows this</span>
         </div>
-        <div class="shortcut">
-            <code>Ctrl D</code>
-            <span>Delete this item</span>
-        </div>
-        <div class="shortcut">
-            <code>Ctrl E</code>
-            <span>Edit Date Taken</span>
-        </div>
-        <div class="shortcut">
-            <code>Alt A</code>
-            <span>Add to album</span>
-        </div>
-        <div class="shortcut">
-            <code>Alt S</code>
-            <span>Star/Unstar</span>
-        </div>
+        
+        @if (CtrlDText != null)
+        {
+            <div class="shortcut">
+                <code>Ctrl D</code>
+                <span>@CtrlDText</span>
+            </div>
+        }
+        
+        @if (CtrlEText != null)
+        {
+            <div class="shortcut">
+                <code>Ctrl E</code>
+                <span>@CtrlEText</span>
+            </div>
+        }
+        
+        @if (AltAText != null)
+        {
+            <div class="shortcut">
+                <code>Alt A</code>
+                <span>@AltAText</span>
+            </div>
+        }
+        
+        @if (AltSText != null)
+        {
+            <div class="shortcut">
+                <code>Alt S</code>
+                <span>@AltSText</span>
+            </div>
+        }
     </div>
 </div>
+
+@code {
+    public static string visibility = "hidden";
+    
+    [Parameter]
+    public string CtrlDText {get; set; }
+    
+    [Parameter]
+    public string CtrlEText {get; set; }
+    
+    [Parameter]
+    public string AltAText {get; set; }
+    
+    [Parameter]
+    public string AltSText {get; set; }
+}
