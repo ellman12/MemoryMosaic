@@ -8,27 +8,27 @@
     HotKeysContext HotKeysContext;
 
     [Parameter]
-    public Action ctrlD { get; set; }
+    public Action CtrlD { get; set; }
     
     [Parameter]
-    public Action ctrlE { get; set; }
+    public Action CtrlE { get; set; }
     
     [Parameter]
-    public Action ctrlSlash { get; set; }
+    public Action CtrlSlash { get; set; }
     
     [Parameter]
-    public Action altA { get; set; }
+    public Action AltA { get; set; }
     
     [Parameter]
-    public Action altS { get; set; }
+    public Action AltS { get; set; }
     
     protected override void OnInitialized()
     {
         HotKeysContext = HotKeys.CreateContext()
-            .Add(ModKeys.Ctrl, Keys.D, ctrlD)
-            .Add(ModKeys.Ctrl, Keys.E, ctrlE)
-            .Add(ModKeys.Ctrl, Keys.Slash, ctrlSlash)
-            .Add(ModKeys.Alt, Keys.A, altA)
-            .Add(ModKeys.Alt, Keys.S, altS);        
+            .Add(ModKeys.Ctrl, Keys.D, CtrlD)
+            .Add(ModKeys.Ctrl, Keys.E, CtrlE)
+            .Add(ModKeys.Ctrl, Keys.Slash, CtrlSlash)
+            .Add(ModKeys.Alt, Keys.A, AltA)
+            .Add(ModKeys.Alt, Keys.S, AltS);        
     }
 }

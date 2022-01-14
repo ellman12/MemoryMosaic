@@ -27,10 +27,10 @@ Required Parameters:
         bool starred = Connection.GetStarred(path);
         
         <KeyboardShortcuts
-            ctrlD="@DeleteBtnClick"
-            ctrlE="@(() => editDateDivVis = "visible")"
-            altA="@(() => albumsVis = "visible")"
-            altS="@(() => Connection.UpdateStarred(path, !starred))"
+            CtrlD="@DeleteBtnClick"
+            CtrlE="@(() => editDateDivVis = "visible")"
+            AltA="@(() => albumsVis = "visible")"
+            AltS="@(() => Connection.UpdateStarred(path, !starred))"
         />
         
         if (true){<ShortcutsReference></ShortcutsReference>}
