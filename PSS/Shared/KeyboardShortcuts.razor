@@ -1,0 +1,34 @@
+﻿@implements IDisposable 
+@using Toolbelt.Blazor.HotKeys
+@inject HotKeys HotKeys
+
+@code {
+    public void Dispose() => HotKeysContext.Dispose();
+
+    HotKeysContext HotKeysContext;
+
+    [Parameter]
+    public Action ctrlD { get; set; }
+    
+    [Parameter]
+    public Action ctrlE { get; set; }
+    
+    [Parameter]
+    public Action ctrlSlash { get; set; }
+    
+    [Parameter]
+    public Action altA { get; set; }
+    
+    [Parameter]
+    public Action altS { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        HotKeysContext = HotKeys.CreateContext()
+            .Add(ModKeys.Ctrl, Keys.D, ctrlD)
+            .Add(ModKeys.Ctrl, Keys.E, ctrlE)
+            .Add(ModKeys.Ctrl, Keys.Slash, ctrlSlash)
+            .Add(ModKeys.Alt, Keys.A, altA)
+            .Add(ModKeys.Alt, Keys.S, altS);        
+    }
+}

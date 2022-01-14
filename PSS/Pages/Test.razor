@@ -1,35 +1,14 @@
 @*A blank page just for testing stuff*@
 @page "/test"
-@implements IDisposable 
-@using Toolbelt.Blazor.HotKeys
-@inject HotKeys HotKeys 
 
 <title>Test</title>
-
-@{
-}
-
-@code {
-    
-    HotKeysContext HotKeysContext;
-
-    protected override void OnInitialized()
-    {
-        HotKeysContext = HotKeys.CreateContext()
-            .Add(ModKeys.Ctrl | ModKeys.Shift, Keys.A, FooBar, "do foo bar.")
-            .Add(ModKeys.Ctrl, Keys.D, bar);
-    }
-
-    void FooBar()
-    {
-        Console.WriteLine("foobar");
-    }
-
-    void bar() => Console.WriteLine("foo");
-
-    public void Dispose()
-    {
-        HotKeysContext.Dispose();
-    }
-
-}
+@* *@
+@* @{ *@
+@*     <KeyboardShortcuts ctrlDAction="@(() => Console.WriteLine("jdgfhj"))" *@
+@*                        ctrlEAction="@(() => Console.WriteLine("eeeeeeeeeeeeeeeeeeee"))" *@
+@*     ></KeyboardShortcuts> *@
+@* } *@
+@* *@
+@* @code { *@
+@*     KeyboardShortcuts ks = new(); *@
+@* } *@

@@ -26,6 +26,13 @@ Required Parameters:
     {
         bool starred = Connection.GetStarred(path);
         
+        <KeyboardShortcuts
+            ctrlD="@DeleteBtnClick"
+            ctrlE="@(() => editDateDivVis = "visible")"
+            altA="@(() => albumsVis = "visible")"
+            altS="@(() => Connection.UpdateStarred(path, !starred))"
+        />
+        
         @*Stuff in top right corner*@
         <div id="buttons">
             <button class="iconBtn" @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
