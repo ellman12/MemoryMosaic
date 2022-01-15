@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Toolbelt.Blazor.Extensions.DependencyInjection; 
 
 namespace PSS
 {
@@ -23,6 +24,7 @@ namespace PSS
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddHotKeys();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

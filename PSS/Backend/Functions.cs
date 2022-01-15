@@ -42,5 +42,10 @@ namespace PSS.Backend
 
             return $"{Math.Round(compactBytes, 3)} {unit}";
         }
+
+        /// <summary>
+        /// Toggle a string variable to either "visible" or "hidden".
+        /// </summary>
+        public static void ToggleVisibility(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
     }
 }

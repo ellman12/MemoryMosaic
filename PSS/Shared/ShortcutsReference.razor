@@ -1,0 +1,68 @@
+@* Overlay thing for showing all the shortcuts in PSS *@
+<link href="/css/components/ShortcutsReference.css" rel="stylesheet">
+
+<div id="reference">
+    <div id="header">
+        <span>Keyboard Shortcuts</span>
+    </div>
+
+    <div id="allShortcuts">
+        <div class="shortcut">
+            <code>Ctrl /</code>
+            <span>Shows this</span>
+        </div>
+        
+        @if (CtrlDText != null)
+        {
+            <div class="shortcut">
+                <code>Ctrl D</code>
+                <span>@CtrlDText</span>
+            </div>
+        }
+        
+        @if (CtrlEText != null)
+        {
+            <div class="shortcut">
+                <code>Ctrl E</code>
+                <span>@CtrlEText</span>
+            </div>
+        }
+        
+        @if (AltAText != null)
+        {
+            <div class="shortcut">
+                <code>Alt A</code>
+                <span>@AltAText</span>
+            </div>
+        }
+        
+        @if (AltSText != null)
+        {
+            <div class="shortcut">
+                <code>Alt S</code>
+                <span>@AltSText</span>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    public static string visibility;
+    
+    [Parameter]
+    public string CtrlDText {get; set; }
+    
+    [Parameter]
+    public string CtrlEText {get; set; }
+    
+    [Parameter]
+    public string AltAText {get; set; }
+    
+    [Parameter]
+    public string AltSText {get; set; }
+
+    protected override void OnInitialized()
+    {
+        visibility = "hidden";
+    }
+}
