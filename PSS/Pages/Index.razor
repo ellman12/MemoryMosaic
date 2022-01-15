@@ -21,10 +21,9 @@
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
     
     <KeyboardShortcuts
-        CtrlD="@DeleteBtnClick"
-        AltA="@(() => albumsVis = "visible")"
-        AltS="@(() => starChoiceVis = "visible")"
-    />
+        CtrlD="@(() => { DeleteBtnClick(); StateHasChanged(); })"
+        AltA="@(() => { albumsVis = "visible"; StateHasChanged(); })"
+        AltS="@(() => { starChoiceVis = "visible"; StateHasChanged(); })" />
 
     if (mediaList.Count == 0)
     {
