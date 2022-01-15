@@ -30,6 +30,7 @@ Required Parameters:
             CtrlD="@DeleteBtnClick"
             CtrlE="@(() => editDateDivVis = "visible")"
             AltA="@(() => albumsVis = "visible")"
+            AltLeft="@(() => navigationManager.NavigateTo(ReturnPath))"
             AltS="@(() => Connection.UpdateStarred(path, !starred))"
         />
 
