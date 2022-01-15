@@ -31,7 +31,7 @@
             <button class="iconBtn" style="visibility: @vis" title="Add or Remove Stars From Selected" @onclick="@(() => starChoiceVis = "visible")"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@DeleteSelectedBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-            <button class="iconBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
+            <button class="iconBtn" @onclick="@(() => Functions.ToggleVisibility(ref sortDivVis))" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
         </div>
 
         <div id="moreOptionsDiv" style="visibility: @sortDivVis">

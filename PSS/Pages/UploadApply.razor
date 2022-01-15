@@ -7,7 +7,7 @@
 <link href="css/UploadApply.css" rel="stylesheet">
 
 <header>
-    <button class="textBtn" @onclick="@(() => filterVis = filterVis == "hidden" ? "visible" : "hidden")" title="This filter thing sucks I know but how it works is check neither, warning, or error (just 1 at a time) to show just those items">
+    <button class="textBtn" @onclick="@(() => Functions.ToggleVisibility(ref filterVis))" title="This filter thing sucks I know but how it works is check neither, warning, or error (just 1 at a time) to show just those items">
         <span class="material-icons-outlined">filter_list</span><span>Filter Items</span>
     </button>
     
@@ -19,7 +19,7 @@
         <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
     </button>
 
-    <button class="textBtn" @onclick="@(() => albumSelectorVis = albumSelectorVis == "visible" ? "hidden" : "visible")">
+    <button class="textBtn" @onclick="@(() => Functions.ToggleVisibility(ref albumSelectorVis))">
         <span class="material-icons-outlined">@(albumSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(albumSelectorVis == "visible" ? "Hide Albums" : "Show Albums")</span>
     </button>
 
@@ -38,7 +38,7 @@
 
 <KeyboardShortcuts
     CtrlD="@(() => { DeleteErrorsBtnClick(); StateHasChanged(); })"
-    AltA="@(() => { albumSelectorVis = "visible"; StateHasChanged(); })" />
+    AltA="@(() => { Functions.ToggleVisibility(ref albumSelectorVis); StateHasChanged(); })" />
 
 @{
     GC.Collect();

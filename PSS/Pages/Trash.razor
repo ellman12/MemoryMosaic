@@ -1,6 +1,7 @@
 ﻿@page "/trash"
 @inject NavigationManager navigationManager;
 @using static PSS.Backend.Connection
+@using PSS.Backend
 
 <title>Trash</title>
 <link href="css/Trash.css" rel="stylesheet"/>
@@ -10,7 +11,7 @@
         <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")">@selectedItems.Count selected</span>
         <div>
-            <button class="textBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
+            <button class="textBtn" @onclick="@(() => Functions.ToggleVisibility(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
             <button class="textBtn" @onclick="RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")</span></button>
             <button class="textBtn" @onclick="DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>

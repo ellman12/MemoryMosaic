@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <button class="textBtn" @onclick="@(() => sortDivVis = sortDivVis == "hidden" ? "visible" : "hidden")" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
+    <button class="textBtn" @onclick="@(() => Functions.ToggleVisibility(ref sortDivVis))" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
     <div id="sortDiv" style="visibility: @sortDivVis"> @* This is ugly but I think it works well *@
         <button class="textBtn" @onclick="@(() => ChangeOrder(AMSortMode.Title))">
             <span class="material-icons-outlined" style="@(mode == AMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
