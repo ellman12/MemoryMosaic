@@ -36,6 +36,10 @@
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
 <AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allShortPaths" ShowCheckCancelButtons="false"/>
 
+<KeyboardShortcuts
+    CtrlD="@(() => { DeleteErrorsBtnClick(); StateHasChanged(); })"
+    AltA="@(() => { albumSelectorVis = "visible"; StateHasChanged(); })" />
+
 @{
     GC.Collect();
     GC.WaitForPendingFinalizers();
@@ -116,6 +120,7 @@
 
         promptVis = "hidden";
         filterVis = "hidden";
+        albumSelectorVis = "hidden";
         neitherChecked = false;
         warningChecked = false;
         errorChecked = false;
