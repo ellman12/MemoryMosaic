@@ -1,8 +1,15 @@
-using System;
-using System.IO;
+//Most, if not all of these are very commonly used throughout the project.
+global using System;
+global using System.IO;
+global using Npgsql;
+global using PSS.Backend;
+global using C = PSS.Backend.Connection;
+global using F = PSS.Backend.Functions;
+global using M = PSS.Backend.Maintenance;
+global using S = PSS.Settings;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 
 namespace PSS
 {
@@ -17,9 +24,9 @@ namespace PSS
             
             //Populate config with default values if file doesn't exist. If exists, read in values.
             if (File.Exists(Environment.CurrentDirectory + "/pss_settings.json") && File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json") != "")
-                Settings.ReadSettings();
+                S.ReadSettings();
             else
-                Settings.ResetSettings();
+                S.ResetSettings();
 
             Pages.Settings.whenWentOnline = DateTime.Now;
 

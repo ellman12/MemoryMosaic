@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using Npgsql;
 
 namespace PSS.Backend
 {
@@ -553,7 +550,7 @@ namespace PSS.Backend
         /// </summary>
         public static void PermDeleteItem(string path)
         {
-            File.Delete(Path.Join(Settings.libFolderFullPath, path));
+            File.Delete(Path.Join(S.libFolderFullPath, path));
 
             try
             {
@@ -892,7 +889,7 @@ namespace PSS.Backend
                 cmd.ExecuteNonQuery();
                 
                 //5. Move item to new path on server.
-                string originalFullPath = Path.Combine(Settings.libFolderFullPath, shortPath);
+                string originalFullPath = Path.Combine(S.libFolderFullPath, shortPath);
                 string newFullDir = Pages.UploadApply.GenerateSortedDir(newDateTaken);
                 string newFullPath = Path.Combine(newFullDir, filename);
                 Directory.CreateDirectory(newFullDir); //Create in case it doesn't exist.

@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using Npgsql;
 using Microsoft.VisualBasic.FileIO;
 using SearchOption = System.IO.SearchOption;
 
@@ -20,12 +17,12 @@ namespace PSS.Backend
         public static void BackupServer()
         {
             //Clear backup folder to remove old backup: https://stackoverflow.com/a/12297082
-            DirectoryInfo di = new(Settings.backupFolderPath);
+            DirectoryInfo di = new(S.backupFolderPath);
             di.Delete(true);
-            Directory.CreateDirectory(Settings.backupFolderPath); 
+            Directory.CreateDirectory(S.backupFolderPath); 
             
-            FileSystem.CopyDirectory(Settings.libFolderFullPath, Path.Combine(Settings.backupFolderPath, "PSS Media Backup"));
-            File.WriteAllText(Path.Combine(Settings.backupFolderPath, "Backed up on.txt"), DateTime.Now.ToString("M-d-yyyy h:mm:ss tt"));
+            FileSystem.CopyDirectory(S.libFolderFullPath, Path.Combine(S.backupFolderPath, "PSS Media Backup"));
+            File.WriteAllText(Path.Combine(S.backupFolderPath, "Backed up on.txt"), DateTime.Now.ToString("M-d-yyyy h:mm:ss tt"));
             
             Process process = new(); //Backup entire database to a file
             ProcessStartInfo startInfo = new()
@@ -33,7 +30,7 @@ namespace PSS.Backend
                 WindowStyle = ProcessWindowStyle.Hidden,
                 WorkingDirectory = "C:/Program Files/PostgreSQL/14/bin/",
                 FileName = "cmd.exe",
-                Arguments = $"/C {Settings.databaseBackupCommand}"
+                Arguments = $"/C {S.databaseBackupCommand}"
             };
             process.StartInfo = startInfo;
             process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
@@ -43,15 +40,15 @@ namespace PSS.Backend
         public static void RestoreBackup()
         {
             //Kept getting a stupid error like OP did when trying to do it the normal way but luckily SO comes in to save the day: https://serverfault.com/a/260610
-            FileSystem.CopyDirectory(Path.Combine(Settings.backupFolderPath, "PSS Media Backup"), Settings.libFolderFullPath);
+            FileSystem.CopyDirectory(Path.Combine(S.backupFolderPath, "PSS Media Backup"), S.libFolderFullPath);
 
             Process process = new(); //Backup entire database to a file
             ProcessStartInfo startInfo = new()
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
-                WorkingDirectory = Settings.backupFolderPath,
+                WorkingDirectory = S.backupFolderPath,
                 FileName = "cmd.exe",
-                Arguments = $"/C {Settings.databaseRestoreCommand}"
+                Arguments = $"/C {S.databaseRestoreCommand}"
             };
             process.StartInfo = startInfo;
             process.Start();
@@ -72,13 +69,13 @@ namespace PSS.Backend
         public static List<string> GetUntrackedLibFiles()
         {
             List<string> untrackedPaths = new(); //Items in lib folder but not in database
-            string[] paths = Directory.GetFiles(Settings.libFolderFullPath, "*", SearchOption.AllDirectories);
-            List<string> mediaPaths = Connection.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
-            List<string> mediaTrashPaths = Connection.LoadMediaTrashTable().Select(media => media.path).ToList();
+            string[] paths = Directory.GetFiles(S.libFolderFullPath, "*", SearchOption.AllDirectories);
+            List<string> mediaPaths = C.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
+            List<string> mediaTrashPaths = C.LoadMediaTrashTable().Select(media => media.path).ToList();
 
             foreach (string fullPath in paths)
             {
-                string shortPath = fullPath.Replace(Settings.libFolderFullPath, "");
+                string shortPath = fullPath.Replace(S.libFolderFullPath, "");
                 if (shortPath.StartsWith('\\') || shortPath.StartsWith('/')) shortPath = shortPath[1..];
                 
                 if (!mediaPaths.Contains(shortPath) && !mediaTrashPaths.Contains(shortPath)) //If find an item not in library add to list
@@ -106,15 +103,15 @@ namespace PSS.Backend
 
             try
             {
-                Connection.Open();
-                NpgsqlCommand cmd = new("SELECT path FROM " + tableStr, Connection.connection);
+                C.Open();
+                NpgsqlCommand cmd = new("SELECT path FROM " + tableStr, C.connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
                     string shortPath = reader.GetString(0);
-                    string fullPath = Path.Combine(Settings.libFolderFullPath, shortPath);
+                    string fullPath = Path.Combine(S.libFolderFullPath, shortPath);
                     if (!File.Exists(fullPath))
                         missingFiles.Add(shortPath);
                 }
@@ -126,7 +123,7 @@ namespace PSS.Backend
             }
             finally
             {
-                Connection.Close();
+                C.Close();
             }
 
             return missingFiles;
@@ -141,10 +138,10 @@ namespace PSS.Backend
         {
             try
             {
-                Connection.Open();
+                C.Open();
                 foreach (string path in paths)
                 {
-                    NpgsqlCommand cmd = new("DELETE FROM " + table + " WHERE path=@path", Connection.connection);
+                    NpgsqlCommand cmd = new("DELETE FROM " + table + " WHERE path=@path", C.connection);
                     cmd.Parameters.AddWithValue("@path", path);
                     cmd.ExecuteNonQuery();
                 }
@@ -155,7 +152,7 @@ namespace PSS.Backend
             }
             finally
             {
-                Connection.Close();
+                C.Close();
             }
         }
     }

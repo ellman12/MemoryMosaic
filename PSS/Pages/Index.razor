@@ -1,6 +1,5 @@
 @page "/"
 @inject NavigationManager navigationManager;
-@using static PSS.Backend.Connection
 
 <title>Photos</title>
 <link href="css/IndexAndStarred.css" rel="stylesheet"/>
@@ -32,12 +31,12 @@
     else
     {
         <div id="mainDiv">
-            @foreach (MediaRow media in mediaList)
+            @foreach (C.MediaRow media in mediaList)
             {
                 <div class="thumbnail">
                     @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
                     <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
-                    <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
+                    <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="@S.requestPath/@media.path" alt="@S.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
         </div>
@@ -47,7 +46,7 @@
 @code {
     private static string headerVis;
     private static string albumsVis;
-    private static List<MediaRow> mediaList;
+    private static List<C.MediaRow> mediaList;
     private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
 
     private static string choiceVis;
@@ -65,16 +64,16 @@
 
     private async void UpdateStars(bool starred)
     {
-        UpdateStarred(selectedItems, starred);
+        C.UpdateStarred(selectedItems, starred);
         await ClearChecks();
         starChoiceVis = "hidden";
-        mediaList = LoadMediaTable();
+        mediaList = C.LoadMediaTable();
         StateHasChanged();
     }
 
     protected override void OnInitialized()
     {
-        mediaList = LoadMediaTable();
+        mediaList = C.LoadMediaTable();
         selectedItems = new List<string>(); //Reset on page load/refresh
         headerVis = "hidden";
         albumsVis = "hidden";
@@ -157,7 +156,7 @@
     //Show choice div
     private void DeleteBtnClick()
     {
-        if (PSS.Settings.showPrompts == false)
+        if (S.showPrompts == false)
         {
             DeleteSelected();
             return;
@@ -170,11 +169,11 @@
     {
         foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
         {
-            MoveToTrash(path);
+            C.MoveToTrash(path);
             headerVis = "hidden";
         }
         await ClearChecks();
-        mediaList = LoadMediaTable();
+        mediaList = C.LoadMediaTable();
         StateHasChanged();
     }
 

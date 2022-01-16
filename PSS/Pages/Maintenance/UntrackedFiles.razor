@@ -1,6 +1,4 @@
 @page "/maintenance/untracked-files"
-@using PSS.Backend
-@using System.IO
 
 <title>Untracked Files — Maintenance</title>
 <link href="css/maintenance/UntrackedFiles.css" rel="stylesheet">
@@ -32,8 +30,8 @@
             string ext = Path.GetExtension(path);
             string name = Path.GetFileName(path);
 
-            string shortPath = path.Replace(Settings.libFolderFullPath, "").Replace('\\', '/');
-            shortPath = Path.GetFileName(Settings.libFolderFullPath) + shortPath;
+            string shortPath = path.Replace(S.libFolderFullPath, "").Replace('\\', '/');
+            shortPath = Path.GetFileName(S.libFolderFullPath) + shortPath;
 
             <div class="itemDiv">
                 @if (ext is ".jpg" or ".jpeg" or ".png")
@@ -62,20 +60,20 @@
 
     protected override void OnInitialized()
     {
-        untrackedPaths = Maintenance.GetUntrackedLibFiles();
+        untrackedPaths = M.GetUntrackedLibFiles();
     }
     
     private static void MoveBtnClick(int index)
     {
         string path = untrackedPaths[index];
-        File.Move(path, Path.Combine(Settings.uploadRootPath, Path.GetFileName(path)));
+        File.Move(path, Path.Combine(S.uploadRootPath, Path.GetFileName(path)));
         untrackedPaths.RemoveAt(index);
     }
 
     private static void MoveAll()
     {
         foreach (string path in untrackedPaths)
-            File.Move(path, Path.Combine(Settings.uploadRootPath, Path.GetFileName(path)));
+            File.Move(path, Path.Combine(S.uploadRootPath, Path.GetFileName(path)));
         untrackedPaths.Clear();
     }
 

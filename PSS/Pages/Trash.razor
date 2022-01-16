@@ -1,7 +1,5 @@
 ﻿@page "/trash"
 @inject NavigationManager navigationManager;
-@using static PSS.Backend.Connection
-@using PSS.Backend
 
 <title>Trash</title>
 <link href="css/Trash.css" rel="stylesheet"/>
@@ -11,28 +9,28 @@
         <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")">@selectedItems.Count selected</span>
         <div>
-            <button class="textBtn" @onclick="@(() => Functions.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
+            <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
             <button class="textBtn" @onclick="RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")</span></button>
             <button class="textBtn" @onclick="DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
     </header>
     
     <div id="sortDiv" style="visibility: @sortDivVis">
-        <button @onclick="@(() => ChangeOrder(TrashSortMode.DateDeleted))">
-            <span class="material-icons-outlined" style="@(mode == TrashSortMode.DateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == TrashSortMode.DateDeleted ? "#1a73e8" : "white")">Date Deleted</span>
+        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateDeleted))">
+            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateDeleted ? "#1a73e8" : "white")">Date Deleted</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(TrashSortMode.DateTaken))">
-            <span class="material-icons-outlined" style="@(mode == TrashSortMode.DateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == TrashSortMode.DateTaken ? "#1a73e8" : "white")">Date Taken</span>
+        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateTaken))">
+            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateTaken ? "#1a73e8" : "white")">Date Taken</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(TrashSortMode.DateDeletedReversed))">
-            <span class="material-icons-outlined" style="@(mode == TrashSortMode.DateDeletedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == TrashSortMode.DateDeletedReversed ? "#1a73e8" : "white")">Date Deleted Reversed</span>
+        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateDeletedReversed))">
+            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateDeletedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateDeletedReversed ? "#1a73e8" : "white")">Date Deleted Reversed</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(TrashSortMode.DateTakenReversed))">
-            <span class="material-icons-outlined" style="@(mode == TrashSortMode.DateTakenReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == TrashSortMode.DateTakenReversed ? "#1a73e8" : "white")">Date Taken Reversed</span>
+        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateTakenReversed))">
+            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateTakenReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateTakenReversed ? "#1a73e8" : "white")">Date Taken Reversed</span>
         </button>
     </div>
     
@@ -45,12 +43,12 @@
     else
     {
         <div id="mainDiv">
-            @foreach (MediaRow media in mediaTrashList)
+            @foreach (C.MediaRow media in mediaTrashList)
             {
                 <div class="thumbnail">
                     @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
                     <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
-                    <img @onclick="@(() => ImgClicked(media.path))" src="@PSS.Settings.requestPath/@media.path" alt="@PSS.Settings.requestPath/@media.path" loading="lazy"/>
+                    <img @onclick="@(() => ImgClicked(media.path))" src="@S.requestPath/@media.path" alt="@S.requestPath/@media.path" loading="lazy"/>
                 </div>
             }
         </div>
@@ -58,12 +56,12 @@
 }
 
 @code {
-    private static List<MediaRow> mediaTrashList;
+    private static List<C.MediaRow> mediaTrashList;
     private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
 
     private static string sortBtnText;
     private static string sortDivVis;
-    private static TrashSortMode mode;
+    private static C.TrashSortMode mode;
 
     private static string choiceVis;
     private static Action yesBtnFunc;
@@ -78,10 +76,10 @@
     
     protected override void OnInitialized()
     {
-        mediaTrashList = LoadMediaTrashTable();
+        mediaTrashList = C.LoadMediaTrashTable();
         selectedItems = new List<string>(); //Reset on page load/refresh
         SetSortBtnText();
-        mode = TrashSortMode.DateDeleted; //Default sort mode
+        mode = C.TrashSortMode.DateDeleted; //Default sort mode
         choiceVis = "hidden";
         sortDivVis = "hidden";
     }
@@ -90,18 +88,18 @@
     {
         sortBtnText = mode switch
         {
-            TrashSortMode.DateDeleted => "Date Deleted",
-            TrashSortMode.DateTaken => "Date Taken",
-            TrashSortMode.DateDeletedReversed => "Date Deleted Reversed",
-            TrashSortMode.DateTakenReversed => "Date Taken Reversed",
+            C.TrashSortMode.DateDeleted => "Date Deleted",
+            C.TrashSortMode.DateTaken => "Date Taken",
+            C.TrashSortMode.DateDeletedReversed => "Date Deleted Reversed",
+            C.TrashSortMode.DateTakenReversed => "Date Taken Reversed",
             _ => "Date Deleted"
         };
     }
     
-    private async void ChangeOrder(TrashSortMode newMode)
+    private async void ChangeOrder(C.TrashSortMode newMode)
     {
         mode = newMode;
-        mediaTrashList = LoadMediaTrashTable(newMode);
+        mediaTrashList = C.LoadMediaTrashTable(newMode);
         SetSortBtnText();
         sortDivVis = "hidden";
         await ClearChecks();
@@ -178,7 +176,7 @@
     private void RestoreBtnClick()
     {
         if (mediaTrashList.Count == 0) return;
-        if (PSS.Settings.showPrompts == false)
+        if (S.showPrompts == false)
         {
             RestoreItems();
             return;
@@ -199,17 +197,17 @@
     {
         //Restore ALL
         if (selectedItems.Count == 0)
-            foreach (MediaRow item in mediaTrashList) RestoreItem(item.path);
+            foreach (C.MediaRow item in mediaTrashList) C.RestoreItem(item.path);
         else //Restore selected
         {
             foreach (string item in selectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
-                RestoreItem(item);
+                C.RestoreItem(item);
             }
         }
         await ClearChecks();
-        mediaTrashList = LoadMediaTrashTable();
+        mediaTrashList = C.LoadMediaTrashTable();
         selectedItems.Clear();
         StateHasChanged();
     }
@@ -218,7 +216,7 @@
     private void DeleteBtnClick()
     {
         if (mediaTrashList.Count == 0) return;
-        if (PSS.Settings.showPrompts == false)
+        if (S.showPrompts == false)
         {
             DeleteItems();
             return;
@@ -238,17 +236,17 @@
     private async void DeleteItems()
     {
         if (selectedItems.Count == 0) //Delete ALL
-            foreach (MediaRow item in mediaTrashList) PermDeleteItem(item.path);
+            foreach (C.MediaRow item in mediaTrashList) C.PermDeleteItem(item.path);
         else //Delete selected
         {
             foreach (string item in selectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
-                PermDeleteItem(item);
+                C.PermDeleteItem(item);
             }
         }
         await ClearChecks();
-        mediaTrashList = LoadMediaTrashTable();
+        mediaTrashList = C.LoadMediaTrashTable();
         selectedItems.Clear();
         StateHasChanged();
     }

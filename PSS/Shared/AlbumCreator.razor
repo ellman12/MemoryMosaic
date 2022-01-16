@@ -1,5 +1,4 @@
 @* Reusable component for a simple interface to create new albums and folders *@
-@using static PSS.Backend.Connection
 <link href="/css/components/AlbumCreator.css" rel="stylesheet">
 
 <div id="albumCreator">
@@ -15,7 +14,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<Album> Albums { get; set; }
+    public List<C.Album> Albums { get; set; }
         
     private static string newAlbumBtnIcon;
     private static string albumInputDisplay;
@@ -60,7 +59,7 @@
             return;
         }
 
-        CreateAlbum(newAlbumName, folderChecked);
+        C.CreateAlbum(newAlbumName, folderChecked);
         newAlbumName = ""; //Reset for next time
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";

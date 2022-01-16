@@ -48,8 +48,8 @@ namespace PSS
             app.UseStaticFiles(new StaticFileOptions()
             {
                 ServeUnknownFileTypes = true,
-                FileProvider = new PhysicalFileProvider(Settings.libFolderFullPath),
-                RequestPath = new PathString(Settings.requestPath)
+                FileProvider = new PhysicalFileProvider(S.libFolderFullPath),
+                RequestPath = new PathString(S.requestPath)
             });
 
             app.UseRouting();

@@ -1,13 +1,10 @@
 @page "/apply-upload"
-@using System.IO
-@using System.Globalization
-@using PSS.Backend
 
 <title>Apply Upload</title>
 <link href="css/UploadApply.css" rel="stylesheet">
 
 <header>
-    <button class="textBtn" @onclick="@(() => Functions.VisToggle(ref filterVis))" title="This filter thing sucks I know but how it works is check neither, warning, or error (just 1 at a time) to show just those items">
+    <button class="textBtn" @onclick="@(() => F.VisToggle(ref filterVis))" title="This filter thing sucks I know but how it works is check neither, warning, or error (just 1 at a time) to show just those items">
         <span class="material-icons-outlined">filter_list</span><span>Filter Items</span>
     </button>
     
@@ -19,7 +16,7 @@
         <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
     </button>
 
-    <button class="textBtn" @onclick="@(() => Functions.VisToggle(ref albumSelectorVis))">
+    <button class="textBtn" @onclick="@(() => F.VisToggle(ref albumSelectorVis))">
         <span class="material-icons-outlined">@(albumSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(albumSelectorVis == "visible" ? "Hide Albums" : "Show Albums")</span>
     </button>
 
@@ -38,7 +35,7 @@
 
 <KeyboardShortcuts
     CtrlD="@(() => { DeleteErrorsBtnClick(); StateHasChanged(); })"
-    AltA="@(() => { Functions.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
+    AltA="@(() => { F.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
 
 @{
     GC.Collect();
@@ -57,8 +54,8 @@
             string ext = Path.GetExtension(path);
 
             //shortPath is relative to wwwroot
-            string shortPath = path.Replace(PSS.Settings.uploadRootPath, "");
-            shortPath = Path.GetFileName(PSS.Settings.uploadRootPath) + shortPath;
+            string shortPath = path.Replace(S.uploadRootPath, "");
+            shortPath = Path.GetFileName(S.uploadRootPath) + shortPath;
             
             string name = Path.GetFileName(path);
             string dateString = dateTakenList[i].ToString("ddd, MMM d, yyy");
@@ -109,8 +106,8 @@
 
     protected override void OnInitialized()
     {
-        pngPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.png", SearchOption.AllDirectories).ToList();
-        jpgPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.jp*g", SearchOption.AllDirectories).ToList();
+        pngPaths = Directory.GetFiles(S.uploadRootPath, "*.png", SearchOption.AllDirectories).ToList();
+        jpgPaths = Directory.GetFiles(S.uploadRootPath, "*.jp*g", SearchOption.AllDirectories).ToList();
         allPaths = new List<string>(pngPaths.Concat(jpgPaths).ToArray());
         allShortPaths = new List<string>();
         dateTakenList = (from path in allPaths select new DateTime()).ToList();
@@ -169,7 +166,7 @@
             try
             {
                 File.Move(allPaths[p], newPath);
-                rowsAffected += Connection.InsertMedia(newShortPath, dateTakenList[p]);
+                rowsAffected += C.InsertMedia(newShortPath, dateTakenList[p]);
             }
             catch (IOException e)
             {
@@ -211,10 +208,10 @@
     }
 
     //Create a short path like this: /2021/10 October/ from a DateTime with values like year: 2021, month: 10, etc. This is what the database stores.
-    public static string GenerateDatePath(DateTime dateTaken) => Path.Combine(dateTaken.Year.ToString(), $"{dateTaken.Month} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
+    public static string GenerateDatePath(DateTime dateTaken) => Path.Combine(dateTaken.Year.ToString(), $"{dateTaken.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
     
     //This is for moving the file to its new home on the server. This is the full path to the item on the server.
-    public static string GenerateSortedDir(DateTime dateTaken) => Path.Combine(PSS.Settings.libFolderFullPath, GenerateDatePath(dateTaken));
+    public static string GenerateSortedDir(DateTime dateTaken) => Path.Combine(S.libFolderFullPath, GenerateDatePath(dateTaken));
     
     //Get if an item is already on the server (already in your library).
     private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));

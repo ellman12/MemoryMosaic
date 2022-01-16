@@ -1,7 +1,4 @@
-﻿using System;
-using Npgsql;
-
-namespace PSS.Backend
+﻿namespace PSS.Backend
 {
     /// <summary>
     /// Static functions for getting statistical data about photo library.
@@ -16,8 +13,8 @@ namespace PSS.Backend
             long rows = 0;
             try
             {
-                Connection.Open();
-                NpgsqlCommand cmd = new("SELECT path FROM media", Connection.connection);
+                C.Open();
+                NpgsqlCommand cmd = new("SELECT path FROM media", C.connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
@@ -29,7 +26,7 @@ namespace PSS.Backend
             }
             finally
             {
-                Connection.Close();
+                C.Close();
             }
 
             return rows;
@@ -43,8 +40,8 @@ namespace PSS.Backend
             long rows = 0;
             try
             {
-                Connection.Open();
-                NpgsqlCommand cmd = new("SELECT id FROM albums", Connection.connection);
+                C.Open();
+                NpgsqlCommand cmd = new("SELECT id FROM albums", C.connection);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
@@ -56,26 +53,26 @@ namespace PSS.Backend
             }
             finally
             {
-                Connection.Close();
+                C.Close();
             }
 
             return rows;
         }
 
-        public static Connection.MediaRow FindOldestItem()
+        public static C.MediaRow FindOldestItem()
         {
-            Connection.MediaRow oldestItem = new("", DateTime.Now, DateTime.Now, false, Guid.Empty);
+            C.MediaRow oldestItem = new("", DateTime.Now, DateTime.Now, false, Guid.Empty);
             
             try
             {
-                Connection.Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY DATE_TAKEN ASC", Connection.connection);
+                C.Open();
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY DATE_TAKEN ASC", C.connection);
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
                     reader.Read(); //There should only be 1 line to read.
-                    oldestItem = new Connection.MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4));
+                    oldestItem = new C.MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4));
                     reader.Close();
                 }
             }
@@ -85,26 +82,26 @@ namespace PSS.Backend
             }
             finally
             {
-                Connection.Close();
+                C.Close();
             }
 
             return oldestItem;
         }
         
-        public static Connection.MediaRow FindNewestItem()
+        public static C.MediaRow FindNewestItem()
         {
-            Connection.MediaRow oldestItem = new("", DateTime.Now, DateTime.Now, false, Guid.Empty);
+            C.MediaRow oldestItem = new("", DateTime.Now, DateTime.Now, false, Guid.Empty);
             
             try
             {
-                Connection.Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY DATE_TAKEN DESC", Connection.connection);
+                C.Open();
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY DATE_TAKEN DESC", C.connection);
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
                     reader.Read(); //There should only be 1 line to read.
-                    oldestItem = new Connection.MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4));
+                    oldestItem = new C.MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4));
                     reader.Close();
                 }
             }
@@ -114,7 +111,7 @@ namespace PSS.Backend
             }
             finally
             {
-                Connection.Close();
+                C.Close();
             }
 
             return oldestItem;

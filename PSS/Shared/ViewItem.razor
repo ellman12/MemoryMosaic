@@ -10,7 +10,6 @@ Required Parameters:
     4. String ReturnPath: The page to return to when hit the back button.
     5. DateTime DateAdded: Either date added to library (if viewing Index items) or date added to album.
 *@
-@using PSS.Backend
 @inject NavigationManager navigationManager;
 
 <title>View</title>
@@ -24,14 +23,14 @@ Required Parameters:
     }
     else
     {
-        bool starred = Connection.GetStarred(path);
+        bool starred = C.GetStarred(path);
         
         <KeyboardShortcuts
             CtrlD="@DeleteBtnClick"
             CtrlE="@(() => editDateDivVis = "visible")"
             AltA="@(() => albumsVis = "visible")"
             AltLeft="@(() => navigationManager.NavigateTo(ReturnPath))"
-            AltS="@(() => Connection.UpdateStarred(path, !starred))"
+            AltS="@(() => C.UpdateStarred(path, !starred))"
         />
 
         @*if (ShortcutsReference.visibility == "visible")
@@ -49,7 +48,7 @@ Required Parameters:
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
             <button class="iconBtn" @onclick="@(() => albumsVis = "visible")" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
             
-            <button class="iconBtn" @onclick="@(() => Connection.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
+            <button class="iconBtn" @onclick="@(() => C.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
             </button>
         </div>
@@ -68,19 +67,19 @@ Required Parameters:
 
             <div class="dataDiv">
                 <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
-                <span>@System.IO.Path.GetFileName(Connection.GetPathFromUuid(id))</span>
+                <span>@Path.GetFileName(C.GetPathFromUuid(id))</span>
             </div>
             
             @if (albums.Count > 0)
             {
                 <span id="albumsText">Albums</span>
                 <div id="albumsIn">
-                    @foreach (Connection.Album album in albums)
+                    @foreach (C.Album album in albums)
                     {
                         <a href="/album-view/@album.id">
                             <div class="album">
                                 <div class="coverDiv">
-                                    <img class="cover" src="@Settings.requestPath/@album.albumCover" alt="">
+                                    <img class="cover" src="@S.requestPath/@album.albumCover" alt="">
                                 </div>
                                 <span title="@album.name">@album.name</span>
                             </div>
@@ -110,7 +109,7 @@ Required Parameters:
             </div>
         }
         
-        <div @onkeydown="@ChangeImage" tabindex="0" id="imgDiv"><img onload="document.getElementById('imgDiv').focus()" id="@path" src="@Settings.requestPath/@path" alt=""/></div>
+        <div @onkeydown="@ChangeImage" tabindex="0" id="imgDiv"><img onload="document.getElementById('imgDiv').focus()" id="@path" src="@S.requestPath/@path" alt=""/></div>
                                                                                                                            
         if (index + 1 < MediaList.Count)
         {
@@ -127,7 +126,7 @@ Required Parameters:
     private static Guid parsedID;
     
     [Parameter]
-    public List<Connection.MediaRow> MediaList { get; set; }
+    public List<C.MediaRow> MediaList { get; set; }
     
     [Parameter]
     public string Page { get; set; }
@@ -145,7 +144,7 @@ Required Parameters:
     private static string infoVis;
     private static string moreOptionsVis;
     private static string editDateDivVis;
-    private static List<Connection.Album> albums;
+    private static List<C.Album> albums;
     private static int index = 0; //The current image's index in the list
 }
 
@@ -153,13 +152,13 @@ Required Parameters:
     protected override void OnInitialized()
     {
         parsedID = Guid.Parse(id);
-        path = Connection.GetPathFromUuid(parsedID);
-        ogDateTaken = newDateTaken = Connection.GetDateTaken(parsedID);
+        path = C.GetPathFromUuid(parsedID);
+        ogDateTaken = newDateTaken = C.GetDateTaken(parsedID);
         albumsVis = "hidden";
         infoVis = "hidden";
         moreOptionsVis = "hidden";
         editDateDivVis = "hidden";
-        albums = Connection.GetAlbumsItemIn(path);
+        albums = C.GetAlbumsItemIn(path);
         
         //Find index. Can't use IndexOf for reasons
         for (int i = 0; i < MediaList.Count; i++)
@@ -172,7 +171,7 @@ Required Parameters:
     private void DeleteBtnClick()
     {
         navigationManager.NavigateTo(ReturnPath);
-        Connection.MoveToTrash(Connection.GetPathFromUuid(parsedID));
+        C.MoveToTrash(C.GetPathFromUuid(parsedID));
     }
 
     private static void ToggleDropdown(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
@@ -180,7 +179,7 @@ Required Parameters:
     private static void ConfirmBtnClick()
     {
         editDateDivVis = "hidden";
-        Connection.UpdateDateTaken(path, newDateTaken);
+        C.UpdateDateTaken(path, newDateTaken);
         ogDateTaken = newDateTaken;
     }
 

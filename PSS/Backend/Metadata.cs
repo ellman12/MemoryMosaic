@@ -1,6 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.IO;
 using ExifLib;
 using static System.Int32;
 

@@ -1,5 +1,4 @@
 @page "/upload"
-@using System.IO
 
 <title>Upload</title>
 <link href="css/Upload.css" rel="stylesheet"/>
@@ -24,8 +23,8 @@
 }
 
 @code {
-    private static readonly string[] pngPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.png", SearchOption.AllDirectories);
-    private static readonly string[] jpgPaths = Directory.GetFiles(PSS.Settings.uploadRootPath, "*.jp*g", SearchOption.AllDirectories);
+    private static readonly string[] pngPaths = Directory.GetFiles(S.uploadRootPath, "*.png", SearchOption.AllDirectories);
+    private static readonly string[] jpgPaths = Directory.GetFiles(S.uploadRootPath, "*.jp*g", SearchOption.AllDirectories);
     private static readonly string[] allPaths = pngPaths.Concat(jpgPaths).ToArray();
 
     private static string cmdVisibility = "hidden";
@@ -43,7 +42,7 @@
             else
             {
                 cmdVisibility = "visible";
-                command = $"scp {PSS.Settings.scpFlags} \"{_folder}\" \"{PSS.Settings.username}@{PSS.Settings.serverIP}:{PSS.Settings.uploadRootPath}\"";
+                command = $"scp {S.scpFlags} \"{_folder}\" \"{S.username}@{S.serverIP}:{S.uploadRootPath}\"";
             }
         }
     }

@@ -1,12 +1,11 @@
 @*Page for viewing full-sized images in an album*@
 @page "/view-album-item/{albumID}/{id}"
-@using PSS.Backend
 @layout EmptyLayout
 
 @{
     string returnPath = $"/album-view/{albumID}";
     string newPage = $"view-album-item/{albumID}"; //Page wasn't allowed...
-    <ViewItem id="@id" MediaList="@mediaList" Page="@newPage" ReturnPath="@returnPath" DateAdded="@Connection.GetDateAddedToAlbum(Connection.GetPathFromUuid(id), Convert.ToInt32(albumID))"/>
+    <ViewItem id="@id" MediaList="@mediaList" Page="@newPage" ReturnPath="@returnPath" DateAdded="@C.GetDateAddedToAlbum(C.GetPathFromUuid(id), Convert.ToInt32(albumID))"/>
 }
 
 @code {
@@ -16,10 +15,10 @@
     [Parameter]
     public string id { get; set; }
 
-    private static List<Connection.MediaRow> mediaList;
+    private static List<C.MediaRow> mediaList;
 
     protected override void OnInitialized()
     {
-        mediaList = Connection.LoadAlbum(Convert.ToInt32(albumID));
+        mediaList = C.LoadAlbum(Convert.ToInt32(albumID));
     }
 }

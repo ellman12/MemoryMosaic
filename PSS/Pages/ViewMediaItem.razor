@@ -3,11 +3,11 @@
 @using PSS.Backend
 @layout EmptyLayout
 
-<ViewItem id="@id" MediaList="@mediaList" Page="view" ReturnPath="/" DateAdded="@Connection.GetDateAdded(Guid.Parse(id))"/>
+<ViewItem id="@id" MediaList="@mediaList" Page="view" ReturnPath="/" DateAdded="@C.GetDateAdded(Guid.Parse(id))"/>
 
 @code{
     [Parameter]
     public string id { get; set; }
 
-    private static readonly List<Connection.MediaRow> mediaList = Connection.LoadMediaTable();
+    private static readonly List<C.MediaRow> mediaList = C.LoadMediaTable();
 }

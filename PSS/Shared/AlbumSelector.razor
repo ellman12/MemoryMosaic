@@ -1,5 +1,4 @@
 @* Reusable component that allows user to choose album(s) to add selected items to *@
-@using static PSS.Backend.Connection
 <link href="/css/components/AlbumSelector.css" rel="stylesheet">
 
 <div id="albumSelector" style="visibility: @AlbumsVis">
@@ -25,7 +24,7 @@
                 int ii = i;
                 <div @onclick="@(() => { checkedAlbums[ii] = !checkedAlbums[ii]; ClearFolderChecks(); checkedFolderIndex = -1; })" class="album">
                     <div class="coverDiv">
-                        @if (albums[i].albumCover != ""){<img src="@Settings.requestPath/@albums[i].albumCover" alt="">}
+                        @if (albums[i].albumCover != ""){<img src="@S.requestPath/@albums[i].albumCover" alt="">}
                     </div>
                     <input type="checkbox" @bind="@checkedAlbums[ii]" @bind:event="oninput">
                     <span title="@albums[i].name">@albums[i].name</span>
@@ -40,7 +39,7 @@
                 int ii = i;
                 <div class="album" @onclick="@(() => { checkedFolderIndex = ii; ClearAlbumChecks(); ClearFolderChecks(); checkedFolders[ii] = true; })">
                     <div class="coverDiv">
-                        @if (folders[i].albumCover != ""){<img src="@Settings.requestPath/@folders[i].albumCover" alt="">}
+                        @if (folders[i].albumCover != ""){<img src="@S.requestPath/@folders[i].albumCover" alt="">}
                     </div>
                     <input type="checkbox" @bind="@checkedFolders[ii]" @bind:event="oninput">
                     <span title="@folders[i].name">@folders[i].name</span>
@@ -51,8 +50,8 @@
 </div>
 
 @code {
-    private static List<Album> albums;
-    private static List<Album> folders;
+    private static List<C.Album> albums;
+    private static List<C.Album> folders;
 
     private static List<bool> checkedAlbums;
     private static List<bool> checkedFolders;
@@ -84,8 +83,8 @@
 
     protected override void OnInitialized()
     {
-        albums = GetAlbumsTable(true, false);
-        folders = GetAlbumsTable(false, true);
+        albums = C.GetAlbumsTable(true, false);
+        folders = C.GetAlbumsTable(false, true);
         checkedAlbums = (from album in albums select new bool()).ToList();
         checkedFolders = (from album in albums select new bool()).ToList();
         checkedFolderIndex = -1; //-1 = a folder isn't picked
@@ -127,7 +126,7 @@
     public async void ConfirmBtnClick()
     {
         if (checkedFolderIndex != -1) //If a folder is selected this won't be -1
-            foreach (string item in SelectedItems) AddToAlbum(item, folders[checkedFolderIndex].id);
+            foreach (string item in SelectedItems) C.AddToAlbum(item, folders[checkedFolderIndex].id);
         else
         {
             for (int c = 0; c < checkedAlbums.Count; c++)
@@ -135,7 +134,7 @@
                 if (checkedAlbums[c] == false) continue;
 
                 foreach (string item in SelectedItems)
-                    AddToAlbum(item, albums[c].id);
+                    C.AddToAlbum(item, albums[c].id);
             }
         }
 
