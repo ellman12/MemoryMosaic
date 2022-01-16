@@ -829,32 +829,6 @@ namespace PSS.Backend
             return media;
         }
 
-        //Update oldPath in the media and album_entries tables with newPath.
-        public static void UpdatePath(string oldPath, string newPath)
-        {
-            try
-            {
-                Open();
-                NpgsqlCommand updateMediaCmd = new("UPDATE media SET path=@newPath WHERE path=@oldPath", connection);
-                updateMediaCmd.Parameters.AddWithValue("@newPath", newPath);
-                updateMediaCmd.Parameters.AddWithValue("@oldPath", oldPath);
-                updateMediaCmd.ExecuteNonQuery();
-
-                NpgsqlCommand updateAlbumEntriesCmd = new("UPDATE album_entries SET path=@newPath WHERE path=@oldPath", connection);
-                updateAlbumEntriesCmd.Parameters.AddWithValue("@newPath", newPath);
-                updateAlbumEntriesCmd.Parameters.AddWithValue("@oldPath", oldPath);
-                updateAlbumEntriesCmd.ExecuteNonQuery();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-        }
-        
         /// <summary>
         /// Update when an item was taken and also update its path and move it to the new path.
         /// </summary>
