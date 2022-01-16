@@ -51,7 +51,7 @@
     margin-left: 8px;
 }
 
-#body > #shortcuts > div > .smallHeader {
+#body > #shortcuts > div > span {
     display: block;
     font-size: 21px;
     font-weight: bold;
