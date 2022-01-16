@@ -46,3 +46,14 @@
     color: black;
     width: 100%;
 }
+
+#body > #debugDiv > div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#body > #debugDiv > div > input[type="text"] {
+    color: black;
+    width: 77%;
+}

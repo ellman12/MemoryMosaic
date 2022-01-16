@@ -1,5 +1,6 @@
 @page "/settings"
 @using System.IO
+@using Npgsql
 @using PSS.Backend
 @using C = Backend.Connection;
 @using M = Backend.Maintenance;
@@ -82,6 +83,14 @@
             <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>
         }
     </div>
+
+    <div id="debugDiv">
+        <span class="header">Debug</span>
+        <div>
+            <input type="text" placeholder="Enter a query" @bind="@debugQuery"/>
+            <button class="textBtn" style="margin-left: 10px" @onclick="@RunQuery"><span class="material-icons-outlined">play_arrow</span><span>Run Query</span></button>
+        </div>
+    </div>
 </div>
 
 @code {
@@ -118,6 +127,9 @@
     private static long librarySize; //Bytes
     private static Connection.MediaRow oldestItem, newestItem;
     public static DateTime whenWentOnline; //When did the server go online?
+    
+    //Debug
+    private static string debugQuery;
 
     protected override void OnInitialized()
     {
@@ -219,5 +231,23 @@
 
         oldestItem = Stats.FindOldestItem();
         newestItem = Stats.FindNewestItem();
+    }
+
+    private static void RunQuery()
+    {
+        try
+        {
+            Connection.connection.Open();
+            NpgsqlCommand cmd = new(debugQuery, Connection.connection);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine("Error in RunQuery. " + e.Message);
+        }
+        finally
+        {
+            Connection.connection.Close();
+        }
     }
 }
