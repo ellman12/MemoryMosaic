@@ -47,6 +47,11 @@
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@buttonsVis" @bind-AlbumsVis="@albumsVis"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@yesBtnFunc" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
+    
+    <KeyboardShortcuts
+        CtrlD="@(() => { DeleteSelectedBtnClick(); StateHasChanged(); })"
+        AltA="@(() => { albumsVis = "visible"; StateHasChanged(); })"
+        AltS="@(() => { starChoiceVis = "visible"; StateHasChanged(); })" />
 
     if (albumMedia.Count == 0)
     {
