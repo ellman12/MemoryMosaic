@@ -7,8 +7,8 @@
 @{
     <header style="visibility: @headerVis">
         <div id="buttons">
-            <button class="iconBtn" @onclick="@(() => albumsVis = "visible")"><span class="material-icons-outlined">collections</span></button>
-            <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@(() => starChoiceVis = "visible")"><span class="material-icons-outlined">star_outline</span></button>
+            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))"><span class="material-icons-outlined">collections</span></button>
+            <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref starChoiceVis))"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         </div>
         <button class="iconBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
@@ -21,8 +21,8 @@
     
     <KeyboardShortcuts
         CtrlD="@(() => { DeleteBtnClick(); StateHasChanged(); })"
-        AltA="@(() => { albumsVis = "visible"; StateHasChanged(); })"
-        AltS="@(() => { starChoiceVis = "visible"; StateHasChanged(); })" />
+        AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
+        AltS="@(() => { F.VisToggle(ref starChoiceVis); StateHasChanged(); })"/>
 
     if (mediaList.Count == 0)
     {

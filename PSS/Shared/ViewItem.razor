@@ -27,11 +27,10 @@ Required Parameters:
         
         <KeyboardShortcuts
             CtrlD="@DeleteBtnClick"
-            CtrlE="@(() => editDateDivVis = "visible")"
-            AltA="@(() => albumsVis = "visible")"
+            CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
+            AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
             AltLeft="@(() => navigationManager.NavigateTo(ReturnPath))"
-            AltS="@(() => C.UpdateStarred(path, !starred))"
-        />
+            AltS="@(() => { C.UpdateStarred(path, !starred); StateHasChanged(); })"/>
 
         @*if (ShortcutsReference.visibility == "visible")
         {
@@ -40,13 +39,13 @@ Required Parameters:
 
         @*Stuff in top right corner*@
         <div id="buttons">
-            <button class="iconBtn" @onclick="@(() => ToggleDropdown(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
+            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
             <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-            <button class="iconBtn" @onclick="@(() => ToggleDropdown(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
+            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
         </div>
         
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
-            <button class="iconBtn" @onclick="@(() => albumsVis = "visible")" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
+            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
             
             <button class="iconBtn" @onclick="@(() => C.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
@@ -173,8 +172,6 @@ Required Parameters:
         navigationManager.NavigateTo(ReturnPath);
         C.MoveToTrash(C.GetPathFromUuid(parsedID));
     }
-
-    private static void ToggleDropdown(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
 
     private static void ConfirmBtnClick()
     {
