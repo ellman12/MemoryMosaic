@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace PSS.Backend
 {
@@ -46,6 +46,6 @@ namespace PSS.Backend
         /// <summary>
         /// Toggle a string variable to either "visible" or "hidden".
         /// </summary>
-        public static void ToggleVisibility(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
+        public static void VisToggle(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
     }
 }
