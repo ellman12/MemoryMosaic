@@ -224,9 +224,15 @@
     //Get if an item is already on the server (already in your library).
     private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));
 
-    //Given the final path where the video file will end up on the server, generate a thumbnail file for it and return the path to said thumbnail.
-    // private static string GenerateThumbnail(string videoFinalPath)
-    // {
-        
-    //}
+    ///Given the final path where the video file will end up on the server, generate a temporary compressed thumbnail file for it,
+    ///turn that into its base64 representation, and return the base64 string.
+    public static void GenerateThumbnail(string videoFullFinalPath)
+    {
+        //ffmpeg -i VID_20211218_154247.mp4 -vf "select=eq(n\,0)" -vf scale=320:-2 -q:v 18 output_image.jpg
+        //byte[] yes = File.ReadAllBytes("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/output_image.jpg");
+        //string base64 = Convert.ToBase64String(yes);
+
+        string thumbnailFullPath = Path.GetPathRoot(videoFullFinalPath);
+        Console.WriteLine(thumbnailFullPath);
+    }
 }
