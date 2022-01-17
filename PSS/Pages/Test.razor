@@ -3,6 +3,21 @@
 
 <title>Test</title>
 @{
-    Metadata.GetDateTaken("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/VID_20211218_154247.mp4", out DateTime yes);
-    Console.WriteLine(yes);
+    //inserting base64 image into thumbnail
+    // var yes = File.ReadAllBytes("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/output_image.jpg");
+    // var base64 = Convert.ToBase64String(yes);
+    // C.Open();
+    // NpgsqlCommand cmd = new("INSERT INTO media (path, date_taken, date_added, starred, separate, thumbnail) VALUES (1, now(), now(), false, false, @base64)", C.connection);
+    // cmd.Parameters.AddWithValue("@base64", base64);
+    // cmd.ExecuteNonQuery();
+    // C.Close();
+    
+    //works perfectly getting base64 string from column
+    // C.Open();
+    // NpgsqlCommand cmd2 = new("SELECT thumbnail FROM media", C.connection);
+    // NpgsqlDataReader reader = cmd2.ExecuteReader();
+    // reader.Read();
+    // var fromDB = reader.GetString(0);
+    //<img alt="mmmmmm" src=@("data:image/jpg;base64," + fromDB)>
+    // C.Close();
 }
