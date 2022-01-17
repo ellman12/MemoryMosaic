@@ -2,13 +2,7 @@
 @page "/test"
 
 <title>Test</title>
-@* *@
-@* @{ *@
-@*     <KeyboardShortcuts ctrlDAction="@(() => Console.WriteLine("jdgfhj"))" *@
-@*                        ctrlEAction="@(() => Console.WriteLine("eeeeeeeeeeeeeeeeeeee"))" *@
-@*     ></KeyboardShortcuts> *@
-@* } *@
-@* *@
-@* @code { *@
-@*     KeyboardShortcuts ks = new(); *@
-@* } *@
+@{
+    Metadata.GetDateTaken("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/VID_20211218_154247.mp4", out DateTime yes);
+    Console.WriteLine(yes);
+}

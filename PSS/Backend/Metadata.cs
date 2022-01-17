@@ -73,12 +73,12 @@ namespace PSS.Backend
             return hasData;
         }
 
-        //Uses ffprobe shell command to get video date from file metadata.
-        //TODO: untested
+        /// <summary>
+        /// Uses ffprobe shell command to get video date from file metadata.
+        /// </summary>
+        /// <returns>True if this file had data.</returns>
         private static bool GetVidDate(string path, out DateTime dateTaken)
         {
-            // bool hasData = false;
-            string cmdOutput = ""; //The output of the ffprobe command.
             ProcessStartInfo ffprobeInfo = new()
             {
                 CreateNoWindow = true,
@@ -90,7 +90,7 @@ namespace PSS.Backend
             };
 
             Process ffprobeProcess = Process.Start(ffprobeInfo);
-            cmdOutput = ffprobeProcess.StandardOutput.ReadLine();
+            string cmdOutput = ffprobeProcess.StandardOutput.ReadLine();
             ffprobeProcess.WaitForExit();
 
             if (cmdOutput == "") //mkv files don't have date data in them at all (I think). cmd just returns blank if no data
