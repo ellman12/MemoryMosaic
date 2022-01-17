@@ -65,6 +65,10 @@
                 {
                     <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
                 }
+                else if (ext is ".mp4" or ".mkv")
+                {
+                    <video src="@shortPath" disablepictureinpicture></video>
+                }
 
                 <span title="@name" class="filenameSpan">@name</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
@@ -85,6 +89,8 @@
     private static string status;
     private static List<string> pngPaths;
     private static List<string> jpgPaths;
+    private static List<string> mp4Paths;
+    private static List<string> mkvPaths;
     private static List<string> allPaths;
     private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<DateTime> dateTakenList;
@@ -108,7 +114,9 @@
     {
         pngPaths = Directory.GetFiles(S.uploadRootPath, "*.png", SearchOption.AllDirectories).ToList();
         jpgPaths = Directory.GetFiles(S.uploadRootPath, "*.jp*g", SearchOption.AllDirectories).ToList();
-        allPaths = new List<string>(pngPaths.Concat(jpgPaths).ToArray());
+        mp4Paths = Directory.GetFiles(S.uploadRootPath, "*.mp4", SearchOption.AllDirectories).ToList();
+        mkvPaths = Directory.GetFiles(S.uploadRootPath, "*.mkv", SearchOption.AllDirectories).ToList();
+        allPaths = pngPaths.Concat(jpgPaths).Concat(mp4Paths).Concat(mkvPaths).ToList();
         allShortPaths = new List<string>();
         dateTakenList = (from path in allPaths select new DateTime()).ToList();
         dataPresentList = (from path in allPaths select new bool()).ToList();
@@ -215,4 +223,10 @@
     
     //Get if an item is already on the server (already in your library).
     private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));
+
+    //Given the final path where the video file will end up on the server, generate a thumbnail file for it and return the path to said thumbnail.
+    // private static string GenerateThumbnail(string videoFinalPath)
+    // {
+        
+    //}
 }

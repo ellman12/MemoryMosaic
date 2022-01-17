@@ -37,7 +37,7 @@ namespace PSS.Backend
                     break;
 
                 case ".mp4":
-                    hasData = GetVidDate(path, out dateTaken);
+                    hasData = GetVidDate(path, out dateTaken, ref src);
                     break;
 
                 case ".mkv":
@@ -77,7 +77,7 @@ namespace PSS.Backend
         /// Uses ffprobe shell command to get video date from file metadata.
         /// </summary>
         /// <returns>True if this file had data.</returns>
-        private static bool GetVidDate(string path, out DateTime dateTaken)
+        private static bool GetVidDate(string path, out DateTime dateTaken, ref DateTakenSrc src)
         {
             ProcessStartInfo ffprobeInfo = new()
             {
@@ -96,10 +96,12 @@ namespace PSS.Backend
             if (cmdOutput == "") //mkv files don't have date data in them at all (I think). cmd just returns blank if no data
             {
                 dateTaken = DateTime.Now;
+                src = DateTakenSrc.Now;
                 return false;
             }
 
             dateTaken = Convert.ToDateTime(cmdOutput);
+            src = DateTakenSrc.Metadata;
             return true;
         }
 
