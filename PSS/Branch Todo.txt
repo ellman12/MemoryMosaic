@@ -4,9 +4,8 @@ thumbnail and video file paths only differ by extension
 branch to do:
 
 update:
-update media and trash to have thumbnail column
-    OR. Change path to imgPath, and add a vidPath column
-init script
+✓ update media and trash to have thumbnail column
+✓ init script
 
 media row record to have thumbnail string
 insert media
