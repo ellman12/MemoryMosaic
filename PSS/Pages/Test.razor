@@ -21,12 +21,11 @@
     //<img alt="mmmmmm" src=@("data:image/jpg;base64," + fromDB)>
     // C.Close();
     
-    <img style="width: 10%; margin-left: 50%;" src="pss_upload/output_image.jpg" alt="hi"/>
-    UploadApply.GenerateThumbnail("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/Photos-001/VID_20211230_075557.mp4");
+    <img style="width: 10%; margin-left: 50%;" src=@("data:image/jpg;base64," + yes) alt="hi"/>;
 }
 
 @code{
 
-    private static readonly string yes = UploadApply.GenerateThumbnail("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/VID_20211218_154247.mp4");
+    private static readonly string yes = UploadApply.GenerateThumbnail("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/VID_20220108_122130.mp4");
 
 }
