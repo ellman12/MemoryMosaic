@@ -1,4 +1,5 @@
 @page "/apply-upload"
+@using System.Diagnostics
 
 <title>Apply Upload</title>
 <link href="css/UploadApply.css" rel="stylesheet">
@@ -232,7 +233,19 @@
         //byte[] yes = File.ReadAllBytes("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/output_image.jpg");
         //string base64 = Convert.ToBase64String(yes);
 
-        string thumbnailFullPath = Path.GetPathRoot(videoFullFinalPath);
-        Console.WriteLine(thumbnailFullPath);
+        string thumbnailFullPath = Path.Combine(Path.GetDirectoryName(videoFullFinalPath)!, Path.GetFileNameWithoutExtension(videoFullFinalPath) + ".jpg");
+        
+        //TODO: include url to where i got the cmd from
+        //TODO: this func is still wip
+        ProcessStartInfo ffprobeInfo = new()
+        {
+            CreateNoWindow = true,
+            FileName = "ffmpeg",
+            Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v 18 \"{thumbnailFullPath}\"" 
+        };
+
+        Process ffprobeProcess = Process.Start(ffprobeInfo);
+        // ffprobeProcess.WaitForExit();
+
     }
 }
