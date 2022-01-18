@@ -227,25 +227,29 @@
 
     ///Given the final path where the video file will end up on the server, generate a temporary compressed thumbnail file for it,
     ///turn that into its base64 representation, and return the base64 string.
-    public static void GenerateThumbnail(string videoFullFinalPath)
+    //TODO: this func is still wip
+    public static string GenerateThumbnail(string videoFullFinalPath)
     {
-        //ffmpeg -i VID_20211218_154247.mp4 -vf "select=eq(n\,0)" -vf scale=320:-2 -q:v 18 output_image.jpg
-        //byte[] yes = File.ReadAllBytes("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload/output_image.jpg");
-        //string base64 = Convert.ToBase64String(yes);
-
+        //First create the thumbnail from the first frame of the video file.
+        //https://stackoverflow.com/questions/4425413/how-to-extract-the-1st-frame-and-restore-as-an-image-with-ffmpeg/4425466
         string thumbnailFullPath = Path.Combine(Path.GetDirectoryName(videoFullFinalPath)!, Path.GetFileNameWithoutExtension(videoFullFinalPath) + ".jpg");
         
-        //TODO: include url to where i got the cmd from
-        //TODO: this func is still wip
         ProcessStartInfo ffprobeInfo = new()
         {
             CreateNoWindow = true,
             FileName = "ffmpeg",
-            Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v 18 \"{thumbnailFullPath}\"" 
+            Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v 25 \"{thumbnailFullPath}\""
         };
-
         Process ffprobeProcess = Process.Start(ffprobeInfo);
-        // ffprobeProcess.WaitForExit();
+        //ffprobeProcess!.WaitForExit(); //Not sure why but this pretty much caused the server to lock up.
 
+        byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
+
+        //Then delete the thumbnail as it's no longer required.
+        //TODO: these don't seem to get deleted???????? Create a tmp folder for pss and write these things there.
+        File.Delete(thumbnailFullPath);
+        
+        //Then convert that file's bytes into its base64 equivalent. This is stored in the DB as the thumbnail (no actual file required).
+        return Convert.ToBase64String(bytes);
     }
 }
