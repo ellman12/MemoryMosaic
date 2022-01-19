@@ -28,6 +28,11 @@ namespace PSS
         [JsonProperty] public static string backupFolderPath;
         
         /// <summary>
+        /// Where the temporary folder is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.
+        /// </summary>
+        [JsonProperty] public static string tmpFolderPath;
+        
+        /// <summary>
         /// Should prompts be shown when doing things like deleting items and albums, etc.?
         /// </summary>
         [JsonProperty] public static bool showPrompts;
@@ -62,6 +67,7 @@ namespace PSS
             uploadRootPath = uploadRootPath.Replace('\\', '/');
             libFolderFullPath = libFolderFullPath.Replace('\\', '/');
             backupFolderPath = backupFolderPath.Replace('\\', '/');
+            tmpFolderPath = tmpFolderPath.Replace('\\', '/');
             
             //Can't assign this until backupFolderPath is read in.
             //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
@@ -80,6 +86,7 @@ namespace PSS
             uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload"; //TODO: temp
             libFolderFullPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_library"; //TODO: temp
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_backup"; //TODO: temp
+            tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_tmp"; //TODO: temp
             showPrompts = true;
             File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings()));
         }

@@ -37,6 +37,11 @@
         </div>
         
         <div class="settings-pair">
+            <span>Where to store temporary items</span>
+            <input type="text" class="settings-pair" @bind="@tmpFolderPath"/>
+        </div>
+        
+        <div class="settings-pair">
             <span style="display: inline">Show Prompts?</span>
             <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
         </div>
@@ -115,6 +120,7 @@
     private static string libraryRootPath = S.libFolderFullPath;
     private static bool showPrompts = S.showPrompts;
     private static string backupFolderPath = S.backupFolderPath;
+    private static string tmpFolderPath = S.tmpFolderPath;
     
     //Maintenance
     private static bool maintenanceLoaded;
@@ -185,6 +191,7 @@
         S.libFolderFullPath = libraryRootPath;
         S.showPrompts = showPrompts;
         S.backupFolderPath = backupFolderPath;
+        S.tmpFolderPath = tmpFolderPath;
         S.WriteSettings();
     }
 
@@ -197,6 +204,7 @@
         libraryRootPath = S.libFolderFullPath;
         showPrompts = S.showPrompts;
         backupFolderPath = S.backupFolderPath;
+        tmpFolderPath = S.tmpFolderPath;
     }
 
     private static void ResetBtnClicked()
