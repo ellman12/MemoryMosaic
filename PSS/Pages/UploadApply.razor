@@ -225,17 +225,22 @@
     //Get if an item is already on the server (already in your library).
     private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));
 
+    ///<summary>
     ///Given the full final path where the video file will end up on the server, generate a temporary compressed thumbnail file for it,
-    ///turn that into its base64 representation, and return the base64 string.
+    ///turn that into its base64 representation, and return the base64 string.<br/>
+    /// Something to note is these files are created in pss_tmp and should be deleted automatically by the function when it finishes.
+    /// However it is recommended to clear this folder before using this function, because if there is somehow an item with the same name in
+    /// there already, the ffmpeg command will prompt if you want to overwrite it, and the program will just get stuck there
+    /// indefinitely as PSS has no way to respond. So, when in doubt, clear pss_temp before calling this function. 
+    ///</summary>
+    /// <param name="videoFullFinalPath">The full path to where the video file either is right now, or where it will be.</param>
     public static string GenerateThumbnail(string videoFullFinalPath)
     {
         //First create the thumbnail from the first frame of the video file.
         //https://stackoverflow.com/questions/4425413/how-to-extract-the-1st-frame-and-restore-as-an-image-with-ffmpeg/4425466
-        // string thumbnailFullPath = Path.Combine(Path.GetDirectoryName(videoFullFinalPath)!, Path.GetFileNameWithoutExtension(videoFullFinalPath) + " thumbnail.tmp.jpg");
-        string thumbnailFullPath = Path.Combine("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_tmp", Path.GetFileNameWithoutExtension(videoFullFinalPath) + " thumbnail.tmp.jpg");
+        //Store this file in the tmp folder and name it as the same name as the video file except with the extension '.tmp.jpg'.
+        string thumbnailFullPath = Path.Combine(S.tmpFolderPath, $"{Path.GetFileNameWithoutExtension(videoFullFinalPath)}.tmp.jpg");
         
-        
-        //TODO: create tmp folder location setting and use that for this stuff
         //Something to note is this command produces a bunch of stupid output and also says it failed but it still produces the thumbnail so... ¯\_(ツ)_/¯ 
         ProcessStartInfo ffmpegInfo = new()
         {
