@@ -231,18 +231,20 @@
     {
         //First create the thumbnail from the first frame of the video file.
         //https://stackoverflow.com/questions/4425413/how-to-extract-the-1st-frame-and-restore-as-an-image-with-ffmpeg/4425466
-        string thumbnailFullPath = Path.Combine(Path.GetDirectoryName(videoFullFinalPath)!, Path.GetFileNameWithoutExtension(videoFullFinalPath) + ".jpg");
+        // string thumbnailFullPath = Path.Combine(Path.GetDirectoryName(videoFullFinalPath)!, Path.GetFileNameWithoutExtension(videoFullFinalPath) + " thumbnail.tmp.jpg");
+        string thumbnailFullPath = Path.Combine("C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_tmp", Path.GetFileNameWithoutExtension(videoFullFinalPath) + " thumbnail.tmp.jpg");
         
+        
+        //TODO: create tmp folder location setting and use that for this stuff
         //Something to note is this command produces a bunch of stupid output and also says it failed but it still produces the thumbnail so... ¯\_(ツ)_/¯ 
-        ProcessStartInfo ffprobeInfo = new()
+        ProcessStartInfo ffmpegInfo = new()
         {
             CreateNoWindow = true,
             FileName = "ffmpeg",
             Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v 25 \"{thumbnailFullPath}\""
         };
-        Process.Start(ffprobeInfo);
-        //Process ffprobeProcess = Process.Start(ffprobeInfo);
-        //ffprobeProcess.WaitForExit(); //Not sure why but this pretty much caused the server to freeze and lock up.
+        Process ffmpegProcess = Process.Start(ffmpegInfo);
+        ffmpegProcess!.WaitForExit();
 
         byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
 
