@@ -1,14 +1,14 @@
 namespace PSS.Backend
 {
-    /// <summary>
-    /// Static class of misc functions.
-    /// </summary>
+    ///<summary>
+    ///Static class of misc functions.
+    ///</summary>
     public static class Functions
     {
-        /// <summary>
-        /// Take a byte long like 10900000000 and turn it into a more readable string like 10.9 GB.
-        /// One thing to note is this uses things like kibibyte instead of the usual things like kilobyte because this is usually what's used for disk storage.
-        /// </summary>
+        ///<summary>
+        ///Take a byte long like 10900000000 and turn it into a more readable string like 10.9 GB.
+        ///One thing to note is this uses things like kibibyte instead of the usual things like kilobyte because this is usually what's used for disk storage.
+        ///</summary>
         public static string FormatBytes(long bytes)
         {
             string unit;
@@ -41,9 +41,9 @@ namespace PSS.Backend
             return $"{Math.Round(compactBytes, 3)} {unit}";
         }
 
-        /// <summary>
-        /// Toggle a string variable to either "visible" or "hidden".
-        /// </summary>
+        ///<summary>
+        ///Toggle a string variable to either "visible" or "hidden".
+        ///</summary>
         public static void VisToggle(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
     }
 }

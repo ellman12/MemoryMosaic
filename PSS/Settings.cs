@@ -5,51 +5,51 @@ namespace PSS
 {
     public class Settings
     {
-        /// <summary>
-        /// Server username. Used for scp command for uploading
-        /// </summary>
+        ///<summary>
+        ///Server username. Used for scp command for uploading
+        ///</summary>
         [JsonProperty] public static string username;
         [JsonProperty] public static string serverIP;
         [JsonProperty] public static string scpFlags;
 
-        /// <summary>
-        /// Where scp should upload files. 
-        /// </summary>
+        ///<summary>
+        ///Where scp should upload files. 
+        ///</summary>
         [JsonProperty] public static string uploadRootPath;
 
-        /// <summary>
-        /// The full path to the library folder on the server.
-        /// </summary>
+        ///<summary>
+        ///The full path to the library folder on the server.
+        ///</summary>
         [JsonProperty] public static string libFolderFullPath;
 
-        /// <summary>
-        /// Where to backup library and database.
-        /// </summary>
+        ///<summary>
+        ///Where to backup library and database.
+        ///</summary>
         [JsonProperty] public static string backupFolderPath;
         
-        /// <summary>
-        /// Where the temporary folder is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.
-        /// </summary>
+        ///<summary>
+        ///Where the temporary folder is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.
+        ///</summary>
         [JsonProperty] public static string tmpFolderPath;
         
-        /// <summary>
-        /// Should prompts be shown when doing things like deleting items and albums, etc.?
-        /// </summary>
+        ///<summary>
+        ///Should prompts be shown when doing things like deleting items and albums, etc.?
+        ///</summary>
         [JsonProperty] public static bool showPrompts;
         
-        /// <summary>
-        /// Used (in Startup.cs) for accessing files outside of wwwroot.
-        /// </summary>
+        ///<summary>
+        ///Used (in Startup.cs) for accessing files outside of wwwroot.
+        ///</summary>
         public const string requestPath = "/pss_library";
 
-        /// <summary>
-        /// The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
-        /// </summary>
+        ///<summary>
+        ///The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
+        ///</summary>
         public static string databaseBackupCommand;
 
-        /// <summary>
-        /// The command used to restore a previous pg_dump backup.
-        /// </summary>
+        ///<summary>
+        ///The command used to restore a previous pg_dump backup.
+        ///</summary>
         public static string databaseRestoreCommand;
 
         public static void WriteSettings()

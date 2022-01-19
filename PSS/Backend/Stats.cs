@@ -1,13 +1,13 @@
 ﻿namespace PSS.Backend
 {
-    /// <summary>
-    /// Static functions for getting statistical data about photo library.
-    /// </summary>
+    ///<summary>
+    ///Static functions for getting statistical data about photo library.
+    ///</summary>
     public static class Stats
     {
-        /// <summary>
-        /// Returns how many rows in media table (and thus how many items in library). 
-        /// </summary>
+        ///<summary>
+        ///Returns how many rows in media table (and thus how many items in library). 
+        ///</summary>
         public static long CountMediaRows()
         {
             long rows = 0;
@@ -32,9 +32,9 @@
             return rows;
         }
 
-        /// <summary>
-        /// Returns number of rows in albums table and thus how many albums there are. 
-        /// </summary>
+        ///<summary>
+        ///Returns number of rows in albums table and thus how many albums there are. 
+        ///</summary>
         public static long CountAlbums()
         {
             long rows = 0;

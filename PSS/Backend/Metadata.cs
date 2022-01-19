@@ -73,10 +73,10 @@ namespace PSS.Backend
             return hasData;
         }
 
-        /// <summary>
-        /// Uses ffprobe shell command to get video date from file metadata.
-        /// </summary>
-        /// <returns>True if this file had data.</returns>
+        ///<summary>
+        ///Uses ffprobe shell command to get video date from file metadata.
+        ///</summary>
+        ///<returns>True if this file had data.</returns>
         private static bool GetVidDate(string path, out DateTime dateTaken, ref DateTakenSrc src)
         {
             ProcessStartInfo ffprobeInfo = new()
