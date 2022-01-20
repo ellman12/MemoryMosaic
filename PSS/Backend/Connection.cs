@@ -92,7 +92,6 @@ namespace PSS.Backend
         ///</summary>
         public class UAFile
         {
-            //TODO: properties???????
             ///<summary>Where this thing is in pss_upload. Starts at root of the drive.</summary>
             public string fullPath;
             
@@ -142,7 +141,16 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate) ON CONFLICT (path) DO NOTHING", connection);
+                //TODO: test this
+                NpgsqlCommand cmd = new("", connection);
+                if (thumbnail == null) //Not video
+                    cmd.CommandText = "INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate) ON CONFLICT (path) DO NOTHING";
+                else
+                {
+                    cmd.CommandText = "INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate, @thumbnail) ON CONFLICT (path) DO NOTHING";
+                    cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
+                }
+                
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
                 cmd.Parameters.AddWithValue("@starred", starred);
