@@ -92,39 +92,25 @@ namespace PSS.Backend
         ///</summary>
         public class UAFile
         {
-            ///<summary>
-            ///Where this thing is in pss_upload. Starts at root of the drive.
-            ///</summary>
+            ///<summary>Where this thing is in pss_upload. Starts at root of the drive.</summary>
             public string fullPath;
             
-            ///<summary>
-            ///Set when uploading begins because if user changes date taken it could vary. Also what the DB stores.
-            ///</summary>
+            ///<summary>Set when uploading begins because if user changes date taken it could vary. Also what the DB stores.</summary>
             public string shortPath;
             
-            ///<summary>
-            ///null for images, otherwise a base64 string for video files. 
-            ///</summary>
+            ///<summary>null for images, otherwise a base64 string for video files. </summary>
             public string thumbnail;
             
-            ///<summary>
-            ///If this item is already in pss_library.
-            ///</summary>
+            ///<summary>If this item is already in pss_library.</summary>
             public bool alreadyInLib;
             
-            ///<summary>
-            ///Does it have date taken data either in the metadata or in its filename.
-            ///</summary>
+            ///<summary>Does it have date taken data either in the metadata or in its filename.</summary>
             public bool dataPresent;
             
-            ///<summary>
-            ///The date and time this image or video was captured.
-            ///</summary>
+            ///<summary>The date and time this image or video was captured.</summary>
             public DateTime dateTaken;
             
-            ///<summary>
-            ///Where did the data come from?
-            ///</summary>
+            ///<summary>Where the date taken data came from (filename, metadata, or neither).</summary>
             public Metadata.DateTakenSrc dateTakenSrc;
         }
 
