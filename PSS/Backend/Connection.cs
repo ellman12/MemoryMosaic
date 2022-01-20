@@ -92,6 +92,7 @@ namespace PSS.Backend
         ///</summary>
         public class UAFile
         {
+            //TODO: properties???????
             ///<summary>Where this thing is in pss_upload. Starts at root of the drive.</summary>
             public string fullPath;
             

@@ -44,41 +44,41 @@
     UpdateStatus();
 
     <div id="mainDiv">
-        @for (int i = 0; i < allPaths.Count; i++)
+        @for (int i = 0; i < allFiles.Count; i++)
         {
-            if (warningChecked && dataPresentList[i]) continue; //If this item doesn't have a warning skip it
-            if (errorChecked && alreadyInLib[i] == false) continue; //If this item has an error skip it
-            if (neitherChecked && !dataPresentList[i] && !alreadyInLib[i]) continue; //Only show items with no warnings or errors
+            if (warningChecked && allFiles[i].dataPresent) continue; //If this item doesn't have a warning skip it
+            if (errorChecked && allFiles[i].alreadyInLib == false) continue; //If this item has an error skip it
+            if (neitherChecked && !allFiles[i].dataPresent && !allFiles[i].alreadyInLib) continue; //Only show items with no warnings or errors
             
             int ii = i; @*Using just i caused crash*@
-            string path = allPaths[i].Replace('\\', '/');
+            string path = allFiles[i].fullPath.Replace('\\', '/');
             string ext = Path.GetExtension(path);
 
             //shortPath is relative to wwwroot
-            string shortPath = path.Replace(S.uploadRootPath, "");
+            string shortPath = path.Replace(S.uploadRootPath!, "");
             shortPath = Path.GetFileName(S.uploadRootPath) + shortPath;
             
             string name = Path.GetFileName(path);
-            string dateString = dateTakenList[i].ToString("ddd, MMM d, yyy");
+            string dateString = allFiles[i].dateTaken.ToString("ddd, MMM d, yyy");
             
             <div class="itemDiv">
-                @if (ext is ".jpg" or ".jpeg" or ".png")
+                @if (allFiles[i].thumbnail == null)
                 {
                     <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
                 }
-                else if (ext is ".mp4" or ".mkv")
+                else
                 {
-                    <video src="@shortPath" disablepictureinpicture></video>
+                    <img title="Click for Full Size Preview" onclick="window.open('@("data:image/jpg;base64," + allFiles[i].thumbnail)', '_blank').focus();" src=@("data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
                 }
 
                 <span title="@name" class="filenameSpan">@name</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
-                @if (!alreadyInLib[i]){<input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">}
-                @if (infoChecked && dataPresentList[i]){<span class="infoSpan">@dtSrc[i].ToString()</span>} @*Don't display now if DT is set to now*@
-                @if (!dataPresentList[i] && !alreadyInLib[i]){<span class="warnSpan">No DT found. DT set to now.</span>}
-                @if (alreadyInLib[i]){<span class="errorSpan">Item already in library. Won't upload.</span>}
+                @if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].alreadyInLib" @bind:event="oninput">}
+                @if (infoChecked && allFiles[i].dataPresent){<span class="infoSpan">@allFiles[i].dateTakenSrc.ToString()</span>} @*Don't display now if DT is set to now*@
+                @if (!allFiles[i].dataPresent && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found. DT set to now.</span>}
+                @if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
-                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii, allPaths[ii]))"><span class="material-icons">close</span></button>
+                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii, allFiles[ii].fullPath))"><span class="material-icons">close</span></button>
             </div>
         }
     </div>
@@ -87,20 +87,10 @@
 @code{
     AlbumSelector albumSelector = new();
 
-    private static string status;
-    // private static List<string> pngPaths;
-    // private static List<string> jpgPaths;
-    // private static List<string> mp4Paths;
-    // private static List<string> mkvPaths;
-    // private static List<string> allPaths;
-    // private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
-    private static List<DateTime> dateTakenList;
-    private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
-    private static List<bool> alreadyInLib; //True if the item is already on the server (in your library).
-    private static List<Metadata.DateTakenSrc> dtSrc;
-
+    private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<C.UAFile> allFiles;
 
+    private static string status;
     private static string promptVis;
     private static string message;
     
@@ -120,19 +110,19 @@
         string[] jpgPaths = Directory.GetFiles(S.uploadRootPath, "*.jp*g", SearchOption.AllDirectories);
         string[] mp4Paths = Directory.GetFiles(S.uploadRootPath, "*.mp4", SearchOption.AllDirectories);
         string[] mkvPaths = Directory.GetFiles(S.uploadRootPath, "*.mkv", SearchOption.AllDirectories);
-        string[] allPaths = pngPaths.Concat(jpgPaths).Concat(mp4Paths).Concat(mkvPaths).ToArray();
-        allFiles = new List<C.UAFile>(allPaths.Length);
+        string[] allFullPaths = pngPaths.Concat(jpgPaths).Concat(mp4Paths).Concat(mkvPaths).ToArray();
+        allFiles = new List<C.UAFile>(allFullPaths.Length);
 
-        for (int i = 0; i < allPaths.Length; i++)
+        foreach (string path in allFullPaths)
         {
             C.UAFile file = new()
             {
-                fullPath = allPaths[i],
+                fullPath = path,
                 shortPath = null,
-                thumbnail = allPaths[i].Contains(".mp4") || allPaths[i].Contains(".mkv") ? GenerateThumbnail(allPaths[i]) : null,
-                alreadyInLib = ItemExists(Path.GetFileName(allPaths[i]), dateTakenList[i])
+                thumbnail = path.Contains(".mp4") || path.Contains(".mkv") ? GenerateThumbnail(path) : null
             };
-            (file.dataPresent, file.dateTakenSrc) = Metadata.GetDateTaken(allPaths[i], out file.dateTaken);
+            (file.dataPresent, file.dateTakenSrc) = Metadata.GetDateTaken(path, out file.dateTaken);
+            file.alreadyInLib = ItemExists(Path.GetFileName(path), file.dateTaken);
             allFiles.Add(file);
         }
     
@@ -145,29 +135,32 @@
         infoChecked = true;
     }
 
-    private static void UpdateStatus() => status = allPaths.Count == 0 ? "No files found to add" : $"{pngPaths.Count + jpgPaths.Count} pictures and {0} videos pending upload. {dataPresentList.Count(c => !c)} Warnings. {alreadyInLib.Count(c => c)} Errors.";
+    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail != null).Count()} pictures and {0} videos pending upload. {allFiles.Count(c => !c.dataPresent)} Warnings. {allFiles.Count(c => c.alreadyInLib)} Errors.";
 
     //Clears an item from the Lists
     private static void DeleteBtnClick(int index, string path)
     {
-        pngPaths.Remove(path);
-        jpgPaths.Remove(path);
-        allPaths.RemoveAt(index);
-        dateTakenList.RemoveAt(index);
-        dataPresentList.RemoveAt(index);
+        //TODO: yes. Could this be better? like pass in something else? Just path? Just something else?
+        // pngPaths.Remove(path);
+        // jpgPaths.Remove(path);
+        // allFullPaths.RemoveAt(index); Might have to keep?
+        // dateTakenList.RemoveAt(index);
+        // dataPresentList.RemoveAt(index);
+        allFiles.RemoveAt(index);
         UpdateStatus();
     }
 
     //Adds all the items to photo library, and, if applicable, any albums.
+    //todo: yes
     private void AddItems()
     {
         int rowsAffected = 0;
         
-        for (int p = 0; p < allPaths.Count; p++)
+        for (int p = 0; p < allFullPaths.Count; p++)
         {
             if (alreadyInLib[p]) continue; //Ignore duplicates
 
-            string filename = Path.GetFileName(allPaths[p]);
+            string filename = Path.GetFileName(allFullPaths[p]);
             string newDir = GenerateSortedDir(dateTakenList[p]);
             string newPath = Path.Combine(newDir, filename); //Used for moving to new home on server.
             
@@ -178,8 +171,9 @@
             GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
             GC.WaitForPendingFinalizers();
             try
-            {//TODO
-                // File.Move(allPaths[p], newPath);
+            {
+                //TODO
+                // File.Move(allFullPaths[p], newPath);
                 // rowsAffected += C.InsertMedia(newShortPath, dateTakenList[p]);
             }
             catch (IOException e)
@@ -190,7 +184,7 @@
         
         albumSelector.ConfirmBtnClick();
         status = $"Added {rowsAffected} items to library";
-        allPaths.Clear();
+        allFullPaths.Clear();
         albumSelectorVis = "hidden";
     }
 
@@ -204,13 +198,13 @@
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
     private void DeleteErrors()
     {
-        for (int i = 0; i < allPaths.Count; i++)
+        for (int i = 0; i < allFullPaths.Count; i++)
         {
             if (!alreadyInLib[i]) continue;
             
-            string path = allPaths[i];
-            int index = allPaths.IndexOf(path);
-            allPaths.RemoveAt(index);
+            string path = allFullPaths[i];
+            int index = allFullPaths.IndexOf(path);
+            allFullPaths.RemoveAt(index);
             dateTakenList.RemoveAt(index);
             dataPresentList.RemoveAt(index);
             alreadyInLib.RemoveAt(index);
