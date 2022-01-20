@@ -88,17 +88,19 @@
     AlbumSelector albumSelector = new();
 
     private static string status;
-    private static List<string> pngPaths;
-    private static List<string> jpgPaths;
-    private static List<string> mp4Paths;
-    private static List<string> mkvPaths;
-    private static List<string> allPaths;
-    private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
+    // private static List<string> pngPaths;
+    // private static List<string> jpgPaths;
+    // private static List<string> mp4Paths;
+    // private static List<string> mkvPaths;
+    // private static List<string> allPaths;
+    // private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<DateTime> dateTakenList;
     private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
     private static List<bool> alreadyInLib; //True if the item is already on the server (in your library).
     private static List<Metadata.DateTakenSrc> dtSrc;
-    
+
+    private static List<C.UAFile> allFiles;
+
     private static string promptVis;
     private static string message;
     
@@ -110,20 +112,30 @@
     private static bool infoChecked;
 
     private static string albumSelectorVis;
-
+    
     protected override void OnInitialized()
     {
-        pngPaths = Directory.GetFiles(S.uploadRootPath, "*.png", SearchOption.AllDirectories).ToList();
-        jpgPaths = Directory.GetFiles(S.uploadRootPath, "*.jp*g", SearchOption.AllDirectories).ToList();
-        mp4Paths = Directory.GetFiles(S.uploadRootPath, "*.mp4", SearchOption.AllDirectories).ToList();
-        mkvPaths = Directory.GetFiles(S.uploadRootPath, "*.mkv", SearchOption.AllDirectories).ToList();
-        allPaths = pngPaths.Concat(jpgPaths).Concat(mp4Paths).Concat(mkvPaths).ToList();
-        allShortPaths = new List<string>();
-        dateTakenList = (from path in allPaths select new DateTime()).ToList();
-        dataPresentList = (from path in allPaths select new bool()).ToList();
-        dtSrc = (from path in allPaths select Metadata.DateTakenSrc.Now).ToList(); //Now = default
-        alreadyInLib = (from path in allPaths select new bool()).ToList();
+        //Get all supported file types in pss_upload and group them together in a single List.
+        string[] pngPaths = Directory.GetFiles(S.uploadRootPath, "*.png", SearchOption.AllDirectories);
+        string[] jpgPaths = Directory.GetFiles(S.uploadRootPath, "*.jp*g", SearchOption.AllDirectories);
+        string[] mp4Paths = Directory.GetFiles(S.uploadRootPath, "*.mp4", SearchOption.AllDirectories);
+        string[] mkvPaths = Directory.GetFiles(S.uploadRootPath, "*.mkv", SearchOption.AllDirectories);
+        string[] allPaths = pngPaths.Concat(jpgPaths).Concat(mp4Paths).Concat(mkvPaths).ToArray();
+        allFiles = new List<C.UAFile>(allPaths.Length);
 
+        for (int i = 0; i < allPaths.Length; i++)
+        {
+            C.UAFile file = new()
+            {
+                fullPath = allPaths[i],
+                shortPath = null,
+                thumbnail = allPaths[i].Contains(".mp4") || allPaths[i].Contains(".mkv") ? GenerateThumbnail(allPaths[i]) : null,
+                alreadyInLib = ItemExists(Path.GetFileName(allPaths[i]), dateTakenList[i])
+            };
+            (file.dataPresent, file.dateTakenSrc) = Metadata.GetDateTaken(allPaths[i], out file.dateTaken);
+            allFiles.Add(file);
+        }
+    
         promptVis = "hidden";
         filterVis = "hidden";
         albumSelectorVis = "hidden";
@@ -131,13 +143,6 @@
         warningChecked = false;
         errorChecked = false;
         infoChecked = true;
-
-        for (int i = 0; i < allPaths.Count; i++)
-        {
-            (dataPresentList[i], dtSrc[i]) = Metadata.GetDateTaken(allPaths[i], out DateTime dateTaken);
-            dateTakenList[i] = dateTaken;
-            alreadyInLib[i] = ItemExists(Path.GetFileName(allPaths[i]), dateTakenList[i]);
-        }
     }
 
     private static void UpdateStatus() => status = allPaths.Count == 0 ? "No files found to add" : $"{pngPaths.Count + jpgPaths.Count} pictures and {0} videos pending upload. {dataPresentList.Count(c => !c)} Warnings. {alreadyInLib.Count(c => c)} Errors.";
@@ -173,9 +178,9 @@
             GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
             GC.WaitForPendingFinalizers();
             try
-            {
-                File.Move(allPaths[p], newPath);
-                rowsAffected += C.InsertMedia(newShortPath, dateTakenList[p]);
+            {//TODO
+                // File.Move(allPaths[p], newPath);
+                // rowsAffected += C.InsertMedia(newShortPath, dateTakenList[p]);
             }
             catch (IOException e)
             {

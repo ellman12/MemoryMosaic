@@ -4,7 +4,7 @@ using static System.Int32;
 
 namespace PSS.Backend
 {
-    static class Metadata
+    public static class Metadata
     {
         public enum DateTakenSrc
         {
