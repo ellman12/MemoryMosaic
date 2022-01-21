@@ -110,11 +110,11 @@ Required Parameters:
 
         if (MediaList[index].thumbnail == null)
         {
-            <div @onkeydown="@ChangeImage" tabindex="0" id="imgDiv"><img onload="document.getElementById('imgDiv').focus()" id="@path" src="@S.requestPath/@path" alt=""/></div>
+            <div @onkeydown="@ChangeImage" tabindex="0" id="viewDiv"><img onload="document.getElementById('viewDiv').focus()" src="@S.requestPath/@path" alt=""/></div>
         }
         else
         {
-            <div @onkeydown="@ChangeImage" tabindex="0" id="imgDiv"><video onload="document.getElementById('imgDiv').focus()" id="@path" src="@S.requestPath/@path" alt="" controls autoplay></video></div>
+            <div id="viewDiv"><video src="@S.requestPath/@path" loop autofocus controls autoplay></video></div>
         }
         
         if (index + 1 < MediaList.Count)
