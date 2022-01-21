@@ -101,6 +101,12 @@ header > div > .textBtn {
     bottom: 10px;
 }
 
+#mainDiv > .thumbnail > .video-icon {
+    position: absolute;
+    right: 8px;
+    top: 10px;
+}
+
 #mainDiv > .thumbnail > .checkbox {
     opacity: 0;
     position: absolute;

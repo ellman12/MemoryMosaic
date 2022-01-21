@@ -869,14 +869,14 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, date_deleted FROM media_trash ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media_trash ORDER BY " + orderBy, connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
+                while (r.Read())
+                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
 
-                reader.Close();
+                r.Close();
             }
             catch (NpgsqlException e)
             {
