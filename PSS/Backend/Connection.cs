@@ -68,6 +68,7 @@ namespace PSS.Backend
             public readonly DateTime dateAdded;
             public bool starred;
             public readonly Guid uuid;
+            public readonly string thumbnail;
 
             public MediaRow(string p, DateTime dt, DateTime da, Guid uuid) //Keeping for legacy purposes before starred column was added.
             {
