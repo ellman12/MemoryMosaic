@@ -6,7 +6,7 @@ update:
 ✓ media row record to have thumbnail string
 ✓ insert media
 load album
-load media table
+✓ load media table
 load starred
 load media trash
 move to trash

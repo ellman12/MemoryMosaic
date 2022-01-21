@@ -86,6 +86,16 @@ namespace PSS.Backend
                 this.starred = starred;
                 this.uuid = uuid;
             }
+
+            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid, string thumbnail)
+            {
+                path = p;
+                dateTaken = dt;
+                dateAdded = da;
+                this.starred = starred;
+                this.uuid = uuid;
+                this.thumbnail = thumbnail;
+            }
         }
 
         ///<summary>
@@ -655,21 +665,19 @@ namespace PSS.Backend
         ///<summary>
         ///Loads everything in the media table into a List of the rows. Does not store separate column. Also only selects ones where separate==false
         ///</summary>
-        ///<returns></returns>
+        ///<returns>List of MediaRow records</returns>
         public static List<MediaRow> LoadMediaTable()
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
-
-                reader.Close();
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? String.Empty : r.GetString(5)));
+                r.Close();
             }
             catch (NpgsqlException e)
             {
