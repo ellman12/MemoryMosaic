@@ -676,7 +676,7 @@ namespace PSS.Backend
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? String.Empty : r.GetString(5)));
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
                 r.Close();
             }
             catch (NpgsqlException e)
