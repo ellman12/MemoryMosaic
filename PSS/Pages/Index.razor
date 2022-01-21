@@ -35,9 +35,16 @@
             {
                 <div class="thumbnail">
                     @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                    @if (media.thumbnail != null) {<span class="material-icons-outlined video-icon">play_circle_outline</span>}
                     <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
-                    <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="@S.requestPath/@media.path" alt="@S.requestPath/@media.path" loading="lazy"/> @*todo this too. When click thumbnail needs to take you to view item with the video as the url param*@
+                    @if (media.thumbnail != null) //Video
+                    {
+                        <span class="material-icons-outlined video-icon">play_circle_outline</span>
+                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.requestPath/@media.path" loading="lazy"/>
+                    }
+                    else
+                    {
+                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="@S.requestPath/@media.path" alt="@S.requestPath/@media.path" loading="lazy"/>
+                    }
                 </div>
             }
         </div>
