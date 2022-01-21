@@ -1,6 +1,10 @@
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 using ExifLib;
+using MetadataExtractor;
+using MetadataExtractor.Formats.QuickTime;
 using static System.Int32;
+using ExifReader = ExifLib.ExifReader;
 
 namespace PSS.Backend
 {
@@ -37,7 +41,7 @@ namespace PSS.Backend
                     break;
 
                 case ".mp4":
-                    hasData = GetVidDate(path, out dateTaken, ref src);
+                    hasData = GetMp4Date(path, out dateTaken, out src);
                     break;
 
                 case ".mkv":
@@ -73,36 +77,28 @@ namespace PSS.Backend
             return hasData;
         }
 
-        ///<summary>
-        ///Uses ffprobe shell command to get video date from file metadata.
-        ///</summary>
+        ///<summary>Get when an mp4 file was taken.</summary>
         ///<returns>True if this file had data.</returns>
-        private static bool GetVidDate(string path, out DateTime dateTaken, ref DateTakenSrc src)
+        private static bool GetMp4Date(string path, out DateTime dateTaken, out DateTakenSrc src)
         {
-            ProcessStartInfo ffprobeInfo = new()
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                FileName = "ffprobe",
-                Arguments = "-v 0 -print_format compact=print_section=0:nk=1 -show_entries format_tags=creation_time \"" + path + '"',
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
+            IEnumerable<MetadataExtractor.Directory> directories = QuickTimeMetadataReader.ReadMetadata(new FileStream(path, FileMode.Open));
+            QuickTimeMovieHeaderDirectory directory = directories.OfType<QuickTimeMovieHeaderDirectory>().FirstOrDefault();
 
-            Process ffprobeProcess = Process.Start(ffprobeInfo);
-            string cmdOutput = ffprobeProcess.StandardOutput.ReadLine();
-            ffprobeProcess.WaitForExit();
-
-            if (cmdOutput == "") //mkv files don't have date data in them at all (I think). cmd just returns blank if no data
+            if (directory == null)
             {
                 dateTaken = DateTime.Now;
                 src = DateTakenSrc.Now;
                 return false;
             }
 
-            dateTaken = Convert.ToDateTime(cmdOutput);
-            src = DateTakenSrc.Metadata;
-            return true;
+            if (directory.TryGetDateTime(QuickTimeMovieHeaderDirectory.TagCreated, out dateTaken))
+            {
+                src = DateTakenSrc.Metadata;
+                return true;
+            }
+
+            src = DateTakenSrc.Now;
+            return false;
         }
 
         //Used if program can't find date/time metadata in the file. Often, filenames will have a timestamp in them.
