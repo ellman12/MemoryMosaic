@@ -181,7 +181,7 @@ button {
 }
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
-#imgDiv > img {
+#imgDiv > img, #imgDiv > video {
     height: 100%;
     overflow: auto;
     object-fit: cover;
