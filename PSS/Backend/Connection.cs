@@ -68,6 +68,7 @@ namespace PSS.Backend
             public readonly DateTime dateAdded;
             public bool starred;
             public readonly Guid uuid;
+            public readonly string thumbnail;
 
             public MediaRow(string p, DateTime dt, DateTime da, Guid uuid) //Keeping for legacy purposes before starred column was added.
             {
@@ -85,6 +86,52 @@ namespace PSS.Backend
                 this.starred = starred;
                 this.uuid = uuid;
             }
+            
+            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid, string thumbnail)
+            {
+                path = p;
+                dateTaken = dt;
+                dateAdded = da;
+                this.uuid = uuid;
+                this.thumbnail = thumbnail;
+            }
+
+            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid, string thumbnail)
+            {
+                path = p;
+                dateTaken = dt;
+                dateAdded = da;
+                this.starred = starred;
+                this.uuid = uuid;
+                this.thumbnail = thumbnail;
+            }
+        }
+
+        ///<summary>
+        ///Represents an item that is being uploaded in UploadApply (UA).
+        ///</summary>
+        public class UAFile
+        {
+            ///<summary>Where this thing is in pss_upload. Starts at root of the drive.</summary>
+            public string fullPath;
+            
+            ///<summary>Set when uploading begins because if user changes date taken it could vary. Also what the DB stores.</summary>
+            public string shortPath;
+            
+            ///<summary>null for images, otherwise a base64 string for video files. </summary>
+            public string thumbnail;
+            
+            ///<summary>If this item is already in pss_library.</summary>
+            public bool alreadyInLib;
+            
+            ///<summary>Does it have date taken data either in the metadata or in its filename.</summary>
+            public bool dataPresent;
+            
+            ///<summary>The date and time this image or video was captured.</summary>
+            public DateTime dateTaken;
+            
+            ///<summary>Where the date taken data came from (filename, metadata, or neither).</summary>
+            public Metadata.DateTakenSrc dateTakenSrc;
         }
 
         public static void Open()
@@ -114,7 +161,15 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate) ON CONFLICT (path) DO NOTHING", connection);
+                NpgsqlCommand cmd = new("", connection);
+                if (thumbnail == null) //Not video
+                    cmd.CommandText = "INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate) ON CONFLICT (path) DO NOTHING";
+                else
+                {
+                    cmd.CommandText = "INSERT INTO media (path, date_taken, date_added, starred, separate, thumbnail) VALUES (@path, @dateTaken, now(), @starred, @separate, @thumbnail) ON CONFLICT (path) DO NOTHING";
+                    cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
+                }
+                
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
                 cmd.Parameters.AddWithValue("@starred", starred);
@@ -619,21 +674,19 @@ namespace PSS.Backend
         ///<summary>
         ///Loads everything in the media table into a List of the rows. Does not store separate column. Also only selects ones where separate==false
         ///</summary>
-        ///<returns></returns>
+        ///<returns>List of MediaRow records</returns>
         public static List<MediaRow> LoadMediaTable()
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
-
-                reader.Close();
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+                r.Close();
             }
             catch (NpgsqlException e)
             {
@@ -657,14 +710,14 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), true, reader.GetGuid(3)));
+                while (r.Read())
+                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
 
-                reader.Close();
+                r.Close();
             }
             catch (NpgsqlException e)
             {
@@ -777,13 +830,13 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
+                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4), reader.GetString(5)));
             }
             catch (NpgsqlException e)
             {
@@ -816,14 +869,14 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, date_deleted FROM media_trash ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media_trash ORDER BY " + orderBy, connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
+                while (r.Read())
+                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
 
-                reader.Close();
+                r.Close();
             }
             catch (NpgsqlException e)
             {

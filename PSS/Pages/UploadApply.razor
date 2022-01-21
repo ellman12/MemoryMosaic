@@ -44,41 +44,34 @@
     UpdateStatus();
 
     <div id="mainDiv">
-        @for (int i = 0; i < allPaths.Count; i++)
+        @for (int i = 0; i < allFiles.Count; i++)
         {
-            if (warningChecked && dataPresentList[i]) continue; //If this item doesn't have a warning skip it
-            if (errorChecked && alreadyInLib[i] == false) continue; //If this item has an error skip it
-            if (neitherChecked && !dataPresentList[i] && !alreadyInLib[i]) continue; //Only show items with no warnings or errors
+            if (warningChecked && allFiles[i].dataPresent) continue; //If this item doesn't have a warning skip it
+            if (errorChecked && allFiles[i].alreadyInLib == false) continue; //If this item has an error skip it
+            if (neitherChecked && !allFiles[i].dataPresent && !allFiles[i].alreadyInLib) continue; //Only show items with no warnings or errors
             
             int ii = i; @*Using just i caused crash*@
-            string path = allPaths[i].Replace('\\', '/');
-            string ext = Path.GetExtension(path);
+            string path = allFiles[i].fullPath.Replace('\\', '/');
 
             //shortPath is relative to wwwroot
-            string shortPath = path.Replace(S.uploadRootPath, "");
+            string shortPath = path.Replace(S.uploadRootPath!, "");
             shortPath = Path.GetFileName(S.uploadRootPath) + shortPath;
             
             string name = Path.GetFileName(path);
-            string dateString = dateTakenList[i].ToString("ddd, MMM d, yyy");
-            
+            string dateString = allFiles[i].dateTaken.ToString("ddd, MMM d, yyy");
+
             <div class="itemDiv">
-                @if (ext is ".jpg" or ".jpeg" or ".png")
-                {
-                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
-                }
-                else if (ext is ".mp4" or ".mkv")
-                {
-                    <video src="@shortPath" disablepictureinpicture></video>
-                }
+                @{ string src = allFiles[i].thumbnail == null ? shortPath : "data:image/jpg;base64," + allFiles[i].thumbnail; }
+                <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src=@src alt="" loading="lazy"/>
 
                 <span title="@name" class="filenameSpan">@name</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
-                @if (!alreadyInLib[i]){<input title="Choose New Date Taken" type="datetime-local" @bind="@dateTakenList[ii]" @bind:event="oninput">}
-                @if (infoChecked && dataPresentList[i]){<span class="infoSpan">@dtSrc[i].ToString()</span>} @*Don't display now if DT is set to now*@
-                @if (!dataPresentList[i] && !alreadyInLib[i]){<span class="warnSpan">No DT found. DT set to now.</span>}
-                @if (alreadyInLib[i]){<span class="errorSpan">Item already in library. Won't upload.</span>}
+                @if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
+                @if (infoChecked && allFiles[i].dataPresent){<span class="infoSpan">@allFiles[i].dateTakenSrc.ToString()</span>} @*Don't display now if DT is set to now*@
+                @if (!allFiles[i].dataPresent && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found. DT set to now.</span>}
+                @if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
-                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii, allPaths[ii]))"><span class="material-icons">close</span></button>
+                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii, allFiles[ii].fullPath))"><span class="material-icons">close</span></button>
             </div>
         }
     </div>
@@ -87,18 +80,15 @@
 @code{
     AlbumSelector albumSelector = new();
 
-    private static string status;
     private static List<string> pngPaths;
     private static List<string> jpgPaths;
     private static List<string> mp4Paths;
     private static List<string> mkvPaths;
-    private static List<string> allPaths;
     private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
-    private static List<DateTime> dateTakenList;
-    private static List<bool> dataPresentList; //Any files where PSS couldn't determine date taken and is defaulting to DateTime.Now
-    private static List<bool> alreadyInLib; //True if the item is already on the server (in your library).
-    private static List<Metadata.DateTakenSrc> dtSrc;
-    
+    private static List<string> allFullPaths;
+    private static List<C.UAFile> allFiles;
+
+    private static string status;
     private static string promptVis;
     private static string message;
     
@@ -110,20 +100,32 @@
     private static bool infoChecked;
 
     private static string albumSelectorVis;
-
+    
     protected override void OnInitialized()
     {
+        allShortPaths = new List<string>();
+        
+        //Get all supported file types in pss_upload and group them together in a single List.
         pngPaths = Directory.GetFiles(S.uploadRootPath, "*.png", SearchOption.AllDirectories).ToList();
         jpgPaths = Directory.GetFiles(S.uploadRootPath, "*.jp*g", SearchOption.AllDirectories).ToList();
         mp4Paths = Directory.GetFiles(S.uploadRootPath, "*.mp4", SearchOption.AllDirectories).ToList();
         mkvPaths = Directory.GetFiles(S.uploadRootPath, "*.mkv", SearchOption.AllDirectories).ToList();
-        allPaths = pngPaths.Concat(jpgPaths).Concat(mp4Paths).Concat(mkvPaths).ToList();
-        allShortPaths = new List<string>();
-        dateTakenList = (from path in allPaths select new DateTime()).ToList();
-        dataPresentList = (from path in allPaths select new bool()).ToList();
-        dtSrc = (from path in allPaths select Metadata.DateTakenSrc.Now).ToList(); //Now = default
-        alreadyInLib = (from path in allPaths select new bool()).ToList();
+        allFullPaths = pngPaths.Concat(jpgPaths).Concat(mp4Paths).Concat(mkvPaths).ToArray().ToList();
+        allFiles = new List<C.UAFile>(allFullPaths.Count);
 
+        foreach (string path in allFullPaths)
+        {
+            C.UAFile file = new()
+            {
+                fullPath = path,
+                shortPath = null,
+                thumbnail = path.Contains(".mp4") || path.Contains(".mkv") ? GenerateThumbnail(path) : null
+            };
+            (file.dataPresent, file.dateTakenSrc) = Metadata.GetDateTaken(path, out file.dateTaken);
+            file.alreadyInLib = ItemExists(Path.GetFileName(path), file.dateTaken);
+            allFiles.Add(file);
+        }
+    
         promptVis = "hidden";
         filterVis = "hidden";
         albumSelectorVis = "hidden";
@@ -131,25 +133,17 @@
         warningChecked = false;
         errorChecked = false;
         infoChecked = true;
-
-        for (int i = 0; i < allPaths.Count; i++)
-        {
-            (dataPresentList[i], dtSrc[i]) = Metadata.GetDateTaken(allPaths[i], out DateTime dateTaken);
-            dateTakenList[i] = dateTaken;
-            alreadyInLib[i] = ItemExists(Path.GetFileName(allPaths[i]), dateTakenList[i]);
-        }
     }
 
-    private static void UpdateStatus() => status = allPaths.Count == 0 ? "No files found to add" : $"{pngPaths.Count + jpgPaths.Count} pictures and {0} videos pending upload. {dataPresentList.Count(c => !c)} Warnings. {alreadyInLib.Count(c => c)} Errors.";
+    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail != null).Count()} pictures and {0} videos pending upload. {allFiles.Count(c => !c.dataPresent)} Warnings. {allFiles.Count(c => c.alreadyInLib)} Errors.";
 
     //Clears an item from the Lists
     private static void DeleteBtnClick(int index, string path)
     {
-        pngPaths.Remove(path);
-        jpgPaths.Remove(path);
-        allPaths.RemoveAt(index);
-        dateTakenList.RemoveAt(index);
-        dataPresentList.RemoveAt(index);
+        // pngPaths.Remove(path);
+        // jpgPaths.Remove(path);
+        // allFullPaths.RemoveAt(index);
+        allFiles.RemoveAt(index);
         UpdateStatus();
     }
 
@@ -158,15 +152,15 @@
     {
         int rowsAffected = 0;
         
-        for (int p = 0; p < allPaths.Count; p++)
+        foreach (C.UAFile file in allFiles)
         {
-            if (alreadyInLib[p]) continue; //Ignore duplicates
+            if (file.alreadyInLib) continue; //Ignore duplicates
 
-            string filename = Path.GetFileName(allPaths[p]);
-            string newDir = GenerateSortedDir(dateTakenList[p]);
-            string newPath = Path.Combine(newDir, filename); //Used for moving to new home on server.
+            string filename = Path.GetFileName(file.fullPath);
+            string newDir = GenerateSortedDir(file.dateTaken);
+            string newPath = Path.Combine(newDir, filename!); //Used for moving to new home on server.
             
-            string newShortPath = Path.Combine(GenerateDatePath(dateTakenList[p]), filename); //Don't need full path, just the short path (/2021/10 October/...).
+            string newShortPath = Path.Combine(GenerateDatePath(file.dateTaken), filename); //Don't need full path, just the short path (\2021\10 October\filename.png).
             allShortPaths.Add(newShortPath);
             Directory.CreateDirectory(newDir);
 
@@ -174,8 +168,8 @@
             GC.WaitForPendingFinalizers();
             try
             {
-                File.Move(allPaths[p], newPath);
-                rowsAffected += C.InsertMedia(newShortPath, dateTakenList[p]);
+                File.Move(file.fullPath!, newPath);
+                rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.thumbnail);
             }
             catch (IOException e)
             {
@@ -185,32 +179,27 @@
         
         albumSelector.ConfirmBtnClick();
         status = $"Added {rowsAffected} items to library";
-        allPaths.Clear();
+        // allFullPaths.Clear();
+        allFiles.Clear();
         albumSelectorVis = "hidden";
     }
 
     private static void DeleteErrorsBtnClick()
     {
         promptVis = "visible";
-        int count = alreadyInLib.Count(c => c); //Get number of items with errors.
+        int count = allFiles.Count(c => c.alreadyInLib); //Get number of items with errors.
         message = $"Are you sure you want to DELETE all {count} items with errors from pss_upload?";
     }
 
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
     private void DeleteErrors()
     {
-        for (int i = 0; i < allPaths.Count; i++)
+        foreach (Connection.UAFile file in allFiles.ToList().Where(file => file.alreadyInLib))
         {
-            if (!alreadyInLib[i]) continue;
-            
-            string path = allPaths[i];
-            int index = allPaths.IndexOf(path);
-            allPaths.RemoveAt(index);
-            dateTakenList.RemoveAt(index);
-            dataPresentList.RemoveAt(index);
-            alreadyInLib.RemoveAt(index);
-            File.Delete(path);
-            i--; //Necessary when deleting from Lists iteratively like this: "because if you remove something from the middle of the list then the next item you want to check is at the same index as the one you just deleted"
+            // int index = allFullPaths.IndexOf(file.fullPath);
+            // allFullPaths.RemoveAt(index);
+            allFiles.Remove(file);
+            File.Delete(file.fullPath);
         }
         promptVis = "hidden";
         StateHasChanged();
@@ -228,10 +217,7 @@
     ///<summary>
     ///Given the full final path where the video file will end up on the server, generate a temporary compressed thumbnail file for it,
     ///turn that into its base64 representation, and return the base64 string.<br/>
-    ///Something to note is these files are created in pss_tmp and should be deleted automatically by the function when it finishes.
-    ///However it is recommended to clear this folder before using this function, because if there is somehow an item with the same name in
-    ///there already, the ffmpeg command will prompt if you want to overwrite it, and the program will just get stuck there
-    ///indefinitely as PSS has no way to respond. So, when in doubt, clear pss_temp before calling this function. 
+    ///Make sure to clear the pss_tmp directory when done in UploadApply!
     ///</summary>
     ///<param name="videoFullFinalPath">The full path to where the video file either is right now, or where it will be.</param>
     public static string GenerateThumbnail(string videoFullFinalPath)
@@ -239,23 +225,23 @@
         //First create the thumbnail from the first frame of the video file.
         //https://stackoverflow.com/questions/4425413/how-to-extract-the-1st-frame-and-restore-as-an-image-with-ffmpeg/4425466
         //Store this file in the tmp folder and name it as the same name as the video file except with the extension '.tmp.jpg'.
-        string thumbnailFullPath = Path.Combine(S.tmpFolderPath, $"{Path.GetFileNameWithoutExtension(videoFullFinalPath)}.tmp.jpg");
-        
-        //Something to note is this command produces a bunch of stupid output and also says it failed but it still produces the thumbnail so... ¯\_(ツ)_/¯ 
-        ProcessStartInfo ffmpegInfo = new()
+        string thumbnailFullPath = Path.Combine(S.tmpFolderPath, $"{Path.GetFileNameWithoutExtension(videoFullFinalPath)}_thumbnail_{DateTime.Now:M-d-yyyy}.tmp.jpg");
+
+        if (!File.Exists(thumbnailFullPath)) //Re-use it if it exists from a previous run of this command.
         {
-            CreateNoWindow = true,
-            FileName = "ffmpeg",
-            Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v 25 \"{thumbnailFullPath}\""
-        };
-        Process ffmpegProcess = Process.Start(ffmpegInfo);
-        ffmpegProcess!.WaitForExit();
+            //Something to note is this command produces a bunch of stupid output and also says it failed but it still produces the thumbnail so... ¯\_(ツ)_/¯ 
+            ProcessStartInfo ffmpegInfo = new()
+            {
+                CreateNoWindow = true,
+                FileName = "ffmpeg",
+                Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v 25 \"{thumbnailFullPath}\""
+            };
+            Process ffmpegProcess = Process.Start(ffmpegInfo);
+            ffmpegProcess!.WaitForExit();
+        }
 
         byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
 
-        //Then delete the thumbnail as it's no longer required.
-        File.Delete(thumbnailFullPath);
-        
         //Then convert that file's bytes into its base64 equivalent. This is stored in the DB as the thumbnail (no actual file required).
         return Convert.ToBase64String(bytes);
     }

@@ -1,24 +1,23 @@
-ideas:
-thumbnail and video file paths only differ by extension
-
 branch to do:
 
 update:
 ✓ update media and trash to have thumbnail column
-✓ init script
 
-media row record to have thumbnail string
-insert media
+✓ media row record to have thumbnail string
+✓ insert media
 load album
-load media table
-load starred
-load media trash
+✓ load media table
+✓ load starred
+✓ load media trash
 move to trash
 restore item
 some way to make sure video can't be set to album cover
 in view item if video is in focus don't let left/right switch item
-update date date taken would have to update both for videos.
+✓ UA display thumbnail for video files
+✓ getting dt from file funcs
+
+✓ Index
+✓ Starred
+✓ Trash
+✓ AV
 ViewItem
-UA display either thumbnail or <video>
-getting dt from file funcs
-Index, Starred, Trash, AV, etc.
