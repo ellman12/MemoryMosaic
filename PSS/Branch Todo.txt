@@ -8,16 +8,16 @@ update:
 load album
 ✓ load media table
 ✓ load starred
-load media trash
+✓ load media trash
 move to trash
 restore item
 some way to make sure video can't be set to album cover
 in view item if video is in focus don't let left/right switch item
-ViewItem
 ✓ UA display thumbnail for video files
-getting dt from file funcs
+✓ getting dt from file funcs
 
 ✓ Index
 ✓ Starred
-Trash
-AV, etc.
+✓ Trash
+✓ AV
+ViewItem
