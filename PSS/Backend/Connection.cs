@@ -86,6 +86,15 @@ namespace PSS.Backend
                 this.starred = starred;
                 this.uuid = uuid;
             }
+            
+            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid, string thumbnail)
+            {
+                path = p;
+                dateTaken = dt;
+                dateAdded = da;
+                this.uuid = uuid;
+                this.thumbnail = thumbnail;
+            }
 
             public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid, string thumbnail)
             {
@@ -701,14 +710,14 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), true, reader.GetGuid(3)));
+                while (r.Read())
+                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
 
-                reader.Close();
+                r.Close();
             }
             catch (NpgsqlException e)
             {
