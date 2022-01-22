@@ -73,6 +73,7 @@
         <span class="header">Maintenance</span>
         <button class="textBtn" title="Last backed up on @lastBackedUp" @onclick="@M.BackupServer"><span class="material-icons-outlined">backup</span><span>Backup Server</span></button>
         <button class="textBtn" @onclick="@M.RestoreBackup"><span class="material-icons-outlined">restore</span><span>Restore Backup</span></button>
+        <button class="textBtn" @onclick="@(() => { Directory.Delete(S.tmpFolderPath, true); Directory.CreateDirectory(S.tmpFolderPath); })"><span class="material-icons-outlined">folder_delete</span><span>Clear pss_tmp</span></button>
         @if (!maintenanceLoaded)
         {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
         @if (maintenanceLoaded)
