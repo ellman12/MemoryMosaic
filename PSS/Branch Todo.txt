@@ -11,7 +11,7 @@ update:
 ✓ load media trash
 ✓ move to trash
 ✓ restore item
-some way to make sure video can't be set to album cover
+✓ some way to make sure video can't be set to album cover
 ✓ in view item if video is in focus don't let left/right switch item
 ✓ UA display thumbnail for video files
 ✓ getting dt from file funcs
