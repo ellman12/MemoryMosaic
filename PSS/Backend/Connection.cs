@@ -3,9 +3,9 @@ using System.Data;
 
 namespace PSS.Backend
 {
-    /// <summary>
-    /// Backend database stuff.
-    /// </summary>
+    ///<summary>
+    ///Backend database stuff.
+    ///</summary>
     public static class Connection
     {
         public static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
@@ -68,6 +68,7 @@ namespace PSS.Backend
             public readonly DateTime dateAdded;
             public bool starred;
             public readonly Guid uuid;
+            public readonly string thumbnail;
 
             public MediaRow(string p, DateTime dt, DateTime da, Guid uuid) //Keeping for legacy purposes before starred column was added.
             {
@@ -85,6 +86,52 @@ namespace PSS.Backend
                 this.starred = starred;
                 this.uuid = uuid;
             }
+            
+            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid, string thumbnail)
+            {
+                path = p;
+                dateTaken = dt;
+                dateAdded = da;
+                this.uuid = uuid;
+                this.thumbnail = thumbnail;
+            }
+
+            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid, string thumbnail)
+            {
+                path = p;
+                dateTaken = dt;
+                dateAdded = da;
+                this.starred = starred;
+                this.uuid = uuid;
+                this.thumbnail = thumbnail;
+            }
+        }
+
+        ///<summary>
+        ///Represents an item that is being uploaded in UploadApply (UA).
+        ///</summary>
+        public class UAFile
+        {
+            ///<summary>Where this thing is in pss_upload. Starts at root of the drive.</summary>
+            public string fullPath;
+            
+            ///<summary>Set when uploading begins because if user changes date taken it could vary. Also what the DB stores.</summary>
+            public string shortPath;
+            
+            ///<summary>null for images, otherwise a base64 string for video files. </summary>
+            public string thumbnail;
+            
+            ///<summary>If this item is already in pss_library.</summary>
+            public bool alreadyInLib;
+            
+            ///<summary>Does it have date taken data either in the metadata or in its filename.</summary>
+            public bool dataPresent;
+            
+            ///<summary>The date and time this image or video was captured.</summary>
+            public DateTime dateTaken;
+            
+            ///<summary>Where the date taken data came from (filename, metadata, or neither).</summary>
+            public Metadata.DateTakenSrc dateTakenSrc;
         }
 
         public static void Open()
@@ -99,14 +146,30 @@ namespace PSS.Backend
                 connection.Close();
         }
 
-        //For inserting a photo or video into the media table (the main table). Will not insert duplicates.
-        public static int InsertMedia(string path, DateTime dateTaken, bool starred = false, bool separate = false)
+        ///<summary>
+        ///For inserting a photo or video into the media table (the main table). Will not insert duplicates.
+        ///</summary>
+        ///<param name="path">The short path that will be stored in media. Convention is to use '\' as the separator.</param>
+        ///<param name="dateTaken">When was this item taken.</param>
+        ///<param name="thumbnail">ONLY FOR VIDEOS. A base64 string for the video thumbnail.</param>
+        ///<param name="starred">Boolean for if this item is starred or not</param>
+        ///<param name="separate">Boolean for if this item is separate from main library.</param>
+        ///<returns>How many rows were affected.</returns>
+        public static int InsertMedia(string path, DateTime dateTaken, string thumbnail, bool starred = false, bool separate = false)
         {
             int rowsAffected = 0;
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate) ON CONFLICT (path) DO NOTHING", connection);
+                NpgsqlCommand cmd = new("", connection);
+                if (thumbnail == null) //Not video
+                    cmd.CommandText = "INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate) ON CONFLICT (path) DO NOTHING";
+                else
+                {
+                    cmd.CommandText = "INSERT INTO media (path, date_taken, date_added, starred, separate, thumbnail) VALUES (@path, @dateTaken, now(), @starred, @separate, @thumbnail) ON CONFLICT (path) DO NOTHING";
+                    cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
+                }
+                
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
                 cmd.Parameters.AddWithValue("@starred", starred);
@@ -337,9 +400,9 @@ namespace PSS.Backend
             }
         }
 
-        /// <summary>
-        /// Add a single path to an album in album_entries. If it's a folder it handles all that automatically.
-        /// </summary>
+        ///<summary>
+        ///Add a single path to an album in album_entries. If it's a folder it handles all that automatically.
+        ///</summary>
         public static void AddToAlbum(string path, int albumID)
         {
             bool isFolder = IsFolder(albumID);
@@ -454,11 +517,11 @@ namespace PSS.Backend
             return albums;
         }
 
-        /// <summary>
-        /// Returns a List of all the items an album is in.
-        /// </summary>
-        /// <param name="path">path to item</param>
-        /// <returns>List of the albums the item is in, if any</returns>
+        ///<summary>
+        ///Returns a List of all the items an album is in.
+        ///</summary>
+        ///<param name="path">path to item</param>
+        ///<returns>List of the albums the item is in, if any</returns>
         public static List<Album> GetAlbumsItemIn(string path)
         {
             List<Album> albums = new();
@@ -487,11 +550,11 @@ namespace PSS.Backend
         }
 
         //https://www.postgresqltutorial.com/postgresql-update-join/
-        /// <summary>
-        /// Used for changing an album to a folder or vice versa.
-        /// </summary>
-        /// <param name="albumID">ID of album or folder to change modes</param>
-        /// <param name="folder">Specify true if want to change album -> folder. False for folder -> album</param>
+        ///<summary>
+        ///Used for changing an album to a folder or vice versa.
+        ///</summary>
+        ///<param name="albumID">ID of album or folder to change modes</param>
+        ///<param name="folder">Specify true if want to change album -> folder. False for folder -> album</param>
         public static void ChangeAlbumType(int albumID, bool folder)
         {
             try
@@ -545,9 +608,9 @@ namespace PSS.Backend
             }
         }
 
-        /// <summary>
-        /// PERMANENTLY remove an item from database and server.
-        /// </summary>
+        ///<summary>
+        ///PERMANENTLY remove an item from database and server.
+        ///</summary>
         public static void PermDeleteItem(string path)
         {
             File.Delete(Path.Join(S.libFolderFullPath, path));
@@ -582,7 +645,7 @@ namespace PSS.Backend
                 Open();
 
                 //Copy item from media to trash
-                NpgsqlCommand cmd = new("INSERT INTO media SELECT path, date_taken, date_added, starred, separate, uuid FROM media_trash WHERE path=@path", connection);
+                NpgsqlCommand cmd = new("INSERT INTO media SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media_trash WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
 
@@ -608,24 +671,22 @@ namespace PSS.Backend
             }
         }
 
-        /// <summary>
-        /// Loads everything in the media table into a List of the rows. Does not store separate column. Also only selects ones where separate==false
-        /// </summary>
-        /// <returns></returns>
+        ///<summary>
+        ///Loads everything in the media table into a List of the rows. Does not store separate column. Also only selects ones where separate==false
+        ///</summary>
+        ///<returns>List of MediaRow records</returns>
         public static List<MediaRow> LoadMediaTable()
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
-
-                reader.Close();
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+                r.Close();
             }
             catch (NpgsqlException e)
             {
@@ -640,8 +701,8 @@ namespace PSS.Backend
         }
         
         ///<summary>
-        /// Load only starred items from the media table. Doesn't bother selecting the starred column because it does SELECT WHERE starred == true.
-        /// </summary>
+        ///Load only starred items from the media table. Doesn't bother selecting the starred column because it does SELECT WHERE starred == true.
+        ///</summary>
         ///<returns>Row(s) retrieved in a List&lt;MediaRow&gt;</returns>
         public static List<MediaRow> LoadStarred()
         {
@@ -649,14 +710,14 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), true, reader.GetGuid(3)));
+                while (r.Read())
+                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
 
-                reader.Close();
+                r.Close();
             }
             catch (NpgsqlException e)
             {
@@ -670,9 +731,9 @@ namespace PSS.Backend
             return media;
         }
 
-        /// <summary>
-        /// Get if a path is starred or not.
-        /// </summary>
+        ///<summary>
+        ///Get if a path is starred or not.
+        ///</summary>
         public static bool GetStarred(string path)
         {
             bool starred = false;
@@ -749,9 +810,9 @@ namespace PSS.Backend
             }
         }
         
-        /// <summary>
-        /// Loads the contents of an album (or folder) into a List of MediaRows
-        /// </summary>
+        ///<summary>
+        ///Loads the contents of an album (or folder) into a List of MediaRows
+        ///</summary>
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             bool isFolder = IsFolder(albumID);
@@ -769,13 +830,13 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
+                while (r.Read())
+                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
             }
             catch (NpgsqlException e)
             {
@@ -789,9 +850,9 @@ namespace PSS.Backend
             return media;
         }
 
-        /// <summary>
-        /// Load everything in media_trash into a List of MediaRows.
-        /// </summary>
+        ///<summary>
+        ///Load everything in media_trash into a List of MediaRows.
+        ///</summary>
         public static List<MediaRow> LoadMediaTrashTable(TrashSortMode mode = TrashSortMode.DateDeleted)
         {
             List<MediaRow> media = new(); //Stores every row retrieved; returned later.
@@ -808,14 +869,14 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, date_deleted FROM media_trash ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media_trash ORDER BY " + orderBy, connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
-                    media.Add(new MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4)));
+                while (r.Read())
+                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
 
-                reader.Close();
+                r.Close();
             }
             catch (NpgsqlException e)
             {
@@ -829,11 +890,11 @@ namespace PSS.Backend
             return media;
         }
 
-        /// <summary>
-        /// Update when an item was taken and also update its path and move it to the new path.
-        /// </summary>
-        /// <param name="shortPath">The path to the item that is stored in the database</param>
-        /// <param name="newDateTaken">The new date taken for this item</param>
+        ///<summary>
+        ///Update when an item was taken and also update its path and move it to the new path.
+        ///</summary>
+        ///<param name="shortPath">The path to the item that is stored in the database</param>
+        ///<param name="newDateTaken">The new date taken for this item</param>
         public static void UpdateDateTaken(string shortPath, DateTime newDateTaken)
         {
             try
@@ -879,9 +940,9 @@ namespace PSS.Backend
             }
         }
 
-        /// <summary>
-        /// Gets an item's path from its (string) uuid.
-        /// </summary>
+        ///<summary>
+        ///Gets an item's path from its (string) uuid.
+        ///</summary>
         public static string GetPathFromUuid(string uuid)
         {
             string path = "";
@@ -915,9 +976,9 @@ namespace PSS.Backend
             return path;
         }
 
-        /// <summary>
-        /// Gets an item's path from its Guid uuid.
-        /// </summary>
+        ///<summary>
+        ///Gets an item's path from its Guid uuid.
+        ///</summary>
         public static string GetPathFromUuid(Guid uuid)
         {
             string path = "";
@@ -1107,9 +1168,9 @@ namespace PSS.Backend
             return dateTaken;
         }
 
-        /// <summary>
-        /// Return if an album is a folder.
-        /// </summary>
+        ///<summary>
+        ///Return if an album is a folder.
+        ///</summary>
         public static bool IsFolder(int albumID)
         {
             bool isFolder = false;

@@ -38,6 +38,10 @@
                 {
                     <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
                 }
+                else if (ext is ".mp4" or ".mkv")
+                {
+                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@("data:image/jpg;base64," + F.GenerateThumbnail(path))" alt="" loading="lazy"/>
+                }
 
                 <span title="@name" class="filenameSpan">@name</span>
 

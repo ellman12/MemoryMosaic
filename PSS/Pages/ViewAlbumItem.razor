@@ -5,7 +5,7 @@
 @{
     string returnPath = $"/album-view/{albumID}";
     string newPage = $"view-album-item/{albumID}"; //Page wasn't allowed...
-    <ViewItem id="@id" MediaList="@mediaList" Page="@newPage" ReturnPath="@returnPath" DateAdded="@C.GetDateAddedToAlbum(C.GetPathFromUuid(id), Convert.ToInt32(albumID))"/>
+    <ViewItem id="@id" MediaList="@mediaList" Page="@newPage" ReturnPath="@returnPath" DateAdded="@C.GetDateAddedToAlbum(C.GetPathFromUuid(id), albumIdInt)" AlbumID="@albumIdInt"/>
 }
 
 @code {
@@ -16,9 +16,11 @@
     public string id { get; set; }
 
     private static List<C.MediaRow> mediaList;
+    private static int albumIdInt;
 
     protected override void OnInitialized()
     {
         mediaList = C.LoadAlbum(Convert.ToInt32(albumID));
+        albumIdInt = Convert.ToInt32(albumID);
     }
 }

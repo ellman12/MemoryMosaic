@@ -7,7 +7,6 @@ CREATE DATABASE "PSS"
     ENCODING = 'UTF8'
     CONNECTION LIMIT = -1;
 
--- Used to create all the tables in PostgreSQL
 CREATE TABLE IF NOT EXISTS public.album_entries
 (
     path text COLLATE pg_catalog."default" NOT NULL,
@@ -61,6 +60,7 @@ CREATE TABLE IF NOT EXISTS public.media
     starred boolean NOT NULL,
     separate boolean NOT NULL,
     uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
+    thumbnail text COLLATE pg_catalog."default",
     CONSTRAINT media_pkey PRIMARY KEY (path, uuid),
     CONSTRAINT path_key UNIQUE (path)
 )
@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS public.media_trash
     starred boolean NOT NULL,
     separate boolean NOT NULL,
     uuid uuid NOT NULL,
+    thumbnail text COLLATE pg_catalog."default",
     date_deleted timestamp without time zone NOT NULL DEFAULT now(),
     CONSTRAINT media_trash_pkey PRIMARY KEY (path, uuid)
     )

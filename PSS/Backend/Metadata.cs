@@ -1,10 +1,14 @@
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 using ExifLib;
+using MetadataExtractor;
+using MetadataExtractor.Formats.QuickTime;
 using static System.Int32;
+using ExifReader = ExifLib.ExifReader;
 
 namespace PSS.Backend
 {
-    static class Metadata
+    public static class Metadata
     {
         public enum DateTakenSrc
         {
@@ -37,7 +41,7 @@ namespace PSS.Backend
                     break;
 
                 case ".mp4":
-                    hasData = GetVidDate(path, out dateTaken);
+                    hasData = GetMp4Date(path, out dateTaken, out src);
                     break;
 
                 case ".mkv":
@@ -73,34 +77,28 @@ namespace PSS.Backend
             return hasData;
         }
 
-        //Uses ffprobe shell command to get video date from file metadata.
-        //TODO: untested
-        private static bool GetVidDate(string path, out DateTime dateTaken)
+        ///<summary>Get when an mp4 file was taken.</summary>
+        ///<returns>True if this file had data.</returns>
+        private static bool GetMp4Date(string path, out DateTime dateTaken, out DateTakenSrc src)
         {
-            // bool hasData = false;
-            string cmdOutput = ""; //The output of the ffprobe command.
-            ProcessStartInfo ffprobeInfo = new()
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                FileName = "ffprobe",
-                Arguments = "-v 0 -print_format compact=print_section=0:nk=1 -show_entries format_tags=creation_time \"" + path + '"',
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
+            IEnumerable<MetadataExtractor.Directory> directories = QuickTimeMetadataReader.ReadMetadata(new FileStream(path, FileMode.Open));
+            QuickTimeMovieHeaderDirectory directory = directories.OfType<QuickTimeMovieHeaderDirectory>().FirstOrDefault();
 
-            Process ffprobeProcess = Process.Start(ffprobeInfo);
-            cmdOutput = ffprobeProcess.StandardOutput.ReadLine();
-            ffprobeProcess.WaitForExit();
-
-            if (cmdOutput == "") //mkv files don't have date data in them at all (I think). cmd just returns blank if no data
+            if (directory == null)
             {
                 dateTaken = DateTime.Now;
+                src = DateTakenSrc.Now;
                 return false;
             }
 
-            dateTaken = Convert.ToDateTime(cmdOutput);
-            return true;
+            if (directory.TryGetDateTime(QuickTimeMovieHeaderDirectory.TagCreated, out dateTaken))
+            {
+                src = DateTakenSrc.Metadata;
+                return true;
+            }
+
+            src = DateTakenSrc.Now;
+            return false;
         }
 
         //Used if program can't find date/time metadata in the file. Often, filenames will have a timestamp in them.
@@ -113,7 +111,7 @@ namespace PSS.Backend
 
             try
             {
-                if (filename.Contains("Screenshot_")) //If Android screenshot. E.g., 'Screenshot_20201028-141626_Messages.jpg'
+                if (filename.StartsWith("Screenshot_")) //If Android screenshot. E.g., 'Screenshot_20201028-141626_Messages.jpg'
                 {
                     timestamp = filename.Substring(11, 8) + filename.Substring(20, 6); //Strip the chars we don't want.
                     timestamp = timestamp.Insert(4, "-");
@@ -122,44 +120,42 @@ namespace PSS.Backend
                     timestamp = timestamp.Insert(13, ":");
                     timestamp = timestamp.Insert(16, ":");
                 }
-                else if (filename.Contains("IMG_") || filename.Contains("VID_"))
+                else if (filename.StartsWith("IMG_") || filename.StartsWith("VID_"))
                 {
                     timestamp = filename.Substring(4, 8) + filename.Substring(13, 6);
                 }
-                else if (filename[4] == '-' && filename[13] == '-' && filename[16] == '-' && filename.Contains(".mkv")) //Check if an OBS-generated file. It would have '-' at these 3 indices.
+                else if (filename[4] == '-' && filename[13] == '-' && filename[16] == '-' && filename.EndsWith(".mkv")) //Check if an OBS-generated file. It would have '-' at these 3 indices.
                 {
                     timestamp = filename;
-                    timestamp = filename.Substring(0, timestamp.Length - 4); //Remove extension https://stackoverflow.com/questions/15564944/remove-the-last-three-characters-from-a-string
+                    timestamp = filename[..(timestamp.Length - 4)]; //Remove extension https://stackoverflow.com/questions/15564944/remove-the-last-three-characters-from-a-string
                     timestamp = timestamp.Replace("-", "").Replace(" ", "");
                 }
                 else if (filename[8] == '_') //A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones. Not 100% sure.
                 {
-                    timestamp = filename.Substring(0, 8) + filename.Substring(9, 6);
+                    timestamp = filename[..8] + filename.Substring(9, 6);
                 }
                 else if (filename.Contains("_s")) //A Nintendo Switch screenshot/video clip, like '2018022016403700_s.mp4'.
                 {
-                    timestamp = filename.Substring(0, 14);
+                    timestamp = filename[..14];
                 }
-                else if (filename.Contains("Capture") && filename.Contains(".png")) //Terraria's Capture Mode 'Capture 2020-05-16 21_04_54.png'
+                else if (filename.StartsWith("Capture") && filename.EndsWith(".png")) //Terraria's Capture Mode 'Capture 2020-05-16 21_04_54.png'
                 {
                     timestamp = filename.Substring(8, 19);
                     timestamp = timestamp.Replace("-", "").Replace(":", "").Replace("_", "").Replace(" ", "");
                 }
                 else if (filename.EndsWith("_1.jpg")) //Not sure if these are exclusive to Terraria or what '20201226213009_1.jpg'
                 {
-                    timestamp = filename.Substring(0, 14);
+                    timestamp = filename[..14];
                 }
                 else if (filename.Contains("105600") && filename.EndsWith("_1.png")) //Might just be another Terraria-exclusive thing '105600_20201122143721_1.png'
                 {
                     timestamp = filename.Substring(7, 14);
                 }
-                else if (filename.Contains("Screenshot ") && filename.Contains(".png")) //Snip & Sketch generates these filenames. E.g., 'Screenshot 2020-11-17 104051.png'
+                else if (filename.StartsWith("Screenshot ")) //Snip & Sketch generates these filenames. E.g., 'Screenshot 2020-11-17 104051.png'
                 {
                     timestamp = filename.Substring(11, 17);
                     timestamp = timestamp.Replace("-", "").Replace(" ", "");
                 }
-                else
-                    hasData = false;
             }
             catch (Exception e)
             {
@@ -181,22 +177,20 @@ namespace PSS.Backend
 
         //Try parsing timestamp like this: "20211031155822"
         //Returns false if unable to parse.
-        public static bool ParseTimestamp(string timestamp, out DateTime dateTime, ref DateTakenSrc src)
+        private static bool ParseTimestamp(string timestamp, out DateTime dateTime, ref DateTakenSrc src)
         {
-            if (DateTime.TryParse(timestamp, out dateTime) == false && timestamp.Length == 14) //Not successful
-            {
-                int year = Parse(timestamp[0..4]);
-                int month = Parse(timestamp[4..6]);
-                int day = Parse(timestamp[6..8]);
-                int hour = Parse(timestamp[8..10]);
-                int min = Parse(timestamp[10..12]);
-                int sec = Parse(timestamp[12..14]);
+            if (DateTime.TryParse(timestamp, out dateTime) || timestamp!.Length != 14) return false;
+            
+            int year = Parse(timestamp[..4]);
+            int month = Parse(timestamp[4..6]);
+            int day = Parse(timestamp[6..8]);
+            int hour = Parse(timestamp[8..10]);
+            int min = Parse(timestamp[10..12]);
+            int sec = Parse(timestamp[12..14]);
 
-                dateTime = new DateTime(year, month, day, hour, min, sec);
-                src = DateTakenSrc.Filename;
-                return true;
-            }
-            return false;
+            dateTime = new DateTime(year, month, day, hour, min, sec);
+            src = DateTakenSrc.Filename;
+            return true;
         }
     }
 }

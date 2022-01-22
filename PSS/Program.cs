@@ -21,6 +21,7 @@ namespace PSS
             Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "wwwroot", "pss_library"));
             Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "wwwroot", "pss_upload"));
             Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "wwwroot", "pss_backup"));
+            Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "wwwroot", "pss_tmp"));
             
             //Populate config with default values if file doesn't exist. If exists, read in values.
             if (File.Exists(Environment.CurrentDirectory + "/pss_settings.json") && File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json") != "")

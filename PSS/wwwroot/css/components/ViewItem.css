@@ -168,7 +168,7 @@ button {
 #leftBtn {left: 10px;}
 #rightBtn {right: 10px;}
 
-#imgDiv {
+#viewDiv {
     height: 98%;
     display: flex;
     align-content: center;
@@ -181,7 +181,7 @@ button {
 }
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
-#imgDiv > img {
+#viewDiv > img, video {
     height: 100%;
     overflow: auto;
     object-fit: cover;

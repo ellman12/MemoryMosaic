@@ -37,6 +37,11 @@
         </div>
         
         <div class="settings-pair">
+            <span>Where to store temporary items</span>
+            <input type="text" class="settings-pair" @bind="@tmpFolderPath"/>
+        </div>
+        
+        <div class="settings-pair">
             <span style="display: inline">Show Prompts?</span>
             <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
         </div>
@@ -68,6 +73,7 @@
         <span class="header">Maintenance</span>
         <button class="textBtn" title="Last backed up on @lastBackedUp" @onclick="@M.BackupServer"><span class="material-icons-outlined">backup</span><span>Backup Server</span></button>
         <button class="textBtn" @onclick="@M.RestoreBackup"><span class="material-icons-outlined">restore</span><span>Restore Backup</span></button>
+        <button class="textBtn" @onclick="@(() => { Directory.Delete(S.tmpFolderPath, true); Directory.CreateDirectory(S.tmpFolderPath); })"><span class="material-icons-outlined">folder_delete</span><span>Clear pss_tmp</span></button>
         @if (!maintenanceLoaded)
         {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
         @if (maintenanceLoaded)
@@ -115,6 +121,7 @@
     private static string libraryRootPath = S.libFolderFullPath;
     private static bool showPrompts = S.showPrompts;
     private static string backupFolderPath = S.backupFolderPath;
+    private static string tmpFolderPath = S.tmpFolderPath;
     
     //Maintenance
     private static bool maintenanceLoaded;
@@ -185,6 +192,7 @@
         S.libFolderFullPath = libraryRootPath;
         S.showPrompts = showPrompts;
         S.backupFolderPath = backupFolderPath;
+        S.tmpFolderPath = tmpFolderPath;
         S.WriteSettings();
     }
 
@@ -197,6 +205,7 @@
         libraryRootPath = S.libFolderFullPath;
         showPrompts = S.showPrompts;
         backupFolderPath = S.backupFolderPath;
+        tmpFolderPath = S.tmpFolderPath;
     }
 
     private static void ResetBtnClicked()

@@ -5,46 +5,51 @@ namespace PSS
 {
     public class Settings
     {
-        /// <summary>
-        /// Server username. Used for scp command for uploading
-        /// </summary>
+        ///<summary>
+        ///Server username. Used for scp command for uploading
+        ///</summary>
         [JsonProperty] public static string username;
         [JsonProperty] public static string serverIP;
         [JsonProperty] public static string scpFlags;
 
-        /// <summary>
-        /// Where scp should upload files. 
-        /// </summary>
+        ///<summary>
+        ///Where scp should upload files. 
+        ///</summary>
         [JsonProperty] public static string uploadRootPath;
 
-        /// <summary>
-        /// The full path to the library folder on the server.
-        /// </summary>
+        ///<summary>
+        ///The full path to the library folder on the server.
+        ///</summary>
         [JsonProperty] public static string libFolderFullPath;
 
-        /// <summary>
-        /// Where to backup library and database.
-        /// </summary>
+        ///<summary>
+        ///Where to backup library and database.
+        ///</summary>
         [JsonProperty] public static string backupFolderPath;
         
-        /// <summary>
-        /// Should prompts be shown when doing things like deleting items and albums, etc.?
-        /// </summary>
+        ///<summary>
+        ///Where the temporary folder is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.
+        ///</summary>
+        [JsonProperty] public static string tmpFolderPath;
+        
+        ///<summary>
+        ///Should prompts be shown when doing things like deleting items and albums, etc.?
+        ///</summary>
         [JsonProperty] public static bool showPrompts;
         
-        /// <summary>
-        /// Used (in Startup.cs) for accessing files outside of wwwroot.
-        /// </summary>
+        ///<summary>
+        ///Used (in Startup.cs) for accessing files outside of wwwroot.
+        ///</summary>
         public const string requestPath = "/pss_library";
 
-        /// <summary>
-        /// The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
-        /// </summary>
+        ///<summary>
+        ///The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
+        ///</summary>
         public static string databaseBackupCommand;
 
-        /// <summary>
-        /// The command used to restore a previous pg_dump backup.
-        /// </summary>
+        ///<summary>
+        ///The command used to restore a previous pg_dump backup.
+        ///</summary>
         public static string databaseRestoreCommand;
 
         public static void WriteSettings()
@@ -62,6 +67,7 @@ namespace PSS
             uploadRootPath = uploadRootPath.Replace('\\', '/');
             libFolderFullPath = libFolderFullPath.Replace('\\', '/');
             backupFolderPath = backupFolderPath.Replace('\\', '/');
+            tmpFolderPath = tmpFolderPath.Replace('\\', '/');
             
             //Can't assign this until backupFolderPath is read in.
             //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
@@ -80,6 +86,7 @@ namespace PSS
             uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_upload"; //TODO: temp
             libFolderFullPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_library"; //TODO: temp
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_backup"; //TODO: temp
+            tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/wwwroot/pss_tmp"; //TODO: temp
             showPrompts = true;
             File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings()));
         }

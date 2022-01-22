@@ -9,6 +9,9 @@ Required Parameters:
     3. String Page. Either 'view' or 'view-album-item/<albumID>' Used for the left/right buttons.
     4. String ReturnPath: The page to return to when hit the back button.
     5. DateTime DateAdded: Either date added to library (if viewing Index items) or date added to album.
+    
+Optional Parameters:
+    1. AlbumID. Only used for ViewAlbumItem. Causes update album cover btn to appear. Defaults to -1 if not specified.
 *@
 @inject NavigationManager navigationManager;
 
@@ -45,11 +48,17 @@ Required Parameters:
         </div>
         
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
-            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
+            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))" title="Add to Album"><span class="material-icons-outlined">library_add</span></button>
             
             <button class="iconBtn" @onclick="@(() => C.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
             </button>
+            
+            @if (AlbumID != -1 && MediaList[index].thumbnail == null)
+            { <button class="iconBtn" @onclick="@(() => C.UpdateAlbumCover(AlbumID, path))" title="Use As Album Cover">
+                    <span class="material-icons-outlined">collections</span>
+                </button>
+            }
         </div>
         
         <div id="infoDiv" style="visibility: @infoVis">
@@ -107,9 +116,16 @@ Required Parameters:
                 <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"></path></svg>
             </div>
         }
+
+        if (MediaList[index].thumbnail == null)
+        {
+            <div @onkeydown="@ChangeImage" tabindex="0" id="viewDiv"><img onload="document.getElementById('viewDiv').focus()" src="@S.requestPath/@path" alt=""/></div>
+        }
+        else
+        {
+            <div id="viewDiv"><video src="@S.requestPath/@path" loop autofocus controls autoplay></video></div>
+        }
         
-        <div @onkeydown="@ChangeImage" tabindex="0" id="imgDiv"><img onload="document.getElementById('imgDiv').focus()" id="@path" src="@S.requestPath/@path" alt=""/></div>
-                                                                                                                           
         if (index + 1 < MediaList.Count)
         {
             <div onclick="location.href='/@Page/@MediaList[index + 1].uuid'" class="sideBtn" id="rightBtn">
@@ -120,21 +136,24 @@ Required Parameters:
 }
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public string id { get; set; }
     private static Guid parsedID;
     
-    [Parameter]
+    [Parameter, EditorRequired]
     public List<C.MediaRow> MediaList { get; set; }
     
-    [Parameter]
+    [Parameter, EditorRequired]
     public string Page { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public string ReturnPath { get; set; }
     
-    [Parameter]
+    [Parameter, EditorRequired]
     public DateTime DateAdded { get; set; }
+
+    [Parameter]
+    public int AlbumID { get; set; } = -1;
     
     private static string path;
     private static DateTime ogDateTaken; //Original

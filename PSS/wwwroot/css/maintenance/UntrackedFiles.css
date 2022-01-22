@@ -41,7 +41,7 @@ h1 {
 }
 
 #mainDiv > .itemDiv > img {
-    width: 6%;
+    width: 4%;
 }
 
 #mainDiv > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/

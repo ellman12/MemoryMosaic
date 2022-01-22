@@ -6,14 +6,14 @@ using SearchOption = System.IO.SearchOption;
 
 namespace PSS.Backend
 {
-    /// <summary>
-    /// Functions for server maintenance.
-    /// </summary>
+    ///<summary>
+    ///Functions for server maintenance.
+    ///</summary>
     public static class Maintenance
     {
-        /// <summary>
-        /// Backup library and database on server.
-        /// </summary>
+        ///<summary>
+        ///Backup library and database on server.
+        ///</summary>
         public static void BackupServer()
         {
             //Clear backup folder to remove old backup: https://stackoverflow.com/a/12297082
@@ -55,17 +55,17 @@ namespace PSS.Backend
             process.WaitForExit();
         }
         
-        /// <summary>
-        /// Return if a folder is empty (has 0 files in folder or subfolders). Subfolders inside path aren't counted unless they have stuff inside.
-        /// If root/ has 2 subfolders and 3 files it would only find 3 files and thus it wouldn't be counted as empty.
-        /// If root/ has 2 subfolders and 0 files, it would be considered empty.
-        /// </summary>
-        /// <returns>True if empty.</returns>
+        ///<summary>
+        ///Return if a folder is empty (has 0 files in folder or subfolders). Subfolders inside path aren't counted unless they have stuff inside.
+        ///If root/ has 2 subfolders and 3 files it would only find 3 files and thus it wouldn't be counted as empty.
+        ///If root/ has 2 subfolders and 0 files, it would be considered empty.
+        ///</summary>
+        ///<returns>True if empty.</returns>
         public static bool IsFolderEmpty(string path) => Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
 
-        /// <summary>
-        /// Search library folder and if an item is not in the media or media_trash tables, add it to the List of full paths that is returned. 
-        /// </summary>
+        ///<summary>
+        ///Search library folder and if an item is not in the media or media_trash tables, add it to the List of full paths that is returned. 
+        ///</summary>
         public static List<string> GetUntrackedLibFiles()
         {
             List<string> untrackedPaths = new(); //Items in lib folder but not in database
@@ -84,7 +84,7 @@ namespace PSS.Backend
             return untrackedPaths;
         }
 
-        /// The table to search for missing files.        
+        ///The table to search for missing files.        
         public enum MissingFilesTable
         {
             media,
@@ -93,9 +93,9 @@ namespace PSS.Backend
             album_entries_trash
         }
 
-        /// <summary>
-        /// Return string List of all shortPaths from the table specified that don't have existing files in the photo library.
-        /// </summary>
+        ///<summary>
+        ///Return string List of all shortPaths from the table specified that don't have existing files in the photo library.
+        ///</summary>
         public static List<string> GetMissingFiles(MissingFilesTable table)
         {
             string tableStr = table.ToString();
@@ -129,11 +129,11 @@ namespace PSS.Backend
             return missingFiles;
         }
 
-        /// <summary>
-        /// Loop through List and delete these paths from table that are in the DB but don't exist as files.
-        /// </summary>
-        /// <param name="paths">List of shortPaths retrieved with GetMissingFiles()</param>
-        /// <param name="table">The table to delete from</param>
+        ///<summary>
+        ///Loop through List and delete these paths from table that are in the DB but don't exist as files.
+        ///</summary>
+        ///<param name="paths">List of shortPaths retrieved with GetMissingFiles()</param>
+        ///<param name="table">The table to delete from</param>
         public static void RemoveMissingFiles(List<string> paths, MissingFilesTable table)
         {
             try
