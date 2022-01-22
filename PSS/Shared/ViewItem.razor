@@ -9,7 +9,9 @@ Required Parameters:
     3. String Page. Either 'view' or 'view-album-item/<albumID>' Used for the left/right buttons.
     4. String ReturnPath: The page to return to when hit the back button.
     5. DateTime DateAdded: Either date added to library (if viewing Index items) or date added to album.
-    6. Bool IsAlbum. If true add button to more options menu for updating album cover.
+    
+Optional Parameters:
+    1. AlbumID. Only used for ViewAlbumItem. Causes update album cover btn to appear. Defaults to -1 if not specified.
 *@
 @inject NavigationManager navigationManager;
 
@@ -52,9 +54,8 @@ Required Parameters:
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
             </button>
             
-            @if (IsAlbum)
-            {
-                <button class="iconBtn" title="Use As Album Cover">
+            @if (AlbumID != -1 && MediaList[index].thumbnail == null)
+            { <button class="iconBtn" @onclick="@(() => C.UpdateAlbumCover(AlbumID, path))" title="Use As Album Cover">
                     <span class="material-icons-outlined">collections</span>
                 </button>
             }
@@ -150,9 +151,9 @@ Required Parameters:
     
     [Parameter, EditorRequired]
     public DateTime DateAdded { get; set; }
-    
-    [Parameter, EditorRequired]
-    public bool IsAlbum { get; set; }
+
+    [Parameter]
+    public int AlbumID { get; set; } = -1;
     
     private static string path;
     private static DateTime ogDateTaken; //Original
