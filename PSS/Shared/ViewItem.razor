@@ -9,6 +9,7 @@ Required Parameters:
     3. String Page. Either 'view' or 'view-album-item/<albumID>' Used for the left/right buttons.
     4. String ReturnPath: The page to return to when hit the back button.
     5. DateTime DateAdded: Either date added to library (if viewing Index items) or date added to album.
+    6. Bool IsAlbum. If true add button to more options menu for updating album cover.
 *@
 @inject NavigationManager navigationManager;
 
@@ -45,11 +46,18 @@ Required Parameters:
         </div>
         
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
-            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))" title="Add to Album"><span class="material-icons-outlined">collections</span></button>
+            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))" title="Add to Album"><span class="material-icons-outlined">library_add</span></button>
             
             <button class="iconBtn" @onclick="@(() => C.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
             </button>
+            
+            @if (IsAlbum)
+            {
+                <button class="iconBtn" title="Use As Album Cover">
+                    <span class="material-icons-outlined">collections</span>
+                </button>
+            }
         </div>
         
         <div id="infoDiv" style="visibility: @infoVis">
@@ -127,21 +135,24 @@ Required Parameters:
 }
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public string id { get; set; }
     private static Guid parsedID;
     
-    [Parameter]
+    [Parameter, EditorRequired]
     public List<C.MediaRow> MediaList { get; set; }
     
-    [Parameter]
+    [Parameter, EditorRequired]
     public string Page { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public string ReturnPath { get; set; }
     
-    [Parameter]
+    [Parameter, EditorRequired]
     public DateTime DateAdded { get; set; }
+    
+    [Parameter, EditorRequired]
+    public bool IsAlbum { get; set; }
     
     private static string path;
     private static DateTime ogDateTaken; //Original

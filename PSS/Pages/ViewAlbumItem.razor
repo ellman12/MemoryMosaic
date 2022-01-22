@@ -5,7 +5,7 @@
 @{
     string returnPath = $"/album-view/{albumID}";
     string newPage = $"view-album-item/{albumID}"; //Page wasn't allowed...
-    <ViewItem id="@id" MediaList="@mediaList" Page="@newPage" ReturnPath="@returnPath" DateAdded="@C.GetDateAddedToAlbum(C.GetPathFromUuid(id), Convert.ToInt32(albumID))"/>
+    <ViewItem id="@id" MediaList="@mediaList" Page="@newPage" ReturnPath="@returnPath" DateAdded="@C.GetDateAddedToAlbum(C.GetPathFromUuid(id), Convert.ToInt32(albumID))" IsAlbum="@true"/>
 }
 
 @code {

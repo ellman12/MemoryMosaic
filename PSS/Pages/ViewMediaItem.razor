@@ -3,7 +3,7 @@
 @using PSS.Backend
 @layout EmptyLayout
 
-<ViewItem id="@id" MediaList="@mediaList" Page="view" ReturnPath="/" DateAdded="@C.GetDateAdded(Guid.Parse(id))"/>
+<ViewItem id="@id" MediaList="@mediaList" Page="view" ReturnPath="/" DateAdded="@C.GetDateAdded(Guid.Parse(id))" IsAlbum="@false"/>
 
 @code{
     [Parameter]
