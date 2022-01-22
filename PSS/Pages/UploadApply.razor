@@ -63,7 +63,7 @@
                 @{ string src = allFiles[i].thumbnail == null ? shortPath : "data:image/jpg;base64," + allFiles[i].thumbnail; }
                 <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src=@src alt="" loading="lazy"/>
 
-                <span title="@name" class="filenameSpan">@name</span>
+                <span class="filenameSpan">@name</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                 @if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
                 @if (infoChecked && allFiles[i].dataPresent){<span class="infoSpan">@allFiles[i].dateTakenSrc.ToString()</span>} @*Don't display now if DT is set to now*@

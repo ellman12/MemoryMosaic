@@ -109,6 +109,10 @@ header > #statusSpan {
     text-overflow: ellipsis;
 }
 
+#mainDiv > .itemDiv > .filenameSpan:hover {
+    width: auto;
+}
+
 #mainDiv > .itemDiv > input {
     width: 205px;
     color: black; /*Font color*/
