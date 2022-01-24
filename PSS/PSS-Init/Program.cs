@@ -54,8 +54,9 @@ Settings.tmpFolderPath = pss_tmp;
 Settings.showPrompts = true;
 Settings s = new();
 File.WriteAllText(Path.Combine(pssRoot, "pss_settings.json"), JsonConvert.SerializeObject(s));
-Console.WriteLine("Done");
+Console.WriteLine("Done\n");
 
-//TODO
-Console.WriteLine("\nCreating PSS database...");
-Console.WriteLine("Done");
+Console.WriteLine("-------Database Time-------");
+Console.WriteLine("To get started, install Postgres in the default location: https://www.postgresql.org/download/");
+Console.WriteLine("Next, copy and paste this command into PowerShell:");
+Console.WriteLine(@"C:\Users\Elliott\Downloads\pgsql\bin\psql.exe ");
