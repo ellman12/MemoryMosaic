@@ -2,8 +2,11 @@
 using System.IO;
 
 Console.WriteLine("-------------------------------PSS Initialization-------------------------------");
-Console.WriteLine("These settings can be changed later.");
+Console.WriteLine("This C# script will initialize the server for first time use.");
+Console.WriteLine("Enter root path to where the PSS project is:");
+string pssRoot = Console.ReadLine()!;
 
+Console.WriteLine("\nThese settings can be changed later when PSS is running.");
 Console.WriteLine("Enter folder path to where you want your library stored:");
 string pss_library = Console.ReadLine()!;
 if (!pss_library.EndsWith("pss_library"))
@@ -32,12 +35,12 @@ if (!pss_backup.EndsWith("pss_backup"))
 Console.WriteLine($"Your photos and videos will be backed up to \"{pss_backup}\"\n");
 Directory.CreateDirectory(pss_backup);
 
-Console.WriteLine("Enter username of server where PSS will be running:");
+Console.WriteLine("Enter the username of the server where PSS will be running:");
 string serverUsername = Console.ReadLine()!;
 
-Console.WriteLine("Enter ip of the server:");
+Console.WriteLine("\nEnter ip of the server:");
 string serverIP = Console.ReadLine()!;
 
 //TODO
-Console.WriteLine("Creating PSS database...");
+Console.WriteLine("\nCreating PSS database...");
 Console.WriteLine("Done");
