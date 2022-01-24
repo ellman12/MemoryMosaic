@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using Newtonsoft.Json;
+using PSS;
 
 Console.WriteLine("-------------------------------PSS Initialization-------------------------------");
 Console.WriteLine("This C# script will initialize the server for first time use.");
@@ -40,6 +42,19 @@ string serverUsername = Console.ReadLine()!;
 
 Console.WriteLine("\nEnter ip of the server:");
 string serverIP = Console.ReadLine()!;
+
+Console.WriteLine("\nSaving settings...");
+Settings.username = serverUsername;
+Settings.serverIP = serverIP;
+Settings.scpFlags = "-r";
+Settings.uploadRootPath = pss_upload;
+Settings.libFolderFullPath = pss_library;
+Settings.backupFolderPath = pss_backup;
+Settings.tmpFolderPath = pss_tmp;
+Settings.showPrompts = true;
+Settings s = new();
+File.WriteAllText(Path.Combine(pssRoot, "pss_settings.json"), JsonConvert.SerializeObject(s));
+Console.WriteLine("Done");
 
 //TODO
 Console.WriteLine("\nCreating PSS database...");
