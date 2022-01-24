@@ -519,56 +519,5 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
-PSS Photo Sorter/obj/Debug/net5.0/PSS Photo Sorter.assets.cache
 
-PSS Photo Sorter/obj/Debug/net5.0/PSS Photo Sorter.pdb
-PSS Photo Sorter/obj/Debug/net5.0/PSS Photo Sorter.dll
-PSS Photo Sorter/obj/Debug/net5.0/PSS Photo Sorter.csprojAssemblyReference.cache
-PSS Photo Sorter/obj/Debug/net5.0/PSS Photo Sorter.assets.cache
-PSS Photo Sorter/obj/Debug/net5.0/apphost.exe
-PSS Photo Sorter/obj/PSS Photo Sorter.csproj.nuget.g.props
-PSS Photo Sorter/obj/PSS Photo Sorter.csproj.nuget.dgspec.json
-PSS Photo Sorter/obj/project.nuget.cache
-PSS Photo Sorter/bin/Debug/net5.0/PSS Photo Sorter.pdb
-PSS Photo Sorter/bin/Debug/net5.0/PSS Photo Sorter.exe
-PSS Photo Sorter/bin/Debug/net5.0/PSS Photo Sorter.dll
-*.csprojAssemblyReference.cache
-Actual DB Test/Actual DB Test/bin/
-
-Actual DB Test/Actual DB Test/obj/
-Actual DB Test/Actual DB Test/bin/Debug/net5.0/ref/Actual DB Test.dll
-Actual DB Test/Actual DB Test/bin/Debug/net5.0/Actual DB Test.pdb
-Actual DB Test/Actual DB Test/bin/Debug/net5.0/Actual DB Test.dll
-Actual DB Test/Actual DB Test/.vs/Actual DB Test/v16/.suo
-Actual DB Test/Actual DB Test/obj/Debug/net5.0/Actual DB Test.csprojAssemblyReference.cache
-Actual DB Test/Actual DB Test/obj/Debug/net5.0/Actual DB Test.dll
-Actual DB Test/Actual DB Test/obj/Debug/net5.0/Actual DB Test.pdb
-Actual DB Test/Actual DB Test/obj/Debug/net5.0/ref/Actual DB Test.dll
-Actual DB Test/Actual DB Test/obj/Debug/net5.0/ref/Actual DB Test.dll
-Actual DB Test/Actual DB Test/obj/Debug/net5.0/Actual DB Test.pdb
-Actual DB Test/Actual DB Test/obj/Debug/net5.0/Actual DB Test.dll
-Actual DB Test/Actual DB Test/bin/Debug/net5.0/ref/Actual DB Test.dll
-Actual DB Test/Actual DB Test/bin/Debug/net5.0/Actual DB Test.pdb
-Actual DB Test/Actual DB Test/bin/Debug/net5.0/Actual DB Test.dll
-Actual DB Test/Actual DB Test/.vs/Actual DB Test/v16/.suo
-
-PSS/wwwroot/Pics and Vids/
-
-Pics and Vids/Test Pics/
-PSS/pss_settings.json
-
-PSS/wwwroot/pss_media/
-
-PSS/wwwroot/hi/
-
-PSS/wwwroot/pss_upload/
-
-PSS/wwwroot/pss_library/
-
-PSS/wwwroot/pics/
-
-Pics and Vids/
-PSS/wwwroot/.tmp.driveupload/
-PSS/wwwroot/pss_backup/
-
-PSS/wwwroot/pss_tmp/
+PSS/PSS/pss_settings.json
