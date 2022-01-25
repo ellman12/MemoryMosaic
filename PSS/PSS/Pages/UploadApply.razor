@@ -49,21 +49,18 @@
             if (errorChecked && allFiles[i].alreadyInLib == false) continue; //If this item has an error skip it
             if (neitherChecked && !allFiles[i].dataPresent && !allFiles[i].alreadyInLib) continue; //Only show items with no warnings or errors
             
-            int ii = i; @*Using just i caused crash*@
-            string path = allFiles[i].fullPath.Replace('\\', '/');
-
-            //shortPath is relative to wwwroot
-            string shortPath = path.Replace(S.uploadRootPath!, "");
-            shortPath = Path.GetFileName(S.uploadRootPath) + shortPath;
-            
-            string name = Path.GetFileName(path);
+            int ii = i; @*Necessary for some things like the <input>'s*@
             string dateString = allFiles[i].dateTaken.ToString("ddd, MMM d, yyy");
+            
+            //Get path relative to pss_upload
+            string shortPath = allFiles[i].fullPath.Replace(S.uploadFolderPath!, ""); //Cut out everything before "pss_upload" as not needed.
+            shortPath = Path.GetFileName(S.uploadFolderPath) + shortPath;
 
             <div class="itemDiv">
                 @{ string src = allFiles[i].thumbnail == null ? shortPath : "data:image/jpg;base64," + allFiles[i].thumbnail; }
                 <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src=@src alt="" loading="lazy"/>
 
-                <span class="filenameSpan">@name</span>
+                <span class="filenameSpan">@Path.GetFileName(shortPath)</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                 @if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
                 @if (infoChecked && allFiles[i].dataPresent){<span class="infoSpan">@allFiles[i].dateTakenSrc.ToString()</span>} @*Don't display now if DT is set to now*@

@@ -49,7 +49,13 @@ namespace PSS
             {
                 ServeUnknownFileTypes = true,
                 FileProvider = new PhysicalFileProvider(S.libFolderPath),
-                RequestPath = new PathString(S.requestPath)
+                RequestPath = new PathString(S.LIB_REQUEST_PATH)
+            });
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                ServeUnknownFileTypes = true,
+                FileProvider = new PhysicalFileProvider(S.uploadFolderPath),
+                RequestPath = new PathString(S.UPLOAD_REQUEST_PATH)
             });
 
             app.UseRouting();
