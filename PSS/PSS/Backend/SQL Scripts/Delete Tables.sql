@@ -1,5 +1,5 @@
-﻿DROP TABLE media;
-DROP TABLE media_trash;
-DROP TABLE albums;
-DROP TABLE album_entries;
-DROP TABLE album_entries_trash;
+﻿DROP TABLE IF EXISTS media;
+DROP TABLE IF EXISTS media_trash;
+DROP TABLE IF EXISTS albums;
+DROP TABLE IF EXISTS album_entries;
+DROP TABLE IF EXISTS album_entries_trash;
