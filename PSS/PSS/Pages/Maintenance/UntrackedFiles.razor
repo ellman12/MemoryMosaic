@@ -30,7 +30,7 @@
             string ext = Path.GetExtension(path);
             string name = Path.GetFileName(path);
 
-            string shortPath = path.Replace(S.libFolderPath, "").Replace('\\', '/');
+            string shortPath = path.Replace(S.libFolderPath!, "").Replace('\\', '/');
             shortPath = Path.GetFileName(S.libFolderPath) + shortPath;
 
             <div class="itemDiv">
