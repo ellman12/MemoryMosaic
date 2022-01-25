@@ -23,8 +23,8 @@
 }
 
 @code {
-    private static readonly string[] pngPaths = Directory.GetFiles(S.uploadRootPath, "*.png", SearchOption.AllDirectories);
-    private static readonly string[] jpgPaths = Directory.GetFiles(S.uploadRootPath, "*.jp*g", SearchOption.AllDirectories);
+    private static readonly string[] pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories);
+    private static readonly string[] jpgPaths = Directory.GetFiles(S.uploadFolderPath, "*.jp*g", SearchOption.AllDirectories);
     private static readonly string[] allPaths = pngPaths.Concat(jpgPaths).ToArray();
 
     private static string cmdVisibility = "hidden";
@@ -42,7 +42,7 @@
             else
             {
                 cmdVisibility = "visible";
-                command = $"scp {S.scpFlags} \"{_folder}\" \"{S.username}@{S.serverIP}:{S.uploadRootPath}\"";
+                command = $"scp {S.scpFlags} \"{_folder}\" \"{S.username}@{S.serverIP}:{S.uploadFolderPath}\"";
             }
         }
     }

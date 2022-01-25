@@ -23,7 +23,7 @@
 
         <div class="settings-pair">
             <span>Where to upload items for applying</span>
-            <input type="text" class="settings-pair" @bind="@uploadRootPath"/>
+            <input type="text" class="settings-pair" @bind="@uploadFolderPath"/>
         </div>
 
         <div class="settings-pair">
@@ -117,7 +117,7 @@
     private static string username = S.username;
     private static string serverIP = S.serverIP;
     private static string scpFlags = S.scpFlags;
-    private static string uploadRootPath = S.uploadRootPath;
+    private static string uploadFolderPath = S.uploadFolderPath;
     private static string libraryRootPath = S.libFolderPath;
     private static bool showPrompts = S.showPrompts;
     private static string backupFolderPath = S.backupFolderPath;
@@ -167,7 +167,7 @@
         album_entries_trash_missing = new List<string>();
 
         //Empty folders
-        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
+        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
         
@@ -188,7 +188,7 @@
         S.username = username;
         S.serverIP = serverIP;
         S.scpFlags = scpFlags;
-        S.uploadRootPath = uploadRootPath;
+        S.uploadFolderPath = uploadFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
         S.backupFolderPath = backupFolderPath;
@@ -201,7 +201,7 @@
         username = S.username;
         serverIP = S.serverIP;
         scpFlags = S.scpFlags;
-        uploadRootPath = S.uploadRootPath;
+        uploadFolderPath = S.uploadFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;
         backupFolderPath = S.backupFolderPath;
@@ -233,7 +233,7 @@
         album_entries_trash_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
         media_missing = media_missing.Concat(media_trash_missing).Concat(album_entries_missing).Concat(album_entries_trash_missing).ToList();
 
-        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
+        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
     }

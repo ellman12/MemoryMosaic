@@ -38,11 +38,11 @@
                     @if (media.thumbnail != null) //Video
                     {
                         <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.requestPath/@media.path" loading="lazy"/>
+                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     }
                     else
                     {
-                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="@S.requestPath/@media.path" alt="@S.requestPath/@media.path" loading="lazy"/>
+                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     }
                 </div>
             }

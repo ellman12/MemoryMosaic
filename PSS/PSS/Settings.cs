@@ -15,7 +15,7 @@ namespace PSS
         ///<summary>
         ///Where scp should upload files. 
         ///</summary>
-        [JsonProperty] public static string uploadRootPath;
+        [JsonProperty] public static string uploadFolderPath;
 
         ///<summary>
         ///The full path to the library folder on the server.
@@ -38,9 +38,12 @@ namespace PSS
         [JsonProperty] public static bool showPrompts;
         
         ///<summary>
-        ///Used (in Startup.cs) for accessing files outside of wwwroot.
+        ///Acts as a kind of shortcut to where the library folder is on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
         ///</summary>
-        public const string requestPath = "/pss_library";
+        public const string LIB_REQUEST_PATH = "/pss_library";
+
+        /// <summary>Same thing as above but for pss_upload.</summary>
+        public const string UPLOAD_REQUEST_PATH = "/pss_upload";
 
         ///<summary>
         ///The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
@@ -64,7 +67,7 @@ namespace PSS
         {
             new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(Environment.CurrentDirectory + "/pss_settings.json").Build();
             JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json"));
-            uploadRootPath = uploadRootPath.Replace('\\', '/');
+            uploadFolderPath = uploadFolderPath.Replace('\\', '/');
             libFolderPath = libFolderPath.Replace('\\', '/');
             backupFolderPath = backupFolderPath.Replace('\\', '/');
             tmpFolderPath = tmpFolderPath.Replace('\\', '/');
@@ -83,7 +86,7 @@ namespace PSS
             username = "elliott";
             serverIP = "localhost"; 
             scpFlags = "-r";
-            uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_upload"; //TODO: temp
+            uploadFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_upload"; //TODO: temp
             libFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_library"; //TODO: temp
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_backup"; //TODO: temp
             tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_tmp"; //TODO: temp

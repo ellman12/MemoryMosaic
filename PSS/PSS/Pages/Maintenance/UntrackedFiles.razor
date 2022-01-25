@@ -70,14 +70,14 @@
     private static void MoveBtnClick(int index)
     {
         string path = untrackedPaths[index];
-        File.Move(path, Path.Combine(S.uploadRootPath, Path.GetFileName(path)));
+        File.Move(path, Path.Combine(S.uploadFolderPath, Path.GetFileName(path)));
         untrackedPaths.RemoveAt(index);
     }
 
     private static void MoveAll()
     {
         foreach (string path in untrackedPaths)
-            File.Move(path, Path.Combine(S.uploadRootPath, Path.GetFileName(path)));
+            File.Move(path, Path.Combine(S.uploadFolderPath, Path.GetFileName(path)));
         untrackedPaths.Clear();
     }
 

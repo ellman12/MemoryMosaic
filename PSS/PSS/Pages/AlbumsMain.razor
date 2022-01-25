@@ -45,7 +45,7 @@
     { 
         <div class="album" onclick="location.href='/album-view/@album.id'"> @*Text and album thumbnail*@
             <div class="thumbnail">
-                @if (album.albumCover != ""){<img src="@S.requestPath/@album.albumCover" alt=""/>}
+                @if (album.albumCover != ""){<img src="@S.LIB_REQUEST_PATH/@album.albumCover" alt=""/>}
             </div>
             <span class="albumName">@album.name</span>
         </div>
