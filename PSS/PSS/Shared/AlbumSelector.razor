@@ -24,7 +24,7 @@
                 int ii = i;
                 <div @onclick="@(() => { checkedAlbums[ii] = !checkedAlbums[ii]; ClearFolderChecks(); checkedFolderIndex = -1; })" class="album">
                     <div class="coverDiv">
-                        @if (albums[i].albumCover != ""){<img src="@S.requestPath/@albums[i].albumCover" alt="">}
+                        @if (albums[i].albumCover != ""){<img src="@S.LIB_REQUEST_PATH/@albums[i].albumCover" alt="">}
                     </div>
                     <input type="checkbox" @bind="@checkedAlbums[ii]" @bind:event="oninput">
                     <span title="@albums[i].name">@albums[i].name</span>
@@ -39,7 +39,7 @@
                 int ii = i;
                 <div class="album" @onclick="@(() => { checkedFolderIndex = ii; ClearAlbumChecks(); ClearFolderChecks(); checkedFolders[ii] = true; })">
                     <div class="coverDiv">
-                        @if (folders[i].albumCover != ""){<img src="@S.requestPath/@folders[i].albumCover" alt="">}
+                        @if (folders[i].albumCover != ""){<img src="@S.LIB_REQUEST_PATH/@folders[i].albumCover" alt="">}
                     </div>
                     <input type="checkbox" @bind="@checkedFolders[ii]" @bind:event="oninput">
                     <span title="@folders[i].name">@folders[i].name</span>

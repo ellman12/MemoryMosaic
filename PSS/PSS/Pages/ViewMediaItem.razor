@@ -1,6 +1,5 @@
 @*Page for viewing full-sized images in Index*@
 @page "/view/{id}"
-@using PSS.Backend
 @layout EmptyLayout
 
 <ViewItem id="@id" MediaList="@mediaList" Page="view" ReturnPath="/" DateAdded="@C.GetDateAdded(Guid.Parse(id))"/>

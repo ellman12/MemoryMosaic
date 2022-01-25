@@ -87,7 +87,7 @@ Optional Parameters:
                         <a href="/album-view/@album.id">
                             <div class="album">
                                 <div class="coverDiv">
-                                    <img class="cover" src="@S.requestPath/@album.albumCover" alt="">
+                                    <img class="cover" src="@S.LIB_REQUEST_PATH/@album.albumCover" alt="">
                                 </div>
                                 <span title="@album.name">@album.name</span>
                             </div>
@@ -119,11 +119,11 @@ Optional Parameters:
 
         if (MediaList[index].thumbnail == null)
         {
-            <div @onkeydown="@ChangeImage" tabindex="0" id="viewDiv"><img onload="document.getElementById('viewDiv').focus()" src="@S.requestPath/@path" alt=""/></div>
+            <div @onkeydown="@ChangeImage" tabindex="0" id="viewDiv"><img onload="document.getElementById('viewDiv').focus()" src="@S.LIB_REQUEST_PATH/@path" alt=""/></div>
         }
         else
         {
-            <div id="viewDiv"><video src="@S.requestPath/@path" loop autofocus controls autoplay></video></div>
+            <div id="viewDiv"><video src="@S.LIB_REQUEST_PATH/@path" loop autofocus controls autoplay></video></div>
         }
         
         if (index + 1 < MediaList.Count)
