@@ -156,7 +156,7 @@
             string newDir = GenerateSortedDir(file.dateTaken);
             string newPath = Path.Combine(newDir, filename!); //Used for moving to new home on server.
             
-            string newShortPath = Path.Combine(GenerateDatePath(file.dateTaken), filename); //Don't need full path, just the short path (\2021\10 October\filename.png).
+            string newShortPath = Path.Combine(GenerateDatePath(file.dateTaken), filename).Replace('\\', '/'); //Don't need full path, just the short path (/2021/10 October/filename.png).
             allShortPaths.Add(newShortPath);
             Directory.CreateDirectory(newDir);
 
