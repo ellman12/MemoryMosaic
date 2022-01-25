@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using PSS;
 
+const string psqlPath = "C:/Program Files/PostgreSQL/14/bin/psql.exe";
+
 ConsoleColor ogColor = Console.ForegroundColor;
 Console.WriteLine("-------------------------------PSS Initialization-------------------------------");
 Console.WriteLine("This C# script will initialize the server for first time use.");
@@ -71,11 +73,20 @@ if (Console.ReadKey(true).Key == ConsoleKey.Q)
 
 Console.ForegroundColor = ogColor;
 
+//Create just the database PSS.
+ProcessStartInfo dbCreateCmd = new()
+{
+    FileName = psqlPath,
+    Arguments = $"-U postgres -f \"{Path.Combine(pssRoot, "Backend/SQL Scripts/Create Database.sql")}\""
+};
+Process.Start(dbCreateCmd)!.WaitForExit();
+
+//Everything else.
 ProcessStartInfo dbInitCmd = new()
 {
-    FileName = "C:/Program Files/PostgreSQL/14/bin/psql.exe",
-    Arguments = $"-U postgres -f \"{Path.Combine(pssRoot, "Backend/SQL Scripts/Server Init.sql")}\""
-};
+    FileName = psqlPath,
+    Arguments = $"-U postgres -d PSS -f \"{Path.Combine(pssRoot, "Backend/SQL Scripts/Server Init.sql")}\""
+}; //Note the "-d PSS" ↑. That is necessary to tell it which DB to connect to/use. Thus why the first command needs to be run first and separately.
 Process.Start(dbInitCmd)!.WaitForExit(); //User needs to enter password to get into database to run this ↑ script 
 
 Console.ForegroundColor = ConsoleColor.Green;
