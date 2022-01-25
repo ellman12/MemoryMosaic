@@ -48,7 +48,7 @@ Console.WriteLine("\nSaving settings...");
 Settings.username = serverUsername;
 Settings.serverIP = serverIP;
 Settings.scpFlags = "-r";
-Settings.uploadRootPath = pss_upload;
+Settings.uploadFolderPath = pss_upload;
 Settings.libFolderPath = pss_library;
 Settings.backupFolderPath = pss_backup;
 Settings.tmpFolderPath = pss_tmp;
