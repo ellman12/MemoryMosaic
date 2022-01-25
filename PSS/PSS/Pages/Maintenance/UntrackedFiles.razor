@@ -30,8 +30,8 @@
             string ext = Path.GetExtension(path);
             string name = Path.GetFileName(path);
 
-            string shortPath = path.Replace(S.libFolderFullPath, "").Replace('\\', '/');
-            shortPath = Path.GetFileName(S.libFolderFullPath) + shortPath;
+            string shortPath = path.Replace(S.libFolderPath, "").Replace('\\', '/');
+            shortPath = Path.GetFileName(S.libFolderPath) + shortPath;
 
             <div class="itemDiv">
                 @if (ext is ".jpg" or ".jpeg" or ".png")

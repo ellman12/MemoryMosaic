@@ -118,7 +118,7 @@
     private static string serverIP = S.serverIP;
     private static string scpFlags = S.scpFlags;
     private static string uploadRootPath = S.uploadRootPath;
-    private static string libraryRootPath = S.libFolderFullPath;
+    private static string libraryRootPath = S.libFolderPath;
     private static bool showPrompts = S.showPrompts;
     private static string backupFolderPath = S.backupFolderPath;
     private static string tmpFolderPath = S.tmpFolderPath;
@@ -167,7 +167,7 @@
         album_entries_trash_missing = new List<string>();
 
         //Empty folders
-        folderPaths = Directory.GetDirectories(S.libFolderFullPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
+        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
         
@@ -189,7 +189,7 @@
         S.serverIP = serverIP;
         S.scpFlags = scpFlags;
         S.uploadRootPath = uploadRootPath;
-        S.libFolderFullPath = libraryRootPath;
+        S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
@@ -202,7 +202,7 @@
         serverIP = S.serverIP;
         scpFlags = S.scpFlags;
         uploadRootPath = S.uploadRootPath;
-        libraryRootPath = S.libFolderFullPath;
+        libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
@@ -233,7 +233,7 @@
         album_entries_trash_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
         media_missing = media_missing.Concat(media_trash_missing).Concat(album_entries_missing).Concat(album_entries_trash_missing).ToList();
 
-        folderPaths = Directory.GetDirectories(S.libFolderFullPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
+        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadRootPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
     }
@@ -244,11 +244,11 @@
         mediaRowCount = Stats.CountMediaRows();
         albumsCount = Stats.CountAlbums();
         
-        DriveInfo driveInfo = new(S.libFolderFullPath);
+        DriveInfo driveInfo = new(S.libFolderPath);
         totalUsableDriveSize = driveInfo.TotalSize;
         freeDriveSpace = driveInfo.TotalFreeSpace;
         
-        DirectoryInfo dirInfo = new(S.libFolderFullPath);
+        DirectoryInfo dirInfo = new(S.libFolderPath);
         librarySize = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
 
         oldestItem = Stats.FindOldestItem();

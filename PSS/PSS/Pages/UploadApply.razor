@@ -208,7 +208,7 @@
     public static string GenerateDatePath(DateTime dateTaken) => Path.Combine(dateTaken.Year.ToString(), $"{dateTaken.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
     
     //This is for moving the file to its new home on the server. This is the full path to the item on the server.
-    public static string GenerateSortedDir(DateTime dateTaken) => Path.Combine(S.libFolderFullPath, GenerateDatePath(dateTaken));
+    public static string GenerateSortedDir(DateTime dateTaken) => Path.Combine(S.libFolderPath, GenerateDatePath(dateTaken));
     
     //Get if an item is already on the server (already in your library).
     private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));

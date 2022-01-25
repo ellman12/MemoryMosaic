@@ -20,7 +20,7 @@ namespace PSS
         ///<summary>
         ///The full path to the library folder on the server.
         ///</summary>
-        [JsonProperty] public static string libFolderFullPath;
+        [JsonProperty] public static string libFolderPath;
 
         ///<summary>
         ///Where to backup library and database.
@@ -65,7 +65,7 @@ namespace PSS
             new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(Environment.CurrentDirectory + "/pss_settings.json").Build();
             JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json"));
             uploadRootPath = uploadRootPath.Replace('\\', '/');
-            libFolderFullPath = libFolderFullPath.Replace('\\', '/');
+            libFolderPath = libFolderPath.Replace('\\', '/');
             backupFolderPath = backupFolderPath.Replace('\\', '/');
             tmpFolderPath = tmpFolderPath.Replace('\\', '/');
             
@@ -84,7 +84,7 @@ namespace PSS
             serverIP = "localhost"; 
             scpFlags = "-r";
             uploadRootPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_upload"; //TODO: temp
-            libFolderFullPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_library"; //TODO: temp
+            libFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_library"; //TODO: temp
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_backup"; //TODO: temp
             tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_tmp"; //TODO: temp
             showPrompts = true;

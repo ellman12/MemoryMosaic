@@ -21,7 +21,7 @@ namespace PSS.Backend
             di.Delete(true);
             Directory.CreateDirectory(S.backupFolderPath); 
             
-            FileSystem.CopyDirectory(S.libFolderFullPath, Path.Combine(S.backupFolderPath, "PSS Media Backup"));
+            FileSystem.CopyDirectory(S.libFolderPath, Path.Combine(S.backupFolderPath, "PSS Media Backup"));
             File.WriteAllText(Path.Combine(S.backupFolderPath, "Backed up on.txt"), DateTime.Now.ToString("M-d-yyyy h:mm:ss tt"));
             
             Process process = new(); //Backup entire database to a file
@@ -40,7 +40,7 @@ namespace PSS.Backend
         public static void RestoreBackup()
         {
             //Kept getting a stupid error like OP did when trying to do it the normal way but luckily SO comes in to save the day: https://serverfault.com/a/260610
-            FileSystem.CopyDirectory(Path.Combine(S.backupFolderPath, "PSS Media Backup"), S.libFolderFullPath);
+            FileSystem.CopyDirectory(Path.Combine(S.backupFolderPath, "PSS Media Backup"), S.libFolderPath);
 
             Process process = new(); //Backup entire database to a file
             ProcessStartInfo startInfo = new()
@@ -69,13 +69,13 @@ namespace PSS.Backend
         public static List<string> GetUntrackedLibFiles()
         {
             List<string> untrackedPaths = new(); //Items in lib folder but not in database
-            string[] paths = Directory.GetFiles(S.libFolderFullPath, "*", SearchOption.AllDirectories);
+            string[] paths = Directory.GetFiles(S.libFolderPath, "*", SearchOption.AllDirectories);
             List<string> mediaPaths = C.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
             List<string> mediaTrashPaths = C.LoadMediaTrashTable().Select(media => media.path).ToList();
 
             foreach (string fullPath in paths)
             {
-                string shortPath = fullPath.Replace(S.libFolderFullPath, "");
+                string shortPath = fullPath.Replace(S.libFolderPath, "");
                 if (shortPath.StartsWith('\\') || shortPath.StartsWith('/')) shortPath = shortPath[1..];
                 
                 if (!mediaPaths.Contains(shortPath) && !mediaTrashPaths.Contains(shortPath)) //If find an item not in library add to list
@@ -111,7 +111,7 @@ namespace PSS.Backend
                 while (reader.Read())
                 {
                     string shortPath = reader.GetString(0);
-                    string fullPath = Path.Combine(S.libFolderFullPath, shortPath);
+                    string fullPath = Path.Combine(S.libFolderPath, shortPath);
                     if (!File.Exists(fullPath))
                         missingFiles.Add(shortPath);
                 }
