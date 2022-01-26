@@ -113,7 +113,7 @@
         {
             C.UAFile file = new()
             {
-                fullPath = path,
+                fullPath = path.Replace('\\', '/'),
                 shortPath = null,
                 thumbnail = path.Contains(".mp4") || path.Contains(".mkv") ? F.GenerateThumbnail(path) : null
             };
