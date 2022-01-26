@@ -42,7 +42,7 @@ namespace PSS
         ///</summary>
         public const string LIB_REQUEST_PATH = "/pss_library";
 
-        /// <summary>Same thing as above but for pss_upload.</summary>
+        ///<summary>Same thing as above but for pss_upload.</summary>
         public const string UPLOAD_REQUEST_PATH = "/pss_upload";
 
         ///<summary>
