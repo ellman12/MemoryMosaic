@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Compression;
+using System.Threading.Tasks;
 
 namespace PSS.Backend
 {
-    ///<summary>
-    ///Static class of misc functions.
-    ///</summary>
+    ///<summary>Static class of misc functions.</summary>
     public static class Functions
     {
         ///<summary>
@@ -78,6 +79,33 @@ namespace PSS.Backend
 
             //Then convert that file's bytes into its base64 equivalent. This is stored in the DB as the thumbnail (no actual file required).
             return Convert.ToBase64String(bytes);
+        }
+
+        ///<summary>Copy the supplied full paths to the Download Folder in pss_tmp.</summary>
+        private static void CopyItemsToZipPath(List<string> fullPaths)
+        {
+            string folderToZip = Path.Combine(S.tmpFolderPath, "Download Folder");
+            Directory.CreateDirectory(folderToZip);
+            
+            foreach(string path in fullPaths)
+            {
+                string filename = Path.GetFileName(path);
+                string destPath = Path.Combine(folderToZip, filename);
+                File.Copy(path, destPath);
+            }
+        }
+        
+        ///<summary>Zips up the items in the Download Folder in pss_tmp.</summary>
+        ///<returns>Path to the newly zipped folder.</returns>
+        public static async Task<string> CreateDownloadZip()
+        {
+            string folderToZip = Path.Combine(S.tmpFolderPath, "Download Folder");
+            
+            string zipPath = Path.Combine(S.tmpFolderPath, $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip");
+            await Task.Run(() => ZipFile.CreateFromDirectory(folderToZip, zipPath));
+
+            await Task.Run(() => Directory.Delete(folderToZip, true)); //Not needed after it's zipped.
+            return zipPath;
         }
     }
 }
