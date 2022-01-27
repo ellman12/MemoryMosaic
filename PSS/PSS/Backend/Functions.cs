@@ -96,16 +96,17 @@ namespace PSS.Backend
         }
         
         ///<summary>Zips up the items in the Download Folder in pss_tmp.</summary>
-        ///<returns>Path to the newly zipped folder.</returns>
+        ///<returns>Zip file's filename.</returns>
         public static async Task<string> CreateDownloadZip()
         {
             string folderToZip = Path.Combine(S.tmpFolderPath, "Download Folder");
-            
-            string zipPath = Path.Combine(S.tmpFolderPath, $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip");
+
+            string filename = $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
+            string zipPath = Path.Combine(S.tmpFolderPath, filename);
             await Task.Run(() => ZipFile.CreateFromDirectory(folderToZip, zipPath));
 
             await Task.Run(() => Directory.Delete(folderToZip, true)); //Not needed after it's zipped.
-            return zipPath;
+            return filename;
         }
     }
 }

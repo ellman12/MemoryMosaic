@@ -45,6 +45,8 @@ namespace PSS
         ///<summary>Same thing as above but for pss_upload.</summary>
         public const string UPLOAD_REQUEST_PATH = "/pss_upload";
 
+        public const string TMP_REQUEST_PATH = "/pss_tmp";
+
         ///<summary>
         ///The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
         ///</summary>
