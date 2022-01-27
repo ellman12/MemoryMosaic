@@ -81,17 +81,17 @@ namespace PSS.Backend
             return Convert.ToBase64String(bytes);
         }
 
-        ///<summary>Copy the supplied full paths to the Download Folder in pss_tmp.</summary>
-        private static void CopyItemsToZipPath(List<string> fullPaths)
+        ///<summary>Copy the supplied short paths to the Download Folder in pss_tmp.</summary>
+        public static void CopyItemsToZipPath(List<string> shortPaths)
         {
             string folderToZip = Path.Combine(S.tmpFolderPath, "Download Folder");
             Directory.CreateDirectory(folderToZip);
             
-            foreach(string path in fullPaths)
+            foreach(string shortPath in shortPaths)
             {
-                string filename = Path.GetFileName(path);
-                string destPath = Path.Combine(folderToZip, filename);
-                File.Copy(path, destPath);
+                string fullPath = Path.Combine(S.libFolderPath, shortPath);
+                string destPath = Path.Combine(folderToZip, Path.GetFileName(shortPath));
+                File.Copy(fullPath, destPath);
             }
         }
         
