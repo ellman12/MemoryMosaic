@@ -57,6 +57,12 @@ namespace PSS
                 FileProvider = new PhysicalFileProvider(S.uploadFolderPath),
                 RequestPath = new PathString(S.UPLOAD_REQUEST_PATH)
             });
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                ServeUnknownFileTypes = true,
+                FileProvider = new PhysicalFileProvider(S.tmpFolderPath),
+                RequestPath = new PathString(S.TMP_REQUEST_PATH)
+            });
 
             app.UseRouting();
             app.UseEndpoints(endpoints =>

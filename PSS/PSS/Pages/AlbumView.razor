@@ -25,6 +25,7 @@
         </div>
 
         <div id="buttons">
+            <button class="iconBtn"><a style="text-decoration: none" class="material-icons-outlined" @onclick="@DownloadSelected" href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">file_download</a></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@(() => albumsVis = "visible")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
             <button class="iconBtn" style="visibility: @vis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref starChoiceVis))"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
@@ -104,6 +105,8 @@
     
     private static string starChoiceVis;
     
+    private static string zipFilename;
+
     private async void UpdateStars(bool starred)
     {
         C.UpdateStarred(selectedItems, starred);
@@ -156,6 +159,12 @@
 
     [Inject]
     public IJSRuntime JSRuntime { get; set; }
+    
+    private static async void DownloadSelected()
+    {
+        F.CopyItemsToZipPath(selectedItems);
+        zipFilename = await F.CreateDownloadZip();
+    }
 
     private async Task ToggleCheck(string id) //id = string path
     {
