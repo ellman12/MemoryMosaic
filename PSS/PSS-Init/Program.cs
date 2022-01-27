@@ -99,4 +99,4 @@ Console.WriteLine(pssRoot);
 Console.ForegroundColor = ogColor;
 Console.WriteLine("and run this command:");
 Console.ForegroundColor = ConsoleColor.Cyan;
-Console.WriteLine("dotnet (watch? idk if watch is needed) run"); //TODO
+Console.WriteLine("dotnet run");
