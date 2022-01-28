@@ -15,6 +15,8 @@
 @code {
     [Parameter, EditorRequired]
     public List<C.Album> Albums { get; set; }
+
+    public static event EventHandler AlbumCreated;
         
     private static string newAlbumBtnIcon;
     private static string albumInputDisplay;
@@ -66,5 +68,6 @@
         albumInputDisplay = "none";
         confirmBtnDisplay = "none";
         folderChecked = false;
+        AlbumCreated?.Invoke(this, EventArgs.Empty);
     }
 }
