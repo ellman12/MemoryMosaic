@@ -23,7 +23,8 @@ For right now PSS will probably only work on a Windows machine but adding Linux 
 ## How to Use and Setup
 On the server, install .NET 6 and PostgreSQL (with all the default settings and whatnot). Then, cd into PSS-Init (Photos-Storage-Server/PSS/PSS-Init), and run<br>
 ```dotnet run``` <br>
-and follow the steps/prompts. That should initialize the server automatically.
+and follow the steps/prompts. That should initialize the server automatically.<br>
+One more thing you will need to install and add to your PATH thing is ffmpeg: https://www.ffmpeg.org/
 
 ## Contributing
 Feel free to open a PR or shoot me a message if you have ideas for PSS or you spot a bug 🐛. 
