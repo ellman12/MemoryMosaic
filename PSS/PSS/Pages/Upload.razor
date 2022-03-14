@@ -4,12 +4,18 @@
 <link href="css/Upload.css" rel="stylesheet"/>
 
 @{
+    pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories);
+    jpgPaths = Directory.GetFiles(S.uploadFolderPath, "*.jp*g", SearchOption.AllDirectories);
+    allPaths = pngPaths.Concat(jpgPaths).ToArray();
+
     <div id="baseContainer">
         @if (allPaths.Length > 0)
         {
             <div id="applyContainer">
                 <span>Items found on server waiting to be added</span>
-                <button class="textBtn"><span class="material-icons-outlined">add_photo_alternate</span><a href="apply-upload">Go to Upload Apply</a></button>
+                <button class="textBtn">
+                    <span class="material-icons-outlined">add_photo_alternate</span><a href="apply-upload">Go to Upload Apply</a>
+                </button>
             </div>
         }
 
@@ -23,9 +29,9 @@
 }
 
 @code {
-    private static readonly string[] pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories);
-    private static readonly string[] jpgPaths = Directory.GetFiles(S.uploadFolderPath, "*.jp*g", SearchOption.AllDirectories);
-    private static readonly string[] allPaths = pngPaths.Concat(jpgPaths).ToArray();
+    private static string[] pngPaths;
+    private static string[] jpgPaths;
+    private static string[] allPaths;
 
     private static string cmdVisibility = "hidden";
     private static string command = "";
