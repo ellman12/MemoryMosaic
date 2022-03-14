@@ -16,7 +16,7 @@ namespace PSS.Backend
             Filename,
             Now //DateTime.Now
         }
-        
+
         //Get the Date Taken for an item, if possible.
         //Return true if data was found or false if using DateTime.Now
         //Steps:
@@ -81,23 +81,31 @@ namespace PSS.Backend
         ///<returns>True if this file had data.</returns>
         private static bool GetMp4Date(string path, out DateTime dateTaken, out DateTakenSrc src)
         {
-            IEnumerable<MetadataExtractor.Directory> directories = QuickTimeMetadataReader.ReadMetadata(new FileStream(path, FileMode.Open));
-            QuickTimeMovieHeaderDirectory directory = directories.OfType<QuickTimeMovieHeaderDirectory>().FirstOrDefault();
-
-            if (directory == null)
+            dateTaken = DateTime.Now;
+            src = DateTakenSrc.Now;
+            
+            try
             {
+                IEnumerable<MetadataExtractor.Directory> directories = QuickTimeMetadataReader.ReadMetadata(new FileStream(path, FileMode.Open));
+                QuickTimeMovieHeaderDirectory directory = directories.OfType<QuickTimeMovieHeaderDirectory>().FirstOrDefault();
+
+                if (directory != null && directory.TryGetDateTime(QuickTimeMovieHeaderDirectory.TagCreated, out dateTaken))
+                {
+                    src = DateTakenSrc.Metadata;
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                src = DateTakenSrc.Now;
+                bool hasData = GetFilenameTimestamp(Path.GetFileName(path), out dateTaken, ref src);
+                if (hasData) return true;
+                
                 dateTaken = DateTime.Now;
                 src = DateTakenSrc.Now;
                 return false;
             }
 
-            if (directory.TryGetDateTime(QuickTimeMovieHeaderDirectory.TagCreated, out dateTaken))
-            {
-                src = DateTakenSrc.Metadata;
-                return true;
-            }
-
-            src = DateTakenSrc.Now;
             return false;
         }
 
@@ -114,11 +122,6 @@ namespace PSS.Backend
                 if (filename.StartsWith("Screenshot_")) //If Android screenshot. E.g., 'Screenshot_20201028-141626_Messages.jpg'
                 {
                     timestamp = filename.Substring(11, 8) + filename.Substring(20, 6); //Strip the chars we don't want.
-                    timestamp = timestamp.Insert(4, "-");
-                    timestamp = timestamp.Insert(7, "-");
-                    timestamp = timestamp.Insert(10, " ");
-                    timestamp = timestamp.Insert(13, ":");
-                    timestamp = timestamp.Insert(16, ":");
                 }
                 else if (filename.StartsWith("IMG_") || filename.StartsWith("VID_"))
                 {
@@ -130,7 +133,7 @@ namespace PSS.Backend
                     timestamp = filename[..(timestamp.Length - 4)]; //Remove extension https://stackoverflow.com/questions/15564944/remove-the-last-three-characters-from-a-string
                     timestamp = timestamp.Replace("-", "").Replace(" ", "");
                 }
-                else if (filename[8] == '_') //A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones. Not 100% sure.
+                else if (filename[8] == '_' && !filename.StartsWith("messages")) //A filename like this: '20201031_090459.jpg'. I think these come from (Android(?)) phones. Not 100% sure.
                 {
                     timestamp = filename[..8] + filename.Substring(9, 6);
                 }
@@ -148,6 +151,10 @@ namespace PSS.Backend
                     timestamp = filename[..14];
                 }
                 else if (filename.Contains("105600") && filename.EndsWith("_1.png")) //Might just be another Terraria-exclusive thing '105600_20201122143721_1.png'
+                {
+                    timestamp = filename.Substring(7, 14);
+                }
+                else if (filename.StartsWith("413150") && filename.EndsWith("_1.png")) //Stardew Valley uncompressed screenshots
                 {
                     timestamp = filename.Substring(7, 14);
                 }
@@ -172,6 +179,7 @@ namespace PSS.Backend
                 else
                     hasData = ParseTimestamp(timestamp, out dateTaken, ref src);
             }
+
             return hasData;
         }
 
@@ -179,8 +187,12 @@ namespace PSS.Backend
         //Returns false if unable to parse.
         private static bool ParseTimestamp(string timestamp, out DateTime dateTime, ref DateTakenSrc src)
         {
-            if (DateTime.TryParse(timestamp, out dateTime) || timestamp!.Length != 14) return false;
-            
+            if (timestamp.Length < 14 || DateTime.TryParse(timestamp, out dateTime))
+            {
+                dateTime = DateTime.Now;
+                return false;
+            }
+
             int year = Parse(timestamp[..4]);
             int month = Parse(timestamp[4..6]);
             int day = Parse(timestamp[6..8]);
