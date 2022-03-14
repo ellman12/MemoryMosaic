@@ -27,7 +27,7 @@
     <label><input type="checkbox" @bind="@neitherChecked">Neither</label>
     <label style="color: yellow"><input type="checkbox" @bind="@warningChecked">Warning</label>
     <label style="color: red"><input type="checkbox" @bind="@errorChecked">Error</label>
-    <label style="color: #93ccdc"><input type="checkbox" @bind="@infoChecked">Show Info</label>
+    <label style="color: #00af00"><input type="checkbox" @bind="@infoChecked">Show Info</label>
 </div>
 
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
