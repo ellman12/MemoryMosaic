@@ -7,11 +7,11 @@ const string psqlPath = "C:/Program Files/PostgreSQL/14/bin/psql.exe";
 ConsoleColor ogColor = Console.ForegroundColor;
 Console.WriteLine("-------------------------------PSS Initialization-------------------------------");
 Console.WriteLine("This C# script will initialize the server for first time use.");
-Console.WriteLine("Enter root path to where the PSS project is:");
+Console.WriteLine("Enter root path to where the PSS project (PSS.csproj) is.\nIt should look something like:\nC:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS\nEnter it here:");
 string pssRoot = Console.ReadLine()!;
 
 Console.WriteLine("\nThese settings can be changed later when PSS is running.");
-Console.WriteLine("Enter folder path to where you want your library stored:");
+Console.WriteLine("Enter folder path to where you want your library stored.");
 string pss_library = Console.ReadLine()!;
 if (!pss_library.EndsWith("pss_library"))
       pss_library = Path.Combine(pss_library, "pss_library");
