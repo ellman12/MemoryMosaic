@@ -30,30 +30,18 @@ namespace PSS.Backend
             dateTaken = DateTime.Now;
             var src = DateTakenSrc.Now;
 
-            switch (Path.GetExtension(path))
+            hasData = Path.GetExtension(path) switch
             {
-                case ".jpg" or ".jpeg":
-                    hasData = GetJpgDate(path, out dateTaken, ref src);
-                    break;
-
-                case ".png":
-                    hasData = GetFilenameTimestamp(Path.GetFileName(path), out dateTaken, ref src);
-                    break;
-
-                case ".mp4":
-                    hasData = GetMp4Date(path, out dateTaken, out src);
-                    break;
-
-                case ".mkv":
-                    hasData = GetFilenameTimestamp(Path.GetFileName(path), out dateTaken, ref src);
-                    break;
-            }
+                ".jpg" or ".jpeg" or ".png" or ".gif" => GetImgDateTaken(path, out dateTaken, ref src),
+                ".mp4" or ".mkv" => GetVideoDateTaken(path, out dateTaken, out src),
+                _ => false
+            };
 
             return (hasData, src);
         }
 
         //Try and examine JPG metadata. If necessary, it analyzes filename. If can't find data in either, default to DateTime.Now.
-        private static bool GetJpgDate(string path, out DateTime dateTaken, ref DateTakenSrc src)
+        private static bool GetImgDateTaken(string path, out DateTime dateTaken, ref DateTakenSrc src)
         {
             bool hasData;
             try
@@ -79,7 +67,7 @@ namespace PSS.Backend
 
         ///<summary>Get when an mp4 file was taken.</summary>
         ///<returns>True if this file had data.</returns>
-        private static bool GetMp4Date(string path, out DateTime dateTaken, out DateTakenSrc src)
+        private static bool GetVideoDateTaken(string path, out DateTime dateTaken, out DateTakenSrc src)
         {
             dateTaken = DateTime.Now;
             src = DateTakenSrc.Now;

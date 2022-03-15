@@ -76,10 +76,7 @@
 @code{
     AlbumSelector albumSelector = new();
 
-    private static List<string> pngPaths;
-    private static List<string> jpgPaths;
-    private static List<string> mp4Paths;
-    private static List<string> mkvPaths;
+    private static List<string> pngPaths, jpgPaths, gifPaths, mp4Paths, mkvPaths;
     private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<string> allFullPaths;
     private static List<C.UAFile> allFiles;
@@ -104,9 +101,10 @@
         //Get all supported file types in pss_upload and group them together in a single List.
         pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories).ToList();
         jpgPaths = Directory.GetFiles(S.uploadFolderPath, "*.jp*g", SearchOption.AllDirectories).ToList();
+        gifPaths = Directory.GetFiles(S.uploadFolderPath, "*.gif", SearchOption.AllDirectories).ToList();
         mp4Paths = Directory.GetFiles(S.uploadFolderPath, "*.mp4", SearchOption.AllDirectories).ToList();
         mkvPaths = Directory.GetFiles(S.uploadFolderPath, "*.mkv", SearchOption.AllDirectories).ToList();
-        allFullPaths = pngPaths.Concat(jpgPaths).Concat(mp4Paths).Concat(mkvPaths).ToArray().ToList();
+        allFullPaths = jpgPaths.Concat(pngPaths).Concat(gifPaths).Concat(mp4Paths).Concat(mkvPaths).ToList();
         allFiles = new List<C.UAFile>(allFullPaths.Count);
 
         foreach (string path in allFullPaths)
