@@ -4,25 +4,28 @@
 <link href="css/Upload.css" rel="stylesheet"/>
 
 @{
-    pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories);
     jpgPaths = Directory.GetFiles(S.uploadFolderPath, "*.jp*g", SearchOption.AllDirectories);
-    allPaths = pngPaths.Concat(jpgPaths).ToArray();
+    pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories);
+    gifPaths = Directory.GetFiles(S.uploadFolderPath, "*.gif", SearchOption.AllDirectories);
+    mp4Paths = Directory.GetFiles(S.uploadFolderPath, "*.mp4", SearchOption.AllDirectories);
+    mkvPaths = Directory.GetFiles(S.uploadFolderPath, "*.mkv", SearchOption.AllDirectories);
+    allPaths = jpgPaths.Concat(pngPaths).Concat(gifPaths).Concat(mp4Paths).Concat(mkvPaths).ToArray();
 
-    <div id="baseContainer">
+    <div id="mainDiv">
         @if (allPaths.Length > 0)
         {
-            <div id="applyContainer">
-                <span>Items found on server waiting to be added</span>
-                <button class="textBtn">
-                    <span class="material-icons-outlined">add_photo_alternate</span><a href="apply-upload">Go to Upload Apply</a>
-                </button>
-            </div>
+            <span style="font-size: 25px; margin-bottom: 20px">Items Found in pss_upload Waiting to Be Added to Library</span>
+            <button class="textBtn">
+                <span class="material-icons-outlined">add_photo_alternate</span><a href="apply-upload">Go to Upload Apply</a>
+            </button>
         }
+
+        <button class="textBtn">
+            <span class="material-icons-outlined">drive_folder_upload</span><a href="gpo-import">Import a Folder Sorted with GPO</a>
+        </button>
     </div>
 }
 
 @code {
-    private static string[] pngPaths;
-    private static string[] jpgPaths;
-    private static string[] allPaths;
+    private static string[] jpgPaths, pngPaths, gifPaths, mp4Paths, mkvPaths, allPaths;
 }
