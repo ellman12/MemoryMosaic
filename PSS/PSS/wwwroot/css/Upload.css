@@ -28,24 +28,3 @@
 #applyContainer > button {
     margin-left: 24px;
 }
-
-#folderContainer {
-    width: 100%;
-    height: 20%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-}
-
-#folderContainer > span {
-    font-size: 25px;
-    margin-top: 11px;
-}
-
-#folderContainer > input[type="text"] {
-    color: black;
-    font-size: 20px;
-    margin-top: 10px;
-    width: 474px;
-}

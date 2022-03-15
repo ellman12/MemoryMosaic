@@ -18,13 +18,6 @@
                 </button>
             </div>
         }
-
-        <div id="folderContainer">
-            <span>Enter the path to a folder you want to upload</span><br><br>
-            <input type="text" placeholder="Enter a folder path here" @bind="Folder" @bind:event="oninput"/>
-            <span style="visibility: @cmdVisibility; margin-top: 40px">Run this command to upload your folder:</span>
-            <span style="visibility: @cmdVisibility">@command</span>
-        </div>
     </div>
 }
 
@@ -32,25 +25,4 @@
     private static string[] pngPaths;
     private static string[] jpgPaths;
     private static string[] allPaths;
-
-    private static string cmdVisibility = "hidden";
-    private static string command = "";
-    private static string _folder = "";
-
-    private static string Folder
-    {
-        get => _folder;
-        set
-        {
-            _folder = value;
-            if (_folder == "")
-                cmdVisibility = "hidden";
-            else
-            {
-                cmdVisibility = "visible";
-                command = $"scp {S.scpFlags} \"{_folder}\" \"{S.username}@{S.serverIP}:{S.uploadFolderPath}\"";
-            }
-        }
-    }
-
 }
