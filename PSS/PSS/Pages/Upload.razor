@@ -23,9 +23,12 @@
         <button class="textBtn">
             <span class="material-icons-outlined">drive_folder_upload</span><a href="gpo-import">Import a Folder in pss_upload Sorted with GPO</a>
         </button>
+        
+        <input style="color: black; width: 400px" placeholder="Enter the Full Path to a GPO Folder" type="text" @bind="gpoFolderPath" @bind:event="oninput"/>
     </div>
 }
 
 @code {
     private static string[] jpgPaths, pngPaths, gifPaths, mp4Paths, mkvPaths, allPaths;
+    public static string gpoFolderPath = ""; //Actually used in ImportGPOFolder.razor
 }
