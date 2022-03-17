@@ -16,3 +16,9 @@
 #mainDiv > .textBtn {
     width: fit-content;
 }
+
+#mainDiv > .bigText {
+    font-size: 25px;
+    margin-bottom: 20px;
+    margin-top: 70px;
+}
