@@ -75,7 +75,7 @@
 @code{
     AlbumSelector albumSelector = new();
 
-    private static List<string> pngPaths, jpgPaths, gifPaths, mp4Paths, mkvPaths;
+    private static List<string> pngPaths, jpgPaths, gifPaths, mp4Paths, mkvPaths, movPaths;
     private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<string> allFullPaths;
     private static List<C.UAFile> allFiles;
@@ -103,7 +103,8 @@
         gifPaths = Directory.GetFiles(Upload.GpoFolderPath, "*.gif", SearchOption.AllDirectories).ToList();
         mp4Paths = Directory.GetFiles(Upload.GpoFolderPath, "*.mp4", SearchOption.AllDirectories).ToList();
         mkvPaths = Directory.GetFiles(Upload.GpoFolderPath, "*.mkv", SearchOption.AllDirectories).ToList();
-        allFullPaths = jpgPaths.Concat(pngPaths).Concat(gifPaths).Concat(mp4Paths).Concat(mkvPaths).ToList();
+        movPaths = Directory.GetFiles(Upload.GpoFolderPath, "*.mov", SearchOption.AllDirectories).ToList();
+        allFullPaths = jpgPaths.Concat(pngPaths).Concat(gifPaths).Concat(mp4Paths).Concat(mkvPaths).Concat(movPaths).ToList();
         allFiles = new List<C.UAFile>(allFullPaths.Count);
 
         foreach (string fullPath in allFullPaths)
@@ -138,7 +139,7 @@
             {
                 fullPath = fullPath.Replace('\\', '/'),
                 shortPath = null,
-                thumbnail = fullPath.Contains(".mp4") || fullPath.Contains(".mkv") ? F.GenerateThumbnail(fullPath) : null,
+                thumbnail = fullPath.Contains(".mp4") || fullPath.Contains(".mkv") || fullPath.Contains(".mov") ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
                 dataPresent = hasTimeData,
                 dateTakenSrc = timeSrc,

@@ -18,29 +18,26 @@ namespace PSS.Backend
         }
 
         //Get the Date Taken for an item, if possible.
-        //Return true if data was found or false if using DateTime.Now
-        //Steps:
-        //1. Determine type.
-        //2. Try reading embedded metadata (if the type is even capable of doing so).
-        //3. If no metadata found, try reading filename.
-        //4. If all else fails, set it to date time right now.
+        //Return true if date taken was found either in the metadata or filename, or false if using DateTime.Now
         public static (bool, DateTakenSrc) GetDateTaken(string path, out DateTime dateTaken)
         {
             bool hasData = false;
             dateTaken = DateTime.Now;
             var src = DateTakenSrc.Now;
 
-            hasData = Path.GetExtension(path) switch
+            string ext = Path.GetExtension(path).ToLower(); //Some files might have extension in all caps for no reason.
+            hasData = ext switch
             {
                 ".jpg" or ".jpeg" or ".png" or ".gif" => GetImgDateTaken(path, out dateTaken, ref src),
-                ".mp4" or ".mkv" => GetVideoDateTaken(path, out dateTaken, out src),
+                ".mp4" or ".mkv" or ".mov" => GetVideoDateTaken(path, out dateTaken, out src),
                 _ => false
             };
 
             return (hasData, src);
         }
 
-        //Try and examine JPG metadata. If necessary, it analyzes filename. If can't find data in either, default to DateTime.Now.
+        //Try and examine metadata. If necessary, it analyzes filename. If can't find data in either, default to DateTime.Now.
+        //Returns true if had metadata.
         private static bool GetImgDateTaken(string path, out DateTime dateTaken, ref DateTakenSrc src)
         {
             bool hasData;
@@ -65,7 +62,7 @@ namespace PSS.Backend
             return hasData;
         }
 
-        ///<summary>Get when an mp4 file was taken.</summary>
+        ///<summary>Get when a video file was taken.</summary>
         ///<returns>True if this file had data.</returns>
         private static bool GetVideoDateTaken(string path, out DateTime dateTaken, out DateTakenSrc src)
         {

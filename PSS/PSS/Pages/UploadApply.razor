@@ -76,7 +76,7 @@
 @code{
     AlbumSelector albumSelector = new();
 
-    private static List<string> pngPaths, jpgPaths, gifPaths, mp4Paths, mkvPaths;
+    private static List<string> pngPaths, jpgPaths, gifPaths, mp4Paths, mkvPaths, movPaths;
     private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<string> allFullPaths;
     private static List<C.UAFile> allFiles;
@@ -99,21 +99,23 @@
         allShortPaths = new List<string>();
         
         //Get all supported file types in pss_upload and group them together in a single List.
-        pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories).ToList();
         jpgPaths = Directory.GetFiles(S.uploadFolderPath, "*.jp*g", SearchOption.AllDirectories).ToList();
+        pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories).ToList();
         gifPaths = Directory.GetFiles(S.uploadFolderPath, "*.gif", SearchOption.AllDirectories).ToList();
         mp4Paths = Directory.GetFiles(S.uploadFolderPath, "*.mp4", SearchOption.AllDirectories).ToList();
         mkvPaths = Directory.GetFiles(S.uploadFolderPath, "*.mkv", SearchOption.AllDirectories).ToList();
-        allFullPaths = jpgPaths.Concat(pngPaths).Concat(gifPaths).Concat(mp4Paths).Concat(mkvPaths).ToList();
+        movPaths = Directory.GetFiles(S.uploadFolderPath, "*.mov", SearchOption.AllDirectories).ToList();
+        allFullPaths = jpgPaths.Concat(pngPaths).Concat(gifPaths).Concat(mp4Paths).Concat(mkvPaths).Concat(movPaths).ToList();
         allFiles = new List<C.UAFile>(allFullPaths.Count);
 
         foreach (string path in allFullPaths)
         {
+            string extLower = Path.GetExtension(path).ToLower();
             C.UAFile file = new()
             {
                 fullPath = path.Replace('\\', '/'),
                 shortPath = null,
-                thumbnail = path.Contains(".mp4") || path.Contains(".mkv") ? F.GenerateThumbnail(path) : null
+                thumbnail = extLower is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(path) : null
             };
             (file.dataPresent, file.dateTakenSrc) = Metadata.GetDateTaken(path, out file.dateTaken);
             file.alreadyInLib = ItemExists(Path.GetFileName(path), file.dateTaken);
@@ -134,9 +136,6 @@
     //Clears an item from the Lists
     private static void DeleteBtnClick(int index, string path)
     {
-        // pngPaths.Remove(path);
-        // jpgPaths.Remove(path);
-        // allFullPaths.RemoveAt(index);
         allFiles.RemoveAt(index);
         UpdateStatus();
     }
@@ -190,8 +189,6 @@
     {
         foreach (Connection.UAFile file in allFiles.ToList().Where(file => file.alreadyInLib))
         {
-            // int index = allFullPaths.IndexOf(file.fullPath);
-            // allFullPaths.RemoveAt(index);
             allFiles.Remove(file);
             File.Delete(file.fullPath);
         }

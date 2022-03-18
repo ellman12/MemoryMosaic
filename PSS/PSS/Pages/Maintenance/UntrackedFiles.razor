@@ -38,7 +38,7 @@
                 {
                     <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
                 }
-                else if (ext is ".mp4" or ".mkv")
+                else if (ext is ".mp4" or ".mkv" or ".mov")
                 {
                     <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@("data:image/jpg;base64," + F.GenerateThumbnail(path))" alt="" loading="lazy"/>
                 }
