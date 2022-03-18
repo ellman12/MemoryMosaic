@@ -19,26 +19,25 @@ namespace PSS.Backend
 
         //Get the Date Taken for an item, if possible.
         //Return true if date taken was found either in the metadata or filename, or false if using DateTime.Now
-        public static (bool, DateTakenSrc) GetDateTaken(string path, out DateTime dateTaken)
+        public static bool GetDateTaken(string path, out DateTime dateTaken, out DateTakenSrc dateTakenSrc)
         {
-            bool hasData = false;
             dateTaken = DateTime.Now;
-            var src = DateTakenSrc.Now;
+            dateTakenSrc = DateTakenSrc.Now;
 
             string ext = Path.GetExtension(path).ToLower(); //Some files might have extension in all caps for no reason.
-            hasData = ext switch
+            bool hasData = ext switch
             {
-                ".jpg" or ".jpeg" or ".png" or ".gif" => GetImgDateTaken(path, out dateTaken, ref src),
-                ".mp4" or ".mkv" or ".mov" => GetVideoDateTaken(path, out dateTaken, out src),
+                ".jpg" or ".jpeg" or ".png" or ".gif" => GetImgDateTaken(path, out dateTaken, out dateTakenSrc),
+                ".mp4" or ".mkv" or ".mov" => GetVideoDateTaken(path, out dateTaken, out dateTakenSrc),
                 _ => false
             };
 
-            return (hasData, src);
+            return hasData;
         }
 
         //Try and examine metadata. If necessary, it analyzes filename. If can't find data in either, default to DateTime.Now.
         //Returns true if had metadata.
-        private static bool GetImgDateTaken(string path, out DateTime dateTaken, ref DateTakenSrc src)
+        private static bool GetImgDateTaken(string path, out DateTime dateTaken, out DateTakenSrc src)
         {
             bool hasData;
             try
@@ -55,7 +54,7 @@ namespace PSS.Backend
             }
             catch (ExifLibException) //No metadata in file.
             {
-                hasData = GetFilenameTimestamp(Path.GetFileName(path), out dateTaken, ref src);
+                hasData = GetFilenameTimestamp(Path.GetFileName(path), out dateTaken, out src);
                 if (!hasData) dateTaken = DateTime.Now;
             }
 
@@ -83,7 +82,7 @@ namespace PSS.Backend
             catch (Exception)
             {
                 src = DateTakenSrc.Now;
-                bool hasData = GetFilenameTimestamp(Path.GetFileName(path), out dateTaken, ref src);
+                bool hasData = GetFilenameTimestamp(Path.GetFileName(path), out dateTaken, out src);
                 if (hasData) return true;
                 
                 dateTaken = DateTime.Now;
@@ -97,7 +96,7 @@ namespace PSS.Backend
         //Used if program can't find date/time metadata in the file. Often, filenames will have a timestamp in them.
         //E.g., the Nintendo Switch generates pics/vids filenames like: 2018022016403700_s.mp4. This can be stripped and
         //converted into an actual DateTime object.
-        private static bool GetFilenameTimestamp(string filename, out DateTime dateTaken, ref DateTakenSrc src)
+        private static bool GetFilenameTimestamp(string filename, out DateTime dateTaken, out DateTakenSrc src)
         {
             bool hasData;
             string timestamp = ""; //The actual timestamp in the filename, without the extra chars we don't want. Converted to DateTime at the end.
@@ -162,7 +161,7 @@ namespace PSS.Backend
                     src = DateTakenSrc.Now;
                 }
                 else
-                    hasData = ParseTimestamp(timestamp, out dateTaken, ref src);
+                    hasData = ParseTimestamp(timestamp, out dateTaken, out src);
             }
 
             return hasData;
@@ -170,11 +169,12 @@ namespace PSS.Backend
 
         //Try parsing timestamp like this: "20211031155822"
         //Returns false if unable to parse.
-        private static bool ParseTimestamp(string timestamp, out DateTime dateTime, ref DateTakenSrc src)
+        private static bool ParseTimestamp(string timestamp, out DateTime dateTime, out DateTakenSrc src)
         {
             if (timestamp.Length < 14 || DateTime.TryParse(timestamp, out dateTime))
             {
                 dateTime = DateTime.Now;
+                src = DateTakenSrc.Now;
                 return false;
             }
 

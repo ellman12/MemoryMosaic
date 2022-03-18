@@ -67,7 +67,7 @@
                 @if (!allFiles[i].dataPresent && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found. DT set to now.</span>}
                 @if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
-                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii, allFiles[ii].fullPath))"><span class="material-icons">close</span></button>
+                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii))"><span class="material-icons">close</span></button>
             </div>
         }
     </div>
@@ -117,7 +117,7 @@
                 shortPath = null,
                 thumbnail = extLower is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(path) : null
             };
-            (file.dataPresent, file.dateTakenSrc) = Metadata.GetDateTaken(path, out file.dateTaken);
+            file.dataPresent = Metadata.GetDateTaken(path, out file.dateTaken, out file.dateTakenSrc);
             file.alreadyInLib = ItemExists(Path.GetFileName(path), file.dateTaken);
             allFiles.Add(file);
         }
@@ -134,7 +134,7 @@
     private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail != null).Count()} pictures and {0} videos pending upload. {allFiles.Count(c => !c.dataPresent)} Warnings. {allFiles.Count(c => c.alreadyInLib)} Errors.";
 
     //Clears an item from the Lists
-    private static void DeleteBtnClick(int index, string path)
+    private static void DeleteBtnClick(int index)
     {
         allFiles.RemoveAt(index);
         UpdateStatus();
