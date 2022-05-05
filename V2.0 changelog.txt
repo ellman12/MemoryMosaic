@@ -3,6 +3,7 @@ Upload page now has big text saying if there are no items in pss_upload to add t
 
 Improvements
 Replace some repetitive code for getting file paths with a single slick method.
+Remove last remaining fragments of scp crap.
 
 Fixes
 View Item page title is now "View Item - PSS" instead of just "View".

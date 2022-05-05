@@ -5,56 +5,32 @@ namespace PSS
 {
     public class Settings
     {
-        ///<summary>
-        ///Server username. Used for scp command for uploading
-        ///</summary>
-        [JsonProperty] public static string username;
         [JsonProperty] public static string serverIP;
-        [JsonProperty] public static string scpFlags;
-
-        ///<summary>
-        ///Where scp should upload files. 
-        ///</summary>
+        
+        ///<summary>The full path to the pss_upload folder on the server. This is where items live before being added to the library.</summary>
         [JsonProperty] public static string uploadFolderPath;
 
-        ///<summary>
-        ///The full path to the library folder on the server.
-        ///</summary>
+        ///<summary>The full path to the library folder (pss_library) on the server.</summary>
         [JsonProperty] public static string libFolderPath;
 
-        ///<summary>
-        ///Where to backup library and database.
-        ///</summary>
+        ///<summary>Where to backup library and database (pss_backup).</summary>
         [JsonProperty] public static string backupFolderPath;
         
-        ///<summary>
-        ///Where the temporary folder is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.
-        ///</summary>
+        ///<summary>Where the temporary folder (pss_tmp) is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.</summary>
         [JsonProperty] public static string tmpFolderPath;
         
-        ///<summary>
-        ///Should prompts be shown when doing things like deleting items and albums, etc.?
-        ///</summary>
+        ///<summary>Should prompts be shown when doing things like deleting items and albums, etc.?</summary>
         [JsonProperty] public static bool showPrompts;
         
-        ///<summary>
-        ///Acts as a kind of shortcut to where the library folder is on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
-        ///</summary>
+        ///<summary>Acts as a kind of shortcut to where the library, upload, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.</summary>
         public const string LIB_REQUEST_PATH = "/pss_library";
-
-        ///<summary>Same thing as above but for pss_upload.</summary>
         public const string UPLOAD_REQUEST_PATH = "/pss_upload";
-
         public const string TMP_REQUEST_PATH = "/pss_tmp";
 
-        ///<summary>
-        ///The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
-        ///</summary>
+        ///<summary>The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/</summary>
         public static string databaseBackupCommand;
 
-        ///<summary>
-        ///The command used to restore a previous pg_dump backup.
-        ///</summary>
+        ///<summary>The command used to restore a previous pg_dump backup.</summary>
         public static string databaseRestoreCommand;
 
         public static void WriteSettings()
@@ -85,9 +61,7 @@ namespace PSS
         //Delete .json file and reset settings to default.
         public static void ResetSettings()
         {
-            username = "elliott";
             serverIP = "localhost"; 
-            scpFlags = "-r";
             uploadFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_upload";
             libFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_library";
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_backup";

@@ -7,18 +7,8 @@
     <div>
         <span class="header">Settings</span>
         <div class="settings-pair">
-            <span>SSH Username</span>
-            <input type="text" class="settings-pair" @bind="@username"/>
-        </div>
-
-        <div class="settings-pair">
             <span>Server IP Address</span>
             <input type="text" class="settings-pair" @bind="@serverIP"/>
-        </div>
-
-        <div class="settings-pair">
-            <span>scp Flags</span>
-            <input type="text" class="settings-pair" @bind="@scpFlags"/>
         </div>
 
         <div class="settings-pair">
@@ -120,9 +110,7 @@
 
 @code {
     //Settings
-    private static string username = S.username;
     private static string serverIP = S.serverIP;
-    private static string scpFlags = S.scpFlags;
     private static string uploadFolderPath = S.uploadFolderPath;
     private static string libraryRootPath = S.libFolderPath;
     private static bool showPrompts = S.showPrompts;
@@ -201,9 +189,7 @@
 
     private static void ApplyBtnClicked()
     {
-        S.username = username;
         S.serverIP = serverIP;
-        S.scpFlags = scpFlags;
         S.uploadFolderPath = uploadFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
@@ -214,9 +200,7 @@
 
     private static void CancelBtnClicked()
     {
-        username = S.username;
         serverIP = S.serverIP;
-        scpFlags = S.scpFlags;
         uploadFolderPath = S.uploadFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;

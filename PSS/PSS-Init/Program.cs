@@ -47,9 +47,7 @@ string serverIP = Console.ReadLine()!;
 
 Console.ForegroundColor = ConsoleColor.Yellow;
 Console.WriteLine("\nSaving settings...");
-Settings.username = serverUsername;
 Settings.serverIP = serverIP;
-Settings.scpFlags = "-r";
 Settings.uploadFolderPath = pss_upload;
 Settings.libFolderPath = pss_library;
 Settings.backupFolderPath = pss_backup;
