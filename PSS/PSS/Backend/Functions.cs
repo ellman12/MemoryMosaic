@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PSS.Backend
@@ -79,6 +80,25 @@ namespace PSS.Backend
 
             //Then convert that file's bytes into its base64 equivalent. This is stored in the DB as the thumbnail (no actual file required).
             return Convert.ToBase64String(bytes);
+        }
+        
+        ///<summary>
+        ///<para>Return a List&lt;string&gt; of the full paths of all supported file types in the root path.</para>
+        ///Supported file types are: ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov", and case is ignored.
+        ///</summary>
+        public static List<string> GetSupportedFiles(string rootPath)
+        {
+            string[] validExts = {".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov"};
+            string[] allPaths = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories);
+            List<string> goodPaths = new();
+        
+            foreach (string path in allPaths)
+            {
+                if (validExts.Contains(Path.GetExtension(path)))
+                    goodPaths.Add(path);
+            }
+
+            return goodPaths;
         }
 
         ///<summary>Copy the supplied short paths to the Download Folder in pss_tmp.</summary>
