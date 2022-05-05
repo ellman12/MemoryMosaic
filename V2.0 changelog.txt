@@ -1,0 +1,2 @@
+Replace some repetitive code for getting file paths with a single slick method.
+Upload page now has big text saying if there are no items in pss_upload to add to library.
