@@ -104,34 +104,45 @@ button {
     outline: 1px solid white;
 }
 
-#datePicker {
+.inputBox {
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     background-color: black;
+    width: 235px;
     height: 125px;
     z-index: 999;
     border: 1px solid white;
 }
 
-#datePicker > span {
+.inputBox > span {
     margin-top: 10px;
     margin-right: 10px;
     margin-left: 10px;
-    display: block;
+    display: inline-block;
 }
 
-#datePicker > input[type="datetime-local"] {
+.inputBox > input {
     color: black;
     border: none;
     outline: none;
+    width: 210px;
     margin-top: 10px;
     margin-right: 10px;
     margin-left: 10px;
 }
 
-#datePicker > #buttons > button {
+.inputBox > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.inputBox > div > button {
     margin-top: 10px;
     margin-right: 5px;
     margin-bottom: 5px;
