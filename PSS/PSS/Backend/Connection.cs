@@ -1207,7 +1207,7 @@ namespace PSS.Backend
 
         ///<summary>Used in ViewItem for renaming the current item's file.</summary>
         ///<returns>The new short path (DB path) of this item. Blank string if DB error occurred.</returns>
-        public static string RenameFile(Guid uuid, string oldShortPath, string newFilename, string ext, DateTime dateTaken)
+        public static string RenameFile(string oldShortPath, string newFilename, string ext, DateTime dateTaken)
         {
             string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
             
@@ -1215,9 +1215,9 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE media SET path=@newShortPath WHERE uuid=@uuid", connection);
+                NpgsqlCommand cmd = new("UPDATE media SET path=@newShortPath WHERE path=@oldShortPath", connection);
                 cmd.Parameters.AddWithValue("@newShortPath", newShortPath);
-                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.Parameters.AddWithValue("@oldShortPath", oldShortPath);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)

@@ -19,21 +19,21 @@ Optional Parameters:
 <link href="/css/components/ViewItem.css" rel="stylesheet"/>
 
 @{
-    if (path == "null") //If URL contains a UUID that isn't present in the database.
+    if (shortPath == "null") //If URL contains a UUID that isn't present in the database.
     {
         <NavMenu/>
         <Error/>
     }
     else
     {
-        bool starred = C.GetStarred(path);
+        bool starred = C.GetStarred(shortPath);
         
         <KeyboardShortcuts
             CtrlD="@DeleteBtnClick"
             CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
             AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
             AltLeft="@(() => navigationManager.NavigateTo(ReturnPath))"
-            AltS="@(() => { C.UpdateStarred(path, !starred); StateHasChanged(); })"/>
+            AltS="@(() => { C.UpdateStarred(shortPath, !starred); StateHasChanged(); })"/>
 
         @*if (ShortcutsReference.visibility == "visible")
         {
@@ -50,12 +50,12 @@ Optional Parameters:
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
             <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))" title="Add to Album"><span class="material-icons-outlined">library_add</span></button>
             
-            <button class="iconBtn" @onclick="@(() => C.UpdateStarred(path, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
+            <button class="iconBtn" @onclick="@(() => C.UpdateStarred(shortPath, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
             </button>
             
             @if (AlbumID != -1 && MediaList[index].thumbnail == null)
-            { <button class="iconBtn" @onclick="@(() => C.UpdateAlbumCover(AlbumID, path))" title="Use As Album Cover">
+            { <button class="iconBtn" @onclick="@(() => C.UpdateAlbumCover(AlbumID, shortPath))" title="Use As Album Cover">
                     <span class="material-icons-outlined">collections</span>
                 </button>
             }
@@ -98,7 +98,7 @@ Optional Parameters:
             }
         </div>
         
-        <AlbumSelector SelectedItems="@(new List<string> {path})" @bind-AlbumsVis="@albumsVis"/>
+        <AlbumSelector SelectedItems="@(new List<string> {shortPath})" @bind-AlbumsVis="@albumsVis"/>
         
         <div class="inputBox" style="visibility: @editDateDivVis">
             <span>Enter new date taken:</span>
@@ -115,7 +115,7 @@ Optional Parameters:
             <span style="color: red; visibility: @filenameErrorVis">Error</span>
             <div>
                 <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
-                <button class="iconBtn" @onclick="@(() => { C.RenameFile(parsedID, path, newFilename, Path.GetExtension(path), ogDateTaken); editFilenameDivVis = "hidden"; })"><span class="material-icons-outlined">check</span></button>
+                <button class="iconBtn" @onclick="@(() => { C.RenameFile(shortPath, newFilename, Path.GetExtension(shortPath), ogDateTaken); editFilenameDivVis = "hidden"; })"><span class="material-icons-outlined">check</span></button>
             </div>
         </div>
         
@@ -130,11 +130,11 @@ Optional Parameters:
 
         if (MediaList[index].thumbnail == null)
         {
-            <div @onkeydown="@ChangeImage" tabindex="0" id="viewDiv"><img onload="document.getElementById('viewDiv').focus()" src="@S.LIB_REQUEST_PATH/@path" alt=""/></div>
+            <div @onkeydown="@ChangeImage" tabindex="0" id="viewDiv"><img onload="document.getElementById('viewDiv').focus()" src="@S.LIB_REQUEST_PATH/@shortPath" alt=""/></div>
         }
         else
         {
-            <div id="viewDiv"><video src="@S.LIB_REQUEST_PATH/@path" loop autofocus controls autoplay></video></div>
+            <div id="viewDiv"><video src="@S.LIB_REQUEST_PATH/@shortPath" loop autofocus controls autoplay></video></div>
         }
         
         if (index + 1 < MediaList.Count)
@@ -166,7 +166,7 @@ Optional Parameters:
     [Parameter]
     public int AlbumID { get; set; } = -1;
     
-    private static string path;
+    private static string shortPath;
     private static DateTime ogDateTaken; //Original
     private static DateTime newDateTaken;
     private static string editDateDivVis;
@@ -184,18 +184,18 @@ Optional Parameters:
     protected override void OnInitialized()
     {
         parsedID = Guid.Parse(id);
-        path = C.GetPathFromUuid(parsedID);
+        shortPath = C.GetPathFromUuid(parsedID);
         ogDateTaken = newDateTaken = C.GetDateTaken(parsedID);
         albumsVis = "hidden";
         infoVis = "hidden";
         moreOptionsVis = "hidden";
         editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
-        albums = C.GetAlbumsItemIn(path);
+        albums = C.GetAlbumsItemIn(shortPath);
         
         //Find index. Can't use IndexOf for reasons
         for (int i = 0; i < MediaList.Count; i++)
         {
-            if (MediaList[i].path == path)
+            if (MediaList[i].path == shortPath)
                 index = i;
         }
     }
@@ -209,7 +209,7 @@ Optional Parameters:
     private static void UpdateDateTaken()
     {
         editDateDivVis = "hidden";
-        C.UpdateDateTaken(path, newDateTaken);
+        C.UpdateDateTaken(shortPath, newDateTaken);
         ogDateTaken = newDateTaken;
     }
 
