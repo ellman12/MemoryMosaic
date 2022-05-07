@@ -133,6 +133,13 @@ button {
     margin-left: 10px;
 }
 
+.inputBox > #errorSpan {
+    font-size: 12px;
+    display: inline-block;
+    width: 120px;
+    color: red;
+}
+
 .inputBox > div {
     display: flex;
     flex-direction: row;

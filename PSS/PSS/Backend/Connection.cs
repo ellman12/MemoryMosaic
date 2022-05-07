@@ -1222,7 +1222,8 @@ namespace PSS.Backend
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                if (e.ErrorCode != -2147467259) //Duplicate key value error. No need to print this out since the error is caught.
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
                 return "";
             }
             finally

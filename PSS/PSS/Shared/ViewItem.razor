@@ -112,10 +112,10 @@ Optional Parameters:
         <div class="inputBox" style="visibility: @editFilenameDivVis">
             <span>Enter new filename:</span>
             <input title="" type="text" @bind="@newFilename" required/>
-            <span style="color: red; visibility: @filenameErrorVis">Error</span>
+            <span id="errorSpan" style="visibility: @filenameErrorVis">@filenameErrorText</span>
             <div>
-                <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
-                <button class="iconBtn" @onclick="@(() => { C.RenameFile(shortPath, newFilename, Path.GetExtension(shortPath), ogDateTaken); editFilenameDivVis = "hidden"; })"><span class="material-icons-outlined">check</span></button>
+                <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = filenameErrorVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
+                <button class="iconBtn" @onclick="@RenameFile"><span class="material-icons-outlined">check</span></button>
             </div>
         </div>
         
@@ -171,7 +171,7 @@ Optional Parameters:
     private static DateTime newDateTaken;
     private static string editDateDivVis;
 
-    private static string newFilename, editFilenameDivVis, filenameErrorVis;
+    private static string newFilename, editFilenameDivVis, filenameErrorVis, filenameErrorText;
 
     private static string albumsVis;
     private static string infoVis;
@@ -189,7 +189,9 @@ Optional Parameters:
         albumsVis = "hidden";
         infoVis = "hidden";
         moreOptionsVis = "hidden";
+        newFilename = Path.GetFileNameWithoutExtension(shortPath);
         editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
+        filenameErrorText = "";
         albums = C.GetAlbumsItemIn(shortPath);
         
         //Find index. Can't use IndexOf for reasons
@@ -211,6 +213,21 @@ Optional Parameters:
         editDateDivVis = "hidden";
         C.UpdateDateTaken(shortPath, newDateTaken);
         ogDateTaken = newDateTaken;
+    }
+
+    private static void RenameFile()
+    {
+        //Error occured
+        if (C.RenameFile(shortPath, newFilename, Path.GetExtension(shortPath), ogDateTaken) == "")
+        {
+            filenameErrorVis = "visible";
+            filenameErrorText = "A file with the same DateTaken and name already exists.";
+        }
+        else
+        {
+            editFilenameDivVis = "hidden";
+        }
+
     }
 
     private void ChangeImage(KeyboardEventArgs e)
