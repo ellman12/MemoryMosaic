@@ -76,7 +76,7 @@ Optional Parameters:
             <div class="dataDiv">
                 <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
                 <span>@Path.GetFileName(C.GetPathFromUuid(id))</span>
-                <button class="iconBtn" @onclick="@(() => editFileNameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+                <button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
             </div>
             
             @if (albums.Count > 0)
@@ -105,17 +105,17 @@ Optional Parameters:
             <input title="" type="datetime-local" @bind="@newDateTaken" required/>
             <div>
                 <button class="iconBtn" @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
-                <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+                <button class="iconBtn" @onclick="@UpdateDateTaken"><span class="material-icons-outlined">check</span></button>
             </div>
         </div>
         
-        <div class="inputBox" style="visibility: @editFileNameDivVis">
+        <div class="inputBox" style="visibility: @editFilenameDivVis">
             <span>Enter new filename:</span>
             <input title="" type="text" @bind="@newFilename" required/>
-            <span style="color: red">Error</span>
+            <span style="color: red; visibility: @filenameErrorVis">Error</span>
             <div>
-                <button class="iconBtn" @onclick="@(() => editFileNameDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
-                <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+                <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
+                <button class="iconBtn" @onclick="@(() => { C.RenameFile(parsedID, path, newFilename, Path.GetExtension(path), ogDateTaken); editFilenameDivVis = "hidden"; })"><span class="material-icons-outlined">check</span></button>
             </div>
         </div>
         
@@ -171,7 +171,7 @@ Optional Parameters:
     private static DateTime newDateTaken;
     private static string editDateDivVis;
 
-    private static string newFilename, editFileNameDivVis;
+    private static string newFilename, editFilenameDivVis, filenameErrorVis;
 
     private static string albumsVis;
     private static string infoVis;
@@ -189,7 +189,7 @@ Optional Parameters:
         albumsVis = "hidden";
         infoVis = "hidden";
         moreOptionsVis = "hidden";
-        editDateDivVis = editFileNameDivVis = "hidden";
+        editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
         albums = C.GetAlbumsItemIn(path);
         
         //Find index. Can't use IndexOf for reasons
@@ -206,7 +206,7 @@ Optional Parameters:
         C.MoveToTrash(C.GetPathFromUuid(parsedID));
     }
 
-    private static void ConfirmBtnClick()
+    private static void UpdateDateTaken()
     {
         editDateDivVis = "hidden";
         C.UpdateDateTaken(path, newDateTaken);
