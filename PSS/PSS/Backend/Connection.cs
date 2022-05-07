@@ -1201,5 +1201,41 @@ namespace PSS.Backend
 
             return isFolder;
         }
+
+        ///Generate a short path (DB path) given a DateTaken and filename. A DB path looks like this: 2022/5 May/yes.png
+        public static string CreateShortPath(DateTime dateTaken, string filename) => Path.Combine(dateTaken.Year.ToString(), $"{dateTaken.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}", filename).Replace('\\', '/');
+
+        ///<summary>Used in ViewItem for renaming the current item's file.</summary>
+        ///<returns>The new short path (DB path) of this item. Blank string if DB error occurred.</returns>
+        public static string RenameFile(string oldShortPath, string newFilename, string ext, DateTime dateTaken)
+        {
+            string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
+            
+            //Rename the file in the DB path.
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("UPDATE media SET path=@newShortPath WHERE path=@oldShortPath", connection);
+                cmd.Parameters.AddWithValue("@newShortPath", newShortPath);
+                cmd.Parameters.AddWithValue("@oldShortPath", oldShortPath);
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                if (e.ErrorCode != -2147467259) //Duplicate key value error. No need to print this out since the error is caught.
+                    Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                return "";
+            }
+            finally
+            {
+                Close();
+            }
+
+            //Rename the actual file
+            string fullOldPath = Path.Combine(S.libFolderPath, oldShortPath);
+            string fullNewPath = Path.Combine(S.libFolderPath, newShortPath);
+            File.Move(fullOldPath, fullNewPath);
+            return newShortPath;
+        }
     }
 }
