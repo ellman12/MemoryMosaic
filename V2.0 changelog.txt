@@ -1,5 +1,6 @@
 New Features
 Upload page now has big text saying if there are no items in pss_upload to add to library.
+You can now rename files in View Item.
 
 Improvements
 Replace some repetitive code for getting file paths with a single slick method.
