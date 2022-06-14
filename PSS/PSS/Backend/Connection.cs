@@ -70,14 +70,6 @@ namespace PSS.Backend
             public readonly Guid uuid;
             public readonly string thumbnail;
 
-            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid) //Keeping for legacy purposes before starred column was added.
-            {
-                path = p;
-                dateTaken = dt;
-                dateAdded = da;
-                this.uuid = uuid;
-            }
-            
             public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid)
             {
                 path = p;
