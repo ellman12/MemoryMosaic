@@ -78,7 +78,7 @@
 
     private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<string> allFullPaths;
-    private static List<C.UAFile> allFiles;
+    private static List<C.UploadFile> allFiles;
 
     private static string status;
     private static string promptVis;
@@ -98,12 +98,12 @@
         allShortPaths = new List<string>();
 
         allFullPaths = F.GetSupportedFiles(S.uploadFolderPath);
-        allFiles = new List<C.UAFile>(allFullPaths.Count);
+        allFiles = new List<C.UploadFile>(allFullPaths.Count);
 
         foreach (string path in allFullPaths)
         {
             string extLower = Path.GetExtension(path).ToLower();
-            C.UAFile file = new()
+            C.UploadFile file = new()
             {
                 fullPath = path.Replace('\\', '/'),
                 shortPath = null,
@@ -137,7 +137,7 @@
     {
         int rowsAffected = 0;
         
-        foreach (C.UAFile file in allFiles)
+        foreach (C.UploadFile file in allFiles)
         {
             if (file.alreadyInLib) continue; //Ignore duplicates
 
@@ -179,7 +179,7 @@
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
     private void DeleteErrors()
     {
-        foreach (Connection.UAFile file in allFiles.ToList().Where(file => file.alreadyInLib))
+        foreach (C.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib))
         {
             allFiles.Remove(file);
             File.Delete(file.fullPath);

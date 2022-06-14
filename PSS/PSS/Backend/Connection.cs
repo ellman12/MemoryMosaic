@@ -99,30 +99,25 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>
-        ///Represents an item that is being uploaded in UploadApply (UA).
-        ///</summary>
-        public class UAFile
+        ///Represents an item that is being uploaded.
+        public class UploadFile
         {
-            ///<summary>Where this thing is in pss_upload. Starts at root of the drive.</summary>
+            ///The absolute path to the file to upload.
             public string fullPath;
             
-            ///<summary>Set when uploading begins because if user changes date taken it could vary. Also what the DB stores.</summary>
+            ///Set when uploading begins because if user changes date taken it could vary. Also what the DB stores.
             public string shortPath;
             
-            ///<summary>null for images, otherwise a base64 string for video files. </summary>
+            ///null for images, otherwise a base64 string for video files.
             public string thumbnail;
             
-            ///<summary>If this item is already in pss_library.</summary>
+            ///If this item is already in pss_library.
             public bool alreadyInLib;
             
-            ///<summary>Does it have date taken data either in the metadata or in its filename.</summary>
-            public bool dataPresent;
+            ///The date and time this image or video was captured.
+            public DateTime? dateTaken;
             
-            ///<summary>The date and time this image or video was captured.</summary>
-            public DateTime dateTaken;
-            
-            ///<summary>Where the date taken data came from (filename, metadata, or neither).</summary>
+            ///Where the date taken data came from (Filename, Metadata, or None).
             public D.DateTakenSrc dateTakenSrc;
         }
 
