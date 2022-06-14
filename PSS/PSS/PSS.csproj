@@ -12,10 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExifLib" Version="1.7.0">
-      <NoWarn>NU1701</NoWarn> <!--https://stackoverflow.com/a/44999938-->
-    </PackageReference>
-    <PackageReference Include="MetadataExtractor" Version="2.7.1" />
+    <PackageReference Include="DateTakenExtractor" Version="1.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql" Version="6.0.2" />
     <PackageReference Include="Toolbelt.Blazor.HotKeys" Version="12.0.1" />

@@ -131,7 +131,7 @@ namespace PSS.Backend
             public DateTime dateTaken;
             
             ///<summary>Where the date taken data came from (filename, metadata, or neither).</summary>
-            public Metadata.DateTakenSrc dateTakenSrc;
+            public D.DateTakenSrc dateTakenSrc;
         }
 
         public static void Open()
