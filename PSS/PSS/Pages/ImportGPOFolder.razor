@@ -12,10 +12,6 @@
         <span class="material-icons-outlined">add_photo_alternate</span><span>Add to Library</span>
     </button>
     
-    <button class="textBtn" @onclick="DeleteErrorsBtnClick">
-        <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
-    </button>
-
     <button class="textBtn" @onclick="@(() => F.VisToggle(ref albumSelectorVis))">
         <span class="material-icons-outlined">@(albumSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(albumSelectorVis == "visible" ? "Hide Albums" : "Show Albums")</span>
     </button>
@@ -30,58 +26,20 @@
     <label style="color: #00af00"><input type="checkbox" @bind="@infoChecked">Show Info</label>
 </div>
 
-<TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
 <AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allShortPaths" ShowCheckCancelButtons="false"/>
 
-<KeyboardShortcuts
-    CtrlD="@(() => { DeleteErrorsBtnClick(); StateHasChanged(); })"
-    AltA="@(() => { F.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
-
-@{
-    GC.Collect();
-    GC.WaitForPendingFinalizers();
-    UpdateStatus();
-
-    <div id="mainDiv">
-        @for (int i = 0; i < allFiles.Count; i++)
-        {
-            if (warningChecked && allFiles[i].dataPresent) continue; //If this item doesn't have a warning skip it
-            if (errorChecked && allFiles[i].alreadyInLib == false) continue; //If this item has an error skip it
-            if (neitherChecked && !allFiles[i].dataPresent && !allFiles[i].alreadyInLib) continue; //Only show items with no warnings or errors
-            
-            int ii = i; @*Necessary for some things like the <input>'s*@
-            string dateString = allFiles[i].dateTaken.ToString("ddd, MMM d, yyy");
-            
-            string shortPath = allFiles[i].fullPath.Replace(S.uploadFolderPath!, "");
-            shortPath = Path.GetFileName(S.uploadFolderPath) + shortPath;
-
-            <div class="itemDiv">
-                @{ string src = allFiles[i].thumbnail == null ? shortPath : "data:image/jpg;base64," + allFiles[i].thumbnail; }
-                <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src=@src alt="" loading="lazy"/>
-
-                <span class="filenameSpan">@Path.GetFileName(shortPath)</span>
-                <span title="@dateString" class="dateTakenSpan">@dateString</span>
-                @if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
-                @if (infoChecked && allFiles[i].dataPresent){<span class="infoSpan">@allFiles[i].dateTakenSrc.ToString()</span>} @*Don't display now if DT is set to now*@
-                @if (!allFiles[i].dataPresent && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found. DT set to now.</span>}
-                @if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
-                
-                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => DeleteBtnClick(ii))"><span class="material-icons">close</span></button>
-            </div>
-        }
-    </div>
-}
+<KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
 
 @code{
-    AlbumSelector albumSelector = new();
+    private static AlbumSelector albumSelector = new();
+    private static string albumSelectorVis;
 
     private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<string> allFullPaths;
-    private static List<C.UAFile> allFiles;
+    private static List<C.UploadFile> allFiles;
 
     private static string status;
     private static string promptVis;
-    private static string message;
     
     //Filtering
     private static string filterVis;
@@ -89,138 +47,70 @@
     private static bool warningChecked;
     private static bool errorChecked;
     private static bool infoChecked;
-
-    private static string albumSelectorVis;
     
     protected override void OnInitialized()
     {
         allShortPaths = new List<string>();
-        
         allFullPaths = F.GetSupportedFiles(Upload.GpoFolderPath);
-        allFiles = new List<C.UAFile>(allFullPaths.Count);
+        allFiles = new List<C.UploadFile>(allFullPaths.Count);
 
         foreach (string fullPath in allFullPaths)
         {
             //Get the date taken based on this item's fullPath.
-            string dtPath = fullPath.Replace('\\', '/');
-            dtPath = dtPath.Replace(Upload.GpoFolderPath, "");
-            dtPath = dtPath.Replace(Path.GetFileName(dtPath), "");
+            string dtPath = fullPath.Replace(Upload.GpoFolderPath, "");
+            dtPath = dtPath.Replace(Path.GetFileName(dtPath), "").Replace('\\', '/');
             if (dtPath[0] == '/') dtPath = dtPath.Remove(0, 1);
-
-            bool hasTimeData;
-            Metadata.DateTakenSrc timeSrc;
-            DateTime fullDT;
+            
+            D.DateTakenSrc timeSrc;
+            DateTime? fullDT;
             if (dtPath.Contains("Unknown Date Taken"))
             {
-                hasTimeData = false;
-                timeSrc = Metadata.DateTakenSrc.Now;
-                fullDT = DateTime.Now;
+                timeSrc = D.DateTakenSrc.None;
+                fullDT = null;
             }
             else
             {
                 string[] data = dtPath.Split('/'); //Split 2018/2 February/14 into 2018, 2 February, and 14
-                string year = data[0];
-                string month = data[1].Substring(0, 2).Trim();
-                string day = data[2];
+                int year = Int32.Parse(data[0]);
+                int month = Int32.Parse(data[1].Substring(0, 2));
+                int day = Int32.Parse(data[2]);
 
-                //Now try and get time
-                hasTimeData = Metadata.GetDateTaken(fullPath, out DateTime time, out timeSrc);
-                fullDT = new DateTime(Int32.Parse(year), Int32.Parse(month), Int32.Parse(day), time.Hour, time.Month, time.Day);
+                //Now try and get time, if there is any.
+                DateTime? time = D.GetDateTakenAuto(fullPath, out timeSrc);
+                if (time == null)
+                    fullDT = new DateTime(year, month, day);
+                else
+                    fullDT = new DateTime(year, month, day, time.Value.Hour, time.Value.Month, time.Value.Day);
             }
             
-            string extLower = Path.GetExtension(fullPath).ToLower();
-            C.UAFile file = new()
+            C.UploadFile file = new()
             {
                 fullPath = fullPath.Replace('\\', '/'),
                 shortPath = null,
-                thumbnail = extLower is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
+                thumbnail = Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
-                dataPresent = hasTimeData,
                 dateTakenSrc = timeSrc,
                 alreadyInLib = ItemExists(Path.GetFileName(fullPath), fullDT)
             };
             allFiles.Add(file);
         }
+    }
+}
+
+@functions{
+    ///<summary>Creates the DB short path for an item given its Date Taken and its filename.</summary>
+    ///<returns>The generated short path for the item.</returns>
+    ///<remarks>If the Date Taken was something like 5/1/2022 3:45:03 PM, then its DB short path would be 2022/5 May/filename.ext. If it was null, it'd be Unknown/filename.ext.</remarks>
+    private static string CreateShortPath(DateTime? dateTaken, string filename)
+    {
+        if (dateTaken == null) return $"Unknown/{filename}";
+        return Path.Combine(dateTaken.Value.Year.ToString(), $"{dateTaken.Value.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Value.Month)}", filename);
+    }
     
-        promptVis = "hidden";
-        filterVis = "hidden";
-        albumSelectorVis = "hidden";
-        neitherChecked = false;
-        warningChecked = false;
-        errorChecked = false;
-        infoChecked = true;
-    }
-
-    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail != null).Count()} pictures and {0} videos pending upload. {allFiles.Count(c => !c.dataPresent)} Warnings. {allFiles.Count(c => c.alreadyInLib)} Errors.";
-
-    //Clears an item from the Lists
-    private static void DeleteBtnClick(int index)
+    //Checks to see if there is a file on the server with the same name and date path.
+    private static bool ItemExists(string filename, DateTime? dateTaken)
     {
-        allFiles.RemoveAt(index);
-        UpdateStatus();
+        if (dateTaken == null) return File.Exists(Path.Combine(S.libFolderPath, "Unknown", filename));
+        return File.Exists(Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename)));
     }
-
-    //Adds all the items to photo library, and, if applicable, any albums.
-    private void AddItems()
-    {
-        int rowsAffected = 0;
-        
-        foreach (C.UAFile file in allFiles)
-        {
-            if (file.alreadyInLib) continue; //Ignore duplicates
-
-            string filename = Path.GetFileName(file.fullPath);
-            string newDir = GenerateSortedDir(file.dateTaken);
-            string newPath = Path.Combine(newDir, filename!); //Used for moving to new home on server.
-            
-            string newShortPath = Path.Combine(GenerateDatePath(file.dateTaken), filename).Replace('\\', '/'); //Don't need full path, just the short path (/2021/10 October/filename.png).
-            allShortPaths.Add(newShortPath);
-            Directory.CreateDirectory(newDir);
-
-            GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
-            GC.WaitForPendingFinalizers();
-            try
-            {
-                File.Move(file.fullPath!, newPath);
-                rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.thumbnail);
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
-        
-        albumSelector.ConfirmBtnClick();
-        status = $"Added {rowsAffected} items to library";
-        allFiles.Clear();
-        albumSelectorVis = "hidden";
-    }
-
-    private static void DeleteErrorsBtnClick()
-    {
-        promptVis = "visible";
-        int count = allFiles.Count(c => c.alreadyInLib); //Get number of items with errors.
-        message = $"Are you sure you want to DELETE all {count} items with errors from pss_upload?";
-    }
-
-    //Permanently deletes every item in the upload folder that is marked with an error (already on server).
-    private void DeleteErrors()
-    {
-        foreach (Connection.UAFile file in allFiles.ToList().Where(file => file.alreadyInLib))
-        {
-            allFiles.Remove(file);
-            File.Delete(file.fullPath);
-        }
-        promptVis = "hidden";
-        StateHasChanged();
-    }
-
-    //Create a short path like this: /2021/10 October/ from a DateTime with values like year: 2021, month: 10, etc. This is what the database stores.
-    private static string GenerateDatePath(DateTime dateTaken) => Path.Combine(dateTaken.Year.ToString(), $"{dateTaken.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}");
-    
-    //This is for moving the file to its new home on the server. This is the full path to the item on the server.
-    private static string GenerateSortedDir(DateTime dateTaken) => Path.Combine(S.libFolderPath, GenerateDatePath(dateTaken));
-    
-    //Get if an item is already on the server (already in your library).
-    private static bool ItemExists(string filename, DateTime dateTaken) => File.Exists(Path.Combine(GenerateSortedDir(dateTaken), Path.GetFileName(filename)));
 }
