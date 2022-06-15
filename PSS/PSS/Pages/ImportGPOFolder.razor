@@ -63,7 +63,7 @@
             
             D.DateTakenSrc timeSrc;
             DateTime? fullDT;
-            if (dtPath.Contains("Unknown Date Taken"))
+            if (dtPath.StartsWith("Unknown Date Taken"))
             {
                 timeSrc = D.DateTakenSrc.None;
                 fullDT = null;
@@ -83,16 +83,15 @@
                     fullDT = new DateTime(year, month, day, time.Value.Hour, time.Value.Month, time.Value.Day);
             }
             
-            C.UploadFile file = new()
+            allFiles.Add(new C.UploadFile
             {
                 fullPath = fullPath.Replace('\\', '/'),
-                shortPath = null,
+                shortPath = null, //Not used
                 thumbnail = Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
                 dateTakenSrc = timeSrc,
                 alreadyInLib = ItemExists(Path.GetFileName(fullPath), fullDT)
-            };
-            allFiles.Add(file);
+            });
         }
     }
 }
@@ -107,10 +106,81 @@
         return Path.Combine(dateTaken.Value.Year.ToString(), $"{dateTaken.Value.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Value.Month)}", filename);
     }
     
+    ///Creates a full path to a shortPath folder.
+    private static string GenerateSortedDir(DateTime? dateTaken)
+    {
+        if (dateTaken == null) return Path.Combine(S.libFolderPath, "Unknown");
+        return Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, ""));
+    }
+    
     //Checks to see if there is a file on the server with the same name and date path.
     private static bool ItemExists(string filename, DateTime? dateTaken)
     {
         if (dateTaken == null) return File.Exists(Path.Combine(S.libFolderPath, "Unknown", filename));
         return File.Exists(Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename)));
+    }
+    
+    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail != null).Count()} pictures and {0} videos pending upload. {allFiles.Count(c => !c.dataPresent)} Warnings. {allFiles.Count(c => c.alreadyInLib)} Errors.";
+
+    //Clears an item from the Lists
+    private static void DeleteBtnClick(int index)
+    {
+        allFiles.RemoveAt(index);
+        UpdateStatus();
+    }
+
+    //Adds all the items to photo library, and, if applicable, any albums.
+    private void AddItems()
+    {
+        int rowsAffected = 0;
+        
+        foreach (C.UploadFile file in allFiles)
+        {
+            if (file.alreadyInLib) continue; //Ignore duplicates
+
+            string filename = Path.GetFileName(file.fullPath);
+            string newDir = GenerateSortedDir(file.dateTaken);
+            string newPath = Path.Combine(newDir, filename!); //Used for moving to new home on server.
+            
+            string newShortPath = Path.Combine(GenerateDatePath(file.dateTaken), filename).Replace('\\', '/'); //Don't need full path, just the short path (/2021/10 October/filename.png).
+            allShortPaths.Add(newShortPath);
+            Directory.CreateDirectory(newDir);
+
+            GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
+            GC.WaitForPendingFinalizers();
+            try
+            {
+                File.Move(file.fullPath!, newPath);
+                rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.thumbnail);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+        
+        albumSelector.ConfirmBtnClick();
+        status = $"Added {rowsAffected} items to library";
+        allFiles.Clear();
+        albumSelectorVis = "hidden";
+    }
+
+    private static void DeleteErrorsBtnClick()
+    {
+        promptVis = "visible";
+        int count = allFiles.Count(c => c.alreadyInLib); //Get number of items with errors.
+        message = $"Are you sure you want to DELETE all {count} items with errors from pss_upload?";
+    }
+
+    //Permanently deletes every item in the upload folder that is marked with an error (already on server).
+    private void DeleteErrors()
+    {
+        foreach (Connection.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib))
+        {
+            allFiles.Remove(file);
+            File.Delete(file.fullPath);
+        }
+        promptVis = "hidden";
+        StateHasChanged();
     }
 }
