@@ -12,6 +12,10 @@
         <span class="material-icons-outlined">add_photo_alternate</span><span>Add to Library</span>
     </button>
     
+    <button class="textBtn" @onclick="DeleteErrorsBtnClick">
+        <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
+    </button>
+    
     <button class="textBtn" @onclick="@(() => F.VisToggle(ref albumSelectorVis))">
         <span class="material-icons-outlined">@(albumSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(albumSelectorVis == "visible" ? "Hide Albums" : "Show Albums")</span>
     </button>
@@ -21,14 +25,56 @@
 
 <div id="filter" style="visibility: @filterVis">
     <label><input type="checkbox" @bind="@neitherChecked">Neither</label>
-    <label style="color: yellow"><input type="checkbox" @bind="@warningChecked">Warning</label>
-    <label style="color: red"><input type="checkbox" @bind="@errorChecked">Error</label>
+    <label style="color: yellow"><input type="checkbox" @bind="@warningChecked">Warning (No DT)</label>
+    <label style="color: red"><input type="checkbox" @bind="@errorChecked">Error (Already in Lib)</label>
     <label style="color: #00af00"><input type="checkbox" @bind="@infoChecked">Show Info</label>
 </div>
 
+<TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
 <AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allShortPaths" ShowCheckCancelButtons="false"/>
 
 <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
+
+@{
+    //TODO: why are these needed?
+    GC.Collect();
+    GC.WaitForPendingFinalizers();
+    UpdateStatus();
+
+    <div id="mainDiv">
+        @for (int i = 0; i < allFiles.Count; i++)
+        {
+            if (warningChecked && allFiles[i].dateTaken == null) continue; //If this item doesn't have a warning skip it
+            if (errorChecked && allFiles[i].alreadyInLib == false) continue; //If this item has an error skip it
+            if (neitherChecked && allFiles[i].dateTaken != null && !allFiles[i].alreadyInLib) continue; //Only show items with no warnings or errors
+            
+            int ii = i; @*Necessary for some things like the <input>'s*@
+            string dateString = allFiles[i].dateTaken == null ? "None" : allFiles[i].dateTaken?.ToString("ddd, MMM d, yyy h:mm:ss tt"); 
+            
+            //The path to the file inside pss_upload. TODO: is the 2nd line needed? Wtf is this part
+            string ogShortPath = allFiles[i].fullPath.Replace(S.uploadFolderPath!, "");
+            ogShortPath = Path.GetFileName(S.uploadFolderPath) + ogShortPath;
+
+            <div class="itemDiv">
+            @{
+                <img title="Click for Full Size Preview" onclick="window.open('@ogShortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? ogShortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
+                <span class="filenameSpan">@Path.GetFileName(ogShortPath)</span>
+                <span title="@dateString" class="dateTakenSpan">@dateString</span>
+                                                                           
+                if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
+                
+                if (infoChecked){<span class="infoSpan">@($"Time Source: {allFiles[i].dateTakenSrc}")</span>}
+                
+                if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found.</span>}
+                
+                if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
+                
+                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => {allFiles.RemoveAt(ii); UpdateStatus();})"><span class="material-icons">close</span></button>
+            }
+            </div>
+        }
+    </div>
+}
 
 @code{
     private static AlbumSelector albumSelector = new();
@@ -39,8 +85,11 @@
     private static List<C.UploadFile> allFiles;
 
     private static string status;
-    private static string promptVis;
     
+    //Two Choice Input
+    private static string promptVis;
+    private static string message;
+
     //Filtering
     private static string filterVis;
     private static bool neitherChecked;
@@ -120,13 +169,25 @@
         return File.Exists(Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename)));
     }
     
-    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail != null).Count()} pictures and {0} videos pending upload. {allFiles.Count(c => !c.dataPresent)} Warnings. {allFiles.Count(c => c.alreadyInLib)} Errors.";
+    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail != null).Count()} pictures and {0} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
 
-    //Clears an item from the Lists
-    private static void DeleteBtnClick(int index)
+    private static void DeleteErrorsBtnClick()
     {
-        allFiles.RemoveAt(index);
-        UpdateStatus();
+        promptVis = "visible";
+        int count = allFiles.Count(c => c.alreadyInLib); //Get number of items with errors.
+        message = $"Are you sure you want to DELETE all {count} items with errors from pss_upload?";
+    }
+
+    //Permanently deletes every item in the upload folder that is marked with an error (already on server).
+    private void DeleteErrors()
+    {
+        foreach (Connection.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib))
+        {
+            allFiles.Remove(file);
+            File.Delete(file.fullPath);
+        }
+        promptVis = "hidden";
+        StateHasChanged();
     }
 
     //Adds all the items to photo library, and, if applicable, any albums.
@@ -163,24 +224,5 @@
         status = $"Added {rowsAffected} items to library";
         allFiles.Clear();
         albumSelectorVis = "hidden";
-    }
-
-    private static void DeleteErrorsBtnClick()
-    {
-        promptVis = "visible";
-        int count = allFiles.Count(c => c.alreadyInLib); //Get number of items with errors.
-        message = $"Are you sure you want to DELETE all {count} items with errors from pss_upload?";
-    }
-
-    //Permanently deletes every item in the upload folder that is marked with an error (already on server).
-    private void DeleteErrors()
-    {
-        foreach (Connection.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib))
-        {
-            allFiles.Remove(file);
-            File.Delete(file.fullPath);
-        }
-        promptVis = "hidden";
-        StateHasChanged();
     }
 }
