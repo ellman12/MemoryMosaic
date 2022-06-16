@@ -132,7 +132,6 @@
             C.UAFile file = new()
             {
                 fullPath = fullPath.Replace('\\', '/'),
-                shortPath = null,
                 thumbnail = extLower is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
                 dataPresent = hasTimeData,

@@ -105,9 +105,6 @@ namespace PSS.Backend
             ///The absolute path to the file to upload.
             public string fullPath;
             
-            ///Set when uploading begins because if user changes date taken it could vary. Also what the DB stores.
-            public string shortPath;
-            
             ///null for images, otherwise a base64 string for video files.
             public string thumbnail;
             
