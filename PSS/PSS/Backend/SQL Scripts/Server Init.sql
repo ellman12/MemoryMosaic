@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS public.albums
 (
     id serial NOT NULL,
     name text NOT NULL,
-    album_cover text DEFAULT NULL references media(path),
+    album_cover text DEFAULT NULL references media(path) ON DELETE SET NULL,
     last_updated timestamp without time zone NOT NULL,
     folder boolean NOT NULL DEFAULT false,
     PRIMARY KEY (id, name), -- TODO: might need to be CONSTRAINT albums_pkey PRIMARY KEY (id)... idk why
