@@ -7,15 +7,15 @@
     <button class="textBtn" @onclick="@(() => F.VisToggle(ref filterVis))" title="This filter thing sucks I know but how it works is check neither, warning, or error (just 1 at a time) to show just those items">
         <span class="material-icons-outlined">filter_list</span><span>Filter Items</span>
     </button>
-    
+
     <button class="textBtn" @onclick="AddItems">
         <span class="material-icons-outlined">add_photo_alternate</span><span>Add to Library</span>
     </button>
-    
-    <button class="textBtn" @onclick="DeleteErrorsBtnClick">
+
+    <button class="textBtn" @onclick="@(() => { promptVis = "visible"; message = $"Are you sure you want to DELETE all {allFiles.Count(f => f.alreadyInLib)} items with errors from pss_upload?"; })">
         <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
     </button>
-    
+
     <button class="textBtn" @onclick="@(() => F.VisToggle(ref albumSelectorVis))">
         <span class="material-icons-outlined">@(albumSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(albumSelectorVis == "visible" ? "Hide Albums" : "Show Albums")</span>
     </button>
@@ -52,7 +52,7 @@
             string dateString = allFiles[i].dateTaken == null ? "None" : allFiles[i].dateTaken?.ToString("ddd, MMM d, yyy h:mm:ss tt"); 
             
             //The path to the file inside pss_upload. TODO: is the 2nd line needed? Wtf is this part
-            string ogShortPath = allFiles[i].fullPath.Replace(S.uploadFolderPath!, "");
+            string ogShortPath = allFiles[i].fullPath.Replace(S.uploadFolderPath!, null);
             ogShortPath = Path.GetFileName(S.uploadFolderPath) + ogShortPath;
 
             <div class="itemDiv">
@@ -62,14 +62,11 @@
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                                                                            
                 if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
-                
                 if (infoChecked){<span class="infoSpan">@($"Time Source: {allFiles[i].dateTakenSrc}")</span>}
-                
                 if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found.</span>}
-                
                 if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
-                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => {allFiles.RemoveAt(ii); UpdateStatus();})"><span class="material-icons">close</span></button>
+                <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => { allFiles.RemoveAt(ii); UpdateStatus(); })"><span class="material-icons">close</span></button>
             }
             </div>
         }
@@ -106,8 +103,8 @@
         foreach (string fullPath in allFullPaths)
         {
             //Get the date taken based on this item's fullPath.
-            string dtPath = fullPath.Replace(Upload.GpoFolderPath, "");
-            dtPath = dtPath.Replace(Path.GetFileName(dtPath), "").Replace('\\', '/');
+            string dtPath = fullPath.Replace(Upload.GpoFolderPath, null);
+            dtPath = dtPath.Replace(Path.GetFileName(dtPath), null).Replace('\\', '/');
             if (dtPath[0] == '/') dtPath = dtPath.Remove(0, 1);
             
             D.DateTakenSrc timeSrc;
@@ -151,37 +148,27 @@
     ///<remarks>If the Date Taken was something like 5/1/2022 3:45:03 PM, then its DB short path would be 2022/5 May/filename.ext. If it was null, it'd be Unknown/filename.ext.</remarks>
     private static string CreateShortPath(DateTime? dateTaken, string filename)
     {
-        if (dateTaken == null) return $"Unknown/{filename}";
-        return Path.Combine(dateTaken.Value.Year.ToString(), $"{dateTaken.Value.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Value.Month)}", filename);
+        return dateTaken == null ? $"Unknown/{filename}" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Value.Month)}/{filename}";
     }
-    
-    ///Creates a full path to a shortPath folder.
+
+    ///Creates a full path to a shortPath folder where photos and videos would go. E.g., if dateTaken was 5/1/2022, and library folder root path is C:/Users/Elliott/Pictures/pss_library/, this would return C:/Users/Elliott/Pictures/pss_library/2022/5 May
     private static string GenerateSortedDir(DateTime? dateTaken)
     {
-        if (dateTaken == null) return Path.Combine(S.libFolderPath, "Unknown");
-        return Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, ""));
+        return Path.Combine(S.libFolderPath, dateTaken == null ? "Unknown" : CreateShortPath(dateTaken, null));
     }
-    
+
     //Checks to see if there is a file on the server with the same name and date path.
     private static bool ItemExists(string filename, DateTime? dateTaken)
     {
-        if (dateTaken == null) return File.Exists(Path.Combine(S.libFolderPath, "Unknown", filename));
-        return File.Exists(Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename)));
+        return File.Exists(dateTaken == null ? Path.Combine(S.libFolderPath, "Unknown", filename) : Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename)));
     }
     
-    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail != null).Count()} pictures and {0} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
-
-    private static void DeleteErrorsBtnClick()
-    {
-        promptVis = "visible";
-        int count = allFiles.Count(c => c.alreadyInLib); //Get number of items with errors.
-        message = $"Are you sure you want to DELETE all {count} items with errors from pss_upload?";
-    }
+    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail == null).Count()} pictures and {allFiles.Select(f => f.thumbnail != null).Count()} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
 
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
     private void DeleteErrors()
     {
-        foreach (Connection.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib))
+        foreach (Connection.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib)) //TODO: is ToList() needed?
         {
             allFiles.Remove(file);
             File.Delete(file.fullPath);
@@ -191,7 +178,7 @@
     }
 
     //Adds all the items to photo library, and, if applicable, any albums.
-    private void AddItems()
+    private static void AddItems()
     {
         int rowsAffected = 0;
         
@@ -203,7 +190,7 @@
             string newDir = GenerateSortedDir(file.dateTaken);
             string newPath = Path.Combine(newDir, filename!); //Used for moving to new home on server.
             
-            string newShortPath = Path.Combine(GenerateDatePath(file.dateTaken), filename).Replace('\\', '/'); //Don't need full path, just the short path (/2021/10 October/filename.png).
+            string newShortPath = CreateShortPath(file.dateTaken, filename).Replace('\\', '/'); //Don't need full path, just the short path (/2021/10 October/filename.png).
             allShortPaths.Add(newShortPath);
             Directory.CreateDirectory(newDir);
 
