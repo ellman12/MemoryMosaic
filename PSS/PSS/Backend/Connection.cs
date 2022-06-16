@@ -111,7 +111,7 @@ namespace PSS.Backend
             ///If this item is already in pss_library.
             public bool alreadyInLib;
             
-            ///The date and time this image or video was captured.
+            ///The date and time this image or video was captured. null if this item doesnt have any.
             public DateTime? dateTaken;
             
             ///Where the date taken data came from (Filename, Metadata, or None).
@@ -130,23 +130,21 @@ namespace PSS.Backend
                 connection.Close();
         }
 
-        ///<summary>
-        ///For inserting a photo or video into the media table (the main table). Will not insert duplicates.
-        ///</summary>
-        ///<param name="path">The short path that will be stored in media. Convention is to use '\' as the separator.</param>
-        ///<param name="dateTaken">When was this item taken.</param>
+        ///<summary>For inserting a photo or video into the media table (the main table). Will not insert duplicates.</summary>
+        ///<param name="path">The short path that will be stored in media. Convention is to use '/' as the separator.</param>
+        ///<param name="dateTaken">When this item was taken.</param>
         ///<param name="thumbnail">ONLY FOR VIDEOS. A base64 string for the video thumbnail.</param>
-        ///<param name="starred">Boolean for if this item is starred or not</param>
-        ///<param name="separate">Boolean for if this item is separate from main library.</param>
-        ///<returns>How many rows were affected.</returns>
-        public static int InsertMedia(string path, DateTime dateTaken, string thumbnail, bool starred = false, bool separate = false)
+        ///<param name="starred">Is this item starred or not?</param>
+        ///<param name="separate">Is this item separate from main library (i.e., is it in a folder)?</param>
+        ///<returns>Int saying how many rows were affected.</returns>
+        public static int InsertMedia(string path, DateTime? dateTaken, string thumbnail, bool starred = false, bool separate = false)
         {
             int rowsAffected = 0;
             try
             {
                 Open();
                 NpgsqlCommand cmd = new("", connection);
-                if (thumbnail == null) //Not video
+                if (thumbnail == null) //An image, not a video
                     cmd.CommandText = "INSERT INTO media VALUES (@path, @dateTaken, now(), @starred, @separate) ON CONFLICT (path) DO NOTHING";
                 else
                 {
@@ -155,7 +153,7 @@ namespace PSS.Backend
                 }
                 
                 cmd.Parameters.AddWithValue("@path", path);
-                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+                cmd.Parameters.AddWithValue("@dateTaken", dateTaken); //TODO: make this support null date taken
                 cmd.Parameters.AddWithValue("@starred", starred);
                 cmd.Parameters.AddWithValue("@separate", separate);
                 rowsAffected = cmd.ExecuteNonQuery();
