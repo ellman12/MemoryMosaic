@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; -- https://stackoverflow.com/a/12505220
 
 -- TODO: try indexes!
-CREATE TABLE public.media
+CREATE TABLE IF NOT EXISTS public.media
 (
     path text NOT NULL,
     date_taken timestamp without time zone NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE public.media
 ) TABLESPACE pg_default;
 ALTER TABLE public.media OWNER to postgres;
 
-CREATE TABLE public.media_trash
+CREATE TABLE IF NOT EXISTS public.media_trash
 (
     path text NOT NULL,
     date_taken timestamp without time zone NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE public.media_trash
 ) TABLESPACE pg_default;
 ALTER TABLE public.media_trash OWNER to postgres;
 
-CREATE TABLE public.albums
+CREATE TABLE IF NOT EXISTS public.albums
 (
     id serial NOT NULL,
     name text NOT NULL,
