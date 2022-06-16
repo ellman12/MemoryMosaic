@@ -1,0 +1,6 @@
+redo the rest of the tables
+
+Make album_entries store uuid instead of short paths
+date_taken can be null
+uuid columns should be primary keys and unique. Other tables reference uuid values in media. https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-FK
+album_entries should use foreign keys for referencing the album id's the items are in.
