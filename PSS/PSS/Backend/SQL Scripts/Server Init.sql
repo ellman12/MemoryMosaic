@@ -15,7 +15,6 @@ CREATE TABLE public.media
     CONSTRAINT media_unique_path UNIQUE (path) INCLUDE(path), -- TODO: what are these INCLUDE() things?
     CONSTRAINT media_unique_uuid UNIQUE (uuid) INCLUDE(uuid)
 ) TABLESPACE pg_default;
-
 ALTER TABLE public.media OWNER to postgres;
 
 CREATE TABLE public.media_trash
@@ -32,6 +31,16 @@ CREATE TABLE public.media_trash
     CONSTRAINT media_trash_unique_path UNIQUE (path) INCLUDE(path), -- TODO: what are these INCLUDE() things?
     CONSTRAINT media_trash_unique_uuid UNIQUE (uuid) INCLUDE(uuid)
 ) TABLESPACE pg_default;
-
 ALTER TABLE public.media_trash OWNER to postgres;
 
+CREATE TABLE public.albums
+(
+    id serial NOT NULL,
+    name text NOT NULL,
+    album_cover text DEFAULT NULL references media(path),
+    last_updated timestamp without time zone NOT NULL,
+    folder boolean NOT NULL DEFAULT false,
+    PRIMARY KEY (id, name), -- TODO: might need to be CONSTRAINT albums_pkey PRIMARY KEY (id)... idk why
+    CONSTRAINT albums_unique_names UNIQUE (name)
+) TABLESPACE pg_default;
+ALTER TABLE public.albums OWNER to postgres;
