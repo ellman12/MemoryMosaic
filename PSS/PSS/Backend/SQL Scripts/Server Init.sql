@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS public.media_trash
     thumbnail text,
     date_deleted timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (path, uuid),
-    CONSTRAINT media_trash_unique_path UNIQUE (path),
-    CONSTRAINT media_trash_unique_uuid UNIQUE (uuid)
+    UNIQUE (path),
+    UNIQUE (uuid)
 ) TABLESPACE pg_default;
 ALTER TABLE public.media_trash OWNER to postgres;
 
@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS public.albums
     album_cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL, -- References short path in media.
     last_updated timestamp without time zone NOT NULL,
     folder boolean NOT NULL DEFAULT false, -- If this is a folder and thus its contents should remain separate from rest of library.
-    PRIMARY KEY (id, name), -- TODO: might need to be CONSTRAINT albums_pkey PRIMARY KEY (id)... idk why
-    CONSTRAINT albums_unique_names UNIQUE (name)
+    PRIMARY KEY (id),
+    UNIQUE (name)
 ) TABLESPACE pg_default;
 ALTER TABLE public.albums OWNER to postgres;
 
