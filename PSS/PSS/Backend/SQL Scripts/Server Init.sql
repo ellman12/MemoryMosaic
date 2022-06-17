@@ -5,7 +5,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; -- https://stackoverflow.com/a/12505
 CREATE TABLE IF NOT EXISTS public.media
 (
     path text NOT NULL, -- A short path, inside the library folder, which could be this format: /Unknown/filename.ext, or /2022/10/filename.ext
-    date_taken timestamp without time zone NOT NULL,
+    date_taken timestamp without time zone,
     date_added timestamp without time zone NOT NULL DEFAULT now(),
     starred boolean NOT NULL DEFAULT false,
     separate boolean NOT NULL DEFAULT false, -- Is this item in a folder?
@@ -20,7 +20,7 @@ ALTER TABLE public.media OWNER to postgres;
 CREATE TABLE IF NOT EXISTS public.media_trash
 (
     path text NOT NULL,
-    date_taken timestamp without time zone NOT NULL,
+    date_taken timestamp without time zone,
     date_added timestamp without time zone NOT NULL,
     starred boolean NOT NULL,
     separate boolean NOT NULL,
