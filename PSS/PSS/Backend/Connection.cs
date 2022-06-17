@@ -336,35 +336,12 @@ namespace PSS.Backend
             return returnVal;
         } 
 
-        //Deletes items in the album from album_entries, then remove the album from the albums table.
-        //THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos.
-        public static void DeleteAlbum(string name)
-        {
-            try
-            {
-                int delID = GetAlbumID(name);
-                Open();
+        ///<summary>Deletes the album with the given name. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
+        ///<param name="albumName">The name of the album to delete.</param>
+        public static void DeleteAlbum(string albumName) => DeleteAlbum(GetAlbumID(albumName));
 
-                //Remove all corresponding items from album_entries table.
-                NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE album_id=@id", connection);
-                delCmd.Parameters.AddWithValue("@id", delID);
-                delCmd.ExecuteNonQuery();
-
-                //Finally, remove from albums table.
-                delCmd.CommandText = "DELETE FROM albums WHERE name=@name";
-                delCmd.Parameters.AddWithValue("@name", name);
-                delCmd.ExecuteNonQuery();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-        }
-
+        ///<summary>Deletes the album with the given ID. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
+        ///<param name="albumID">The id of the album to delete.</param>
         public static void DeleteAlbum(int albumID)
         {
             try
