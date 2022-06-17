@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS public.media
     uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
     thumbnail text DEFAULT NULL,
     PRIMARY KEY (path, uuid),
-    CONSTRAINT media_unique_path UNIQUE (path) INCLUDE(path), -- TODO: what are these INCLUDE() things?
-    CONSTRAINT media_unique_uuid UNIQUE (uuid) INCLUDE(uuid)
+    UNIQUE (path),
+    UNIQUE (uuid)
 ) TABLESPACE pg_default;
 ALTER TABLE public.media OWNER to postgres;
 
@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS public.media_trash
     thumbnail text,
     date_deleted timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (path, uuid),
-    CONSTRAINT media_trash_unique_path UNIQUE (path) INCLUDE(path), -- TODO: what are these INCLUDE() things?
-    CONSTRAINT media_trash_unique_uuid UNIQUE (uuid) INCLUDE(uuid)
+    CONSTRAINT media_trash_unique_path UNIQUE (path),
+    CONSTRAINT media_trash_unique_uuid UNIQUE (uuid)
 ) TABLESPACE pg_default;
 ALTER TABLE public.media_trash OWNER to postgres;
 
