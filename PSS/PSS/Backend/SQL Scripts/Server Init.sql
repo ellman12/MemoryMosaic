@@ -47,8 +47,8 @@ ALTER TABLE public.albums OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.album_entries
 (
-    uuid uuid NOT NULL REFERENCES media(uuid), -- TODO: ON DELETE CASCADE?
-    album_id integer NOT NULL REFERENCES albums(id), -- TODO: ON DELETE CASCADE?
+    uuid uuid NOT NULL REFERENCES media(uuid) ON DELETE CASCADE,
+    album_id integer NOT NULL REFERENCES albums(id) ON DELETE CASCADE,
     date_added_to_album timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (uuid, album_id)
 ) TABLESPACE pg_default;
