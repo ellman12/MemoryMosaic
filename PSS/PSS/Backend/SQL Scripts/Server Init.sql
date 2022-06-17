@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS public.albums
 (
     id serial NOT NULL,
     name text NOT NULL,
-    album_cover text DEFAULT NULL references media(path) ON DELETE SET NULL,
+    album_cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL, -- References short path in media.
     last_updated timestamp without time zone NOT NULL,
     folder boolean NOT NULL DEFAULT false,
     PRIMARY KEY (id, name), -- TODO: might need to be CONSTRAINT albums_pkey PRIMARY KEY (id)... idk why
@@ -47,8 +47,8 @@ ALTER TABLE public.albums OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.album_entries
 (
-    uuid uuid NOT NULL references media(uuid), -- TODO: ON DELETE CASCADE?
-    album_id integer NOT NULL references albums(id), -- TODO: ON DELETE CASCADE?
+    uuid uuid NOT NULL REFERENCES media(uuid), -- TODO: ON DELETE CASCADE?
+    album_id integer NOT NULL REFERENCES albums(id), -- TODO: ON DELETE CASCADE?
     date_added_to_album timestamp without time zone NOT NULL,
     PRIMARY KEY (path, album_id)
 ) TABLESPACE pg_default;
@@ -56,8 +56,8 @@ ALTER TABLE public.album_entries OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.album_entries_trash
 (
-    uuid uuid NOT NULL references media(uuid), -- TODO: ON DELETE CASCADE?
-    album_id integer NOT NULL references albums(id), -- TODO: ON DELETE CASCADE?
+    uuid uuid NOT NULL REFERENCES media(uuid), -- TODO: ON DELETE CASCADE?
+    album_id integer NOT NULL REFERENCES albums(id), -- TODO: ON DELETE CASCADE?
     date_added_to_album timestamp without time zone NOT NULL,
     PRIMARY KEY (path, album_id)
 ) TABLESPACE pg_default;
