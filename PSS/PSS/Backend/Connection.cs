@@ -172,8 +172,12 @@ namespace PSS.Backend
             return rowsAffected;
         }
 
-        //Create a new album and add it to the table of album names and IDs. ID is auto incrementing.
-        public static void CreateAlbum(string name, bool folder = false)
+        ///<summary>Create a new album and add it to the albums table.</summary>
+        ///<param name="name">The name for the new album.</param>
+        ///<param name="folder">True if this album should be a folder. False by default.</param>
+        ///<returns>True if successfully created album/folder, false if album/folder couldn't be created (e.g., because duplicate album name).</returns>
+        ///<remarks>The name column in the albums table requires all values to be unique.</remarks>
+        public static bool CreateAlbum(string name, bool folder = false)
         {
             try
             {
@@ -182,10 +186,12 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.Parameters.AddWithValue("@folder", folder);
                 cmd.ExecuteNonQuery();
+                return true;
             }
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+                return false;
             }
             finally
             {
@@ -213,9 +219,9 @@ namespace PSS.Backend
             }
         }
 
-        //This has 3 different use cases: give an album a cover if it doesn't have a cover,
-        //update an existing cover, or remove an album cover (supply literal null as path).
-        //Albums aren't required to have an album cover.
+        ///This has 3 different use cases: give an album a cover if it doesn't have a cover,
+        ///update an existing cover, or remove an album cover (supply null as path).
+        ///Albums aren't required to have an album cover.
         public static void UpdateAlbumCover(string albumName, string path)
         {
             try
@@ -236,6 +242,9 @@ namespace PSS.Backend
             }
         }
 
+        ///This has 3 different use cases: give an album a cover if it doesn't have a cover,
+        ///update an existing cover, or remove an album cover (supply null as path).
+        ///Albums aren't required to have an album cover.
         public static void UpdateAlbumCover(int albumID, string path)
         {
             try
