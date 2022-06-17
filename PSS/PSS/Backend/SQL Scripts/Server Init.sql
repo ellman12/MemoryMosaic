@@ -4,13 +4,13 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; -- https://stackoverflow.com/a/12505
 -- TODO: try indexes!
 CREATE TABLE IF NOT EXISTS public.media
 (
-    path text NOT NULL,
+    path text NOT NULL, -- A short path, inside the library folder, which could be this format: /Unknown/filename.ext, or /2022/10/filename.ext
     date_taken timestamp without time zone NOT NULL,
     date_added timestamp without time zone NOT NULL DEFAULT now(),
     starred boolean NOT NULL DEFAULT false,
-    separate boolean NOT NULL DEFAULT false,
+    separate boolean NOT NULL DEFAULT false, -- Is this item in a folder?
     uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
-    thumbnail text DEFAULT NULL,
+    thumbnail text DEFAULT NULL, -- Base64 string representing video thumbnail.
     PRIMARY KEY (path, uuid),
     UNIQUE (path),
     UNIQUE (uuid)
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS public.albums
     name text NOT NULL,
     album_cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL, -- References short path in media.
     last_updated timestamp without time zone NOT NULL,
-    folder boolean NOT NULL DEFAULT false,
+    folder boolean NOT NULL DEFAULT false, -- If this is a folder and thus its contents should remain separate from rest of library.
     PRIMARY KEY (id, name), -- TODO: might need to be CONSTRAINT albums_pkey PRIMARY KEY (id)... idk why
     CONSTRAINT albums_unique_names UNIQUE (name)
 ) TABLESPACE pg_default;
