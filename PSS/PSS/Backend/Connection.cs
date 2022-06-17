@@ -199,6 +199,10 @@ namespace PSS.Backend
             }
         }
 
+        
+        ///<summary>Give an album a new name.</summary>
+        ///<param name="newName">The new name for the album.</param>
+        ///<param name="id">The id of the album to rename.</param>
         public static void RenameAlbum(string newName, int id)
         {
             try
@@ -265,17 +269,16 @@ namespace PSS.Backend
             }
         }
 
-        //Given an album name, will find its ID in the albums table.
-        //Returns 0 if not found or can't connect. IDs are greater than 0.
-        public static int GetAlbumID(string name)
+        ///Given an album name, will find its ID in the albums table.
+        ///Returns 0 if not found or can't connect. IDs are greater than 0.
+        public static int GetAlbumID(string albumName)
         {
             int returnVal = 0;
             try
             {
                 Open();
-                //Find the album ID using the album name.
-                NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@name", connection);
-                selectCmd.Parameters.AddWithValue("@name", name);
+                NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE albumName=@albumName", connection);
+                selectCmd.Parameters.AddWithValue("@albumName", albumName);
                 selectCmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = selectCmd.ExecuteReader();
 
@@ -298,6 +301,9 @@ namespace PSS.Backend
             return returnVal;
         }
 
+        ///<summary>Given an album id, attempt to return its album name.</summary>
+        ///<param name="id">The id of the album.</param>
+        ///<returns>Album name.</returns>
         public static string GetAlbumName(int id)
         {
             string returnVal = "";
