@@ -280,7 +280,7 @@ namespace PSS.Backend
                 NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@albumName", connection);
                 selectCmd.Parameters.AddWithValue("@albumName", albumName);
                 selectCmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = selectCmd.ExecuteReader();
+                using NpgsqlDataReader reader = selectCmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -315,7 +315,7 @@ namespace PSS.Backend
                 NpgsqlCommand selectCmd = new("SELECT name FROM albums WHERE id=@id", connection);
                 selectCmd.Parameters.AddWithValue("@id", id);
                 selectCmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = selectCmd.ExecuteReader();
+                using NpgsqlDataReader reader = selectCmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -477,7 +477,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums " + where + " ORDER BY " + orderBy, connection);
                 //cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2), reader.GetDateTime(3))); //https://stackoverflow.com/a/38930847
                 reader.Close();
@@ -660,7 +660,7 @@ namespace PSS.Backend
                 Open();
                 NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader r = cmd.ExecuteReader();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
 
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
                 r.Close();
@@ -689,7 +689,7 @@ namespace PSS.Backend
                 Open();
                 NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader r = cmd.ExecuteReader();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
 
                 while (r.Read())
                     media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
@@ -721,7 +721,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT starred FROM media WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -810,7 +810,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader r = cmd.ExecuteReader();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
 
                 while (r.Read())
                     media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
@@ -848,7 +848,7 @@ namespace PSS.Backend
                 Open();
                 NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media_trash ORDER BY " + orderBy, connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader r = cmd.ExecuteReader();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
 
                 while (r.Read())
                     media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
@@ -930,7 +930,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", Guid.Parse(uuid));
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -966,7 +966,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -999,7 +999,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT date_taken FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -1030,7 +1030,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT date_taken FROM media WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -1061,7 +1061,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE path=@path", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -1092,7 +1092,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -1124,7 +1124,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
@@ -1158,7 +1158,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT folder FROM albums WHERE id=@albumID", connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)
                 {
