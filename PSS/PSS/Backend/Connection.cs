@@ -442,6 +442,11 @@ namespace PSS.Backend
             }
         }
 
+        ///<summary>Load all the albums and/or folders in the albums table.</summary>
+        ///<param name="showAlbums">Should albums be selected?</param>
+        ///<param name="showFolders">Should folders be selected?</param>
+        ///<param name="mode">How should the data be sorted?</param>
+        ///<returns>A List&lt;Album&gt; of all the albums and/or folders.</returns>
         public static List<Album> GetAlbumsTable(bool showAlbums, bool showFolders, AMSortMode mode = AMSortMode.Title)
         {
             List<Album> albums = new();
