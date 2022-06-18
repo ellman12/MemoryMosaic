@@ -277,15 +277,15 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE albumName=@albumName", connection);
+                NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@albumName", connection);
                 selectCmd.Parameters.AddWithValue("@albumName", albumName);
                 selectCmd.ExecuteNonQuery();
                 NpgsqlDataReader reader = selectCmd.ExecuteReader();
 
-                if (reader.HasRows) //Check if there is actually a row to read. If reader.Read() is called and there isn't, a nasty exception is raised.
+                if (reader.HasRows)
                 {
-                    reader.Read(); //There should only be 1 line to read.
-                    returnVal = reader.GetInt32(0); //First and only column.
+                    reader.Read(); //There should only be 1 column in 1 row to read.
+                    returnVal = reader.GetInt32(0);
                     reader.Close();
                 }
             }
