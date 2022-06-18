@@ -551,24 +551,15 @@ namespace PSS.Backend
             }
         }
 
-        //Moves an item from media and album_entries (if applicable) into the 2 trash albums.
-        public static void MoveToTrash(string path)
+        ///<summary>Mark an item in the media table as in the Trash.</summary>
+        ///<param name="uuid">The uuid of the item to move to Trash.</param>
+        public static void MoveToTrash(Guid uuid)
         {
             try
             {
                 Open();
-
-                NpgsqlCommand cmd = new("INSERT INTO media_trash SELECT * FROM media WHERE path=@path", connection);
-                cmd.Parameters.AddWithValue("@path", path);
-                cmd.ExecuteNonQuery();
-
-                cmd.CommandText = "DELETE FROM media WHERE path=@path";
-                cmd.ExecuteNonQuery();
-
-                cmd.CommandText = "INSERT INTO album_entries_trash SELECT * FROM album_entries WHERE path=@path";
-                cmd.ExecuteNonQuery();
-
-                cmd.CommandText = "DELETE FROM album_entries WHERE path=@path";
+                NpgsqlCommand cmd = new("UPDATE media SET date_deleted = now() WHERE uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("uuid", uuid);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)

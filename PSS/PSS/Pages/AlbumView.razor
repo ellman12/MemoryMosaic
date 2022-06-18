@@ -259,7 +259,7 @@
 
     private async void DeleteSelected()
     {
-        foreach (string path in selectedItems.ToList()) C.MoveToTrash(path);
+        //foreach (string path in selectedItems.ToList()) C.MoveToTrash(path); TODO
         await ClearChecks();
         albumMedia = C.LoadAlbum(statAlbumID, mode);
         StateHasChanged();
