@@ -11,8 +11,6 @@
 
     private static void Yes()
     {
-        C.CreateAlbum("another new album", true);
-        Thread.Sleep(6000);
-        C.DeleteAlbum("another new album");
+        C.RemoveFromAlbum(new Guid("d73cb3b4-edd9-11ec-9089-9798299faae8"), 5);
     }
 }

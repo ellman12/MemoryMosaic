@@ -413,21 +413,23 @@ namespace PSS.Backend
             }*/
         }
 
-        //Remove a single path from an album.
-        public static void RemoveFromAlbum(string path, int albumID)
+        ///<summary>Remove a single path from an album.</summary>
+        ///<param name="uuid">The uuid of the item to remove.</param>
+        ///<param name="albumID">ID of the album to remove from.</param>
+        public static void RemoveFromAlbum(Guid uuid, int albumID)
         {
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("DELETE FROM album_entries WHERE album_id=@albumID AND path=@path", connection);
+                NpgsqlCommand cmd = new("DELETE FROM album_entries WHERE album_id=@albumID AND uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
-                cmd.Parameters.AddWithValue("@path", path);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "UPDATE media SET separate = false WHERE path=@path AND separate = true";
+                cmd.CommandText = "UPDATE media SET separate = false WHERE uuid=@uuid AND separate = true";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)

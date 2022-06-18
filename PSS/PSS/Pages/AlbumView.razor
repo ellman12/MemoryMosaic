@@ -233,9 +233,10 @@
     }
 
     //Remove selected from the album
+    //TODO: switch out paths for uuid's.
     private async Task RemoveBtnClick()
     {
-        foreach (string path in selectedItems.ToList()) C.RemoveFromAlbum(path, statAlbumID);
+        // foreach (string path in selectedItems.ToList()) C.RemoveFromAlbum(path, statAlbumID);
         await ClearChecks();
         albumMedia = C.LoadAlbum(statAlbumID, mode);
     }
