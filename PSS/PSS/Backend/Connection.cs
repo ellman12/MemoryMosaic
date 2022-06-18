@@ -371,9 +371,11 @@ namespace PSS.Backend
         ///<summary>
         ///Add a single path to an album in album_entries. If it's a folder it handles all that automatically.
         ///</summary>
+        ///This shit is a big fat TODO. Need to modify AlbumSelector and stuff that uses it to work with uuid's instead of short paths.
         public static void AddToAlbum(string path, int albumID)
         {
-            bool isFolder = IsFolder(albumID);
+            throw new NotImplementedException();
+            /*bool isFolder = IsFolder(albumID);
             
             try
             {
@@ -408,7 +410,7 @@ namespace PSS.Backend
             finally
             {
                 Close();
-            }
+            }*/
         }
 
         //Remove a single path from an album.
