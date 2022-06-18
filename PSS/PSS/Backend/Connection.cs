@@ -336,11 +336,11 @@ namespace PSS.Backend
             return returnVal;
         } 
 
-        ///<summary>Deletes the album with the given name. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
+        ///<summary>Deletes the album with the given name, and remove all items in this album from album_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
         ///<param name="albumName">The name of the album to delete.</param>
         public static void DeleteAlbum(string albumName) => DeleteAlbum(GetAlbumID(albumName));
 
-        ///<summary>Deletes the album with the given ID. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
+        ///<summary>Deletes the album with the given ID, and remove all items in this album from album_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
         ///<param name="albumID">The id of the album to delete.</param>
         public static void DeleteAlbum(int albumID)
         {
@@ -348,23 +348,15 @@ namespace PSS.Backend
             {
                 Open();
                 
-                //Set all items to no longer being separate (only matters if this was a folder).
-                NpgsqlCommand cmd = new("UPDATE media SET separate=false FROM album_entries WHERE album_id=@albumID AND album_entries.path=media.path", connection);
+                //Set all items to no longer being separate (only matters if this was a folder). If don't do this they won't appear in main library.
+                NpgsqlCommand cmd = new("UPDATE media SET separate=false FROM album_entries WHERE album_id=@albumID AND album_entries.uuid=media.uuid", connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 
-                //Remove all corresponding items from album_entries table.
-                NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE album_id=@id", connection);
-                delCmd.Parameters.AddWithValue("@id", albumID);
-                delCmd.ExecuteNonQuery();
-                
-                //Remove all items from the trash table too.
-                delCmd.CommandText = "DELETE FROM album_entries_trash WHERE album_id=@id";
-                delCmd.ExecuteNonQuery();
-
-                //Finally, remove from albums table.
-                delCmd.CommandText = "DELETE FROM albums WHERE id=@id";
-                delCmd.ExecuteNonQuery();
+                //Removing the row for this album in albums table automatically removes any rows in album_entries referencing this album.
+                cmd = new NpgsqlCommand("DELETE FROM albums WHERE id=@albumID", connection);
+                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
             {

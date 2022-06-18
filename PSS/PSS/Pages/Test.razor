@@ -1,5 +1,6 @@
 @*A blank page just for testing stuff*@
 @page "/test"
+@using System.Threading
 
 <title>Test - PSS</title>
 @{
@@ -10,9 +11,8 @@
 
     private static void Yes()
     {
-        C.InsertMedia("image1.jpg", DateTime.Now, null, true, false);
-        C.InsertMedia("image2.png", null, null, false, false);
-        C.InsertMedia("video1.mp4", DateTime.Now, null, false, false);
-        C.InsertMedia("video2.mkv", null, null, true, false);
+        C.CreateAlbum("another new album", true);
+        Thread.Sleep(6000);
+        C.DeleteAlbum("another new album");
     }
 }
