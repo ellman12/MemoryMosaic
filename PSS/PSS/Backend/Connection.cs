@@ -494,29 +494,27 @@ namespace PSS.Backend
             return albums;
         }
 
-        ///<summary>
-        ///Returns a List of all the items an album is in.
-        ///</summary>
-        ///<param name="path">path to item</param>
+        ///<summary>Returns a List&lt;Album&gt; of all the items an album is in.</summary>
+        ///<param name="uuid">Uuid of the item.</param>
         ///<returns>List of the albums the item is in, if any</returns>
-        public static List<Album> GetAlbumsItemIn(string path)
+        public static List<Album> GetAlbumsItemIn(Guid uuid)
         {
             List<Album> albums = new();
 
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT album_id, name, album_cover FROM album_entries AS e INNER JOIN albums AS a ON e.album_id=a.id WHERE path=@path ORDER BY name ASC", connection);
-                cmd.Parameters.AddWithValue("@path", path);
+                NpgsqlCommand cmd = new("SELECT album_id, name, album_cover FROM album_entries AS e INNER JOIN albums AS a ON e.album_id=a.id WHERE uuid=@uuid ORDER BY name ASC", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2)));
-                reader.Close();
+                while (r.Read()) albums.Add(new Album(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
+                r.Close();
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred in GetAlbumsTable. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
             }
             finally
             {

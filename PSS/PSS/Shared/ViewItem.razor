@@ -192,7 +192,7 @@ Optional Parameters:
         newFilename = Path.GetFileNameWithoutExtension(shortPath);
         editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
         filenameErrorText = "";
-        albums = C.GetAlbumsItemIn(shortPath);
+        albums = C.GetAlbumsItemIn(parsedID);
         
         //Find index. Can't use IndexOf for reasons
         for (int i = 0; i < MediaList.Count; i++)
