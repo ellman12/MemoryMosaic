@@ -525,17 +525,15 @@ namespace PSS.Backend
         }
 
         //https://www.postgresqltutorial.com/postgresql-update-join/
-        ///<summary>
-        ///Used for changing an album to a folder or vice versa.
-        ///</summary>
-        ///<param name="albumID">ID of album or folder to change modes</param>
+        ///<summary>Change an album to a folder or vice versa.</summary>
+        ///<param name="albumID">ID of album or folder to change into folder or album.</param>
         ///<param name="folder">Specify true if want to change album -> folder. False for folder -> album</param>
         public static void ChangeAlbumType(int albumID, bool folder)
         {
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE media SET separate=@folder FROM album_entries WHERE album_id=@albumID AND album_entries.path=media.path", connection);
+                NpgsqlCommand cmd = new("UPDATE media SET separate=@folder FROM album_entries WHERE album_id=@albumID AND album_entries.uuid=media.uuid", connection);
                 cmd.Parameters.AddWithValue("@folder", folder);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
@@ -545,7 +543,7 @@ namespace PSS.Backend
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred in GetAlbumsTable. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
             }
             finally
             {
