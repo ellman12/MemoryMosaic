@@ -1062,13 +1062,10 @@ namespace PSS.Backend
             return dateTaken;
         }
 
-        ///<summary>
-        ///Return if an album is a folder.
-        ///</summary>
+        ///Returns true if an album is a folder, false otherwise.
         public static bool IsFolder(int albumID)
         {
             bool isFolder = false;
-
             try
             {
                 Open();
