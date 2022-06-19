@@ -110,14 +110,14 @@
             
             D.DateTakenSrc timeSrc;
             DateTime? fullDT;
-            if (dtPath.StartsWith("Unknown Date Taken"))
+            if (dtPath.StartsWith("Unknown"))
             {
                 timeSrc = D.DateTakenSrc.None;
                 fullDT = null;
             }
             else
             {
-                string[] data = dtPath.Split('/'); //Split 2018/2 February/14 into 2018, 2 February, and 14
+                string[] data = dtPath.Split('/'); //Split 2018/2 February/14 into 2018, 2, and 14
                 int year = Int32.Parse(data[0]);
                 int month = Int32.Parse(data[1].Substring(0, 2));
                 int day = Int32.Parse(data[2]);
