@@ -16,21 +16,21 @@
     </header>
     
     <div id="sortDiv" style="visibility: @sortDivVis">
-        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateDeleted))">
-            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateDeleted ? "#1a73e8" : "white")">Date Deleted</span>
+        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.NewestDateDeleted))">
+            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")">Date Deleted</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateTaken))">
-            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateTaken ? "#1a73e8" : "white")">Date Taken</span>
+        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.NewestDateTaken))">
+            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")">Date Taken</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateDeletedReversed))">
-            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateDeletedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateDeletedReversed ? "#1a73e8" : "white")">Date Deleted Reversed</span>
+        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.OldestDateDeleted))">
+            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")">Date Deleted Reversed</span>
         </button>
-        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateTakenReversed))">
-            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateTakenReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateTakenReversed ? "#1a73e8" : "white")">Date Taken Reversed</span>
+        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.OldestDateTaken))">
+            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")">Date Taken Reversed</span>
         </button>
     </div>
     
@@ -84,10 +84,10 @@
     
     protected override void OnInitialized()
     {
-        mediaTrashList = C.LoadMediaTrashTable();
+        mediaTrashList = C.LoadMediaTrash();
         selectedItems = new List<string>(); //Reset on page load/refresh
         SetSortBtnText();
-        mode = C.TrashSortMode.DateDeleted; //Default sort mode
+        mode = C.TrashSortMode.NewestDateDeleted; //Default sort mode
         choiceVis = "hidden";
         sortDivVis = "hidden";
     }
@@ -96,18 +96,18 @@
     {
         sortBtnText = mode switch
         {
-            C.TrashSortMode.DateDeleted => "Date Deleted",
-            C.TrashSortMode.DateTaken => "Date Taken",
-            C.TrashSortMode.DateDeletedReversed => "Date Deleted Reversed",
-            C.TrashSortMode.DateTakenReversed => "Date Taken Reversed",
-            _ => "Date Deleted"
+            C.TrashSortMode.NewestDateDeleted => "Newest Date Deleted",
+            C.TrashSortMode.NewestDateTaken => "Newest Date Taken",
+            C.TrashSortMode.OldestDateDeleted => "Oldest Date Deleted",
+            C.TrashSortMode.OldestDateTaken => "Oldest Date Taken",
+            _ => "Newest Date Deleted"
         };
     }
     
     private async void ChangeOrder(C.TrashSortMode newMode)
     {
         mode = newMode;
-        mediaTrashList = C.LoadMediaTrashTable(newMode);
+        mediaTrashList = C.LoadMediaTrash(newMode);
         SetSortBtnText();
         sortDivVis = "hidden";
         await ClearChecks();
@@ -215,7 +215,7 @@
             }
         }
         await ClearChecks();
-        mediaTrashList = C.LoadMediaTrashTable();
+        mediaTrashList = C.LoadMediaTrash();
         selectedItems.Clear();
         StateHasChanged();
     }
@@ -254,7 +254,7 @@
             }
         }
         await ClearChecks();
-        mediaTrashList = C.LoadMediaTrashTable();
+        mediaTrashList = C.LoadMediaTrash();
         selectedItems.Clear();
         StateHasChanged();
     }

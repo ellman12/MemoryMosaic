@@ -11,7 +11,7 @@
 
     private static void Yes()
     {
-        foreach(var yes in C.LoadAlbum(1, C.AVSortMode.OldestDateTaken))
+        foreach(var yes in C.LoadMediaTrash(C.TrashSortMode.OldestDateTaken))
             Console.WriteLine(yes.ToString());
     }
 }
