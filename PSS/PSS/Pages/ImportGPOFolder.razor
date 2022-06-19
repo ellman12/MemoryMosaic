@@ -49,7 +49,7 @@
             if (neitherChecked && allFiles[i].dateTaken != null && !allFiles[i].alreadyInLib) continue; //Only show items with no warnings or errors
             
             int ii = i; @*Necessary for some things like the <input>'s*@
-            string dateString = allFiles[i].dateTaken == null ? "None" : allFiles[i].dateTaken?.ToString("ddd, MMM d, yyy h:mm:ss tt"); 
+            string dateString = allFiles[i].dateTaken == null ? null : allFiles[i].dateTaken?.ToString("ddd, MMM d, yyy h:mm:ss tt"); 
             
             //Get the short path to this item relative to pss_upload.
             string ogShortPath = Path.Join("pss_upload", allFiles[i].fullPath.Replace(S.uploadFolderPath!, null));
@@ -60,9 +60,9 @@
                 <span class="filenameSpan">@Path.GetFileName(ogShortPath)</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                                                                            
+                if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">Unknown Date Taken</span>}
                 if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
                 if (timeInfoChecked){<span class="infoSpan">@($"Time Source: {allFiles[i].dateTakenSrc}")</span>}
-                if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found.</span>}
                 if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
                 <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => { allFiles.RemoveAt(ii); UpdateStatus(); })"><span class="material-icons">close</span></button>
