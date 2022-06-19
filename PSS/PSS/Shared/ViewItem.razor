@@ -19,7 +19,7 @@ Optional Parameters:
 <link href="/css/components/ViewItem.css" rel="stylesheet"/>
 
 @{
-    if (shortPath == "null") //If URL contains a UUID that isn't present in the database.
+    if (shortPath == null) //If URL contains a UUID that isn't present in the database.
     {
         <NavMenu/>
         <Error/>

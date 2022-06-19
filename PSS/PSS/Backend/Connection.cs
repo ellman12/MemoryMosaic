@@ -894,45 +894,15 @@ namespace PSS.Backend
             }
         }
 
-        ///Gets an item's path from its (string) uuid.
-        public static string GetPathFromUuid(string uuid)
-        {
-            string path = "";
+        ///<summary>Gets an item's path from its uuid.</summary>
+        ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
+        public static string GetPathFromUuid(string uuid) => GetPathFromUuid(new Guid(uuid));
 
-            try
-            {
-                Open();
-                NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
-                cmd.Parameters.AddWithValue("@uuid", Guid.Parse(uuid));
-                cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.HasRows)
-                {
-                    reader.Read(); //There should only be 1 line to read.
-                    path = reader.GetString(0); //First and only column.
-                    reader.Close();
-                }
-                else
-                    path = "null";
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return path;
-        }
-
-        ///Gets an item's path from its Guid uuid.
+        ///<summary>Gets an item's path from its uuid.</summary>
+        ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
         public static string GetPathFromUuid(Guid uuid)
         {
-            string path = "";
-
+            string path = null;
             try
             {
                 Open();
@@ -947,8 +917,6 @@ namespace PSS.Backend
                     path = reader.GetString(0); //First and only column.
                     reader.Close();
                 }
-                else
-                    path = "null";
             }
             catch (NpgsqlException e)
             {
@@ -958,7 +926,6 @@ namespace PSS.Backend
             {
                 Close();
             }
-
             return path;
         }
 
