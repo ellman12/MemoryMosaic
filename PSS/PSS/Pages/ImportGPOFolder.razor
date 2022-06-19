@@ -27,7 +27,7 @@
     <label><input type="checkbox" @bind="@neitherChecked">Neither</label>
     <label style="color: yellow"><input type="checkbox" @bind="@warningChecked">Warning (No DT)</label>
     <label style="color: red"><input type="checkbox" @bind="@errorChecked">Error (Already in Lib)</label>
-    <label style="color: #00af00"><input type="checkbox" @bind="@infoChecked">Show Info</label>
+    <label style="color: #00af00"><input type="checkbox" @bind="@timeInfoChecked">Show Time Info</label>
 </div>
 
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
@@ -62,7 +62,7 @@
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                                                                            
                 if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
-                if (infoChecked){<span class="infoSpan">@($"Time Source: {allFiles[i].dateTakenSrc}")</span>}
+                if (timeInfoChecked){<span class="infoSpan">@($"Time Source: {allFiles[i].dateTakenSrc}")</span>}
                 if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found.</span>}
                 if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
@@ -92,14 +92,16 @@
     private static bool neitherChecked;
     private static bool warningChecked;
     private static bool errorChecked;
-    private static bool infoChecked;
+    private static bool timeInfoChecked;
     
     protected override void OnInitialized()
     {
         allShortPaths = new List<string>();
         allFullPaths = F.GetSupportedFiles(Upload.GpoFolderPath);
         allFiles = new List<C.UploadFile>(allFullPaths.Count);
-
+        promptVis = filterVis = albumSelectorVis = "hidden";
+        timeInfoChecked = true;
+        
         foreach (string fullPath in allFullPaths)
         {
             //Get the date taken based on this item's fullPath.
