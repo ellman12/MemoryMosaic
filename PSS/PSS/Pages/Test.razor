@@ -11,8 +11,7 @@
 
     private static void Yes()
     {
-        C.MoveToTrash(new Guid("56ff8116-ef4d-11ec-8ea0-0242ac120002"));
-        Thread.Sleep(9000);
-        C.PermDeleteItem(new Guid("56ff8116-ef4d-11ec-8ea0-0242ac120002"));
+        foreach(var yes in C.LoadAlbum(1, C.AVSortMode.OldestDateTaken))
+            Console.WriteLine(yes.ToString());
     }
 }

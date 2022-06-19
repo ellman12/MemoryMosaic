@@ -205,13 +205,13 @@
     {
         //Restore ALL
         if (selectedItems.Count == 0)
-            foreach (C.MediaRow item in mediaTrashList) C.RestoreItem(item.path);
+            foreach (C.MediaRow item in mediaTrashList) C.RestoreItem(item.uuid);
         else //Restore selected
         {
             foreach (string item in selectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
-                C.RestoreItem(item);
+                //C.RestoreItem(item); TODO
             }
         }
         await ClearChecks();

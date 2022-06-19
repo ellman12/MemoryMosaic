@@ -606,27 +606,19 @@ namespace PSS.Backend
         }
 
         //Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
-        public static void RestoreItem(string path)
+        public static void RestoreItem(Guid uuid)
         {
             try
             {
                 Open();
 
                 //Copy item from media to trash
-                NpgsqlCommand cmd = new("INSERT INTO media SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media_trash WHERE path=@path", connection);
-                cmd.Parameters.AddWithValue("@path", path);
+                NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE uuid = @uuid", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
                 //Remove from media
-                cmd.CommandText = "DELETE FROM media_trash WHERE path=@path";
-                cmd.ExecuteNonQuery();
-
-                //Copy item(s) from album_entries to trash
-                cmd.CommandText = "INSERT INTO album_entries SELECT * FROM album_entries_trash WHERE path=@path";
-                cmd.ExecuteNonQuery();
-
-                //Remove from album_entries
-                cmd.CommandText = "DELETE FROM album_entries_trash WHERE path=@path";
+                cmd.CommandText = "";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
