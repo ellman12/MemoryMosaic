@@ -71,7 +71,7 @@ namespace PSS.Backend
             List<string> untrackedPaths = new(); //Items in lib folder but not in database
             string[] paths = Directory.GetFiles(S.libFolderPath, "*", SearchOption.AllDirectories);
             List<string> mediaPaths = C.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
-            List<string> mediaTrashPaths = C.LoadMediaTrashTable().Select(media => media.path).ToList();
+            List<string> mediaTrashPaths = C.LoadMediaTrash().Select(media => media.path).ToList();
 
             foreach (string fullPath in paths)
             {
