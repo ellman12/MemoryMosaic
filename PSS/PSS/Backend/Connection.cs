@@ -287,12 +287,12 @@ namespace PSS.Backend
                 selectCmd.Parameters.AddWithValue("@albumName", albumName);
                 selectCmd.ExecuteNonQuery();
 
-                using NpgsqlDataReader reader = selectCmd.ExecuteReader();
-                if (reader.HasRows)
+                using NpgsqlDataReader r = selectCmd.ExecuteReader();
+                if (r.HasRows)
                 {
-                    reader.Read(); //There should only be 1 column in 1 row to read.
-                    returnVal = reader.GetInt32(0);
-                    reader.Close();
+                    r.Read(); //There should only be 1 column in 1 row to read.
+                    returnVal = r.GetInt32(0);
+                    r.Close();
                 }
             }
             catch (NpgsqlException e)
@@ -322,12 +322,12 @@ namespace PSS.Backend
                 selectCmd.Parameters.AddWithValue("@id", id);
                 selectCmd.ExecuteNonQuery();
 
-                using NpgsqlDataReader reader = selectCmd.ExecuteReader();
-                if (reader.HasRows)
+                using NpgsqlDataReader r = selectCmd.ExecuteReader();
+                if (r.HasRows)
                 {
-                    reader.Read(); //There should only be 1 line to read.
-                    returnVal = reader.GetString(0); //First and only column.
-                    reader.Close();
+                    r.Read(); //There should only be 1 line to read.
+                    returnVal = r.GetString(0); //First and only column.
+                    r.Close();
                 }
             }
             catch (NpgsqlException e)
@@ -483,9 +483,9 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums " + where + " ORDER BY " + orderBy, connection);
                 //cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2), reader.GetDateTime(3))); //https://stackoverflow.com/a/38930847
-                reader.Close();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                while (r.Read()) albums.Add(new Album(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
+                r.Close();
             }
             catch (NpgsqlException e)
             {
@@ -694,12 +694,12 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
                 {
-                    reader.Read();
-                    starred = reader.GetBoolean(0);
-                    reader.Close();
+                    r.Read();
+                    starred = r.GetBoolean(0);
+                    r.Close();
                 }
             }
             catch (NpgsqlException e)
@@ -907,12 +907,12 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
                 {
-                    reader.Read(); //There should only be 1 line to read.
-                    path = reader.GetString(0); //First and only column.
-                    reader.Close();
+                    r.Read(); //There should only be 1 line to read.
+                    path = r.GetString(0); //First and only column.
+                    r.Close();
                 }
             }
             catch (NpgsqlException e)
@@ -1035,12 +1035,12 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
                 {
-                    reader.Read();
-                    dateTaken = reader.GetDateTime(0);
-                    reader.Close();
+                    r.Read();
+                    dateTaken = r.GetDateTime(0);
+                    r.Close();
                 }
             }
             catch (NpgsqlException e)
@@ -1066,13 +1066,13 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
 
-                if (reader.HasRows)
+                if (r.HasRows)
                 {
-                    reader.Read();
-                    dateTaken = reader.GetDateTime(0);
-                    reader.Close();
+                    r.Read();
+                    dateTaken = r.GetDateTime(0);
+                    r.Close();
                 }
             }
             catch (NpgsqlException e)
@@ -1101,12 +1101,12 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
 
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
                 {
-                    reader.Read();
-                    isFolder = reader.GetBoolean(0);
-                    reader.Close();
+                    r.Read();
+                    isFolder = r.GetBoolean(0);
+                    r.Close();
                 }
             }
             catch (NpgsqlException e)
