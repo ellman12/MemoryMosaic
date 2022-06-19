@@ -1093,12 +1093,21 @@ namespace PSS.Backend
             return isFolder;
         }
 
-        ///Generate a short path (DB path) given a DateTaken and filename. A DB path looks like this: 2022/5 May/yes.png
-        public static string CreateShortPath(DateTime dateTaken, string filename) => Path.Combine(dateTaken.Year.ToString(), $"{dateTaken.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Month)}", filename).Replace('\\', '/');
+        //TODO: use this guy in UA, GPO import, etc. Forgot about it lmao.
+        ///<summary>Generates a short path (DB path) given a Date Taken and filename. A DB path looks like this: 2022/5/filename.jpg.</summary>
+        ///<param name="dateTaken">The date taken of the item.</param>
+        ///<param name="filename">The filename and extension of the item.</param>
+        ///<returns>A short/DB path for the item.</returns>
+        ///<remarks>If date taken is null, the returned path's format is 'Unknown/filename.jpg'. If date taken is not null, the returned path's format is like 2022/5/filename.jpg.</remarks>
+        public static string CreateShortPath(DateTime? dateTaken, string filename) => dateTaken == null ? $"Unknown/{filename}" : $"{dateTaken.Value.Year.ToString()}/{dateTaken.Value.Month}/{filename})";
 
         ///<summary>Used in ViewItem for renaming the current item's file.</summary>
-        ///<returns>The new short path (DB path) of this item. Blank string if DB error occurred.</returns>
-        public static string RenameFile(string oldShortPath, string newFilename, string ext, DateTime dateTaken)
+        ///<param name="oldShortPath">The original short path of the item.</param>
+        ///<param name="newFilename">The new filename of the item.</param>
+        ///<param name="ext">The file extension.</param>
+        ///<param name="dateTaken">The date taken of the item.</param>
+        ///<returns>The new short path (DB path) of this item. null if DB error occurred, which means there is already a file with the same name in that location.</returns>
+        public static string RenameFile(string oldShortPath, string newFilename, string ext, DateTime? dateTaken)
         {
             string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
             
@@ -1115,7 +1124,7 @@ namespace PSS.Backend
             {
                 if (e.ErrorCode != -2147467259) //Duplicate key value error. No need to print this out since the error is caught.
                     Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-                return "";
+                return null;
             }
             finally
             {
