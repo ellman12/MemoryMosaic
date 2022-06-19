@@ -631,13 +631,11 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>
-        ///Loads everything in the media table into a List of the rows. Does not store separate column. Also only selects ones where separate==false
-        ///</summary>
-        ///<returns>List of MediaRow records</returns>
+        ///<summary>Loads all rows and columns in the media table not in a folder (separate==false) into a List&lt;MediaRow&gt;.</summary>
+        ///<returns>List&lt;MediaRow&gt; of items in media table not in a folder, sorted by date taken descending (newest first).</returns>
         public static List<MediaRow> LoadMediaTable()
         {
-            List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+            List<MediaRow> media = new();
             try
             {
                 Open();
