@@ -570,23 +570,21 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>
-        ///PERMANENTLY remove an item from database and server.
-        ///</summary>
-        public static void PermDeleteItem(string path)
+        ///PERMANENTLY remove an item from the database and DELETES the file from server.
+        public static void PermDeleteItem(Guid uuid)
         {
-            File.Delete(Path.Join(S.libFolderPath, path));
+            File.Delete(Path.Join(S.libFolderPath, GetPathFromUuid(uuid)));
 
             try
             {
                 Open();
 
                 //Copy item from media to trash
-                NpgsqlCommand cmd = new("DELETE FROM media_trash WHERE path=@path", connection);
-                cmd.Parameters.AddWithValue("@path", path);
+                NpgsqlCommand cmd = new("DELETE FROM media WHERE uuid=@uuid AND date_deleted IS NOT NULL", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "DELETE FROM album_entries_trash WHERE path=@path";
+                cmd.CommandText = "DELETE FROM album_entries WHERE uuid=@uuid AND deleted = TRUE";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)

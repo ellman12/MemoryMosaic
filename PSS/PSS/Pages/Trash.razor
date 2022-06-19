@@ -244,13 +244,13 @@
     private async void DeleteItems()
     {
         if (selectedItems.Count == 0) //Delete ALL
-            foreach (C.MediaRow item in mediaTrashList) C.PermDeleteItem(item.path);
+            foreach (C.MediaRow item in mediaTrashList) C.PermDeleteItem(item.uuid);
         else //Delete selected
         {
             foreach (string item in selectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
-                C.PermDeleteItem(item);
+                //C.PermDeleteItem(item); TODO
             }
         }
         await ClearChecks();

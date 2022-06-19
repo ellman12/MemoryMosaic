@@ -184,7 +184,7 @@
         Directory.CreateDirectory(S.tmpFolderPath);
         
         //Empty trash.
-        foreach (C.MediaRow item in C.LoadMediaTrashTable()) C.PermDeleteItem(item.path);
+        //foreach (C.MediaRow item in C.LoadMediaTrashTable()) C.PermDeleteItem(item.path); TODO
     }
 
     private static void ApplyBtnClicked()

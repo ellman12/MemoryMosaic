@@ -11,6 +11,8 @@
 
     private static void Yes()
     {
-        C.MoveToTrash(new Guid("56ff7b1c-ef4d-11ec-8ea0-0242ac120002"));
+        C.MoveToTrash(new Guid("56ff8116-ef4d-11ec-8ea0-0242ac120002"));
+        Thread.Sleep(9000);
+        C.PermDeleteItem(new Guid("56ff8116-ef4d-11ec-8ea0-0242ac120002"));
     }
 }
