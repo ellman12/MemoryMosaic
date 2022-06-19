@@ -683,18 +683,17 @@ namespace PSS.Backend
             return media;
         }
 
-        ///<summary>
-        ///Get if a path is starred or not.
-        ///</summary>
-        public static bool GetStarred(string path)
+        ///<summary>Get if an item is starred or not.</summary>
+        ///<returns>True if this item is starred, false if not.</returns>
+        public static bool IsStarred(Guid uuid)
         {
             bool starred = false;
             
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT starred FROM media WHERE path=@path", connection);
-                cmd.Parameters.AddWithValue("@path", path);
+                NpgsqlCommand cmd = new("SELECT starred FROM media WHERE uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader reader = cmd.ExecuteReader();
 
