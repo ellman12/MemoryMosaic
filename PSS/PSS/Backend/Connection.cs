@@ -3,9 +3,7 @@ using System.Data;
 
 namespace PSS.Backend
 {
-    ///<summary>
-    ///Backend database stuff.
-    ///</summary>
+    ///Contains static methods for interacting with the PSS PostgreSQL database.
     public static class Connection
     {
         public static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
@@ -413,7 +411,7 @@ namespace PSS.Backend
             }*/
         }
 
-        ///<summary>Remove a single path from an album.</summary>
+        ///<summary>Remove a single item from an album.</summary>
         ///<param name="uuid">The uuid of the item to remove.</param>
         ///<param name="albumID">ID of the album to remove from.</param>
         public static void RemoveFromAlbum(Guid uuid, int albumID)
@@ -904,9 +902,7 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>
         ///Gets an item's path from its (string) uuid.
-        ///</summary>
         public static string GetPathFromUuid(string uuid)
         {
             string path = "";
@@ -940,9 +936,7 @@ namespace PSS.Backend
             return path;
         }
 
-        ///<summary>
         ///Gets an item's path from its Guid uuid.
-        ///</summary>
         public static string GetPathFromUuid(Guid uuid)
         {
             string path = "";
@@ -974,6 +968,42 @@ namespace PSS.Backend
             }
 
             return path;
+        }
+
+        ///<summary>Get the UUID of the item with this short path.</summary>
+        ///<param name="shortPath">The short path of the item.</param>
+        ///<returns>The uuid of the item.</returns>
+        public static Guid GetUuidFromPath(string shortPath)
+        {
+            Guid uuid = new();
+
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT uuid FROM media WHERE shortPath=@shortPath", connection);
+                cmd.Parameters.AddWithValue("@shortPath", shortPath);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    reader.Read(); //There should only be 1 column in 1 row to read.
+                    uuid = reader.GetGuid(0);
+                    reader.Close();
+                }
+                else
+                    uuid = Guid.Empty;
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return uuid;
         }
 
         public static DateTime GetDateTaken(Guid uuid)
