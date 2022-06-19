@@ -51,9 +51,8 @@
             int ii = i; @*Necessary for some things like the <input>'s*@
             string dateString = allFiles[i].dateTaken == null ? "None" : allFiles[i].dateTaken?.ToString("ddd, MMM d, yyy h:mm:ss tt"); 
             
-            //The path to the file inside pss_upload. TODO: is the 2nd line needed? Wtf is this part
-            string ogShortPath = allFiles[i].fullPath.Replace(S.uploadFolderPath!, null);
-            ogShortPath = Path.GetFileName(S.uploadFolderPath) + ogShortPath;
+            //Get the short path to this item relative to pss_upload.
+            string ogShortPath = Path.Join("pss_upload", allFiles[i].fullPath.Replace(S.uploadFolderPath!, null));
 
             <div class="itemDiv">
             @{
