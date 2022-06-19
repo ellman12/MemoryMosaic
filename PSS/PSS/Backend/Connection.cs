@@ -642,7 +642,6 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
                 r.Close();
             }
@@ -658,10 +657,9 @@ namespace PSS.Backend
             return media;
         }
         
-        ///<summary>
-        ///Load only starred items from the media table. Doesn't bother selecting the starred column because it does SELECT WHERE starred == true.
-        ///</summary>
-        ///<returns>Row(s) retrieved in a List&lt;MediaRow&gt;</returns>
+        //TODO: should this only get ones not in a folder?
+        ///<summary>Like LoadMediaTable() but only loads items where starred==true.</summary>
+        ///<returns>List&lt;MediaRow&gt; of items in media table either in or not in a folder, sorted by date taken descending (newest first).</returns>
         public static List<MediaRow> LoadStarred()
         {
             List<MediaRow> media = new();
@@ -671,10 +669,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-
-                while (r.Read())
-                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
-
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
                 r.Close();
             }
             catch (NpgsqlException e)
