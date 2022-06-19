@@ -770,9 +770,10 @@ namespace PSS.Backend
             }
         }
         
-        ///<summary>
-        ///Loads the contents of an album (or folder) into a List of MediaRows
-        ///</summary>
+        ///<summary>Loads the contents of an album/folder into a List&lt;MediaRow&gt;.</summary>        
+        ///<param name="albumID">The id of the album/folder to load.</param>
+        ///<param name="mode">How the items should be sorted.</param>
+        ///<returns>List&lt;MediaRow&gt; of the album/folder contents.</returns>
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             bool isFolder = IsFolder(albumID);
@@ -790,13 +791,12 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT a.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.path=a.path WHERE album_id=@albumID AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
+                NpgsqlCommand cmd = new("SELECT m.path, m.date_taken, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id=@albumID AND date_deleted IS NULL AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (r.Read())
-                    media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
             }
             catch (NpgsqlException e)
             {
