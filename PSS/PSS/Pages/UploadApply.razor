@@ -103,7 +103,7 @@
         {
             C.UploadFile file = new()
             {
-                fullPath = path.Replace('\\', '/'),
+                fullPath = fullPath.Replace('\\', '/'),
                 thumbnail = Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null
             };
             file.dateTaken = D.GetDateTakenAuto(fullPath, out file.dateTakenSrc);

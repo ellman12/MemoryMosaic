@@ -132,7 +132,7 @@
             allFiles.Add(new C.UploadFile
             {
                 fullPath = fullPath.Replace('\\', '/'),
-                thumbnail = extLower is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
+                thumbnail = Path.GetExtension(fullPath) is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
                 dateTakenSrc = timeSrc,
                 alreadyInLib = ItemExists(Path.GetFileName(fullPath), fullDT)
