@@ -950,8 +950,7 @@ namespace PSS.Backend
                     uuid = reader.GetGuid(0);
                     reader.Close();
                 }
-                else
-                    uuid = Guid.Empty;
+                else uuid = Guid.Empty;
             }
             catch (NpgsqlException e)
             {
@@ -961,13 +960,15 @@ namespace PSS.Backend
             {
                 Close();
             }
-
             return uuid;
         }
 
-        public static DateTime GetDateTaken(Guid uuid)
+        ///<summary>Returns the date taken of the item with this uuid.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<returns>The DateTime? date taken of the item.</returns>
+        public static DateTime? GetDateTaken(Guid uuid)
         {
-            DateTime dateTaken = new();
+            DateTime? dateTaken = null;
 
             try
             {
@@ -975,44 +976,12 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT date_taken FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.HasRows)
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
                 {
-                    reader.Read();
-                    dateTaken = reader.GetDateTime(0);
-                    reader.Close();
-                }
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return dateTaken;
-        }
-
-        public static DateTime GetDateTaken(string path)
-        {
-            DateTime dateTaken = new();
-
-            try
-            {
-                Open();
-                NpgsqlCommand cmd = new("SELECT date_taken FROM media WHERE path=@path", connection);
-                cmd.Parameters.AddWithValue("@path", path);
-                cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.HasRows)
-                {
-                    reader.Read();
-                    dateTaken = reader.GetDateTime(0);
-                    reader.Close();
+                    r.Read();
+                    dateTaken = r.IsDBNull(0) ? null : r.GetDateTime(0);
+                    r.Close();
                 }
             }
             catch (NpgsqlException e)

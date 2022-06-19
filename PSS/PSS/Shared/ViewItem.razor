@@ -185,7 +185,7 @@ Optional Parameters:
     {
         parsedID = Guid.Parse(id);
         shortPath = C.GetPathFromUuid(parsedID);
-        ogDateTaken = newDateTaken = C.GetDateTaken(parsedID);
+        //ogDateTaken = newDateTaken = C.GetDateTaken(parsedID); TODO: support null DT here.
         albumsVis = "hidden";
         infoVis = "hidden";
         moreOptionsVis = "hidden";
