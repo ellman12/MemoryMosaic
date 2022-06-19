@@ -286,8 +286,8 @@ namespace PSS.Backend
                 NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@albumName", connection);
                 selectCmd.Parameters.AddWithValue("@albumName", albumName);
                 selectCmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = selectCmd.ExecuteReader();
 
+                using NpgsqlDataReader reader = selectCmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     reader.Read(); //There should only be 1 column in 1 row to read.
@@ -321,8 +321,8 @@ namespace PSS.Backend
                 NpgsqlCommand selectCmd = new("SELECT name FROM albums WHERE id=@id", connection);
                 selectCmd.Parameters.AddWithValue("@id", id);
                 selectCmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = selectCmd.ExecuteReader();
 
+                using NpgsqlDataReader reader = selectCmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     reader.Read(); //There should only be 1 line to read.
@@ -484,7 +484,6 @@ namespace PSS.Backend
                 //cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader reader = cmd.ExecuteReader();
-
                 while (reader.Read()) albums.Add(new Album(reader.GetInt32(0), reader.GetString(1), reader.IsDBNull(2) ? String.Empty : reader.GetString(2), reader.GetDateTime(3))); //https://stackoverflow.com/a/38930847
                 reader.Close();
             }
@@ -514,7 +513,6 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-
                 while (r.Read()) albums.Add(new Album(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
                 r.Close();
             }
@@ -695,8 +693,8 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT starred FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     reader.Read();
@@ -786,7 +784,6 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
             }
             catch (NpgsqlException e)
@@ -909,8 +906,8 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     reader.Read(); //There should only be 1 line to read.
@@ -942,13 +939,13 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT uuid FROM media WHERE shortPath=@shortPath", connection);
                 cmd.Parameters.AddWithValue("@shortPath", shortPath);
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
-                if (reader.HasRows)
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
                 {
-                    reader.Read(); //There should only be 1 column in 1 row to read.
-                    uuid = reader.GetGuid(0);
-                    reader.Close();
+                    r.Read(); //There should only be 1 column in 1 row to read.
+                    uuid = r.GetGuid(0);
+                    r.Close();
                 }
                 else uuid = Guid.Empty;
             }
@@ -976,6 +973,7 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT date_taken FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
+                
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 if (r.HasRows)
                 {
@@ -1030,15 +1028,14 @@ namespace PSS.Backend
         public static DateTime GetDateAdded(Guid uuid)
         {
             DateTime dateTaken = new();
-
             try
             {
                 Open();
                 NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     reader.Read();
@@ -1103,8 +1100,8 @@ namespace PSS.Backend
                 NpgsqlCommand cmd = new("SELECT folder FROM albums WHERE id=@albumID", connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     reader.Read();
