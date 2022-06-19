@@ -33,7 +33,7 @@ Optional Parameters:
             CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
             AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
             AltLeft="@(() => navigationManager.NavigateTo(ReturnPath))"
-            AltS="@(() => { C.UpdateStarred(shortPath, !starred); StateHasChanged(); })"/>
+            AltS="@(() => { C.UpdateStarred(parsedID, !starred); StateHasChanged(); })"/>
 
         @*if (ShortcutsReference.visibility == "visible")
         {
@@ -50,7 +50,7 @@ Optional Parameters:
         <div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
             <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))" title="Add to Album"><span class="material-icons-outlined">library_add</span></button>
             
-            <button class="iconBtn" @onclick="@(() => C.UpdateStarred(shortPath, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
+            <button class="iconBtn" @onclick="@(() => C.UpdateStarred(parsedID, !starred))" title="@(starred ? "Remove Star" : "Add Star")">
                 <span class="material-icons-outlined">@(starred ? "star" : "star_outline")</span>
             </button>
             

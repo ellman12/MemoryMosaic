@@ -716,15 +716,15 @@ namespace PSS.Backend
             return starred;
         }
 
-        ///<summary>Change a single item from either starred (true) or not starred.</summary>
-        public static void UpdateStarred(string path, bool starred)
+        ///<summary>Change a single item from either starred or not starred.</summary>
+        public static void UpdateStarred(Guid uuid, bool starred)
         {
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE path=@path;", connection);
+                NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@starred", starred);
-                cmd.Parameters.AddWithValue("@path", path);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
