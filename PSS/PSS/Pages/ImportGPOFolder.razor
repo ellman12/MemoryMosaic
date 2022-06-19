@@ -44,7 +44,7 @@
     <div id="mainDiv">
         @for (int i = 0; i < allFiles.Count; i++)
         {
-            if (warningChecked && allFiles[i].dateTaken == null) continue; //If this item doesn't have a warning skip it
+            if (warningChecked && allFiles[i].dateTaken != null) continue; //If this item doesn't have a warning skip it
             if (errorChecked && allFiles[i].alreadyInLib == false) continue; //If this item has an error skip it
             if (neitherChecked && allFiles[i].dateTaken != null && !allFiles[i].alreadyInLib) continue; //Only show items with no warnings or errors
             
