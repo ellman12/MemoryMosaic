@@ -994,37 +994,9 @@ namespace PSS.Backend
             return dateTaken;
         }
 
-        public static DateTime GetDateAdded(string path)
-        {
-            DateTime dateTaken = new();
-
-            try
-            {
-                Open();
-                NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE path=@path", connection);
-                cmd.Parameters.AddWithValue("@path", path);
-                cmd.ExecuteNonQuery();
-                using NpgsqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.HasRows)
-                {
-                    reader.Read();
-                    dateTaken = reader.GetDateTime(0);
-                    reader.Close();
-                }
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return dateTaken;
-        }
-
+        ///<summary>Get the DateTime of when this item was added to the library.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<returns>DateTime representing its date_added value.</returns>
         public static DateTime GetDateAdded(Guid uuid)
         {
             DateTime dateTaken = new();
@@ -1055,19 +1027,22 @@ namespace PSS.Backend
             return dateTaken;
         }
         
-        public static DateTime GetDateAddedToAlbum(string path, int albumID)
+        ///<summary>Get the DateTime a uuid was added to an album.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<param name="albumID">The id of the album the item is in.</param>
+        ///<returns>DateTime the uuid was added to the album.</returns>
+        public static DateTime GetDateAddedToAlbum(Guid uuid, int albumID)
         {
             DateTime dateTaken = new();
-
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT date_added_to_album FROM album_entries WHERE path=@path AND album_id=@albumID", connection);
-                cmd.Parameters.AddWithValue("@path", path);
+                NpgsqlCommand cmd = new("SELECT date_added_to_album FROM album_entries WHERE uuid=@uuid AND album_id=@albumID", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
-                using NpgsqlDataReader r = cmd.ExecuteReader();
 
+                using NpgsqlDataReader r = cmd.ExecuteReader();
                 if (r.HasRows)
                 {
                     r.Read();
