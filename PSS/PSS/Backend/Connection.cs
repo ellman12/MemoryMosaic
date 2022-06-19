@@ -838,49 +838,55 @@ namespace PSS.Backend
             return media;
         }
 
-        ///<summary>
-        ///Update when an item was taken and also update its path and move it to the new path.
-        ///</summary>
+        ///<summary>Update when an item was taken, update its short path, and move it to the new path on the server.</summary>
         ///<param name="shortPath">The path to the item that is stored in the database</param>
         ///<param name="newDateTaken">The new date taken for this item</param>
-        public static void UpdateDateTaken(string shortPath, DateTime newDateTaken)
+        ///<returns>True if completed successfully, false otherwise.</returns>
+        //TODO: need to test this later to make sure it works, after merging UA improvements
+        //TODO: need to do validation to prevent duplicate file errors.
+        public static bool UpdateDateTaken(string shortPath, DateTime? newDateTaken)
         {
+            throw new NotImplementedException();
             try
             {
                 Open();
 
-                //1. Update date taken in media.
-                NpgsqlCommand cmd = new("UPDATE media SET date_taken=@newDateTaken WHERE path=@shortPath", connection);
-                cmd.Parameters.AddWithValue("@shortPath", shortPath);
-                cmd.Parameters.AddWithValue("@newDateTaken", newDateTaken);
-                cmd.ExecuteNonQuery();
-
-                //2. Update shortPath in media.
                 string filename = Path.GetFileName(shortPath);
-                string newPath = Path.Combine(Pages.UploadApply.GenerateDatePath(newDateTaken), filename); //Don't need full path, just the short path (/2021/10 October/...).
-                cmd.CommandText = "UPDATE media SET path=@newPath WHERE path=@shortPath";
-                cmd.Parameters.AddWithValue("@newPath", newPath);
+                string originalFullPath = Path.Combine(S.libFolderPath, shortPath);
+                //string dateFolderFullPath = Pages.UploadApply.GenerateSortedDir(newDateTaken); //TODO: this method should handle null DT
+                
+                //Move item to new path on server.
+                // Directory.CreateDirectory(dateFolderFullPath); //Create in case it doesn't exist.
+                // string newFullPath = Path.Combine(dateFolderFullPath, filename);
+                // File.Move(originalFullPath, newFullPath);
+
+                NpgsqlCommand cmd = new("", connection);
+                if (newDateTaken == null)
+                {
+                    cmd.CommandText = "UPDATE media SET path = @newPath, date_taken = NULL WHERE path = @shortPath";
+                }
+                else
+                {
+                    cmd.CommandText = "UPDATE media SET path = @newPath, date_taken = @newDateTaken WHERE path = @shortPath";
+                    cmd.Parameters.AddWithValue("@newDateTaken", newDateTaken);
+                }
+
+                //Update date taken and short path in media.
+                //string newPath = Path.Combine(Pages.UploadApply.GenerateDatePath(newDateTaken), filename); //TODO: this I think will have to change to a different method in improved UA...
+                //cmd.Parameters.AddWithValue("@newPath", newPath);
                 cmd.Parameters.AddWithValue("@shortPath", shortPath);
                 cmd.ExecuteNonQuery();
-                
-                //3. Update path(s) in Album_Entries table.
-                cmd.CommandText = "UPDATE album_entries SET path=@newPath WHERE path=@shortPath";
-                cmd.ExecuteNonQuery();
-                
-                //4. Update album cover(s).
-                cmd.CommandText = "UPDATE albums SET album_cover=@newPath WHERE album_cover=@shortPath";
-                cmd.ExecuteNonQuery();
-                
-                //5. Move item to new path on server.
-                string originalFullPath = Path.Combine(S.libFolderPath, shortPath);
-                string newFullDir = Pages.UploadApply.GenerateSortedDir(newDateTaken);
-                string newFullPath = Path.Combine(newFullDir, filename);
-                Directory.CreateDirectory(newFullDir); //Create in case it doesn't exist.
-                File.Move(originalFullPath, newFullPath);
+                return true;
             }
+            // catch (IOException e) TODO
+            // {
+                // Console.WriteLine(e.Message);
+                // return false;
+            // }
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+                return false;
             }
             finally
             {
