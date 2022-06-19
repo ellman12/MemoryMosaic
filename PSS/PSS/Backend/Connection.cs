@@ -605,7 +605,7 @@ namespace PSS.Backend
             }
         }
 
-        //Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
+        ///Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
         public static void RestoreItem(Guid uuid)
         {
             try
@@ -657,16 +657,15 @@ namespace PSS.Backend
             return media;
         }
         
-        //TODO: should this only get ones not in a folder?
-        ///<summary>Like LoadMediaTable() but only loads items where starred==true.</summary>
-        ///<returns>List&lt;MediaRow&gt; of items in media table either in or not in a folder, sorted by date taken descending (newest first).</returns>
+        ///<summary>Like LoadMediaTable() but only loads items where separate==false AND starred==true.</summary>
+        ///<returns>List&lt;MediaRow&gt; of items in media table not in a folder AND starred, sorted by date taken descending (newest first).</returns>
         public static List<MediaRow> LoadStarred()
         {
             List<MediaRow> media = new();
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE starred=true ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE separate=FALSE AND starred=TRUE ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
