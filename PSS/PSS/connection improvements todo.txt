@@ -1,3 +1,0 @@
-DateTime parameters need to be nullable, and need to update queries to support this
-make Connection a partial class?
-Add "using" in front of everything that supports it.

@@ -63,7 +63,7 @@ namespace PSS.Backend
         {
             public readonly string path;
             public readonly DateTime? dateTaken;
-            public readonly DateTime dateAdded; //TODO: remove?
+            public readonly DateTime dateAdded;
             public readonly bool starred;
             public readonly Guid uuid;
             public readonly string thumbnail;
@@ -149,7 +149,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("", connection);
+                using NpgsqlCommand cmd = new("", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@starred", starred);
                 cmd.Parameters.AddWithValue("@separate", separate);
@@ -188,7 +188,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated, folder) VALUES (@name, now(), @folder)", connection);
+                using NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated, folder) VALUES (@name, now(), @folder)", connection);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.Parameters.AddWithValue("@folder", folder);
                 cmd.ExecuteNonQuery();
@@ -214,7 +214,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE albums SET name=@newName WHERE id=@id", connection);
+                using NpgsqlCommand cmd = new("UPDATE albums SET name=@newName WHERE id=@id", connection);
                 cmd.Parameters.AddWithValue("@newName", newName);
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.ExecuteNonQuery();
@@ -237,7 +237,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE albums SET album_cover=@path WHERE name=@albumName", connection);
+                using NpgsqlCommand cmd = new("UPDATE albums SET album_cover=@path WHERE name=@albumName", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@albumName", albumName);
                 cmd.ExecuteNonQuery();
@@ -260,7 +260,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE albums SET album_cover=@path WHERE id=@albumID", connection);
+                using NpgsqlCommand cmd = new("UPDATE albums SET album_cover=@path WHERE id=@albumID", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
@@ -283,7 +283,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@albumName", connection);
+                using NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@albumName", connection);
                 selectCmd.Parameters.AddWithValue("@albumName", albumName);
                 selectCmd.ExecuteNonQuery();
 
@@ -318,7 +318,7 @@ namespace PSS.Backend
                 Open();
 
                 //Find the album ID using the album name.
-                NpgsqlCommand selectCmd = new("SELECT name FROM albums WHERE id=@id", connection);
+                using NpgsqlCommand selectCmd = new("SELECT name FROM albums WHERE id=@id", connection);
                 selectCmd.Parameters.AddWithValue("@id", id);
                 selectCmd.ExecuteNonQuery();
 
@@ -390,17 +390,17 @@ namespace PSS.Backend
                 if (isFolder)
                 {
                     //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first.
-                    NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE path=@path", connection);
+                    using NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE path=@path", connection);
                     delCmd.Parameters.AddWithValue("@path", path);
                     delCmd.ExecuteNonQuery();
 
                     //Mark this item as in a folder (separate).
-                    NpgsqlCommand separateCmd = new("UPDATE media SET separate=true WHERE path=@path", connection);
+                    using NpgsqlCommand separateCmd = new("UPDATE media SET separate=true WHERE path=@path", connection);
                     separateCmd.Parameters.AddWithValue("@path", path);
                     separateCmd.ExecuteNonQuery();
                 }
 
-                NpgsqlCommand cmd = new("INSERT INTO album_entries VALUES (@path, @albumID, @date_added_to_album) ON CONFLICT (path, album_id) DO NOTHING", connection);
+                using NpgsqlCommand cmd = new("INSERT INTO album_entries VALUES (@path, @albumID, @date_added_to_album) ON CONFLICT (path, album_id) DO NOTHING", connection);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.Parameters.AddWithValue("@date_added_to_album", DateTime.Now);
@@ -427,7 +427,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("DELETE FROM album_entries WHERE album_id=@albumID AND uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("DELETE FROM album_entries WHERE album_id=@albumID AND uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
@@ -480,7 +480,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums " + where + " ORDER BY " + orderBy, connection);
+                using NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums " + where + " ORDER BY " + orderBy, connection);
                 //cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
@@ -509,7 +509,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT album_id, name, album_cover FROM album_entries AS e INNER JOIN albums AS a ON e.album_id=a.id WHERE uuid=@uuid ORDER BY name ASC", connection);
+                using NpgsqlCommand cmd = new("SELECT album_id, name, album_cover FROM album_entries AS e INNER JOIN albums AS a ON e.album_id=a.id WHERE uuid=@uuid ORDER BY name ASC", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
@@ -537,7 +537,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE media SET separate=@folder FROM album_entries WHERE album_id=@albumID AND album_entries.uuid=media.uuid", connection);
+                using NpgsqlCommand cmd = new("UPDATE media SET separate=@folder FROM album_entries WHERE album_id=@albumID AND album_entries.uuid=media.uuid", connection);
                 cmd.Parameters.AddWithValue("@folder", folder);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
@@ -562,7 +562,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE media SET date_deleted = now() WHERE uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = now() WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("uuid", uuid);
                 cmd.ExecuteNonQuery();
             }
@@ -586,7 +586,7 @@ namespace PSS.Backend
                 Open();
 
                 //Copy item from media to trash
-                NpgsqlCommand cmd = new("DELETE FROM media WHERE uuid=@uuid AND date_deleted IS NOT NULL", connection);
+                using NpgsqlCommand cmd = new("DELETE FROM media WHERE uuid=@uuid AND date_deleted IS NOT NULL", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
@@ -610,7 +610,7 @@ namespace PSS.Backend
             {
                 Open();
 
-                NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE uuid = @uuid", connection);
+                using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE uuid = @uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
             }
@@ -632,7 +632,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=false ORDER BY date_taken DESC", connection);
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
@@ -658,7 +658,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NULL AND separate=false ORDER BY date_taken DESC", connection);
+                using NpgsqlCommand cmd = new("SELECT path, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NULL AND separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), null, r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
@@ -684,7 +684,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=FALSE AND starred=TRUE ORDER BY date_taken DESC", connection);
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=FALSE AND starred=TRUE ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
@@ -711,7 +711,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT starred FROM media WHERE uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("SELECT starred FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
@@ -741,7 +741,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@starred", starred);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
@@ -764,7 +764,7 @@ namespace PSS.Backend
                 Open();
                 foreach(string path in paths)
                 {
-                    NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE path=@path", connection);
+                    using NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE path=@path", connection);
                     cmd.Parameters.AddWithValue("@starred", starred);
                     cmd.Parameters.AddWithValue("@path", path);
                     cmd.ExecuteNonQuery();
@@ -801,7 +801,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT m.path, m.date_taken, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id=@albumID AND date_deleted IS NULL AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
+                using NpgsqlCommand cmd = new("SELECT m.path, m.date_taken, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id=@albumID AND date_deleted IS NULL AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
@@ -838,7 +838,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_deleted IS NOT NULL ORDER BY " + orderBy, connection);
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_deleted IS NOT NULL ORDER BY " + orderBy, connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
@@ -878,7 +878,7 @@ namespace PSS.Backend
                 // string newFullPath = Path.Combine(dateFolderFullPath, filename);
                 // File.Move(originalFullPath, newFullPath);
 
-                NpgsqlCommand cmd = new("", connection);
+                using NpgsqlCommand cmd = new("", connection);
                 if (newDateTaken == null)
                 {
                     cmd.CommandText = "UPDATE media SET path = @newPath, date_taken = NULL WHERE path = @shortPath";
@@ -924,7 +924,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
@@ -957,7 +957,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT uuid FROM media WHERE shortPath=@shortPath", connection);
+                using NpgsqlCommand cmd = new("SELECT uuid FROM media WHERE shortPath=@shortPath", connection);
                 cmd.Parameters.AddWithValue("@shortPath", shortPath);
                 cmd.ExecuteNonQuery();
 
@@ -991,7 +991,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT date_taken FROM media WHERE uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("SELECT date_taken FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
                 
@@ -1024,7 +1024,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
@@ -1058,7 +1058,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT date_added_to_album FROM album_entries WHERE uuid=@uuid AND album_id=@albumID", connection);
+                using NpgsqlCommand cmd = new("SELECT date_added_to_album FROM album_entries WHERE uuid=@uuid AND album_id=@albumID", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
@@ -1090,7 +1090,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT folder FROM albums WHERE id=@albumID", connection);
+                using NpgsqlCommand cmd = new("SELECT folder FROM albums WHERE id=@albumID", connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
 
@@ -1136,7 +1136,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("UPDATE media SET path=@newShortPath WHERE path=@oldShortPath", connection);
+                using NpgsqlCommand cmd = new("UPDATE media SET path=@newShortPath WHERE path=@oldShortPath", connection);
                 cmd.Parameters.AddWithValue("@newShortPath", newShortPath);
                 cmd.Parameters.AddWithValue("@oldShortPath", oldShortPath);
                 cmd.ExecuteNonQuery();
