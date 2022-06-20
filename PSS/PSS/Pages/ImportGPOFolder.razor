@@ -32,7 +32,7 @@
 </div>
 
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
-<AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allShortPaths" ShowCheckCancelButtons="false"/>
+<AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allGuids" ShowCheckCancelButtons="false"/>
 
 <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
 
@@ -76,7 +76,7 @@
     private static AlbumSelector albumSelector = new();
     private static string albumSelectorVis;
 
-    private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
+    private static List<Guid> allGuids; //Passed in to AlbumSelector and items added in AddItems().
     private static List<string> allFullPaths;
     private static List<C.UploadFile> allFiles;
 
@@ -95,7 +95,7 @@
     
     protected override void OnInitialized()
     {
-        allShortPaths = new List<string>();
+        allGuids = new List<Guid>();
         allFullPaths = F.GetSupportedFiles(Upload.GpoFolderPath);
         allFiles = new List<C.UploadFile>(allFullPaths.Count);
         promptVis = filterVis = albumSelectorVis = "hidden";
@@ -136,7 +136,8 @@
                 thumbnail = Path.GetExtension(fullPath) is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
                 dateTakenSrc = timeSrc,
-                alreadyInLib = ItemInLibrary(fullDT, Path.GetFileName(fullPath))
+                alreadyInLib = ItemInLibrary(fullDT, Path.GetFileName(fullPath)),
+                uuid = Guid.NewGuid()
             });
             
             UpdateStatus();
@@ -173,7 +174,7 @@
 
             string filename = Path.GetFileName(file.fullPath);
             string newShortPath = C.CreateShortPath(file.dateTaken, filename).Replace('\\', '/');
-            allShortPaths.Add(newShortPath);
+            allGuids.Add(file.uuid);
             Directory.CreateDirectory(C.CreateFullDateFolderPath(file.dateTaken));
 
             GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207

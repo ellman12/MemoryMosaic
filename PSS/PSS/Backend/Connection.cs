@@ -122,6 +122,9 @@ namespace PSS.Backend
             
             ///Where the date taken data came from (Filename, Metadata, or None).
             public D.DateTakenSrc dateTakenSrc;
+
+            ///The uuid of the item, which will be added to the database upon upload.
+            public Guid uuid;
         }
 
         public static void Open()
