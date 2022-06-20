@@ -1120,7 +1120,18 @@ namespace PSS.Backend
         ///<param name="filename">The filename and extension of the item.</param>
         ///<returns>A short/DB path for the item.</returns>
         ///<remarks>If date taken is null, the returned path's format is 'Unknown/filename.jpg'. If date taken is not null, the returned path's format is like 2022/5/filename.jpg.</remarks>
-        public static string CreateShortPath(DateTime? dateTaken, string filename) => dateTaken == null ? $"Unknown/{filename}" : $"{dateTaken.Value.Year.ToString()}/{dateTaken.Value.Month}/{filename})";
+        public static string CreateShortPath(DateTime? dateTaken, string filename) => dateTaken == null ? $"Unknown/{filename}" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}/{filename}";
+
+        ///<summary>Create the full folder path to where an item with this date taken would get moved to in the PSS library.</summary>
+        ///<param name="dateTaken">The date taken to use for creating the path.</param>
+        ///<returns>The full date folder path.</returns>
+        public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(S.libFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
+
+        ///<summary>Given a Date Taken and a filename, create the full path to where the item would get moved to in the PSS library.</summary>
+        ///<param name="dateTaken">The date taken to use for creating the path.</param>
+        ///<param name="filename">The filename and extension of the item.</param>
+        ///<returns>The full path to where the item would get moved to in the PSS library.</returns>
+        public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename));
 
         ///<summary>Used in ViewItem for renaming the current item's file.</summary>
         ///<param name="oldShortPath">The original short path of the item.</param>
