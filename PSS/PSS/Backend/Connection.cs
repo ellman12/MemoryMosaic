@@ -649,6 +649,32 @@ namespace PSS.Backend
 
             return media;
         }
+
+        ///<summary>Like LoadMediaTable() but only loads items that DON'T have a date taken.</summary>
+        ///<returns>A List&lt;MediaRow&gt; containing only items without a date taken (NULL DT).</returns>
+        public static List<MediaRow> LoadMediaUnknownDT()
+        {
+            List<MediaRow> media = new();
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT path, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NULL AND separate=false ORDER BY date_taken DESC", connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), null, r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
+                r.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return media;
+        }
         
         ///<summary>Like LoadMediaTable() but only loads items where separate==false AND starred==true.</summary>
         ///<returns>List&lt;MediaRow&gt; of items in media table not in a folder AND starred, sorted by date taken descending (newest first).</returns>
