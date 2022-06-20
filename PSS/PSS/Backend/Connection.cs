@@ -624,7 +624,7 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Loads all rows and columns in the media table not in a folder (separate==false) into a List&lt;MediaRow&gt;.</summary>
+        ///<summary>Loads all rows and columns in the media table not in a folder (separate==false), and that have a date taken, into a List&lt;MediaRow&gt;.</summary>
         ///<returns>List&lt;MediaRow&gt; of items in media table not in a folder, sorted by date taken descending (newest first).</returns>
         public static List<MediaRow> LoadMediaTable()
         {
@@ -632,7 +632,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
@@ -684,7 +684,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE separate=FALSE AND starred=TRUE ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=FALSE AND starred=TRUE ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
