@@ -62,13 +62,13 @@ namespace PSS.Backend
         public record MediaRow
         {
             public readonly string path;
-            public readonly DateTime dateTaken; //TODO: need to make this nullable
+            public readonly DateTime? dateTaken;
             public readonly DateTime dateAdded; //TODO: remove?
             public readonly bool starred;
             public readonly Guid uuid;
             public readonly string thumbnail;
 
-            public MediaRow(string p, DateTime dt, bool starred, Guid uuid, string thumbnail)
+            public MediaRow(string p, DateTime? dt, bool starred, Guid uuid, string thumbnail)
             {
                 path = p;
                 dateTaken = dt;
@@ -76,7 +76,7 @@ namespace PSS.Backend
                 this.uuid = uuid;
             }
 
-            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid)
+            public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid)
             {
                 path = p;
                 dateTaken = dt;
@@ -85,7 +85,7 @@ namespace PSS.Backend
                 this.uuid = uuid;
             }
             
-            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid, string thumbnail)
+            public MediaRow(string p, DateTime? dt, DateTime da, Guid uuid, string thumbnail)
             {
                 path = p;
                 dateTaken = dt;
@@ -94,7 +94,7 @@ namespace PSS.Backend
                 this.thumbnail = thumbnail;
             }
 
-            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid, string thumbnail)
+            public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail)
             {
                 path = p;
                 dateTaken = dt;
