@@ -170,7 +170,7 @@
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
     private void DeleteErrors()
     {
-        foreach (Connection.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib)) //TODO: is ToList() needed?
+        foreach (C.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib))
         {
             allFiles.Remove(file);
             File.Delete(file.fullPath);
