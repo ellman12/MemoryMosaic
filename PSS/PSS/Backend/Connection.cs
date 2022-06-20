@@ -374,39 +374,29 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>
-        ///Add a single path to an album in album_entries. If it's a folder it handles all that automatically.
-        ///</summary>
-        ///This shit is a big fat TODO. Need to modify AlbumSelector and stuff that uses it to work with uuid's instead of short paths.
-        public static void AddToAlbum(string path, int albumID)
+        ///<summary>Add a single item to an album in album_entries. If it's a folder it handles all that automatically.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<param name="albumID">The ID of the album to add the item to.</param>
+        public static void AddToAlbum(Guid uuid, int albumID)
         {
-            throw new NotImplementedException();
-            /*bool isFolder = IsFolder(albumID);
+            bool isFolder = IsFolder(albumID);
             
             try
             {
                 Open();
+                using NpgsqlCommand cmd = new("", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.Parameters.AddWithValue("@albumID", albumID);
 
                 if (isFolder)
                 {
-                    //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first.
-                    using NpgsqlCommand delCmd = new("DELETE FROM album_entries WHERE path=@path", connection);
-                    delCmd.Parameters.AddWithValue("@path", path);
-                    delCmd.ExecuteNonQuery();
-
-                    //Mark this item as in a folder (separate).
-                    using NpgsqlCommand separateCmd = new("UPDATE media SET separate=true WHERE path=@path", connection);
-                    separateCmd.Parameters.AddWithValue("@path", path);
-                    separateCmd.ExecuteNonQuery();
+                    //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
+                    cmd.CommandText = "DELETE FROM album_entries WHERE uuid=@uuid; UPDATE media SET separate=true WHERE uuid=@uuid";
+                    cmd.ExecuteNonQuery();
                 }
 
-                using NpgsqlCommand cmd = new("INSERT INTO album_entries VALUES (@path, @albumID, @date_added_to_album) ON CONFLICT (path, album_id) DO NOTHING", connection);
-                cmd.Parameters.AddWithValue("@path", path);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
-                cmd.Parameters.AddWithValue("@date_added_to_album", DateTime.Now);
-                cmd.ExecuteNonQuery();
-
-                cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
+                //Actually add the item to the folder/album and set the album's last updated to now.
+                cmd.CommandText = "INSERT INTO album_entries VALUES (@uuid, @albumID) ON CONFLICT (uuid, album_id) DO NOTHING; UPDATE albums SET last_updated = now() WHERE id=@albumID";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -416,7 +406,7 @@ namespace PSS.Backend
             finally
             {
                 Close();
-            }*/
+            }
         }
 
         ///<summary>Remove a single item from an album.</summary>
