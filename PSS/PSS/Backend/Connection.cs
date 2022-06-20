@@ -62,13 +62,13 @@ namespace PSS.Backend
         public record MediaRow
         {
             public readonly string path;
-            public readonly DateTime dateTaken; //TODO: need to make this nullable
+            public readonly DateTime? dateTaken;
             public readonly DateTime dateAdded; //TODO: remove?
             public readonly bool starred;
             public readonly Guid uuid;
             public readonly string thumbnail;
 
-            public MediaRow(string p, DateTime dt, bool starred, Guid uuid, string thumbnail)
+            public MediaRow(string p, DateTime? dt, bool starred, Guid uuid, string thumbnail)
             {
                 path = p;
                 dateTaken = dt;
@@ -76,7 +76,7 @@ namespace PSS.Backend
                 this.uuid = uuid;
             }
 
-            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid)
+            public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid)
             {
                 path = p;
                 dateTaken = dt;
@@ -85,7 +85,7 @@ namespace PSS.Backend
                 this.uuid = uuid;
             }
             
-            public MediaRow(string p, DateTime dt, DateTime da, Guid uuid, string thumbnail)
+            public MediaRow(string p, DateTime? dt, DateTime da, Guid uuid, string thumbnail)
             {
                 path = p;
                 dateTaken = dt;
@@ -94,7 +94,7 @@ namespace PSS.Backend
                 this.thumbnail = thumbnail;
             }
 
-            public MediaRow(string p, DateTime dt, DateTime da, bool starred, Guid uuid, string thumbnail)
+            public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail)
             {
                 path = p;
                 dateTaken = dt;
@@ -624,7 +624,7 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Loads all rows and columns in the media table not in a folder (separate==false) into a List&lt;MediaRow&gt;.</summary>
+        ///<summary>Loads all rows and columns in the media table not in a folder (separate==false), and that have a date taken, into a List&lt;MediaRow&gt;.</summary>
         ///<returns>List&lt;MediaRow&gt; of items in media table not in a folder, sorted by date taken descending (newest first).</returns>
         public static List<MediaRow> LoadMediaTable()
         {
@@ -632,10 +632,36 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate=false ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+                r.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return media;
+        }
+
+        ///<summary>Like LoadMediaTable() but only loads items that DON'T have a date taken.</summary>
+        ///<returns>A List&lt;MediaRow&gt; containing only items without a date taken (NULL DT).</returns>
+        public static List<MediaRow> LoadMediaUnknownDT()
+        {
+            List<MediaRow> media = new();
+            try
+            {
+                Open();
+                NpgsqlCommand cmd = new("SELECT path, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NULL AND separate=false ORDER BY date_taken DESC", connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), null, r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
                 r.Close();
             }
             catch (NpgsqlException e)
@@ -658,7 +684,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE separate=FALSE AND starred=TRUE ORDER BY date_taken DESC", connection);
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=FALSE AND starred=TRUE ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
@@ -779,7 +805,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.GetString(4)));
             }
             catch (NpgsqlException e)
             {
