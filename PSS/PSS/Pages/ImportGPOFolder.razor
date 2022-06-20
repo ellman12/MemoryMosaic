@@ -136,7 +136,7 @@
                 thumbnail = Path.GetExtension(fullPath) is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
                 dateTakenSrc = timeSrc,
-                alreadyInLib = ItemExists(Path.GetFileName(fullPath), fullDT)
+                alreadyInLib = ItemInLibrary(fullDT, Path.GetFileName(fullPath))
             });
             
             UpdateStatus();
@@ -145,26 +145,9 @@
 }
 
 @functions{
-    ///<summary>Creates the DB short path for an item given its Date Taken and its filename.</summary>
-    ///<returns>The generated short path for the item.</returns>
-    ///<remarks>If the Date Taken was something like 5/1/2022 3:45:03 PM, then its DB short path would be 2022/5 May/filename.ext. If it was null, it'd be Unknown/filename.ext.</remarks>
-    private static string CreateShortPath(DateTime? dateTaken, string filename)
-    {
-        return dateTaken == null ? $"Unknown/{filename}" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTaken.Value.Month)}/{filename}";
-    }
-
-    ///Creates a full path to a shortPath folder where photos and videos would go. E.g., if dateTaken was 5/1/2022, and library folder root path is C:/Users/Elliott/Pictures/pss_library/, this would return C:/Users/Elliott/Pictures/pss_library/2022/5 May
-    private static string GenerateSortedDir(DateTime? dateTaken)
-    {
-        return Path.Combine(S.libFolderPath, dateTaken == null ? "Unknown" : CreateShortPath(dateTaken, null));
-    }
-
     //Checks to see if there is a file on the server with the same name and date path.
-    private static bool ItemExists(string filename, DateTime? dateTaken)
-    {
-        return File.Exists(dateTaken == null ? Path.Combine(S.libFolderPath, "Unknown", filename) : Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename)));
-    }
-    
+    private static bool ItemInLibrary(DateTime? dateTaken, string filename) => File.Exists(C.CreateFullPath(dateTaken, filename));
+
     private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Count(f => f.thumbnail == null)} pictures and {allFiles.Count(f => f.thumbnail != null)} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
 
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
@@ -189,18 +172,15 @@
             if (file.alreadyInLib) continue; //Ignore duplicates
 
             string filename = Path.GetFileName(file.fullPath);
-            string newDir = GenerateSortedDir(file.dateTaken);
-            string newPath = Path.Combine(newDir, filename!); //Used for moving to new home on server.
-            
-            string newShortPath = CreateShortPath(file.dateTaken, filename).Replace('\\', '/'); //Don't need full path, just the short path (/2021/10 October/filename.png).
+            string newShortPath = C.CreateShortPath(file.dateTaken, filename).Replace('\\', '/');
             allShortPaths.Add(newShortPath);
-            Directory.CreateDirectory(newDir);
+            Directory.CreateDirectory(C.CreateFullDateFolderPath(file.dateTaken));
 
             GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
             GC.WaitForPendingFinalizers();
             try
             {
-                File.Move(file.fullPath!, newPath);
+                File.Move(file.fullPath!, C.CreateFullPath(file.dateTaken, filename));
                 rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.thumbnail);
             }
             catch (IOException e)
@@ -209,7 +189,7 @@
             }
         }
         
-        albumSelector.ConfirmBtnClick();
+        albumSelector.ConfirmBtnClick(); //Adds every file to the album(s)/folder.
         status = $"Added {rowsAffected} items to library";
         allFiles.Clear();
         albumSelectorVis = "hidden";
