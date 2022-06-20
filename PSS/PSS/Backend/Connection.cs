@@ -610,13 +610,8 @@ namespace PSS.Backend
             {
                 Open();
 
-                //Copy item from media to trash
                 NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE uuid = @uuid", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
-                cmd.ExecuteNonQuery();
-
-                //Remove from media
-                cmd.CommandText = "";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
