@@ -749,17 +749,17 @@ namespace PSS.Backend
             }
         }
         
-        ///<summary>Change a List of paths (strings) from either starred (true) or not starred.</summary>
-        public static void UpdateStarred(List<string> paths, bool starred)
+        ///<summary>Change a List of items from either starred (true) or not starred.</summary>
+        public static void UpdateStarred(List<Guid> uuids, bool starred)
         {
             try
             {
                 Open();
-                foreach(string path in paths)
+                foreach(Guid uuid in uuids)
                 {
-                    using NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE path=@path", connection);
+                    using NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE uuid=@uuid", connection);
                     cmd.Parameters.AddWithValue("@starred", starred);
-                    cmd.Parameters.AddWithValue("@path", path);
+                    cmd.Parameters.AddWithValue("@uuid", uuid);
                     cmd.ExecuteNonQuery();
                 }
             }
