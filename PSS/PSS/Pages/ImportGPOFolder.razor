@@ -36,10 +36,8 @@
 <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
 
 @{
-    //TODO: why are these needed?
     GC.Collect();
     GC.WaitForPendingFinalizers();
-    UpdateStatus();
 
     <div id="mainDiv">
         @for (int i = 0; i < allFiles.Count; i++)
@@ -138,6 +136,8 @@
                 dateTakenSrc = timeSrc,
                 alreadyInLib = ItemExists(Path.GetFileName(fullPath), fullDT)
             });
+            
+            UpdateStatus();
         }
     }
 }
@@ -163,7 +163,7 @@
         return File.Exists(dateTaken == null ? Path.Combine(S.libFolderPath, "Unknown", filename) : Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename)));
     }
     
-    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail == null).Count()} pictures and {allFiles.Select(f => f.thumbnail != null).Count()} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
+    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Count(f => f.thumbnail == null)} pictures and {allFiles.Count(f => f.thumbnail != null)} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
 
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
     private void DeleteErrors()
