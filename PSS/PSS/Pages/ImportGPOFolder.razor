@@ -58,9 +58,9 @@
                 <img title="Click for Full Size Preview" onclick="window.open('@ogShortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? ogShortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
                 <span class="filenameSpan">@Path.GetFileName(ogShortPath)</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
-                                                                           
+
                 if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">Unknown Date Taken</span>}
-                if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput">}
+                if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput" @onchange="@UpdateStatus">}
                 if (timeInfoChecked){<span class="infoSpan">@($"Time Source: {allFiles[i].dateTakenSrc}")</span>}
                 if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
