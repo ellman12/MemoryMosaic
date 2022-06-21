@@ -33,13 +33,7 @@ namespace PSS
         ///The command used to restore a previous pg_dump backup.
         public static string databaseRestoreCommand;
 
-        public static void WriteSettings()
-        {
-            //https://stackoverflow.com/a/16921677
-            Settings settings = new();
-            string json = JsonConvert.SerializeObject(settings);
-            File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", json);
-        }
+        public static void WriteSettings() => File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
 
         public static void ReadSettings()
         {
