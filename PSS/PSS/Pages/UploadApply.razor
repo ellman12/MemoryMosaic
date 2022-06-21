@@ -106,7 +106,7 @@
                 thumbnail = Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null
             };
             file.dateTaken = D.GetDateTakenAuto(fullPath, out file.dateTakenSrc);
-            file.alreadyInLib = ItemExists(Path.GetFileName(fullPath), file.dateTaken);
+            file.alreadyInLib = ItemInLibrary(file.dateTaken, Path.GetFileName(fullPath));
             allFiles.Add(file);
         }
     
@@ -136,11 +136,8 @@
     }
 
     //Checks to see if there is a file on the server with the same name and date path.
-    private static bool ItemExists(string filename, DateTime? dateTaken)
-    {
-        return File.Exists(dateTaken == null ? Path.Combine(S.libFolderPath, "Unknown", filename) : Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename)));
-    }
-    
+    private static bool ItemInLibrary(DateTime? dateTaken, string filename) => File.Exists(C.CreateFullPath(dateTaken, filename));
+
     private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail == null).Count()} pictures and {allFiles.Select(f => f.thumbnail != null).Count()} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
 
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
