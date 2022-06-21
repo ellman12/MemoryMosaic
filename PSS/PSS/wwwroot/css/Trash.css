@@ -81,6 +81,11 @@ header > div > .textBtn {
     padding: 11px 11px 11px 10px;
 }
 
+#sortDiv > button:hover {
+    background-color: var(--hover-color);
+    cursor: pointer;
+}
+
 #mainDiv {
     display: flex;
     flex-direction: row;

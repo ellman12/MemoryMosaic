@@ -18,19 +18,19 @@
     <div id="sortDiv" style="visibility: @sortDivVis">
         <button @onclick="@(() => ChangeOrder(C.TrashSortMode.NewestDateDeleted))">
             <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")">Date Deleted</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")">Newest Date Deleted First</span>
         </button>
         <button @onclick="@(() => ChangeOrder(C.TrashSortMode.NewestDateTaken))">
             <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")">Date Taken</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span>
         </button>
         <button @onclick="@(() => ChangeOrder(C.TrashSortMode.OldestDateDeleted))">
             <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")">Date Deleted Reversed</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")">Oldest Date Deleted First</span>
         </button>
         <button @onclick="@(() => ChangeOrder(C.TrashSortMode.OldestDateTaken))">
             <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")">Date Taken Reversed</span>
+            <span class="btnText" style="color: @(mode == C.TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span>
         </button>
     </div>
     
