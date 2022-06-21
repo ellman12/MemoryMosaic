@@ -775,7 +775,7 @@ namespace PSS.Backend
             }
         }
         
-        ///<summary>Loads the contents of an album/folder into a List&lt;MediaRow&gt;.</summary>        
+        ///<summary>Loads the contents of an album/folder into a List&lt;MediaRow&gt;, optionally including items without a Date Taken (set in Settings).</summary>        
         ///<param name="albumID">The id of the album/folder to load.</param>
         ///<param name="mode">How the items should be sorted.</param>
         ///<returns>List&lt;MediaRow&gt; of the album/folder contents.</returns>
@@ -796,7 +796,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("SELECT m.path, m.date_taken, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id=@albumID AND date_deleted IS NULL AND separate=" + isFolder + " ORDER BY " + orderBy, connection);
+                using NpgsqlCommand cmd = new($"SELECT m.path, m.date_taken, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id=@albumID AND {(S.displayNoDTInAV ? "" : "date_taken IS NOT NULL AND")} date_deleted IS NULL AND separate={isFolder} ORDER BY {orderBy}", connection);
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
