@@ -47,15 +47,15 @@
             {
                 <div class="thumbnail">
                     @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                    <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
+                    <span @onclick="@(() => ToggleCheck(media.uuid))" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
                     @if (media.thumbnail != null) //Video
                     {
                         <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        <img @onclick="@(() => ImgClicked(media.path))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        <img @onclick="@(() => ImgClicked(media.uuid))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     }
                     else
                     {
-                        <img @onclick="@(() => ImgClicked(media.path))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        <img @onclick="@(() => ImgClicked(media.uuid))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     }
                 </div>
             }
@@ -65,7 +65,7 @@
 
 @code {
     private static List<C.MediaRow> mediaTrashList;
-    private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
+    private static List<Guid> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
 
     private static string sortBtnText;
     private static string sortDivVis;
@@ -85,7 +85,7 @@
     protected override void OnInitialized()
     {
         mediaTrashList = C.LoadMediaTrash();
-        selectedItems = new List<string>(); //Reset on page load/refresh
+        selectedItems = new List<Guid>(); //Reset on page load/refresh
         SetSortBtnText();
         mode = C.TrashSortMode.NewestDateDeleted; //Default sort mode
         choiceVis = "hidden";
@@ -117,19 +117,19 @@
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
     public IJSRuntime JSRuntime { get; set; }
 
-    private async Task ToggleCheck(string id) //id = string path
+    private async Task ToggleCheck(Guid uuid)
     {
-        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
+        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
         if (newClass.Contains("unchecked"))
-            selectedItems.Remove(id);
-        else if (!selectedItems.Contains(id)) //Needed to prevent adding dupes when shift clicking
-            selectedItems.Add(id);
+            selectedItems.Remove(uuid);
+        else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking
+            selectedItems.Add(uuid);
 
         //Get mediaList currentIndex of latest selected thing. Needed only for shift click
         int index = -1;
         for (int i = 0; i < mediaTrashList.Count; i++)
         {
-            if (mediaTrashList[i].path != id) continue;
+            if (mediaTrashList[i].uuid != uuid) continue;
             index = i;
             break;
         }
@@ -148,7 +148,7 @@
     {
         for (int i = startIndex; i <= endIndex; i++)
         {
-            string currentID = mediaTrashList[i].path;
+            Guid currentID = mediaTrashList[i].uuid;
             if (selectedItems.Contains(currentID)) continue;
             selectedItems.Add(currentID);
             await ToggleCheck(currentID);
@@ -167,17 +167,17 @@
 
     private async Task ClearChecks()
     {
-        foreach (string item in selectedItems)
+        foreach (Guid item in selectedItems)
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         choiceVis = "hidden";
     }
     
-    private async Task ImgClicked(string path)
+    private async Task ImgClicked(Guid uuid)
     {
         await GetCtrlDown();
         if (selectedItems.Count > 0 || ctrlDown)
-            await ToggleCheck(path);
+            await ToggleCheck(uuid);
     }
 
     //Show choice div
@@ -208,10 +208,10 @@
             foreach (C.MediaRow item in mediaTrashList) C.RestoreItem(item.uuid);
         else //Restore selected
         {
-            foreach (string item in selectedItems)
+            foreach (Guid item in selectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
-                //C.RestoreItem(item); TODO
+                C.RestoreItem(item);
             }
         }
         await ClearChecks();
@@ -247,10 +247,10 @@
             foreach (C.MediaRow item in mediaTrashList) C.PermDeleteItem(item.uuid);
         else //Delete selected
         {
-            foreach (string item in selectedItems)
+            foreach (Guid item in selectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
-                //C.PermDeleteItem(item); TODO
+                C.PermDeleteItem(item);
             }
         }
         await ClearChecks();

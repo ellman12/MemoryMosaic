@@ -51,9 +51,8 @@
             int ii = i; @*Necessary for some things like the <input>'s*@
             string dateString = allFiles[i].dateTaken == null ? "None" : allFiles[i].dateTaken?.ToString("ddd, MMM d, yyy h:mm:ss tt"); 
             
-            //The path to the file inside pss_upload. TODO: is the 2nd line needed? Wtf is this part
-            string ogShortPath = allFiles[i].fullPath.Replace(S.uploadFolderPath!, null);
-            ogShortPath = Path.GetFileName(S.uploadFolderPath) + ogShortPath;
+            //Get the short path to this item relative to pss_upload.
+            string ogShortPath = Path.Join("pss_upload", allFiles[i].fullPath.Replace(S.uploadFolderPath!, null));
 
             <div class="itemDiv">
             @{
@@ -76,7 +75,7 @@
 @code{
     private static AlbumSelector albumSelector = new();
 
-    private static List<string> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
+    private static List<Guid> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
     private static List<string> allFullPaths;
     private static List<C.UploadFile> allFiles;
 
@@ -95,7 +94,7 @@
     
     protected override void OnInitialized()
     {
-        allShortPaths = new List<string>();
+        allShortPaths = new List<Guid>();
         allFullPaths = F.GetSupportedFiles(S.uploadFolderPath);
         allFiles = new List<C.UploadFile>(allFullPaths.Count);
 
@@ -147,7 +146,7 @@
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
     private void DeleteErrors()
     {
-        foreach (Connection.UploadFile file in allFiles.ToList().Where(file => file.alreadyInLib)) //TODO: is ToList() needed?
+        foreach (C.UploadFile file in allFiles.Where(file => file.alreadyInLib))
         {
             allFiles.Remove(file);
             File.Delete(file.fullPath);
@@ -170,7 +169,7 @@
             string newPath = Path.Combine(newDir, filename!); //Used for moving to new home on server.
             
             string newShortPath = CreateShortPath(file.dateTaken, filename).Replace('\\', '/'); //Don't need full path, just the short path (/2021/10 October/filename.png).
-            allShortPaths.Add(newShortPath);
+            allShortPaths.Add(file.uuid);
             Directory.CreateDirectory(newDir);
 
             GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
