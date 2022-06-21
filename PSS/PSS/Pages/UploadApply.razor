@@ -43,7 +43,7 @@
     <div id="mainDiv">
         @for (int i = 0; i < allFiles.Count; i++)
         {
-            if (warningChecked && allFiles[i].dateTaken == null) continue; //If this item doesn't have a warning skip it
+            if (warningChecked && allFiles[i].dateTaken != null) continue; //If this item doesn't have a warning skip it
             if (errorChecked && allFiles[i].alreadyInLib == false) continue; //If this item has an error skip it
             if (neitherChecked && allFiles[i].dateTaken != null && !allFiles[i].alreadyInLib) continue; //Only show items with no warnings or errors
             
@@ -59,9 +59,9 @@
                 <span class="filenameSpan">@Path.GetFileName(ogShortPath)</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                                                                            
+                if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">Unknown Date Taken</span>}
                 if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput" @onchange="@UpdateStatus">}
                 if (infoChecked){<span class="infoSpan">@($"DT Source: {allFiles[i].dateTakenSrc}")</span>}
-                if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">No DT found.</span>}
                 if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
                 <button class="iconBtn" title="Remove This Item From the Upload" @onclick="@(() => { allFiles.RemoveAt(ii); UpdateStatus(); })"><span class="material-icons">close</span></button>

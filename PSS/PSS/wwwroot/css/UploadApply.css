@@ -24,7 +24,7 @@ header > button {
     left: var(--left-margin);
     z-index: 9999;
     background-color: black;
-    top: 10px;
+    top: 50px;
     border: 1px solid white;
 }
 
