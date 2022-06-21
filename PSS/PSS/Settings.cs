@@ -7,30 +7,30 @@ namespace PSS
     {
         [JsonProperty] public static string serverIP;
         
-        ///<summary>The full path to the pss_upload folder on the server. This is where items live before being added to the library.</summary>
+        ///The full path to the pss_upload folder on the server. This is where items live before being added to the library.
         [JsonProperty] public static string uploadFolderPath;
 
-        ///<summary>The full path to the library folder (pss_library) on the server.</summary>
+        ///The full path to the library folder (pss_library) on the server.
         [JsonProperty] public static string libFolderPath;
 
-        ///<summary>Where to backup library and database (pss_backup).</summary>
+        ///Where to backup library and database (pss_backup).
         [JsonProperty] public static string backupFolderPath;
         
-        ///<summary>Where the temporary folder (pss_tmp) is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.</summary>
+        ///Where the temporary folder (pss_tmp) is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.
         [JsonProperty] public static string tmpFolderPath;
         
-        ///<summary>Should prompts be shown when doing things like deleting items and albums, etc.?</summary>
+        ///Should prompts be shown when doing things like deleting items and albums, etc.?
         [JsonProperty] public static bool showPrompts;
         
-        ///<summary>Acts as a kind of shortcut to where the library, upload, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.</summary>
+        ///Acts as a kind of shortcut to where the library, upload, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
         public const string LIB_REQUEST_PATH = "/pss_library";
         public const string UPLOAD_REQUEST_PATH = "/pss_upload";
         public const string TMP_REQUEST_PATH = "/pss_tmp";
 
-        ///<summary>The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/</summary>
+        ///The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
         public static string databaseBackupCommand;
 
-        ///<summary>The command used to restore a previous pg_dump backup.</summary>
+        ///The command used to restore a previous pg_dump backup.
         public static string databaseRestoreCommand;
 
         public static void WriteSettings()
