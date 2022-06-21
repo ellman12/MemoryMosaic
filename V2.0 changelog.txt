@@ -23,3 +23,4 @@ Fixes
 The status <span> in GPO and UA should work better/actually work now.
 View Item page title is now "View Item - PSS" instead of just "View".
 In Upload, fix button text saying "Go to Upload Apply" instead of "Go to Apply Upload".
+Fix annoying issue where GPO Import and Upload Apply width was too big and thus screen could be scrolled horizontally.
