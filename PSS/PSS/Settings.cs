@@ -21,6 +21,9 @@ namespace PSS
         
         ///Should prompts be shown when doing things like deleting items and albums, etc.?
         [JsonProperty] public static bool showPrompts;
+
+        ///Should items without a Date Taken be shown in albums and folders?
+        [JsonProperty] public static bool displayNoDTInAV;
         
         ///Acts as a kind of shortcut to where the library, upload, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
         public const string LIB_REQUEST_PATH = "/pss_library";
@@ -60,7 +63,7 @@ namespace PSS
             libFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_library";
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_backup";
             tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_tmp";
-            showPrompts = true;
+            showPrompts = displayNoDTInAV = true;
             File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings()));
         }
     }

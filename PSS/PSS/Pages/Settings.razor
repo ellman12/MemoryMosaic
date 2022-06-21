@@ -35,6 +35,11 @@
             <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
             <span style="display: inline">Show Prompts?</span>
         </div>
+        
+         <div class="settings-pair">
+            <input type="checkbox" class="settings-pair" @bind="@displayNoDTInAV"/>
+            <span style="display: inline">Display items with no date taken in albums/folders?</span>
+        </div>
 
         <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
         <button class="textBtn" @onclick="@CancelBtnClicked"><span class="material-icons-outlined">close</span><span>Cancel</span></button>
@@ -114,6 +119,7 @@
     private static string uploadFolderPath = S.uploadFolderPath;
     private static string libraryRootPath = S.libFolderPath;
     private static bool showPrompts = S.showPrompts;
+    private static bool displayNoDTInAV = S.displayNoDTInAV;
     private static string backupFolderPath = S.backupFolderPath;
     private static string tmpFolderPath = S.tmpFolderPath;
     
@@ -193,6 +199,7 @@
         S.uploadFolderPath = uploadFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
+        S.displayNoDTInAV = displayNoDTInAV;
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
         S.WriteSettings();
@@ -204,6 +211,7 @@
         uploadFolderPath = S.uploadFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;
+        displayNoDTInAV = S.displayNoDTInAV;
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
     }
