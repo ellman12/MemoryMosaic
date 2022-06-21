@@ -98,7 +98,7 @@ Optional Parameters:
             }
         </div>
         
-        <AlbumSelector SelectedItems="@(new List<string> {shortPath})" @bind-AlbumsVis="@albumsVis"/>
+        <AlbumSelector SelectedItems="@(new List<Guid> {parsedID})" @bind-AlbumsVis="@albumsVis"/>
         
         <div class="inputBox" style="visibility: @editDateDivVis">
             <span>Enter new date taken:</span>

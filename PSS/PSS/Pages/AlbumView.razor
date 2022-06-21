@@ -68,15 +68,15 @@
             {
                 <div class="thumbnail">
                     @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                    <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
+                    <span @onclick="@(() => ToggleCheck(media.uuid))" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
                     @if (media.thumbnail != null) //Video
                     {
                         <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        <img @onclick="@(() => ImgClicked(media.uuid))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     }
                     else
                     {
-                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        <img @onclick="@(() => ImgClicked(media.uuid))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     }
                 </div>
             }
@@ -92,7 +92,7 @@
 
     private static string albumsVis;
     private static List<C.MediaRow> albumMedia;
-    private static List<string> selectedItems;
+    private static List<Guid> selectedItems;
     private static string sortDivVis;
     private static C.AVSortMode mode;
     private static string albumName;
@@ -143,18 +143,13 @@
 
     protected override void OnInitialized()
     {
-        albumsVis = "hidden";
+        albumsVis = buttonsVis = choiceVis = starChoiceVis = "hidden";
         statAlbumID = Int32.Parse(albumID);
         albumMedia = C.LoadAlbum(statAlbumID);
-        selectedItems = new List<string>(); //Reset on page load/refresh
-        sortDivVis = "hidden";
+        selectedItems = new List<Guid>(); //Reset on page load/refresh
         mode = C.AVSortMode.NewestDateTaken; //Default
         albumName = C.GetAlbumName(statAlbumID);
         _newAlbumName = albumName;
-        buttonsVis = "hidden";
-        selectedItems = new List<string>(); //Reset on page load/refresh
-        choiceVis = "hidden";
-        starChoiceVis = "hidden";
     }
 
     [Inject]
@@ -162,23 +157,23 @@
     
     private static async void DownloadSelected()
     {
-        F.CopyItemsToZipPath(selectedItems);
+        F.CopyItemsToZipPath((from media in albumMedia where selectedItems.Contains(media.uuid) select media.path).ToList());
         zipFilename = await F.CreateDownloadZip();
     }
 
-    private async Task ToggleCheck(string id) //id = string path
+    private async Task ToggleCheck(Guid uuid)
     {
-        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
+        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
         if (newClass.Contains("unchecked"))
-            selectedItems.Remove(id);
-        else if (!selectedItems.Contains(id)) //Needed to prevent adding dupes when shift clicking
-            selectedItems.Add(id);
+            selectedItems.Remove(uuid);
+        else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking
+            selectedItems.Add(uuid);
 
-        //Get mediaList currentIndex of latest selected thing. Needed only for shift click
+        //Get currentIndex of latest selected thing. Needed only for shift click
         int index = -1;
         for (int i = 0; i < albumMedia.Count; i++)
         {
-            if (albumMedia[i].path != id) continue;
+            if (albumMedia[i].uuid != uuid) continue;
             index = i;
             break;
         }
@@ -191,13 +186,12 @@
         }
         await ShiftClick(index); //Select multiple.
     }
-
     //Add items from start to end into selectedItems. Used for ShiftClick.
     private async Task AddSelected(int startIndex, int endIndex)
     {
         for (int i = startIndex; i <= endIndex; i++)
         {
-            string currentID = albumMedia[i].path;
+            Guid currentID = albumMedia[i].uuid;
             if (selectedItems.Contains(currentID)) continue;
             selectedItems.Add(currentID);
             await ToggleCheck(currentID);
@@ -216,27 +210,26 @@
     
     private async Task ClearChecks()
     {
-        foreach (string item in selectedItems)
+        foreach (Guid item in selectedItems)
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         albumsVis = "hidden";
         choiceVis = "hidden";
     }
 
-    private async Task ImgClicked(string uuid, string path)
+    private async Task ImgClicked(Guid uuid)
     {
         await GetCtrlDown();
         if (selectedItems.Count > 0 || ctrlDown)
-            await ToggleCheck(path);
+            await ToggleCheck(uuid);
         else
             navigationManager.NavigateTo($"/view-album-item/{albumID}/{uuid}");
     }
 
     //Remove selected from the album
-    //TODO: switch out paths for uuid's.
     private async Task RemoveBtnClick()
     {
-        // foreach (string path in selectedItems.ToList()) C.RemoveFromAlbum(path, statAlbumID);
+        foreach (Guid uuid in selectedItems) C.RemoveFromAlbum(uuid, statAlbumID);
         await ClearChecks();
         albumMedia = C.LoadAlbum(statAlbumID, mode);
     }
@@ -259,7 +252,7 @@
 
     private async void DeleteSelected()
     {
-        //foreach (string path in selectedItems.ToList()) C.MoveToTrash(path); TODO
+        foreach (Guid uuid in selectedItems) C.MoveToTrash(uuid);
         await ClearChecks();
         albumMedia = C.LoadAlbum(statAlbumID, mode);
         StateHasChanged();
