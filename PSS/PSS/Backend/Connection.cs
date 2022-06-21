@@ -627,7 +627,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=false ORDER BY date_taken DESC", connection);
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND date_deleted IS NULL AND separate=false ORDER BY date_taken DESC", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
