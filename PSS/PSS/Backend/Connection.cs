@@ -142,11 +142,12 @@ namespace PSS.Backend
         ///<summary>For inserting a photo or video into the media table (the main table). Will not insert duplicates.</summary>
         ///<param name="path">The short path that will be stored in media. Convention is to use '/' as the separator.</param>
         ///<param name="dateTaken">When this item was taken.</param>
+        ///<param name="uuid">The uuid of this item.</param>
         ///<param name="thumbnail">ONLY FOR VIDEOS. A base64 string for the video thumbnail. Use null or "" for pictures.</param>
         ///<param name="starred">Is this item starred or not?</param>
         ///<param name="separate">Is this item separate from main library (i.e., is it in a folder)?</param>
         ///<returns>Int saying how many rows were affected.</returns>
-        public static int InsertMedia(string path, DateTime? dateTaken, string thumbnail, bool starred = false, bool separate = false)
+        public static int InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
         {
             int rowsAffected = 0;
             try
@@ -154,16 +155,17 @@ namespace PSS.Backend
                 Open();
                 using NpgsqlCommand cmd = new("", connection);
                 cmd.Parameters.AddWithValue("@path", path);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.Parameters.AddWithValue("@starred", starred);
                 cmd.Parameters.AddWithValue("@separate", separate);
                 if (dateTaken != null) cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
                 
                 if (String.IsNullOrWhiteSpace(thumbnail))
-                    cmd.CommandText = dateTaken == null ? "INSERT INTO media (path, date_added, starred, separate, uuid) VALUES (@path, now(), @starred, @separate, uuid_generate_v1())" : "INSERT INTO media (path, date_taken, date_added, starred, separate, uuid) VALUES (@path, @dateTaken, now(), @starred, @separate, uuid_generate_v1())";
+                    cmd.CommandText = dateTaken == null ? "INSERT INTO media (path, date_added, starred, separate, uuid) VALUES (@path, now(), @starred, @separate, @uuid)" : "INSERT INTO media (path, date_taken, date_added, starred, separate, uuid) VALUES (@path, @dateTaken, now(), @starred, @separate, @uuid)";
                 else
                 {
                     cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
-                    cmd.CommandText = dateTaken == null ? "INSERT INTO media (path, date_added, starred, separate, uuid, thumbnail) VALUES (@path, now(), @starred, @separate, uuid_generate_v1(), @thumbnail)" : "INSERT INTO media (path, date_taken, date_added, starred, separate, uuid, thumbnail) VALUES (@path, @dateTaken, now(), @starred, @separate, uuid_generate_v1(), @thumbnail)";
+                    cmd.CommandText = dateTaken == null ? "INSERT INTO media (path, date_added, starred, separate, uuid, thumbnail) VALUES (@path, now(), @starred, @separate, @uuid, @thumbnail)" : "INSERT INTO media (path, date_taken, date_added, starred, separate, uuid, thumbnail) VALUES (@path, @dateTaken, now(), @starred, @separate, @uuid, @thumbnail)";
                 }
 
                 cmd.CommandText += " ON CONFLICT(path) DO NOTHING";
@@ -780,7 +782,7 @@ namespace PSS.Backend
         public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
         {
             bool isFolder = IsFolder(albumID);
-            List<MediaRow> media = new(); //Stores every row retrieved; returned later.
+            List<MediaRow> media = new();
             
             string orderBy = mode switch
             {
@@ -798,7 +800,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@albumID", albumID);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.GetString(4)));
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
             }
             catch (NpgsqlException e)
             {

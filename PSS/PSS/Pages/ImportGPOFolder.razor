@@ -182,7 +182,7 @@
             try
             {
                 File.Move(file.fullPath!, C.CreateFullPath(file.dateTaken, filename));
-                rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.thumbnail);
+                rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
             }
             catch (IOException e)
             {
