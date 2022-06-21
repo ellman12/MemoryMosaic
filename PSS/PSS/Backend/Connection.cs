@@ -475,8 +475,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("SELECT id, name, album_cover, last_updated FROM albums " + where + " ORDER BY " + orderBy, connection);
-                //cmd.Parameters.AddWithValue("@orderBy", orderBy); //NOTE: I'd love to use this line that's commented out instead of a '+', but for some reason, it doesn't work and the '+' does. No idea why.
+                using NpgsqlCommand cmd = new($"SELECT id, name, album_cover, last_updated FROM albums {where} ORDER BY {orderBy}", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) albums.Add(new Album(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
@@ -833,7 +832,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_deleted IS NOT NULL ORDER BY " + orderBy, connection);
+                using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_deleted IS NOT NULL ORDER BY {orderBy}", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
