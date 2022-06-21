@@ -124,7 +124,7 @@
     //Checks to see if there is a file on the server with the same name and date path.
     private static bool ItemInLibrary(DateTime? dateTaken, string filename) => File.Exists(C.CreateFullPath(dateTaken, filename));
 
-    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Select(f => f.thumbnail == null).Count()} pictures and {allFiles.Select(f => f.thumbnail != null).Count()} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
+    private static void UpdateStatus() => status = allFiles.Count == 0 ? "No files found to add" : $"{allFiles.Count(f => f.thumbnail == null)} pictures and {allFiles.Count(f => f.thumbnail != null)} videos pending upload. {allFiles.Count(f => f.dateTaken == null)} Warnings. {allFiles.Count(f => f.alreadyInLib)} Errors.";
 
     //Permanently deletes every item in the upload folder that is marked with an error (already on server).
     private void DeleteErrors()
