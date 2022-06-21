@@ -102,6 +102,7 @@
             {
                 fullPath = fullPath.Replace('\\', '/'),
                 thumbnail = Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null
+                uuid = Guid.NewGuid()
             };
             file.dateTaken = D.GetDateTakenAuto(fullPath, out file.dateTakenSrc);
             file.alreadyInLib = ItemInLibrary(file.dateTaken, Path.GetFileName(fullPath));
