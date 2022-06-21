@@ -1,7 +1,7 @@
-@page "/"
+@page "/no-dt"
 @inject NavigationManager navigationManager;
 
-<title>Photos - PSS</title>
+<title>No DT - PSS</title>
 <link href="css/IndexStarredNoDT.css" rel="stylesheet"/>
 
 @{
@@ -27,7 +27,7 @@
 
     if (mediaList.Count == 0)
     {
-        <h1>Upload some items to get started</h1>
+        <h1>There Are No Items Without a Date Taken</h1>
     }
     else
     {
@@ -78,13 +78,13 @@
         C.UpdateStarred(selectedItems, starred);
         await ClearChecks();
         starChoiceVis = "hidden";
-        mediaList = C.LoadMediaTable();
+        mediaList = C.LoadMediaNoDT();
         StateHasChanged();
     }
 
     protected override void OnInitialized()
     {
-        mediaList = C.LoadMediaTable();
+        mediaList = C.LoadMediaNoDT();
         selectedItems = new List<Guid>(); //Reset on page load/refresh
         headerVis = albumsVis = choiceVis = starChoiceVis = "hidden";
     }
@@ -164,7 +164,7 @@
         if (selectedItems.Count > 0 || ctrlDown)
             await ToggleCheck(uuid);
         else
-            navigationManager.NavigateTo($"/view/{uuid}");
+            navigationManager.NavigateTo($"/view-no-dt/{uuid}");
     }
     
     //Show choice div
@@ -187,7 +187,7 @@
             headerVis = "hidden";
         }
         await ClearChecks();
-        mediaList = C.LoadMediaTable();
+        mediaList = C.LoadMediaNoDT();
         StateHasChanged();
     }
 
