@@ -25,7 +25,7 @@
         </div>
 
         <div id="buttons">
-            <button class="iconBtn"><a style="text-decoration: none" class="material-icons-outlined" @onclick="@DownloadSelected" href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">file_download</a></button>
+            <button class="iconBtn"><a style="text-decoration: none; visibility: @vis" class="material-icons-outlined" @onclick="@DownloadSelected" href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">file_download</a></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@(() => albumsVis = "visible")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
             <button class="iconBtn" style="visibility: @vis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref starChoiceVis))"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
@@ -143,7 +143,7 @@
 
     protected override void OnInitialized()
     {
-        albumsVis = buttonsVis = choiceVis = starChoiceVis = "hidden";
+        albumsVis = buttonsVis = choiceVis = sortDivVis = starChoiceVis = "hidden";
         statAlbumID = Int32.Parse(albumID);
         albumMedia = C.LoadAlbum(statAlbumID);
         selectedItems = new List<Guid>(); //Reset on page load/refresh
