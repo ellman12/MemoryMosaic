@@ -36,15 +36,15 @@
             {
                 <div class="thumbnail">
                     @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                    <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
+                    <span @onclick="@(() => ToggleCheck(media.uuid))" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
                     @if (media.thumbnail != null) //Video
                     {
                         <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        <img @onclick="@(() => ImgClicked(media.uuid))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     }
                     else
                     {
-                        <img @onclick="@(() => ImgClicked(media.uuid.ToString(), media.path))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        <img @onclick="@(() => ImgClicked(media.uuid))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     }
                 </div>
             }
@@ -56,7 +56,7 @@
     private static string headerVis;
     private static string albumsVis;
     private static List<C.MediaRow> mediaList;
-    private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
+    private static List<Guid> selectedItems; //Stores all items user has selected.
 
     private static string choiceVis;
     private static string choiceMsg;
@@ -85,11 +85,8 @@
     protected override void OnInitialized()
     {
         mediaList = C.LoadMediaTable();
-        selectedItems = new List<string>(); //Reset on page load/refresh
-        headerVis = "hidden";
-        albumsVis = "hidden";
-        choiceVis = "hidden";
-        starChoiceVis = "hidden";
+        selectedItems = new List<Guid>(); //Reset on page load/refresh
+        headerVis = albumsVis = choiceVis = starChoiceVis = "hidden";
     }
 
     [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
@@ -97,17 +94,17 @@
 
     private static async void DownloadSelected()
     {
-        F.CopyItemsToZipPath(selectedItems);
+        F.CopyItemsToZipPath((from media in mediaList where selectedItems.Contains(media.uuid) select media.path).ToList());
         zipFilename = await F.CreateDownloadZip();
     }
 
-    private async Task ToggleCheck(string id) //id = string path
+    private async Task ToggleCheck(Guid uuid)
     {
-        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
+        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
         if (newClass.Contains("unchecked"))
-            selectedItems.Remove(id);
-        else if (!selectedItems.Contains(id)) //Needed to prevent adding dupes when shift clicking
-            selectedItems.Add(id);
+            selectedItems.Remove(uuid);
+        else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking
+            selectedItems.Add(uuid);
 
         headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
 
@@ -115,7 +112,7 @@
         int index = -1;
         for (int i = 0; i < mediaList.Count; i++)
         {
-            if (mediaList[i].path != id) continue;
+            if (mediaList[i].uuid != uuid) continue;
             index = i;
             break;
         }
@@ -134,7 +131,7 @@
     {
         for (int i = startIndex; i <= endIndex; i++)
         {
-            string currentID = mediaList[i].path;
+            Guid currentID = mediaList[i].uuid;
             if (selectedItems.Contains(currentID)) continue;
             selectedItems.Add(currentID);
             await ToggleCheck(currentID);
@@ -153,7 +150,7 @@
 
     private async Task ClearChecks()
     {
-        foreach (string item in selectedItems)
+        foreach (Guid item in selectedItems)
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         selectedItems.Clear();
         headerVis = "hidden";
@@ -161,11 +158,11 @@
         choiceVis = "hidden";
     }
 
-    private async Task ImgClicked(string uuid, string path)
+    private async Task ImgClicked(Guid uuid)
     {
         await GetCtrlDown();
         if (selectedItems.Count > 0 || ctrlDown)
-            await ToggleCheck(path);
+            await ToggleCheck(uuid);
         else
             navigationManager.NavigateTo($"/view/{uuid}");
     }
@@ -184,9 +181,9 @@
 
     private async void DeleteSelected()
     {
-        foreach (string path in selectedItems.ToList()) //https://stackoverflow.com/a/604843
+        foreach (Guid item in selectedItems) //https://stackoverflow.com/a/604843
         {
-            //C.MoveToTrash(path); TODO
+            C.MoveToTrash(item);
             headerVis = "hidden";
         }
         await ClearChecks();
