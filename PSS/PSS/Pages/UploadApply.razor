@@ -31,15 +31,13 @@
 </div>
 
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
-<AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allShortPaths" ShowCheckCancelButtons="false"/>
+<AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allGuids" ShowCheckCancelButtons="false"/>
 
 <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
 
 @{
-    //TODO: why are these needed?
     GC.Collect();
     GC.WaitForPendingFinalizers();
-    UpdateStatus();
 
     <div id="mainDiv">
         @for (int i = 0; i < allFiles.Count; i++)
@@ -75,7 +73,7 @@
 @code{
     private static AlbumSelector albumSelector = new();
 
-    private static List<Guid> allShortPaths; //Passed in to AlbumSelector and set in AddItems().
+    private static List<Guid> allGuids; //Passed in to AlbumSelector and gets items added in AddItems().
     private static List<string> allFullPaths;
     private static List<C.UploadFile> allFiles;
 
@@ -94,7 +92,7 @@
     
     protected override void OnInitialized()
     {
-        allShortPaths = new List<Guid>();
+        allGuids = new List<Guid>();
         allFullPaths = F.GetSupportedFiles(S.uploadFolderPath);
         allFiles = new List<C.UploadFile>(allFullPaths.Count);
 
@@ -163,7 +161,7 @@
 
             string filename = Path.GetFileName(file.fullPath);
             string newDir = GenerateSortedDir(file.dateTaken);
-            string newPath = Path.Combine(newDir, filename!); //Used for moving to new home on server.
+            allGuids.Add(file.uuid);
             
             string newShortPath = CreateShortPath(file.dateTaken, filename).Replace('\\', '/'); //Don't need full path, just the short path (/2021/10 October/filename.png).
             allShortPaths.Add(file.uuid);
