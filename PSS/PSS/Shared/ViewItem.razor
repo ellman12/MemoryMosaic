@@ -203,7 +203,7 @@ Optional Parameters:
     private void DeleteBtnClick()
     {
         navigationManager.NavigateTo(ReturnPath);
-        // C.MoveToTrash(C.GetPathFromUuid(parsedID)); TODO
+        C.MoveToTrash(parsedID);
     }
 
     private static void UpdateDateTaken()

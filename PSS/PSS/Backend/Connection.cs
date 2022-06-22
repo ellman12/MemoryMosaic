@@ -1100,7 +1100,6 @@ namespace PSS.Backend
             return isFolder;
         }
 
-        //TODO: use this guy in UA, GPO import, etc. Forgot about it lmao.
         ///<summary>Generates a short path (DB path) given a Date Taken and filename. A DB path looks like this: 2022/5/filename.jpg.</summary>
         ///<param name="dateTaken">The date taken of the item.</param>
         ///<param name="filename">The filename and extension of the item.</param>
