@@ -858,8 +858,6 @@ namespace PSS.Backend
         {
             try
             {
-                Open();
-
                 string filename = Path.GetFileName(shortPath);
                 string originalFullPath = Path.Combine(S.libFolderPath, shortPath);
                 
@@ -871,6 +869,7 @@ namespace PSS.Backend
                 Directory.CreateDirectory(newDTFolderPath); //Create in case it doesn't exist.
                 File.Move(originalFullPath, newFullPath);
 
+                Open();
                 using NpgsqlCommand cmd = new("", connection);
                 if (newDateTaken == null)
                 {
