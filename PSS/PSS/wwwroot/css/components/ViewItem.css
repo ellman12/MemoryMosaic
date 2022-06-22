@@ -133,7 +133,7 @@ button {
     margin-left: 10px;
 }
 
-.inputBox > #errorSpan {
+.inputBox > .errorSpan {
     font-size: 12px;
     display: inline-block;
     width: 120px;

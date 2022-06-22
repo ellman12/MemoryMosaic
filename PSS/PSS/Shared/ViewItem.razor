@@ -102,7 +102,8 @@ Optional Parameters:
         
         <div class="inputBox" style="visibility: @editDateDivVis">
             <span>Enter new date taken:</span>
-            <input title="" type="datetime-local" @bind="@newDateTaken" required/>
+            <input title="" type="datetime-local" @bind="@newDateTaken" step=1/>
+            <span class="errorSpan" style="visibility: @dtErrorVis">@dtErrorText</span>
             <div>
                 <button class="iconBtn" @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
                 <button class="iconBtn" @onclick="@UpdateDateTaken"><span class="material-icons-outlined">check</span></button>
@@ -112,7 +113,7 @@ Optional Parameters:
         <div class="inputBox" style="visibility: @editFilenameDivVis">
             <span>Enter new filename:</span>
             <input title="" type="text" @bind="@newFilename" required/>
-            <span id="errorSpan" style="visibility: @filenameErrorVis">@filenameErrorText</span>
+            <span class="errorSpan" style="visibility: @filenameErrorVis">@filenameErrorText</span>
             <div>
                 <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = filenameErrorVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
                 <button class="iconBtn" @onclick="@RenameFile"><span class="material-icons-outlined">check</span></button>
@@ -169,7 +170,7 @@ Optional Parameters:
     private static string shortPath;
     private static DateTime? ogDateTaken; //Original
     private static DateTime? newDateTaken;
-    private static string editDateDivVis;
+    private static string editDateDivVis, dtErrorVis, dtErrorText;
 
     private static string newFilename, editFilenameDivVis, filenameErrorVis, filenameErrorText;
 
@@ -185,12 +186,9 @@ Optional Parameters:
     {
         parsedID = Guid.Parse(id);
         shortPath = C.GetPathFromUuid(parsedID);
-        //ogDateTaken = newDateTaken = C.GetDateTaken(parsedID); TODO: support null DT here.
-        albumsVis = "hidden";
-        infoVis = "hidden";
-        moreOptionsVis = "hidden";
+        ogDateTaken = newDateTaken = C.GetDateTaken(parsedID);
         newFilename = Path.GetFileNameWithoutExtension(shortPath);
-        editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
+        albumsVis = infoVis = moreOptionsVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
         filenameErrorText = "";
         albums = C.GetAlbumsItemIn(parsedID);
         
@@ -210,9 +208,16 @@ Optional Parameters:
 
     private static void UpdateDateTaken()
     {
-        editDateDivVis = "hidden";
-        C.UpdateDateTaken(shortPath, newDateTaken);
-        ogDateTaken = newDateTaken;
+        if (C.UpdateDateTaken(shortPath, newDateTaken))
+        {
+            editDateDivVis = "hidden";
+            ogDateTaken = newDateTaken;
+        }
+        else
+        {
+            dtErrorVis = "visible";
+            dtErrorText = "Error Changing Date Taken";
+        }
     }
 
     private static void RenameFile()
