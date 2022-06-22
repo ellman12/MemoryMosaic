@@ -853,24 +853,23 @@ namespace PSS.Backend
         ///<summary>Update when an item was taken, update its short path, and move it to the new path on the server.</summary>
         ///<param name="shortPath">The path to the item that is stored in the database</param>
         ///<param name="newDateTaken">The new date taken for this item</param>
-        ///<returns>True if completed successfully, false otherwise.</returns>
-        //TODO: need to test this later to make sure it works, after merging UA improvements
-        //TODO: need to do validation to prevent duplicate file errors.
+        ///<returns>True if completed successfully, false otherwise. If it failed, it's probably because an item with the same filename and Date Taken already exists there.</returns>
         public static bool UpdateDateTaken(string shortPath, DateTime? newDateTaken)
         {
-            throw new NotImplementedException();
             try
             {
                 Open();
 
                 string filename = Path.GetFileName(shortPath);
                 string originalFullPath = Path.Combine(S.libFolderPath, shortPath);
-                //string dateFolderFullPath = Pages.UploadApply.GenerateSortedDir(newDateTaken); //TODO: this method should handle null DT
                 
-                //Move item to new path on server.
-                // Directory.CreateDirectory(dateFolderFullPath); //Create in case it doesn't exist.
-                // string newFullPath = Path.Combine(dateFolderFullPath, filename);
-                // File.Move(originalFullPath, newFullPath);
+                string newShortPath = CreateShortPath(newDateTaken, filename);
+                string newDTFolderPath = CreateFullDateFolderPath(newDateTaken);
+                string newFullPath = Path.Combine(newDTFolderPath, filename);
+                
+                //Move item to new path on server. This is how the user input is validated. If this fails, user needs to pick a new DT and/or filename.
+                Directory.CreateDirectory(newDTFolderPath); //Create in case it doesn't exist.
+                File.Move(originalFullPath, newFullPath);
 
                 using NpgsqlCommand cmd = new("", connection);
                 if (newDateTaken == null)
@@ -884,20 +883,14 @@ namespace PSS.Backend
                 }
 
                 //Update date taken and short path in media.
-                //string newPath = Path.Combine(Pages.UploadApply.GenerateDatePath(newDateTaken), filename); //TODO: this I think will have to change to a different method in improved UA...
-                //cmd.Parameters.AddWithValue("@newPath", newPath);
+                cmd.Parameters.AddWithValue("@newPath", newShortPath);
                 cmd.Parameters.AddWithValue("@shortPath", shortPath);
                 cmd.ExecuteNonQuery();
                 return true;
             }
-            // catch (IOException e) TODO
-            // {
-                // Console.WriteLine(e.Message);
-                // return false;
-            // }
-            catch (NpgsqlException e)
+            catch (Exception e)
             {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+                Console.WriteLine(e.Message);
                 return false;
             }
             finally
