@@ -1127,33 +1127,29 @@ namespace PSS.Backend
         ///<returns>The new short path (DB path) of this item. null if DB error occurred, which means there is already a file with the same name in that location.</returns>
         public static string RenameFile(string oldShortPath, string newFilename, string ext, DateTime? dateTaken)
         {
-            string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
-            
-            //Rename the file in the DB path.
             try
             {
+                string originalFullPath = Path.Combine(S.libFolderPath, oldShortPath);
+                string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
+                string newFullPath = Path.Combine(S.libFolderPath, newShortPath);
+                File.Move(originalFullPath, newFullPath);
+                
                 Open();
-                using NpgsqlCommand cmd = new("UPDATE media SET path=@newShortPath WHERE path=@oldShortPath", connection);
+                using NpgsqlCommand cmd = new("UPDATE media SET path = @newShortPath WHERE path = @oldShortPath", connection);
                 cmd.Parameters.AddWithValue("@newShortPath", newShortPath);
                 cmd.Parameters.AddWithValue("@oldShortPath", oldShortPath);
                 cmd.ExecuteNonQuery();
+                return newShortPath;
             }
-            catch (NpgsqlException e)
+            catch (Exception e)
             {
-                if (e.ErrorCode != -2147467259) //Duplicate key value error. No need to print this out since the error is caught.
-                    Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+                Console.WriteLine(e.Message);
                 return null;
             }
             finally
             {
                 Close();
             }
-
-            //Rename the actual file
-            string fullOldPath = Path.Combine(S.libFolderPath, oldShortPath);
-            string fullNewPath = Path.Combine(S.libFolderPath, newShortPath);
-            File.Move(fullOldPath, fullNewPath);
-            return newShortPath;
         }
     }
 }
