@@ -222,17 +222,17 @@ Optional Parameters:
 
     private static void RenameFile()
     {
-        //Error occured
-        if (C.RenameFile(shortPath, newFilename, Path.GetExtension(shortPath), ogDateTaken) == "")
+        string result = C.RenameFile(shortPath, newFilename, Path.GetExtension(shortPath), ogDateTaken);
+        if (result == null)
         {
             filenameErrorVis = "visible";
-            filenameErrorText = "A file with the same DateTaken and name already exists.";
+            filenameErrorText = "A file with the same Date Taken and name already exists.";
         }
         else
         {
             editFilenameDivVis = "hidden";
+            shortPath = result;
         }
-
     }
 
     private void ChangeImage(KeyboardEventArgs e)
