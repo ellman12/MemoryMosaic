@@ -60,7 +60,7 @@
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
 
                 if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">Unknown Date Taken</span>}
-                if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput" @onchange="@UpdateStatus">}
+                if (!allFiles[i].alreadyInLib){<input title="Choose New Date Taken" type="datetime-local" @bind="@allFiles[ii].dateTaken" @bind:event="oninput" @onchange="@UpdateStatus" step="1">} @* step=1 forces the seconds to be there (would disappear if DT is null) *@
                 if (timeInfoChecked){<span class="infoSpan">@($"Time Source: {allFiles[i].dateTakenSrc}")</span>}
                 if (allFiles[i].alreadyInLib){<span class="errorSpan">Item already in library. Won't upload.</span>}
                 
