@@ -24,30 +24,37 @@
     private static void CreateBackup()
     {
         //TODO: while this is running have some big popup or something else that prevents user from navigating away from the page. Also have a status text for what it is working on rn, like creating zip, backing up DB, etc.
+        //TODO: display the size of each backup and each item would have its own restore/delete button. Button to delete all backups.
 
         string timestamp = $"PSS Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}";
         string dbBakPath = Path.Combine(S.tmpFolderPath, $"{timestamp}.bak");
         string zipFilePath = Path.Combine(S.backupFolderPath, $"{timestamp}.zip");
         
         //Backup entire database into a single file.
-        Process process = new Process()
+        using Process process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
+                RedirectStandardError = false,
+                RedirectStandardInput = false,
+                RedirectStandardOutput = false,
                 WorkingDirectory = "C:/Program Files/PostgreSQL/14/bin/",
                 FileName = "cmd.exe",
-                Arguments = $"pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbBakPath}\"" //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+                Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbBakPath}\"" //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
             }
         };
         process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
         process.WaitForExit();
         
-        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.SmallestSize, true);
+        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.SmallestSize, true); //Create a .zip file and add pss_library to it.
+        
         using FileStream zipFile = new(zipFilePath, FileMode.Open);
         using ZipArchive archive = new(zipFile, ZipArchiveMode.Update);
-        archive.CreateEntry(dbBakPath);
-        Task.Run(() => File.Delete(dbBakPath)); //Don't need file after it's zipped up.
+        string ogCurrDir = Environment.CurrentDirectory; //This is kinda stupid but I don't think paths can be passed into createEntry().
+        Environment.CurrentDirectory = S.tmpFolderPath;
+        archive.CreateEntry(Path.GetFileName(dbBakPath)); //Adds the DB backup file to the zip archive.
+        Environment.CurrentDirectory = ogCurrDir;
     }
 
     ///<summary>Restore PSS to this backup.</summary>
