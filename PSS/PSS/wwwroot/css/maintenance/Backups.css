@@ -3,3 +3,16 @@
     --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
 }
 
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: var(--left-margin);
+}
+
+header > button {
+    margin-top: 10px;
+    margin-right: 12px;
+}

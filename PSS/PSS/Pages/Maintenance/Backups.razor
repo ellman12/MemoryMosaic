@@ -1,14 +1,13 @@
 @page "/maintenance/backups"
-@using Microsoft.VisualBasic.FileIO
 @using System.Diagnostics
 @using System.IO.Compression
 
 <title>Missing Files — Maintenance - PSS</title>
 <link href="css/maintenance/Backups.css" rel="stylesheet">
 
-@{
-    
-}
+<header>
+    <button class="textBtn" @onclick="@CreateBackup"><span class="material-icons-outlined">settings_backup_restore</span><span>Create Backup</span></button>
+</header>
 
 @code{
 
