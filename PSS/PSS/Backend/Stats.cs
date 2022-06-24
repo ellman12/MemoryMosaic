@@ -1,51 +1,84 @@
-﻿namespace PSS.Backend
+namespace PSS.Backend
 {
-    ///<summary>
-    ///Static functions for getting statistical data about photo library.
-    ///</summary>
+    ///Static functions for getting statistical data about the library.
     public static class Stats
     {
-        ///<summary>
-        ///Returns how many rows in media table (and thus how many items in library). 
-        ///</summary>
-        public static long CountMediaRows()
+        ///<summary>Returns how many items are in your library (not including the trash).</summary>
+        ///<returns>The number of items in your library NOT in the trash. 0 if no items in library. -1 if an error occurred.</returns>
+        public static long GetNumItemsInLibrary()
         {
             long rows = 0;
             try
             {
                 C.Open();
-                NpgsqlCommand cmd = new("SELECT path FROM media", C.connection);
+                using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NULL", C.connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read()) rows++;
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                while (r.Read()) rows++;
+                return rows;
             }
-            catch (NpgsqlException e)
+            catch (Exception e)
             {
                 Console.WriteLine("Counting media rows error. " + e.Message);
+                return -1;
             }
             finally
             {
                 C.Close();
             }
-
-            return rows;
         }
 
-        ///<summary>
-        ///Returns number of rows in albums table and thus how many albums there are. 
-        ///</summary>
+        ///<summary>Returns how many items are in the trash.</summary>
+        ///<returns>The number of items in the trash. 0 if no items in trash. -1 if an error occurred.</returns>
+        public static long GetNumItemsInTrash()
+        {
+            long rows = 0;
+            try
+            {
+                C.Open();
+                using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", C.connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                while (r.Read()) rows++;
+                return rows;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Counting trash rows error. " + e.Message);
+                return -1;
+            }
+            finally
+            {
+                C.Close();
+            }
+        }
+
+        ///<summary>Returns how many albums you have.</summary>
+        ///<returns>The number of albums you have. 0 if none. -1 if error occured.</returns>
         public static long CountAlbums()
         {
             long rows = 0;
             try
             {
                 C.Open();
-                NpgsqlCommand cmd = new("SELECT id FROM albums", C.connection);
+                using NpgsqlCommand cmd = new("SELECT id FROM albums", C.connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                while (r.Read()) rows++;
+                return rows;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Counting albums rows error. " + e.Message);
+                return -1;
+            }
+            finally
+            {
+                C.Close();
+            }
+        }
 
-                while (reader.Read()) rows++;
+        ///<summary>Attempts to find the item with the oldest not-null date taken.</summary>
             }
             catch (NpgsqlException e)
             {
