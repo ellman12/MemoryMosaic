@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Microsoft.VisualBasic.FileIO;
 using SearchOption = System.IO.SearchOption;
 
 namespace PSS.Backend
@@ -9,48 +7,6 @@ namespace PSS.Backend
     ///Functions for server/library maintenance.
     public static class Maintenance
     {
-        ///Backup library and database on server.
-        public static void BackupServer()
-        {
-            //Clear backup folder to remove old backup: https://stackoverflow.com/a/12297082
-            DirectoryInfo di = new(S.backupFolderPath);
-            di.Delete(true);
-            Directory.CreateDirectory(S.backupFolderPath); 
-            
-            FileSystem.CopyDirectory(S.libFolderPath, Path.Combine(S.backupFolderPath, "PSS Media Backup"));
-            File.WriteAllText(Path.Combine(S.backupFolderPath, "Backed up on.txt"), DateTime.Now.ToString("M-d-yyyy h:mm:ss tt"));
-            
-            Process process = new(); //Backup entire database to a file
-            ProcessStartInfo startInfo = new()
-            {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                WorkingDirectory = "C:/Program Files/PostgreSQL/14/bin/",
-                FileName = "cmd.exe",
-                Arguments = $"/C {S.databaseBackupCommand}"
-            };
-            process.StartInfo = startInfo;
-            process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
-            process.WaitForExit();
-        }
-
-        public static void RestoreBackup()
-        {
-            //Kept getting a stupid error like OP did when trying to do it the normal way but luckily SO comes in to save the day: https://serverfault.com/a/260610
-            FileSystem.CopyDirectory(Path.Combine(S.backupFolderPath, "PSS Media Backup"), S.libFolderPath);
-
-            Process process = new(); //Backup entire database to a file
-            ProcessStartInfo startInfo = new()
-            {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                WorkingDirectory = S.backupFolderPath,
-                FileName = "cmd.exe",
-                Arguments = $"/C {S.databaseRestoreCommand}"
-            };
-            process.StartInfo = startInfo;
-            process.Start();
-            process.WaitForExit();
-        }
-        
         ///<summary>
         ///<para>Return if a folder is empty (has 0 files in folder or subfolders). Subfolders inside path aren't counted unless they have stuff inside.</para>
         ///<para>If root/ has 2 subfolders and 3 files it would only find 3 files and thus it wouldn't be counted as empty.</para>

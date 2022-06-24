@@ -66,8 +66,6 @@
 
     <div>
         <span class="header">Maintenance</span>
-        <button class="textBtn" title="Last backed up on @lastBackedUp" @onclick="@M.BackupServer"><span class="material-icons-outlined">backup</span><span>Backup Server</span></button>
-        <button class="textBtn" @onclick="@M.RestoreBackup"><span class="material-icons-outlined">restore</span><span>Restore Backup</span></button>
         <button class="textBtn" @onclick="@(() => { Directory.Delete(S.tmpFolderPath, true); Directory.CreateDirectory(S.tmpFolderPath); })"><span class="material-icons-outlined">folder_delete</span><span>Clear pss_tmp</span></button>
         <button title="Clear pss_tmp and Empty Trash" class="textBtn" @onclick="@FreeUpSpace"><span class="material-icons-outlined">folder_delete</span><span>Free Up Space</span></button>
         @if (!maintenanceLoaded)
@@ -134,7 +132,6 @@
     
     //Maintenance
     private static bool maintenanceLoaded;
-    private static string lastBackedUp;
     private static List<string> untrackedPaths;
 
     //Get all folders in pss_library and pss_upload
@@ -159,8 +156,6 @@
     protected override void OnInitialized()
     {
         maintenanceLoaded = false;
-        string datePath = Path.Combine(S.backupFolderPath, "Backed up on.txt");
-        lastBackedUp = File.Exists(datePath) ? DateTime.Parse(File.ReadAllText(datePath)).ToString("MMM d, yyyy h:mm:ss tt") : "Never";
         
         //Items in lib folder but not DB.
         untrackedPaths = new List<string>();
