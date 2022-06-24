@@ -76,38 +76,25 @@ namespace PSS.Backend
             return untrackedPaths;
         }
 
-        ///The table to search for missing files.        
-        public enum MissingFilesTable
+        ///Returns a List&lt;MediaRow&gt; of all rows and columns from the media table that don't have existing files in pss_library.
+        public static List<C.MediaRow> GetMediaMissingFiles()
         {
-            media,
-            media_trash,
-            album_entries,
-            album_entries_trash
-        }
-
-        ///<summary>
-        ///Return string List of all shortPaths from the table specified that don't have existing files in the photo library.
-        ///</summary>
-        public static List<string> GetMissingFiles(MissingFilesTable table)
-        {
-            string tableStr = table.ToString();
-            List<string> missingFiles = new();
-
+            List<C.MediaRow> missingFiles = new();
             try
             {
                 C.Open();
-                NpgsqlCommand cmd = new("SELECT path FROM " + tableStr, C.connection);
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media", C.connection);
                 cmd.ExecuteNonQuery();
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
 
-                while (reader.Read())
+                while (r.Read())
                 {
-                    string shortPath = reader.GetString(0);
+                    string shortPath = r.GetString(0);
                     string fullPath = Path.Combine(S.libFolderPath, shortPath);
                     if (!File.Exists(fullPath))
-                        missingFiles.Add(shortPath);
+                        missingFiles.Add(new C.MediaRow(shortPath, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
                 }
-                reader.Close();
+                r.Close();
             }
             catch (NpgsqlException e)
             {
