@@ -25,8 +25,9 @@
     {
         //TODO: while this is running have some big popup or something else that prevents user from navigating away from the page. Also have a status text for what it is working on rn, like creating zip, backing up DB, etc.
 
-        string dbBakPath = $"{S.tmpFolderPath}/PSS DB Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}.bak";
-        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip");
+        string timestamp = $"PSS Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}";
+        string dbBakPath = Path.Combine(S.tmpFolderPath, $"{timestamp}.bak");
+        string zipFilePath = Path.Combine(S.backupFolderPath, $"{timestamp}.zip");
         
         //Backup entire database into a single file.
         Process process = new Process()
