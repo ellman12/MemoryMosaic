@@ -1163,5 +1163,26 @@ namespace PSS.Backend
                 Close();
             }
         }
+
+        ///<summary>Loads every row in the media table, even if has no DT, in a folder, in the trash, etc. Sorted by date_taken descending (NULL and newest DT first).</summary>
+        ///<returns>List&lt;MediaRow&gt; of EVERY row in the media table.</returns>
+        public static List<MediaRow> LoadEntireMediaTable()
+        {
+            List<MediaRow> media = new();
+            try
+            {
+                Open();
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media ORDER BY date_taken DESC", connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
+                r.Close();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return media;
+        }
     }
 }
