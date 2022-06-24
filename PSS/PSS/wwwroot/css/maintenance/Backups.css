@@ -1,0 +1,5 @@
+* {
+    scrollbar-width: none !important;
+    --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
+}
+
