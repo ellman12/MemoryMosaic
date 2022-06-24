@@ -59,22 +59,18 @@ namespace PSS.Backend
         ///<returns>True if empty, false otherwise.</returns>
         public static bool IsFolderEmpty(string path) => Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
 
-        ///<summary>
-        ///Search library folder and if an item is not in the media or media_trash tables, add it to the List of full paths that is returned. 
-        ///</summary>
+        ///Search pss_library and if an item is not in the media table, add it to the List of full paths that is returned. 
         public static List<string> GetUntrackedLibFiles()
         {
-            List<string> untrackedPaths = new(); //Items in lib folder but not in database
-            string[] paths = Directory.GetFiles(S.libFolderPath, "*", SearchOption.AllDirectories);
-            List<string> mediaPaths = C.LoadMediaTable().Select(media => media.path).ToList(); //Get just paths
-            List<string> mediaTrashPaths = C.LoadMediaTrash().Select(media => media.path).ToList();
+            List<string> untrackedPaths = new(); //Tracks items in pss_library but not in database
+            HashSet<string> mediaPaths = C.LoadEntireMediaTable().Select(media => media.path).ToHashSet();
 
-            foreach (string fullPath in paths)
+            foreach (string fullPath in Directory.GetFiles(S.libFolderPath, "*", SearchOption.AllDirectories))
             {
-                string shortPath = fullPath.Replace(S.libFolderPath, "");
-                if (shortPath.StartsWith('\\') || shortPath.StartsWith('/')) shortPath = shortPath[1..];
+                string shortPath = fullPath.Replace(S.libFolderPath, null).Replace('\\', '/');
+                if (shortPath.StartsWith('/')) shortPath = shortPath[1..]; //Database short paths don't ever start with '/'.
                 
-                if (!mediaPaths.Contains(shortPath) && !mediaTrashPaths.Contains(shortPath)) //If find an item not in library add to list
+                if (!mediaPaths.Contains(shortPath))
                     untrackedPaths.Add(fullPath);
             }
             return untrackedPaths;
