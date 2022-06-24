@@ -1,6 +1,7 @@
 @page "/maintenance/backups"
 @using Microsoft.VisualBasic.FileIO
 @using System.Diagnostics
+@using System.IO.Compression
 
 <title>Missing Files — Maintenance - PSS</title>
 <link href="css/maintenance/Backups.css" rel="stylesheet">
@@ -17,7 +18,22 @@
 
 @functions{
 
-    // ///Backup library and database on server.
+    ///Create a backup .zip file of library and database on server.
+    private static void CreateBackup()
+    {
+        //TODO: while this is running have some big popup or something else that prevents user from navigating away from the page. Also have a status text for what it is working on rn, like creating zip, backing up DB, etc.
+        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip");
+        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.SmallestSize, false);
+    }
+
+    ///<summary>Restore PSS to this backup.</summary>
+    ///<param name="zipFullPath">The full path to the zip file to restore PSS to.</param>
+    private static void RestoreBackup(string zipFullPath)
+    {
+        //TODO: Use Tasks/Threads for this, and have a popup so user can't navigate away from page. Make sure to make it clear the entire library will be restored to this point.
+        //TODO: Clear DB and pss_library, unzip this into pss_tmp, start copying stuff to pss_library and adding stuff to database.
+    }
+    
     // public static void BackupServer()
     // {
     //     //Clear backup folder to remove old backup: https://stackoverflow.com/a/12297082
