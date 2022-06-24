@@ -25,8 +25,29 @@
     private static void CreateBackup()
     {
         //TODO: while this is running have some big popup or something else that prevents user from navigating away from the page. Also have a status text for what it is working on rn, like creating zip, backing up DB, etc.
+
+        string dbBakPath = $"{S.tmpFolderPath}/PSS DB Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}.bak";
         string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip");
-        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.SmallestSize, false);
+        
+        //Backup entire database into a single file.
+        Process process = new Process()
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                WorkingDirectory = "C:/Program Files/PostgreSQL/14/bin/",
+                FileName = "cmd.exe",
+                Arguments = $"pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbBakPath}\"" //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+            }
+        };
+        process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+        process.WaitForExit();
+        
+        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.SmallestSize, true);
+        using FileStream zipFile = new(zipFilePath, FileMode.Open);
+        using ZipArchive archive = new(zipFile, ZipArchiveMode.Update);
+        archive.CreateEntry(dbBakPath);
+        Task.Run(() => File.Delete(dbBakPath)); //Don't need file after it's zipped up.
     }
 
     ///<summary>Restore PSS to this backup.</summary>
