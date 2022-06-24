@@ -79,39 +79,28 @@ namespace PSS.Backend
         }
 
         ///<summary>Attempts to find the item with the oldest not-null date taken.</summary>
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine("Counting albums rows error. " + e.Message);
-            }
-            finally
-            {
-                C.Close();
-            }
-
-            return rows;
-        }
-
-        public static C.MediaRow FindOldestItem()
+        ///<returns>The row with the oldest date taken, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
+        public static C.MediaRow FindItemWithOldestDateTaken()
         {
-            C.MediaRow oldestItem = new("", DateTime.Now, DateTime.Now, false, Guid.Empty);
+            C.MediaRow oldestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
             
             try
             {
                 C.Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY DATE_TAKEN ASC", C.connection);
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media WHERE date_taken IS NOT NULL ORDER BY date_taken ASC", C.connection);
+                cmd.ExecuteNonQuery();
+                NpgsqlDataReader r = cmd.ExecuteReader();
 
-                if (reader.HasRows)
+                if (r.HasRows)
                 {
-                    reader.Read(); //There should only be 1 line to read.
-                    oldestItem = new C.MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4));
-                    reader.Close();
+                    r.Read(); //There should only be 1 row to read.
+                    oldestItem = new C.MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
+                    r.Close();
                 }
             }
-            catch (NpgsqlException e)
+            catch (Exception e)
             {
-                Console.WriteLine("FindOldestItem error. " + e.Message);
+                Console.WriteLine("FindItemWithOldestDateTaken error. " + e.Message);
             }
             finally
             {
@@ -121,33 +110,100 @@ namespace PSS.Backend
             return oldestItem;
         }
         
-        public static C.MediaRow FindNewestItem()
+        ///<summary>Attempts to find the item with the newest not-null date taken.</summary>
+        ///<returns>The row with the newest date taken, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
+        public static C.MediaRow FindItemWithNewestDateTaken()
         {
-            C.MediaRow oldestItem = new("", DateTime.Now, DateTime.Now, false, Guid.Empty);
+            C.MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
             
             try
             {
                 C.Open();
-                NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY DATE_TAKEN DESC", C.connection);
-                NpgsqlDataReader reader = cmd.ExecuteReader();
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media WHERE date_taken IS NOT NULL ORDER BY date_taken DESC", C.connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
 
-                if (reader.HasRows)
+                if (r.HasRows)
                 {
-                    reader.Read(); //There should only be 1 line to read.
-                    oldestItem = new C.MediaRow(reader.GetString(0), reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4));
-                    reader.Close();
+                    r.Read(); //There should only be 1 row to read.
+                    newestItem = new C.MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
+                    r.Close();
                 }
             }
-            catch (NpgsqlException e)
+            catch (Exception e)
             {
-                Console.WriteLine("FindOldestItem error. " + e.Message);
+                Console.WriteLine("FindItemWithNewestDateTaken error. " + e.Message);
             }
             finally
             {
                 C.Close();
             }
 
-            return oldestItem;
+            return newestItem;
+        }
+
+        ///<summary>Attempts to find the item with the oldest date added, which may or may not have a date taken.</summary>
+        ///<returns>The row with the oldest date added, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
+        public static C.MediaRow FindItemWithOldestDateAdded()
+        {
+            C.MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
+            
+            try
+            {
+                C.Open();
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY date_added ASC", C.connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+
+                if (r.HasRows)
+                {
+                    r.Read(); //There should only be 1 row to read.
+                    newestItem = new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
+                    r.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("FindItemWithOldestDateAdded error. " + e.Message);
+            }
+            finally
+            {
+                C.Close();
+            }
+
+            return newestItem;
+        }
+        
+        ///<summary>Attempts to find the item with the newest date added, which may or may not have a date taken.</summary>
+        ///<returns>The row with the newest date added, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
+        public static C.MediaRow FindItemWithNewestDateAdded()
+        {
+            C.MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
+            
+            try
+            {
+                C.Open();
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY date_added DESC", C.connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+
+                if (r.HasRows)
+                {
+                    r.Read(); //There should only be 1 row to read.
+                    newestItem = new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
+                    r.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("FindItemWithNewestDateAdded error. " + e.Message);
+            }
+            finally
+            {
+                C.Close();
+            }
+
+            return newestItem;
         }
     }
 }
