@@ -6,14 +6,10 @@ using SearchOption = System.IO.SearchOption;
 
 namespace PSS.Backend
 {
-    ///<summary>
-    ///Functions for server maintenance.
-    ///</summary>
+    ///Functions for server/library maintenance.
     public static class Maintenance
     {
-        ///<summary>
         ///Backup library and database on server.
-        ///</summary>
         public static void BackupServer()
         {
             //Clear backup folder to remove old backup: https://stackoverflow.com/a/12297082
@@ -56,11 +52,11 @@ namespace PSS.Backend
         }
         
         ///<summary>
-        ///Return if a folder is empty (has 0 files in folder or subfolders). Subfolders inside path aren't counted unless they have stuff inside.
-        ///If root/ has 2 subfolders and 3 files it would only find 3 files and thus it wouldn't be counted as empty.
-        ///If root/ has 2 subfolders and 0 files, it would be considered empty.
+        ///<para>Return if a folder is empty (has 0 files in folder or subfolders). Subfolders inside path aren't counted unless they have stuff inside.</para>
+        ///<para>If root/ has 2 subfolders and 3 files it would only find 3 files and thus it wouldn't be counted as empty.</para>
+        ///<para>If root/ has 2 subfolders and 0 files, it would be considered empty.</para>
         ///</summary>
-        ///<returns>True if empty.</returns>
+        ///<returns>True if empty, false otherwise.</returns>
         public static bool IsFolderEmpty(string path) => Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
 
         ///<summary>
