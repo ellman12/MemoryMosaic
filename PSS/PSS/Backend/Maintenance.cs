@@ -108,20 +108,17 @@ namespace PSS.Backend
             return missingFiles;
         }
 
-        ///<summary>
-        ///Loop through List and delete these paths from table that are in the DB but don't exist as files.
-        ///</summary>
-        ///<param name="paths">List of shortPaths retrieved with GetMissingFiles()</param>
-        ///<param name="table">The table to delete from</param>
-        public static void RemoveMissingFiles(List<string> paths, MissingFilesTable table)
+        ///<summary>Delete these items from media table that are in the DB but don't exist as files.</summary>
+        ///<param name="rows">List&lt;MediaRow&gt; retrieved with GetMediaMissingFiles()</param>
+        public static void RemoveMediaMissingFiles(List<C.MediaRow> rows)
         {
             try
             {
                 C.Open();
-                foreach (string path in paths)
+                foreach (C.MediaRow row in rows)
                 {
-                    NpgsqlCommand cmd = new("DELETE FROM " + table + " WHERE path=@path", C.connection);
-                    cmd.Parameters.AddWithValue("@path", path);
+                    using NpgsqlCommand cmd = new("DELETE FROM media WHERE path=@path", C.connection);
+                    cmd.Parameters.AddWithValue("@path", row.path);
                     cmd.ExecuteNonQuery();
                 }
             }
