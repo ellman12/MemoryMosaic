@@ -30,12 +30,6 @@ namespace PSS
         public const string UPLOAD_REQUEST_PATH = "/pss_upload";
         public const string TMP_REQUEST_PATH = "/pss_tmp";
 
-        ///The command used to backup the database with pg_dump. https://www.postgresqltutorial.com/postgresql-backup-database/
-        public static string databaseBackupCommand;
-
-        ///The command used to restore a previous pg_dump backup.
-        public static string databaseRestoreCommand;
-
         public static void WriteSettings() => File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
 
         public static void ReadSettings()
@@ -46,13 +40,6 @@ namespace PSS
             libFolderPath = libFolderPath.Replace('\\', '/');
             backupFolderPath = backupFolderPath.Replace('\\', '/');
             tmpFolderPath = tmpFolderPath.Replace('\\', '/');
-            
-            //Can't assign this until backupFolderPath is read in.
-            //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
-            databaseBackupCommand = $"pg_dump.exe \"host={serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{backupFolderPath}/PSS DB Backup.bak\"";
-            
-            //https://superuser.com/a/434876
-            databaseRestoreCommand = $"type \"{backupFolderPath}/PSS DB Backup.bak\" | \"C:/Program Files/PostgreSQL/14/bin/psql.exe\" \"host=localhost port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\"";
         }
 
         //Delete .json file and reset settings to default.
