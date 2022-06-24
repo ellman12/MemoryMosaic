@@ -1,0 +1,51 @@
+﻿header {
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    position: fixed;
+    left: 146px;
+    right: 0;
+    top: 4px;
+    z-index: 999;
+}
+
+#mainDiv {
+    position: absolute;
+    left: 145px;
+    top: 70px;
+}
+
+#mainDiv > .missingItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#mainDiv > .missingItem > .thumbnail {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    width: 60px;
+    height: 60px;
+    background-color: #212121;
+    border-radius: 4px;
+}
+
+#mainDiv > .missingItem > .thumbnail > img {
+    object-fit: cover;
+    width: 60px;
+    height: 60px;
+}
+
+#mainDiv > .missingItem > .info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#mainDiv > .missingItem > .info > span {
+    margin-left: 10px;
+}
