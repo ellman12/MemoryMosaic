@@ -75,7 +75,7 @@
         @if (maintenanceLoaded)
         {
             <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
-            <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@media_missing.Count)</a></button>
+            <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@mediaMissingFiles.Count)</a></button>
             <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Upload"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
         }
     </div>
@@ -85,19 +85,28 @@
         @if (!statsLoaded) {<button class="textBtn" @onclick="@GetStats" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>}
         @if (statsLoaded)
         {
-            <span>@mediaRowCount Items in Library</span>
-            <span>@albumsCount Albums</span>
+            <span>@($"{mediaRowCount} {(mediaRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
+            <span>@($"{trashRowCount} {(trashRowCount == 1 ? "Item In Trash" : "Items In Trash")}")</span>
+            <span>@($"{albumsCount} {(albumsCount == 1 ? "Album" : "Albums")}")</span>
             <span style="margin-top: 14px;">Library Drive Total Size (Usable): @F.FormatBytes(totalUsableDriveSize)</span>
             <span>Library Drive Free Space: @F.FormatBytes(freeDriveSpace)</span>
             <progress style="margin-bottom: 14px" max="100" value="@((float)freeDriveSpace / totalUsableDriveSize * 100)"></progress>
             <span>Library Size: @F.FormatBytes(librarySize)</span>
-            if (oldestItem.uuid != Guid.Empty)
+            if (oldestDTItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" rel="noopener noreferrer" href="@($"/view/{oldestItem.uuid}")">Oldest Item in Library, Taken on @oldestItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+                <span><a target="_blank" href="@($"/view/{oldestDTItem.uuid}")">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
             }
-            if (newestItem.uuid != Guid.Empty)
+            if (newestDTItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" rel="noopener noreferrer" href="@($"/view/{newestItem.uuid}")">Newest Item in Library, Taken on @newestItem.dateTaken</a></span>
+                <span><a target="_blank" href="@($"/view/{newestDTItem.uuid}")">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a></span>
+            }
+            if (oldestDAItem.uuid != Guid.Empty)
+            {
+                <span><a target="_blank" href="@($"/view/{oldestDAItem.uuid}")">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a></span>
+            }
+            if (newestDAItem.uuid != Guid.Empty)
+            {
+                <span><a target="_blank" href="@($"/view/{newestDAItem.uuid}")">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a></span>
             }
             <span>Server went online at @whenWentOnline</span>
             <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>
@@ -128,24 +137,20 @@
     private static string lastBackedUp;
     private static List<string> untrackedPaths;
 
-    //Get all folders in Library and Upload
+    //Get all folders in pss_library and pss_upload
     private static string[] folderPaths;
     private static readonly List<string> emptyFolders = new();
     
-    //Missing Files stuff
-    private static List<string> media_missing = new();
-    private static List<string> media_trash_missing = new();
-    private static List<string> album_entries_missing = new(); //TODO
-    private static List<string> album_entries_trash_missing = new();
+    //Missing files
+    private static List<C.MediaRow> mediaMissingFiles = new();
     
     //Stats
     private static bool statsLoaded;
-    private static long mediaRowCount;
-    private static long albumsCount;
+    private static long mediaRowCount, trashRowCount, albumsCount;
     private static long totalUsableDriveSize; //How much space the drive pss_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
     private static long freeDriveSpace; //Bytes
     private static long librarySize; //Bytes
-    private static C.MediaRow oldestItem, newestItem;
+    private static C.MediaRow oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
     public static DateTime whenWentOnline; //When did the server go online?
     
     //Debug
@@ -160,11 +165,8 @@
         //Items in lib folder but not DB.
         untrackedPaths = new List<string>();
         
-        //Items in database but no file on server
-        media_missing = new List<string>();
-        media_trash_missing = new List<string>();
-        album_entries_missing = new List<string>();
-        album_entries_trash_missing = new List<string>();
+        //Items in database but not a file on server
+        mediaMissingFiles = new List<C.MediaRow>();
 
         //Empty folders
         folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadFolderPath, "*", SearchOption.AllDirectories)).ToArray();
@@ -173,26 +175,28 @@
         
         //Stats
         statsLoaded = false;
-        mediaRowCount = 0;
+        mediaRowCount = trashRowCount = 0;
         albumsCount = 0;
         totalUsableDriveSize = 0;
         freeDriveSpace = 0;
         librarySize = 0;
-
-        oldestItem = new C.MediaRow("", DateTime.Now, DateTime.Now, false, Guid.Empty);
-        newestItem = new C.MediaRow("", DateTime.Now, DateTime.Now, false, Guid.Empty);
+        oldestDTItem = newestDTItem = oldestDAItem = newestDAItem = new C.MediaRow(null, null, DateTime.Now, false, Guid.Empty);
     }
 
+    ///Free up space on server by removing temporary files, empty folders, and emptying the trash.
     private static void FreeUpSpace()
     {
         //Clear pss_tmp.
         Directory.Delete(S.tmpFolderPath, true);
         Directory.CreateDirectory(S.tmpFolderPath);
         
+        EmptyFoldersBtnClick();
+        
         //Empty trash.
         foreach (C.MediaRow item in C.LoadMediaTrash()) C.PermDeleteItem(item.uuid);
     }
 
+    ///Update settings.
     private static void ApplyBtnClicked()
     {
         S.serverIP = serverIP;
@@ -205,6 +209,7 @@
         S.WriteSettings();
     }
 
+    ///Cancel modification of settings.
     private static void CancelBtnClicked()
     {
         serverIP = S.serverIP;
@@ -216,6 +221,7 @@
         tmpFolderPath = S.tmpFolderPath;
     }
 
+    ///Reset settings to default values.
     private static void ResetBtnClicked()
     {
         S.ResetSettings();
@@ -230,39 +236,40 @@
         emptyFolders.Clear();
     }
 
+    ///Runs a Maintenance Check on PSS.
     private static void RunMaintenanceCheck()
     {
         maintenanceLoaded = true;
         untrackedPaths = M.GetUntrackedLibFiles();
 
-        media_missing = M.GetMissingFiles(M.MissingFilesTable.media);
-        media_trash_missing = M.GetMissingFiles(M.MissingFilesTable.media_trash);
-        album_entries_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries);
-        album_entries_trash_missing = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
-        media_missing = media_missing.Concat(media_trash_missing).Concat(album_entries_missing).Concat(album_entries_trash_missing).ToList();
+        mediaMissingFiles = M.GetMediaMissingFiles();
 
         folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
     }
 
+    ///Get various statistics about the server and the library.
     private static void GetStats()
     {
         statsLoaded = true;
-        mediaRowCount = Stats.CountMediaRows();
+        mediaRowCount = Stats.GetNumItemsInLibrary();
+        trashRowCount = Stats.GetNumItemsInTrash();
         albumsCount = Stats.CountAlbums();
         
         DriveInfo driveInfo = new(S.libFolderPath);
         totalUsableDriveSize = driveInfo.TotalSize;
         freeDriveSpace = driveInfo.TotalFreeSpace;
         
-        DirectoryInfo dirInfo = new(S.libFolderPath);
-        librarySize = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+        librarySize = new DirectoryInfo(S.libFolderPath).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
 
-        oldestItem = Stats.FindOldestItem();
-        newestItem = Stats.FindNewestItem();
+        oldestDTItem = Stats.FindItemWithOldestDateTaken();
+        newestDTItem = Stats.FindItemWithNewestDateTaken();
+        oldestDAItem = Stats.FindItemWithOldestDateAdded();
+        newestDAItem = Stats.FindItemWithNewestDateAdded();
     }
 
+    ///Only for debugging/testing purposes.
     private static void RunQuery()
     {
         try
