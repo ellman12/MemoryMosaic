@@ -1,4 +1,5 @@
 @page "/maintenance/untracked-files"
+@using Microsoft.VisualBasic.FileIO
 
 <title>Untracked Files — Maintenance - PSS</title>
 <link href="css/maintenance/UntrackedFiles.css" rel="stylesheet">
@@ -11,45 +12,46 @@
     <button class="textBtn" @onclick="@DeleteAll">
         <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24">
             <path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path>
-        </svg><span>Delete All</span>
+        </svg>
+        <span>Delete All</span>
     </button>
 </header>
 
 @{
-    if (untrackedPaths.Count == 0)
+    if (untrackedFiles.Count == 0)
     {
         <h1>No Untracked Items</h1>
         return;
     }
     
     <div id="mainDiv">
-        @for (int i = 0; i < untrackedPaths.Count; i++)
+        @for (int i = 0; i < untrackedFiles.Count; i++)
         {
             int ii = i;
-            string path = untrackedPaths[i];
-            string ext = Path.GetExtension(path);
+            string path = untrackedFiles[i];
+            string ext = Path.GetExtension(path).ToLower();
             string name = Path.GetFileName(path);
 
             string shortPath = path.Replace(S.libFolderPath!, "").Replace('\\', '/');
             shortPath = Path.GetFileName(S.libFolderPath) + shortPath;
 
             <div class="itemDiv">
-                @if (ext is ".jpg" or ".jpeg" or ".png")
+                @if (ext is ".jpg" or ".jpeg" or ".png" or ".gif")
                 {
-                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="" loading="lazy"/>
+                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="@shortPath" loading="lazy"/>
                 }
                 else if (ext is ".mp4" or ".mkv" or ".mov")
                 {
-                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@("data:image/jpg;base64," + F.GenerateThumbnail(path))" alt="" loading="lazy"/>
+                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@("data:image/jpg;base64," + F.GenerateThumbnail(path))" alt="@shortPath" loading="lazy"/>
                 }
 
                 <span title="@name" class="filenameSpan">@name</span>
 
-                <button class="iconBtn" title="Move Item to Upload Folder" @onclick="@(() => MoveBtnClick(ii))">
+                <button class="iconBtn" title="Move This Item to Upload Folder" @onclick="@(() => MoveBtnClick(ii))">
                     <span class="material-icons-outlined">drive_file_move</span>
                 </button>
 
-                <button class="iconBtn" title="Delete Item From Server" @onclick="@(() => DeleteBtnClick(ii))">
+                <button class="iconBtn" title="Delete This Item From Server" @onclick="@(() => DeleteBtnClick(ii))">
                     <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24">
                         <path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path>
                     </svg>
@@ -60,36 +62,38 @@
 }
 
 @code {
-    private static List<string> untrackedPaths;
+    private static List<string> untrackedFiles;
 
-    protected override void OnInitialized()
-    {
-        untrackedPaths = M.GetUntrackedLibFiles();
-    }
-    
+    protected override void OnInitialized() => untrackedFiles = M.GetUntrackedLibFiles();
+
+    ///Move a single item to pss_upload.
     private static void MoveBtnClick(int index)
     {
-        string path = untrackedPaths[index];
+        string path = untrackedFiles[index];
         File.Move(path, Path.Combine(S.uploadFolderPath, Path.GetFileName(path)));
-        untrackedPaths.RemoveAt(index);
+        untrackedFiles.RemoveAt(index);
     }
 
+    ///Move all untracked items from pss_library to pss_upload.
     private static void MoveAll()
     {
-        foreach (string path in untrackedPaths)
+        foreach (string path in untrackedFiles)
             File.Move(path, Path.Combine(S.uploadFolderPath, Path.GetFileName(path)));
-        untrackedPaths.Clear();
+        untrackedFiles.Clear();
     }
 
+    ///Delete this untracked item.
     private static void DeleteBtnClick(int index)
     {
-        File.Delete(untrackedPaths[index]);
-        untrackedPaths.RemoveAt(index);
+        FileSystem.DeleteFile(untrackedFiles[index], UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+        untrackedFiles.RemoveAt(index);
     }
 
+    ///Delete all untracked items in pss_library.
     private static void DeleteAll()
     {
-        foreach (string path in untrackedPaths) File.Delete(path);
-        untrackedPaths.Clear();
+        foreach (string path in untrackedFiles)
+            FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+        untrackedFiles.Clear();
     }
 }
