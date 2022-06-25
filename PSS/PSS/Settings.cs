@@ -24,6 +24,9 @@ namespace PSS
 
         ///Should items without a Date Taken be shown in albums and folders?
         [JsonProperty] public static bool displayNoDTInAV;
+
+        ///Controls the quality of video thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
+        [JsonProperty] public static int thumbnailQuality;
         
         ///Acts as a kind of shortcut to where the library, upload, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
         public const string LIB_REQUEST_PATH = "/pss_library";
@@ -51,6 +54,7 @@ namespace PSS
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_backup";
             tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_tmp";
             showPrompts = displayNoDTInAV = true;
+            thumbnailQuality = 7;
             File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings()));
         }
     }

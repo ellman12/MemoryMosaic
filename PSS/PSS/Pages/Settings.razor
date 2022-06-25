@@ -130,6 +130,7 @@
     private static bool displayNoDTInAV = S.displayNoDTInAV;
     private static string backupFolderPath = S.backupFolderPath;
     private static string tmpFolderPath = S.tmpFolderPath;
+    private static int thumbnailQuality = S.thumbnailQuality;
     
     //Maintenance
     private static bool maintenanceLoaded;
@@ -202,6 +203,7 @@
         S.displayNoDTInAV = displayNoDTInAV;
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
+        S.thumbnailQuality = thumbnailQuality;
         S.WriteSettings();
     }
 
@@ -215,6 +217,7 @@
         displayNoDTInAV = S.displayNoDTInAV;
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
+        thumbnailQuality = S.thumbnailQuality;
     }
 
     ///Reset settings to default values.
