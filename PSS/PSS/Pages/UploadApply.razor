@@ -1,5 +1,6 @@
 @page "/apply-upload"
 @using Microsoft.VisualBasic.FileIO
+@using DateTakenExtractor
 
 <title>Apply Upload - PSS</title>
 <link href="css/UploadApply.css" rel="stylesheet">
@@ -158,8 +159,10 @@
             GC.WaitForPendingFinalizers();
             try
             {
-                File.Move(file.fullPath!, C.CreateFullPath(file.dateTaken, filename));
+                string fullFinalPath = C.CreateFullPath(file.dateTaken, filename);
+                File.Move(file.fullPath!, fullFinalPath);
                 rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
+                Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken));
             }
             catch (IOException e)
             {

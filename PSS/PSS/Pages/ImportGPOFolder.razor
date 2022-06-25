@@ -180,8 +180,10 @@
             GC.WaitForPendingFinalizers();
             try
             {
-                File.Move(file.fullPath!, C.CreateFullPath(file.dateTaken, filename));
+                string fullFinalPath = C.CreateFullPath(file.dateTaken, filename);
+                File.Move(file.fullPath!, fullFinalPath);
                 rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
+                Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken));
             }
             catch (IOException e)
             {
