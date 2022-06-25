@@ -101,45 +101,4 @@
         //TODO: Use Tasks/Threads for this, and have a popup so user can't navigate away from page. Make sure to make it clear the entire library will be restored to this point.
         //TODO: Clear DB and pss_library, unzip this into pss_tmp, start copying stuff to pss_library and adding stuff to database.
     }
-    
-    // public static void BackupServer()
-    // {
-    //     //Clear backup folder to remove old backup: https://stackoverflow.com/a/12297082
-    //     DirectoryInfo di = new(S.backupFolderPath);
-    //     di.Delete(true);
-    //     Directory.CreateDirectory(S.backupFolderPath); 
-    //         
-    //     FileSystem.CopyDirectory(S.libFolderPath, Path.Combine(S.backupFolderPath, "PSS Media Backup"));
-    //     File.WriteAllText(Path.Combine(S.backupFolderPath, "Backed up on.txt"), DateTime.Now.ToString("M-d-yyyy h:mm:ss tt"));
-    //         
-    //     Process process = new(); //Backup entire database to a file
-    //     ProcessStartInfo startInfo = new()
-    //     {
-    //         WindowStyle = ProcessWindowStyle.Hidden,
-    //         WorkingDirectory = "C:/Program Files/PostgreSQL/14/bin/",
-    //         FileName = "cmd.exe",
-    //         Arguments = $"/C {S.databaseBackupCommand}"
-    //     };
-    //     process.StartInfo = startInfo;
-    //     process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
-    //     process.WaitForExit();
-    // }
-    //
-    // public static void RestoreBackup()
-    // {
-    //     //Kept getting a stupid error like OP did when trying to do it the normal way but luckily SO comes in to save the day: https://serverfault.com/a/260610
-    //     FileSystem.CopyDirectory(Path.Combine(S.backupFolderPath, "PSS Media Backup"), S.libFolderPath);
-    //
-    //     Process process = new(); //Backup entire database to a file
-    //     ProcessStartInfo startInfo = new()
-    //     {
-    //         WindowStyle = ProcessWindowStyle.Hidden,
-    //         WorkingDirectory = S.backupFolderPath,
-    //         FileName = "cmd.exe",
-    //         Arguments = $"/C {S.databaseRestoreCommand}"
-    //     };
-    //     process.StartInfo = startInfo;
-    //     process.Start();
-    //     process.WaitForExit();
-    // }
 }
