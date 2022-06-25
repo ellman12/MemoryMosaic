@@ -5,9 +5,28 @@
 <title>Missing Files — Maintenance - PSS</title>
 <link href="css/maintenance/Backups.css" rel="stylesheet">
 
-<header>
-    <button class="textBtn" @onclick="@CreateBackup"><span class="material-icons-outlined">settings_backup_restore</span><span>Create Backup</span></button>
-</header>
+@{
+    <header>
+        <button class="textBtn" @onclick="@CreateBackup"><span class="material-icons-outlined">settings_backup_restore</span><span>Create Backup</span></button>
+        <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
+    </header>
+
+    if (backups.Count == 0)
+    {
+        <h1>No PSS Backups</h1>
+        return;
+    }
+
+    <div id="mainDiv">
+        @foreach ((string, DateTime, long) backup in backups)
+        {
+            <div class="backup">
+                <span>@backup.Item2</span>
+                <span>@F.FormatBytes(backup.Item3)</span>
+            </div>
+        }
+    </div>
+}
 
 @code{
 
