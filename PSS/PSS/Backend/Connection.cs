@@ -957,7 +957,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("SELECT uuid FROM media WHERE shortPath=@shortPath", connection);
+                using NpgsqlCommand cmd = new("SELECT uuid FROM media WHERE path=@shortPath", connection);
                 cmd.Parameters.AddWithValue("@shortPath", shortPath);
                 cmd.ExecuteNonQuery();
 
