@@ -9,11 +9,30 @@
 
 @code{
 
+    private bool _visible;
+    private string _message;
+
     [Parameter]
-    public bool Visible { get; set; }
-    
+    public bool Visible
+    {
+        get => _visible;
+        set
+        {
+            _visible = value;
+            StateHasChanged();
+        }
+    }
+
     [Parameter, EditorRequired]
-    public string Message { get; set; }
+    public string Message
+    {
+        get => _message;
+        set
+        {
+            _message = value;
+            StateHasChanged();
+        }
+    }
 
     [Parameter]
     public int Width { get; set; } = 320;
