@@ -36,9 +36,14 @@
             <span style="display: inline">Show Prompts?</span>
         </div>
         
-         <div class="settings-pair">
+        <div class="settings-pair">
             <input type="checkbox" class="settings-pair" @bind="@displayNoDTInAV"/>
             <span style="display: inline">Display items with no date taken in albums/folders?</span>
+        </div>
+        
+        <div class="settings-pair">
+            <span title="Lower the number, higher the quality.">Video Thumbnail Quality: @thumbnailQuality</span>
+            <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
         </div>
 
         <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
