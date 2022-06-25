@@ -25,7 +25,7 @@
     ///Create a backup .zip file of library and database on server.
     private static void CreateBackup()
     {
-        string timestamp = $"{DateTime.Now:M-d-yyyy h;mm;ss tt}";
+        string timestamp = $"{DateTime.Now:MM-dd-yyyy hh;mm;ss tt}";
         string dbBakPath = Path.Combine(S.libFolderPath, $"PSS Backup {timestamp}.bak");
         string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS DB Backup {timestamp}.zip");
         
