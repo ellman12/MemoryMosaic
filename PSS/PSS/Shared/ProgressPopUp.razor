@@ -4,7 +4,6 @@
 <div id="popupBackground" style="display: @(Visible ? "inline" : "none")">
     <div id="progressPopUp" style="width: @(Width + "px"); height: @(Height + "px")">
         <span style="font-size: @(FontSize + "px")">@Message</span>
-        <progress style="display: @(ShowProgressBar ? "inline" : "none");" max="@ProgressBarMax" value="@ProgressBarValue"></progress>
     </div>
 </div>
 
@@ -24,13 +23,4 @@
 
     [Parameter]
     public int FontSize { get; set; } = 20;
-
-    [Parameter, EditorRequired]
-    public bool ShowProgressBar { get; set; }
-
-    [Parameter]
-    public double ProgressBarValue { get; set; }
-
-    [Parameter]
-    public double ProgressBarMax { get; set; } = 100;
 }
