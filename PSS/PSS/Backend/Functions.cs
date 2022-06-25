@@ -70,7 +70,7 @@ namespace PSS.Backend
                 {
                     CreateNoWindow = true,
                     FileName = "ffmpeg",
-                    Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v 25 \"{thumbnailFullPath}\""
+                    Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\""
                 };
                 Process ffmpegProcess = Process.Start(ffmpegInfo);
                 ffmpegProcess!.WaitForExit();
