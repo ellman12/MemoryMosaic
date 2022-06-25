@@ -12,7 +12,9 @@
 @code{
 
     //TODO: backups are compressed t0 max level in zip files and each zip holds the whole library contents and the DB contents.
-    
+    //TODO: while this is running have some big popup or something else that prevents user from navigating away from the page. Also have a status text for what it is working on rn, like creating zip, backing up DB, etc.
+    //TODO: display the size of each backup and each item would have its own restore/delete button. Button to delete all backups.
+
     //TODO
     //https://superuser.com/a/434876
     // Pages.Maintenance.Backups.databaseRestoreCommand = $"type \"{backupFolderPath}/PSS DB Backup.bak\" | \"C:/Program Files/PostgreSQL/14/bin/psql.exe\" \"host=localhost port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\"";
@@ -23,12 +25,9 @@
     ///Create a backup .zip file of library and database on server.
     private static void CreateBackup()
     {
-        //TODO: while this is running have some big popup or something else that prevents user from navigating away from the page. Also have a status text for what it is working on rn, like creating zip, backing up DB, etc.
-        //TODO: display the size of each backup and each item would have its own restore/delete button. Button to delete all backups.
-
-        string timestamp = $"PSS Backup {DateTime.Now:M-d-yyyy h;mm;ss tt}";
-        string dbBakPath = Path.Combine(S.tmpFolderPath, $"{timestamp}.bak");
-        string zipFilePath = Path.Combine(S.backupFolderPath, $"{timestamp}.zip");
+        string timestamp = $"{DateTime.Now:M-d-yyyy h;mm;ss tt}";
+        string dbBakPath = Path.Combine(S.libFolderPath, $"PSS Backup {timestamp}.bak");
+        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS DB Backup {timestamp}.zip");
         
         //Backup entire database into a single file.
         using Process process = new Process
@@ -47,14 +46,8 @@
         process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
         process.WaitForExit();
         
-        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.SmallestSize, true); //Create a .zip file and add pss_library to it.
-        
-        using FileStream zipFile = new(zipFilePath, FileMode.Open);
-        using ZipArchive archive = new(zipFile, ZipArchiveMode.Update);
-        string ogCurrDir = Environment.CurrentDirectory; //This is kinda stupid but I don't think paths can be passed into createEntry().
-        Environment.CurrentDirectory = S.tmpFolderPath;
-        archive.CreateEntry(Path.GetFileName(dbBakPath)); //Adds the DB backup file to the zip archive.
-        Environment.CurrentDirectory = ogCurrDir;
+        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.SmallestSize, true);
+        File.Delete(dbBakPath);
     }
 
     ///<summary>Restore PSS to this backup.</summary>
