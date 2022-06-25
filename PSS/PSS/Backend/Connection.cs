@@ -881,6 +881,7 @@ namespace PSS.Backend
                 //Move item to new path on server. This is how the user input is validated. If this fails, user needs to pick a new DT and/or filename.
                 Directory.CreateDirectory(newDTFolderPath); //Create in case it doesn't exist.
                 File.Move(originalFullPath, newFullPath);
+                D.UpdateDateTaken(newFullPath, newDateTaken);
 
                 Open();
                 using NpgsqlCommand cmd = new("", connection);
