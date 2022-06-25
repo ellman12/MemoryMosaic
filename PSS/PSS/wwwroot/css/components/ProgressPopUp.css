@@ -1,0 +1,32 @@
+﻿#popupBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(72, 71, 71, 0.41);
+}
+
+#popupBackground > #progressPopUp {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background-color: black;
+    border: 2px solid white;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    word-wrap: break-word;
+}
+
+#popupBackground > #progressPopUp > span {
+    text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
+    user-select: none;
+}

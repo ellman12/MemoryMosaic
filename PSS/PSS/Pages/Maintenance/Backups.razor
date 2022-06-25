@@ -7,7 +7,7 @@
 
 @{
     <header>
-        <button class="textBtn" @onclick="@CreateBackup"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
+        <button class="textBtn" @onclick="@(async () => { popUpMsg = "Creating Backup. Do not navigate away from this page."; popUpVis = true; await Task.Run(CreateBackup); popUpVis = false; })"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
         <button class="textBtn" @onclick="@(() => { Directory.Delete(S.backupFolderPath, true); Directory.CreateDirectory(S.backupFolderPath); backups.Clear(); })"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete All Backups</span></button>
         <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
     </header>
@@ -24,22 +24,26 @@
             <div class="backup">
                 <span>@backup.Item2</span>
                 <span>@F.FormatBytes(backup.Item3)</span>
-                <button class="iconBtn" @onclick="@(() => RestoreBackup(backup.Item1))" title="Restore This Backup File"><span class="material-icons">restore</span></button>
+                <button class="iconBtn" @onclick="@(async () => { popUpMsg = "Restoring Backup. Do not navigate away from this page."; popUpVis = true; await Task.Run(() => RestoreBackup(backup.Item1)); popUpVis = false; })" title="Restore This Backup File"><span class="material-icons">restore</span></button>
                 <button class="iconBtn" @onclick="@(() => File.Delete(backup.Item1))" title="Delete This Backup File"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             </div>
         }
     </div>
+    
+    <ProgressPopUp Message="@popUpMsg" FontSize="22" Visible="@popUpVis"/>
 }
 
 @code{
+    private bool popUpVis;
+    private string popUpMsg;
 
     ///Stores each backup's full path, date and time it was made, and its size in bytes.
-    private static List<(string, DateTime, long)> backups;
+    private List<(string, DateTime, long)> backups;
 
     protected override void OnInitialized()
     {
         backups = new List<(string, DateTime, long)>();
-        
+
         foreach (string zipFile in Directory.GetFiles(S.backupFolderPath, "*.zip", SearchOption.AllDirectories))
         {
             try
@@ -53,16 +57,15 @@
             }
             catch (FormatException){}
         }
-        
+
         backups = backups.OrderByDescending(x => x.Item2).ToList(); //Sort it so newer backups appear first in the List.
     }
-    //TODO: when creating or restoring backup have some big popup or something else that prevents user from navigating away from the page. Also have a status text for what it is working on rn, like creating zip, backing up DB, etc.
 }
 
 @functions{
 
     ///Create a backup .zip file of library and database on server, and add the backup to the top of the page of  backups.
-    private static void CreateBackup()
+    private void CreateBackup()
     {
         string dbBakPath = Path.Combine(S.libFolderPath, "PSS Backup.bak");
         string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}.zip");
