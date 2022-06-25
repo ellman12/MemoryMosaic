@@ -1,9 +1,11 @@
 @* Reusable component for a simple popup for long-running processes to prevent user from navigating away from page. *@
 <link href="/css/components/ProgressPopUp.css" rel="stylesheet">
 
-<div id="progressPopUp" style="width: @(Width + "px"); height: @(Height + "px")">
-    <span>@Message</span>
-    <progress style="visibility: @(ShowProgressBar ? "visible" : "hidden");" max="@ProgressBarMax" value="@ProgressBarValue"></progress>
+<div id="popupBackground" style="display: @(Visible ? "inline" : "none")">
+    <div id="progressPopUp" style="width: @(Width + "px"); height: @(Height + "px")">
+        <span style="font-size: @(FontSize + "px")">@Message</span>
+        <progress style="display: @(ShowProgressBar ? "inline" : "none");" max="@ProgressBarMax" value="@ProgressBarValue"></progress>
+    </div>
 </div>
 
 @code{
@@ -13,13 +15,16 @@
     
     [Parameter, EditorRequired]
     public string Message { get; set; }
-    
-    [Parameter]
-    public int Width { get; set; }
 
     [Parameter]
-    public int Height { get; set; }
-    
+    public int Width { get; set; } = 320;
+
+    [Parameter]
+    public int Height { get; set; } = 300;
+
+    [Parameter]
+    public int FontSize { get; set; } = 20;
+
     [Parameter, EditorRequired]
     public bool ShowProgressBar { get; set; }
 
