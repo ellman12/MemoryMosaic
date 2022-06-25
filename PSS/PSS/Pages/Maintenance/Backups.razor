@@ -70,9 +70,8 @@
     ///Create a backup .zip file of library and database on server.
     private static void CreateBackup()
     {
-        string timestamp = $"{DateTime.Now:MM-dd-yyyy hh;mm;ss tt}";
-        string dbBakPath = Path.Combine(S.libFolderPath, $"PSS Backup {timestamp}.bak");
-        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS DB Backup {timestamp}.zip");
+        string dbBakPath = Path.Combine(S.libFolderPath, "PSS Backup.bak");
+        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS DB Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}.zip");
         
         //Backup entire database into a single file.
         using Process process = new Process
