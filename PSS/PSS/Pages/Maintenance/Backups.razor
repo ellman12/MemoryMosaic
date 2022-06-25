@@ -46,7 +46,7 @@
                 backups.Add(new ValueTuple<string, DateTime, long>
                 {
                     Item1 = zipFile.Replace('\\', '/'),
-                    Item2 = DateTime.Parse(Path.GetFileName(zipFile).Replace("PSS DB Backup", null).Replace(".zip", null).Replace(';', ':')),
+                    Item2 = DateTime.Parse(Path.GetFileName(zipFile).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
                     Item3 = new FileInfo(zipFile).Length
                 });
             }
@@ -71,7 +71,7 @@
     private static void CreateBackup()
     {
         string dbBakPath = Path.Combine(S.libFolderPath, "PSS Backup.bak");
-        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS DB Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}.zip");
+        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}.zip");
         
         //Backup entire database into a single file.
         using Process process = new Process
