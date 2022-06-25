@@ -11,6 +11,30 @@
 
 @code{
 
+    ///Stores each backup's full path, date and time it was made, and its size in bytes.
+    private static List<(string, DateTime, long)> backups;
+
+    protected override void OnInitialized()
+    {
+        backups = new List<(string, DateTime, long)>();
+        
+        foreach (string zipFile in Directory.GetFiles(S.backupFolderPath, "*.zip", SearchOption.AllDirectories))
+        {
+            try
+            {
+                backups.Add(new ValueTuple<string, DateTime, long>
+                {
+                    Item1 = zipFile.Replace('\\', '/'),
+                    Item2 = DateTime.Parse(Path.GetFileName(zipFile).Replace("PSS DB Backup", null).Replace(".zip", null).Replace(';', ':')),
+                    Item3 = new FileInfo(zipFile).Length
+                });
+            }
+            catch (FormatException){}
+        }
+        
+        backups = backups.OrderByDescending(x => x.Item2).ToList(); //Sort it so newer backups appear first in the List.
+    }
+
     //TODO: backups are compressed t0 max level in zip files and each zip holds the whole library contents and the DB contents.
     //TODO: while this is running have some big popup or something else that prevents user from navigating away from the page. Also have a status text for what it is working on rn, like creating zip, backing up DB, etc.
     //TODO: display the size of each backup and each item would have its own restore/delete button. Button to delete all backups.
