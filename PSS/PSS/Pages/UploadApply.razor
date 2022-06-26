@@ -1,6 +1,5 @@
 @page "/apply-upload"
 @using Microsoft.VisualBasic.FileIO
-@using DateTakenExtractor
 
 <title>Apply Upload - PSS</title>
 <link href="css/UploadApply.css" rel="stylesheet">
@@ -99,7 +98,7 @@
         allFullPaths = F.GetSupportedFiles(S.uploadFolderPath);
         allFiles = new List<C.UploadFile>(allFullPaths.Count);
 
-        foreach (string fullPath in allFullPaths)
+        Parallel.ForEach(allFullPaths, fullPath => 
         {
             C.UploadFile file = new()
             {
@@ -110,7 +109,7 @@
             file.dateTaken = D.GetDateTakenAuto(fullPath, out file.dateTakenSrc);
             file.alreadyInLib = ItemInLibrary(file.dateTaken, Path.GetFileName(fullPath));
             allFiles.Add(file);
-        }
+        });
     
         promptVis = "hidden";
         filterVis = "hidden";

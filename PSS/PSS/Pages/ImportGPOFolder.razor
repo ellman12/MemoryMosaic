@@ -101,13 +101,13 @@
         promptVis = filterVis = albumSelectorVis = "hidden";
         timeInfoChecked = true;
         
-        foreach (string fullPath in allFullPaths)
+        Parallel.ForEach(allFullPaths, fullPath =>
         {
             //Get the date taken based on this item's fullPath.
             string dtPath = fullPath.Replace(Upload.GpoFolderPath, null);
             dtPath = dtPath.Replace(Path.GetFileName(dtPath), null).Replace('\\', '/');
             if (dtPath[0] == '/') dtPath = dtPath.Remove(0, 1);
-            
+
             D.DateTakenSrc timeSrc;
             DateTime? fullDT;
             if (dtPath.StartsWith("Unknown"))
@@ -129,7 +129,7 @@
                 else
                     fullDT = new DateTime(year, month, day, time.Value.Hour, time.Value.Month, time.Value.Day);
             }
-            
+
             allFiles.Add(new C.UploadFile
             {
                 fullPath = fullPath.Replace('\\', '/'),
@@ -139,7 +139,7 @@
                 alreadyInLib = ItemInLibrary(fullDT, Path.GetFileName(fullPath)),
                 uuid = Guid.NewGuid()
             });
-        }
+        });
         UpdateStatus();
     }
 }
