@@ -1,0 +1,12 @@
+* {
+    user-select: none;
+}
+
+#mainDiv {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 145px;
+    top: 60px;
+}
