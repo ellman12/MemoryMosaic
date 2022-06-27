@@ -121,6 +121,9 @@ namespace PSS.Backend
         ///Represents an item that is being uploaded.
         public class UploadFile
         {
+            ///The original (or new if changed by user) filename of this item.
+            public string filename;
+
             ///The absolute path to the file to upload.
             public string fullPath;
             

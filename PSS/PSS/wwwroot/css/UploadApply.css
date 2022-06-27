@@ -101,14 +101,15 @@ header > #statusSpan {
     margin-left: 10px;
 }
 
-#mainDiv > .itemDiv > .filenameSpan {
+#mainDiv > .itemDiv > .filename {
     width: 60px;
     overflow: scroll;
     white-space: nowrap;
     text-overflow: ellipsis;
+    user-select: initial;
 }
 
-#mainDiv > .itemDiv > .filenameSpan:hover {
+#mainDiv > .itemDiv > .filename:hover {
     width: auto;
 }
 

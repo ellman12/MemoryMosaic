@@ -56,7 +56,7 @@
             <div class="itemDiv">
             @{
                 <img title="Click for Full Size Preview" onclick="window.open('@ogShortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? ogShortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
-                <span class="filenameSpan">@Path.GetFileName(ogShortPath)</span>
+                <span class="filename">@Path.GetFileName(ogShortPath)</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
 
                 if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">Unknown Date Taken</span>}
@@ -132,6 +132,7 @@
 
             allFiles.Add(new C.UploadFile
             {
+                filename = Path.GetFileName(fullPath),
                 fullPath = fullPath.Replace('\\', '/'),
                 thumbnail = Path.GetExtension(fullPath) is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
@@ -171,8 +172,7 @@
         {
             if (file.alreadyInLib) continue; //Ignore duplicates
 
-            string filename = Path.GetFileName(file.fullPath);
-            string newShortPath = C.CreateShortPath(file.dateTaken, filename).Replace('\\', '/');
+            string newShortPath = C.CreateShortPath(file.dateTaken, file.filename).Replace('\\', '/');
             allGuids.Add(file.uuid);
             Directory.CreateDirectory(C.CreateFullDateFolderPath(file.dateTaken));
 
@@ -180,7 +180,7 @@
             GC.WaitForPendingFinalizers();
             try
             {
-                string fullFinalPath = C.CreateFullPath(file.dateTaken, filename);
+                string fullFinalPath = C.CreateFullPath(file.dateTaken, file.filename);
                 File.Move(file.fullPath!, fullFinalPath);
                 rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
                 Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken));
