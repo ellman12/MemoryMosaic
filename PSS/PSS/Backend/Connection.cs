@@ -1190,10 +1190,10 @@ namespace PSS.Backend
             return media;
         }
 
-        /// <summary>Loads every item in media that was taken on this month and day, sorted so newest items appear first.</summary>
-        /// <param name="monthName">The name of the month, automatically converted to a number by LoadMemories().</param>
-        /// <param name="day">The day of the month.</param>
-        /// <returns>List&lt;MediaRow&gt; of items taken on this month and day.</returns>
+        ///<summary>Loads every item in media that was taken on this month and day, sorted so newest items appear first.</summary>
+        ///<param name="monthName">The name of the month, automatically converted to a number by LoadMemories().</param>
+        ///<param name="day">The day of the month.</param>
+        ///<returns>List&lt;MediaRow&gt; of items taken on this month and day.</returns>
         public static List<MediaRow> LoadMemories(string monthName, int day)
         {
             List<MediaRow> memories = new();

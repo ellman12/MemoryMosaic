@@ -31,19 +31,27 @@ header > select, header > input[type="number"] {
 }
 
 input[type='number'] {
-    width: 20px;
-    -moz-appearance: textfield;
-}
-
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    width: 40px;
 }
 
 #mainDiv {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     position: absolute;
-    left: 145px;
-    top: 60px;
+    left: 170px;
+    top: 80px;
+}
+
+#mainDiv > span {
+    font-size: 30px;
+    display: block;
+}
+
+#mainDiv > div {
+    display: flex;
+    flex-direction: row;
+}
+
+#mainDiv > div > img {
+    height: 100px;
 }
