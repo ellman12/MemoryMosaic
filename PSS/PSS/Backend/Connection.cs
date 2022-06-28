@@ -75,6 +75,7 @@ namespace PSS.Backend
                 dateTaken = dt;
                 this.starred = starred;
                 this.uuid = uuid;
+                this.thumbnail = thumbnail;
             }
 
             public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid)
