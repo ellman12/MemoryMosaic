@@ -1204,7 +1204,7 @@ namespace PSS.Backend
                 Open();
                 using NpgsqlCommand cmd = new($"SELECT path, date_taken, starred, uuid, thumbnail FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{day}%' ORDER BY date_taken DESC", connection);
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.GetString(4)));
+                while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
             }
             catch (NpgsqlException e)
             {
