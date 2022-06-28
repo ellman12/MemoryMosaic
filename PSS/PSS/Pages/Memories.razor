@@ -1,2 +1,71 @@
 ﻿@page "/memories"
 
+<link rel="stylesheet" href="css/Memories.css">
+<title>Memories - PSS</title>
+
+<header>
+    <span>Memories From</span>
+    
+    <select name="months" id="months" autocomplete="on" @bind="@SelectedMonth" @bind:event="oninput">
+        <option value="January">January</option>
+        <option value="February">February</option>
+        <option value="March">March</option>
+        <option value="April">April</option>
+        <option value="May">May</option>
+        <option value="June">June</option>
+        <option value="July">July</option>
+        <option value="August">August</option>
+        <option value="September">September</option>
+        <option value="October">October</option>
+        <option value="November">November</option>
+        <option value="December">December</option>
+    </select>
+    
+    <input type="number" min="1" max="@maxDay" @bind="@SelectedDay"/>
+</header>
+
+<div id="mainDiv">
+    
+</div>
+
+@code{
+
+    private static string _selectedMonth;
+    private static int maxDay, _selectedDay;
+    private static string SelectedMonth
+    {
+        get => _selectedMonth;
+        set
+        {
+            _selectedMonth = value;
+
+            maxDay = value switch
+            {
+                "April" or "June" or "September" or "November" => 30,
+                "February" => 29,
+                _ => 31
+            };
+
+            if (_selectedDay > maxDay) _selectedDay = maxDay;
+        }
+    }
+
+    private static int SelectedDay
+    {
+        get => _selectedDay;
+        set
+        {
+            if (value > maxDay) _selectedDay = maxDay;
+            else if (value is < 1 or > 31) _selectedDay = 1;
+        }
+    }
+    
+    private static List<C.MediaRow> memories;
+    
+    protected override void OnInitialized()
+    {
+        _selectedMonth = DateTime.Today.ToString("MMMM");
+        _selectedDay = DateTime.Today.Day;
+        // memories = C.LoadMemories(selectedDate);
+    }
+}
