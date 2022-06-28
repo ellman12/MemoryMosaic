@@ -1187,6 +1187,10 @@ namespace PSS.Backend
             {
                 Console.WriteLine(e.Message);
             }
+            finally
+            {
+                Close();
+            }
             return media;
         }
     }
