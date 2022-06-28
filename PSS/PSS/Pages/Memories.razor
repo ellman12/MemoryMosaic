@@ -39,9 +39,20 @@
         {
             <span>@group.Key</span>
             <div>
-                @foreach (C.MediaRow memory in group.Value)
+                @foreach (C.MediaRow media in group.Value)
                 {
-                    <img src="@S.LIB_REQUEST_PATH/@memory.path" alt="@S.LIB_REQUEST_PATH/@memory.path"/>
+                    <div class="thumbnail">
+                        @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
+                        @if (media.thumbnail != null) //Video
+                        {
+                            <span class="material-icons-outlined video-icon">play_circle_outline</span>
+                            <img src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        }
+                        else
+                        {
+                            <img src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        }
+                    </div>
                 }
             </div>
         }

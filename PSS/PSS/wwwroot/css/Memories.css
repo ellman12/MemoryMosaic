@@ -50,8 +50,35 @@ input[type='number'] {
 #mainDiv > div {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
-#mainDiv > div > img {
-    height: 100px;
+#mainDiv > div > .thumbnail > .star-icon {
+    position: absolute;
+    left: 8px;
+    bottom: 10px;
+}
+
+#mainDiv > div > .thumbnail > .video-icon {
+    position: absolute;
+    right: 8px;
+    top: 10px;
+}
+
+#mainDiv > div > .thumbnail > img {
+    height: 200px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+#mainDiv > div > .thumbnail {
+    position: relative; /* https://stackoverflow.com/a/12365963 */
+}
+
+#mainDiv > div > .thumbnail > img {
+    height: 200px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
 }
