@@ -1193,5 +1193,32 @@ namespace PSS.Backend
             }
             return media;
         }
+
+        ///<summary>Loads every item in media that was taken on this month and day, sorted so newest items appear first.</summary>
+        ///<param name="monthName">The name of the month, automatically converted to a number by LoadMemories().</param>
+        ///<param name="day">The day of the month.</param>
+        ///<returns>List&lt;MediaRow&gt; of items taken on this month and day.</returns>
+        public static List<MediaRow> LoadMemories(string monthName, int day)
+        {
+            List<MediaRow> memories = new();
+            int month = DateTime.ParseExact(monthName, "MMMM", System.Globalization.CultureInfo.CurrentCulture).Month;
+
+            try
+            {
+                Open();
+                using NpgsqlCommand cmd = new($"SELECT path, date_taken, starred, uuid, thumbnail FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{day}%' ORDER BY date_taken DESC", connection);
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+            return memories;
+        }
     }
 }

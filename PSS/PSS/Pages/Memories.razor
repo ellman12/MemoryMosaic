@@ -1,0 +1,119 @@
+@page "/memories"
+
+<link rel="stylesheet" href="css/Memories.css">
+<title>Memories - PSS</title>
+
+<header>
+    <span>Memories From</span>
+
+    <select name="months" id="months" autocomplete="on" @bind="@SelectedMonth">
+        <option value="January">January</option>
+        <option value="February">February</option>
+        <option value="March">March</option>
+        <option value="April">April</option>
+        <option value="May">May</option>
+        <option value="June">June</option>
+        <option value="July">July</option>
+        <option value="August">August</option>
+        <option value="September">September</option>
+        <option value="October">October</option>
+        <option value="November">November</option>
+        <option value="December">December</option>
+    </select>
+
+    <input title="" type="number" min="1" max="@maxDay" @bind="@SelectedDay"/>
+
+    <button class="textBtn" @onclick="@LoadMemories" style="margin-left: 10px">
+        <span class="material-icons-outlined">history</span><span>Load Memories</span>
+    </button>
+</header>
+
+@{
+    if (grouped.Count == 0)
+    {
+        <h1>No items were taken on this day</h1>
+        return;
+    }
+    
+    <div id="mainDiv">
+        @foreach (KeyValuePair<int, List<C.MediaRow>> group in grouped)
+        {
+            <span>@group.Key</span>
+            <div>
+                @foreach (C.MediaRow media in group.Value)
+                {
+                    <div class="thumbnail">
+                        @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
+                        @if (media.thumbnail != null) //Video
+                        {
+                            <span class="material-icons-outlined video-icon">play_circle_outline</span>
+                            <img src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        }
+                        else
+                        {
+                            <img src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code{
+    private static string _selectedMonth;
+    private static int maxDay, _selectedDay;
+    private static string SelectedMonth
+    {
+        get => _selectedMonth;
+        set
+        {
+            _selectedMonth = value;
+
+            maxDay = value switch
+            {
+                "April" or "June" or "September" or "November" => 30,
+                "February" => 29,
+                _ => 31
+            };
+
+            if (_selectedDay > maxDay) _selectedDay = maxDay;
+        }
+    }
+
+    private static int SelectedDay
+    {
+        get => _selectedDay;
+        set
+        {
+            if (value > maxDay) _selectedDay = maxDay;
+            else if (value is < 1 or > 31) _selectedDay = 1;
+            else _selectedDay = value;
+        }
+    }
+
+    ///Stores the years, and a List of each item corresponding to that year.
+    private static Dictionary<int, List<C.MediaRow>> grouped;
+
+    protected override void OnInitialized()
+    {
+        SelectedMonth = DateTime.Today.ToString("MMMM");
+        SelectedDay = DateTime.Today.Day;
+        grouped = new Dictionary<int, List<C.MediaRow>>();
+    }
+
+    private static void LoadMemories()
+    {
+        grouped.Clear();
+        
+        //Get all the items taken on this month and day and group them by their DT year.
+        foreach (C.MediaRow memory in C.LoadMemories(SelectedMonth, SelectedDay))
+        {
+            if (!grouped.ContainsKey(memory.dateTaken!.Value.Year))
+                grouped.Add(memory.dateTaken!.Value.Year, new List<C.MediaRow> {memory});
+            else
+                grouped[memory.dateTaken!.Value.Year].Add(memory);
+        }
+    }
+
+}

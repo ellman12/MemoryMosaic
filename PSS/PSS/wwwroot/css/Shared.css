@@ -61,11 +61,6 @@ svg {fill: white;}
     top: 10px;
 }
 
-#mainDiv > .thumbnail {
-    position: relative;
-    cursor: pointer;
-}
-
 #mainDiv > .thumbnail > .checkbox {
     opacity: 0;
     position: absolute;
