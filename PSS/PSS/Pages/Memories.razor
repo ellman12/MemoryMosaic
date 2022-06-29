@@ -91,7 +91,7 @@
         }
     }
 
-    ///Groups each memory by its year.
+    ///Stores the years, and a List of each item corresponding to that year.
     private static Dictionary<int, List<C.MediaRow>> grouped;
 
     protected override void OnInitialized()
@@ -103,17 +103,16 @@
 
     private static void LoadMemories()
     {
+        grouped.Clear();
+        
         //Get all the items taken on this month and day and group them by their DT year.
         foreach (C.MediaRow memory in C.LoadMemories(SelectedMonth, SelectedDay))
         {
             if (!grouped.ContainsKey(memory.dateTaken!.Value.Year))
-                grouped.Add(memory.dateTaken!.Value.Year, new List<C.MediaRow>());
+                grouped.Add(memory.dateTaken!.Value.Year, new List<C.MediaRow> {memory});
             else
                 grouped[memory.dateTaken!.Value.Year].Add(memory);
         }
-
-        // foreach (KeyValuePair<int, List<C.MediaRow>> kvPair in grouped)
-            // kvPair.Value.Sort((x, y) => x.dateTaken!.Value.CompareTo(y));
     }
 
 }
