@@ -6,7 +6,7 @@
 <header>
     <span>Memories From</span>
 
-    <select name="months" id="months" autocomplete="on" @bind="@SelectedMonth" @bind:event="oninput">
+    <select name="months" id="months" autocomplete="on" @bind="@SelectedMonth">
         <option value="January">January</option>
         <option value="February">February</option>
         <option value="March">March</option>
@@ -87,6 +87,7 @@
         {
             if (value > maxDay) _selectedDay = maxDay;
             else if (value is < 1 or > 31) _selectedDay = 1;
+            else _selectedDay = value;
         }
     }
 
@@ -95,8 +96,8 @@
 
     protected override void OnInitialized()
     {
-        _selectedMonth = DateTime.Today.ToString("MMMM");
-        _selectedDay = DateTime.Today.Day;
+        SelectedMonth = DateTime.Today.ToString("MMMM");
+        SelectedDay = DateTime.Today.Day;
         grouped = new Dictionary<int, List<C.MediaRow>>();
     }
 
