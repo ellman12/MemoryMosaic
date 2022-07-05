@@ -133,4 +133,38 @@ else
 		else
 			SelectedItem = uuid; //Show this item in fullscreen.
 	}
+	
+	private async Task ClearChecks() //TODO: how to call this when <header> clear button is clicked? Action parameter?
+	{
+		foreach (Guid item in selectedItems)
+			await JSRuntime.InvokeAsync<string>("removeCheck", item);
+		selectedItems.Clear();
+		HeaderVis = "hidden";
+		// albumsVis = "hidden"; //TODO
+		// choiceVis = "hidden";
+	}
+	
+	private void DeleteBtnClick() //TODO: how to call this when header delete button is clicked?
+	{
+		if (S.showPrompts == false)
+		{
+			DeleteSelected();
+			return;
+		}
+		// choiceVis = "visible"; //TODO
+		// choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
+	}
+
+	///Deletes all selected items.
+	private async void DeleteSelected()
+	{
+		foreach (Guid item in selectedItems) //https://stackoverflow.com/a/604843
+		{
+			C.MoveToTrash(item);
+			HeaderVis = "hidden";
+		}
+		await ClearChecks();
+		// mediaList = C.LoadMediaTable(); //TODO
+		StateHasChanged();
+	}
 }
