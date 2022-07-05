@@ -10,7 +10,11 @@ If it can't find any content, it shows an h1 saying no content.
 
 <link href="/css/components/LibraryContentViewer.css" rel="stylesheet">
 
-@if (mediaList.Count == 0)
+@if (SelectedItem != Guid.Empty)
+{
+	Console.WriteLine("hello lmao"); //TODO
+}
+else if (mediaList.Count == 0)
 {
 	<h1>Upload some items to get started</h1>
 }
@@ -42,6 +46,18 @@ else
 
 	///Stores all content loaded.
 	private static List<C.MediaRow> mediaList;
+
+	///A single item for viewing.
+	private Guid SelectedItem
+	{
+		get => _selectedItem;
+		set
+		{
+			_selectedItem = value;
+			StateHasChanged();
+		}
+	}
+	private static Guid _selectedItem;
 
 	///Stores all items user has selected.
 	private static List<Guid> selectedItems;
