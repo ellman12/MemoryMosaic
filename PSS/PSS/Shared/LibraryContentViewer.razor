@@ -1,0 +1,114 @@
+@*
+Component used in Index, Starred, AlbumView, and Trash for displaying items in the PSS library in small chunks at a time.
+More content is added when mouse enters the top or bottom of the screen.
+The default amount of items loaded at a time is 50.
+If it can't find any content, it shows an h1 saying no content.
+*@
+
+@* https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/ *@
+@inject IJSRuntime JSRuntime
+
+<link href="/css/components/LibraryContentViewer.css" rel="stylesheet">
+
+@if (mediaList.Count == 0)
+{
+	<h1>Upload some items to get started</h1>
+}
+else
+{
+	<div id="mainDiv">
+		@for (int i = 0; i < mediaList.Count; i++)
+		{
+			C.MediaRow media = mediaList[i];
+			
+			<div class="thumbnail">
+				@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
+				<span @onclick="@(() => ToggleCheck(new MouseEventArgs(), media.uuid))" title="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
+				@if (media.thumbnail != null) //Video
+				{
+					<span class="material-icons-outlined video-icon">play_circle_outline</span>
+					<img @onclick="@(() => ImgClicked(new MouseEventArgs(), media.uuid))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+				}
+				else
+				{
+					<img @onclick="@(() => ImgClicked(new MouseEventArgs(), media.uuid))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+				}
+			</div>
+		}
+	</div>
+}
+
+@code{
+	
+	///Stores all content loaded.
+	private static List<C.MediaRow> mediaList;
+
+	///Stores all items user has selected.
+	private static List<Guid> selectedItems;
+
+	///Stores the index in mediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
+	private static int lastCheckedIndex;
+	
+	///Used to control the visibility of the header element, if there is one. 
+	[Parameter]
+	public static string HeaderVis { get; set; }
+	
+	// TODO ///Used for binding HeaderVis
+	// [Parameter]
+	// public EventCallback<string> HeaderVisChanged { get; set; }
+
+}
+
+@functions{
+
+	protected override void OnInitialized()
+	{
+		mediaList = new List<C.MediaRow>(150);
+		selectedItems = new List<Guid>(150);
+	}
+
+	///Called when the check for an item is clicked. Toggles that item's check, or multiple items if Shift is held down.
+	private async Task ToggleCheck(MouseEventArgs eventArgs, Guid uuid)
+	{
+		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
+		if (newClass.Contains("unchecked"))
+			selectedItems.Remove(uuid);
+		else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking. TODO: create a hashSet for storing uuids as well so this would be way faster.
+			selectedItems.Add(uuid);
+		
+		HeaderVis = selectedItems.Count > 0 ? "visible" : "hidden";
+
+		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
+		if (eventArgs.ShiftKey)
+		{
+			int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>($"document.getElementById('{uuid}').getAttribute('title')")); //TODO: idk if this will work. Might have to make a js func.
+
+			//First item is on left and item shift clicked is on the right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selectedItems.
+			if (lastCheckedIndex < thisIndex)
+				await AddSelected(lastCheckedIndex, thisIndex);
+			else if (lastCheckedIndex > thisIndex) //Same as above but swap 1 and 2 and the direction.
+				await AddSelected(thisIndex, lastCheckedIndex);
+		}
+		else
+		{
+			lastCheckedIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>($"document.getElementById('{uuid}').getAttribute('title')")); //TODO: idk if this will work. Might have to make a js func.
+		}
+		
+		//Add items from start to end into selectedItems. Used for ShiftClick.
+		async Task AddSelected(int startIndex, int endIndex)
+		{
+			for (int i = startIndex; i <= endIndex; i++)
+			{
+				Guid currentID = mediaList[i].uuid;
+				if (selectedItems.Contains(currentID)) continue;
+				selectedItems.Add(currentID);
+				await ToggleCheck(currentID);
+			}
+		}
+	}
+
+	private static void ImgClicked(MouseEventArgs eventArgs, Guid uuid)
+	{
+		
+	}
+}
