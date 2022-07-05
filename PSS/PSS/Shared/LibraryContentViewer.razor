@@ -125,8 +125,12 @@ else
 		}
 	}
 	
-	private static void ImgClicked(MouseEventArgs eventArgs, Guid uuid)
+	///Called when an &lt;img/&gt; is clicked. Either checks this item, or shows it in fullscreen.
+	private async Task ImgClicked(MouseEventArgs eventArgs, Guid uuid)
 	{
-		
+		if (selectedItems.Count > 0 || eventArgs.CtrlKey)
+			await ToggleCheck(uuid);
+		else
+			SelectedItem = uuid; //Show this item in fullscreen.
 	}
 }
