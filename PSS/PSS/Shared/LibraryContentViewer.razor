@@ -23,7 +23,7 @@ else
 			
 			<div class="thumbnail">
 				@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-				<span @onclick="@(() => ToggleCheck(new MouseEventArgs(), media.uuid))" title="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
+				<span @onclick="@(() => CheckClicked(new MouseEventArgs(), media.uuid))" title="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
 				@if (media.thumbnail != null) //Video
 				{
 					<span class="material-icons-outlined video-icon">play_circle_outline</span>
@@ -39,7 +39,7 @@ else
 }
 
 @code{
-	
+
 	///Stores all content loaded.
 	private static List<C.MediaRow> mediaList;
 
@@ -66,23 +66,25 @@ else
 		mediaList = new List<C.MediaRow>(150);
 		selectedItems = new List<Guid>(150);
 	}
+	
+	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
+	private async Task ToggleCheck(Guid guid)
+	{
+		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", guid);
+		if (newClass.Contains("unchecked")) selectedItems.Remove(guid); //No longer selected.
+		else if (!selectedItems.Contains(guid)) selectedItems.Add(guid); //Needed to prevent adding dupes when shift clicking. TODO: create a hashSet for storing uuids as well so this would be way faster.
+	}
 
 	///Called when the check for an item is clicked. Toggles that item's check, or multiple items if Shift is held down.
-	private async Task ToggleCheck(MouseEventArgs eventArgs, Guid uuid)
+	private async Task CheckClicked(MouseEventArgs eventArgs, Guid uuid)
 	{
-		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
-		if (newClass.Contains("unchecked"))
-			selectedItems.Remove(uuid);
-		else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking. TODO: create a hashSet for storing uuids as well so this would be way faster.
-			selectedItems.Add(uuid);
-		
+		await ToggleCheck(uuid);
+		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>($"document.getElementById('{uuid}').getAttribute('title')")); //TODO: idk if this will work. Might have to make a js func.
 		HeaderVis = selectedItems.Count > 0 ? "visible" : "hidden";
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
 		if (eventArgs.ShiftKey)
 		{
-			int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>($"document.getElementById('{uuid}').getAttribute('title')")); //TODO: idk if this will work. Might have to make a js func.
-
 			//First item is on left and item shift clicked is on the right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selectedItems.
 			if (lastCheckedIndex < thisIndex)
 				await AddSelected(lastCheckedIndex, thisIndex);
@@ -91,22 +93,22 @@ else
 		}
 		else
 		{
-			lastCheckedIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>($"document.getElementById('{uuid}').getAttribute('title')")); //TODO: idk if this will work. Might have to make a js func.
+			lastCheckedIndex = thisIndex;
 		}
 		
-		//Add items from start to end into selectedItems. Used for ShiftClick.
+		//Add items from start to end into selectedItems. Used for Shift Click.
 		async Task AddSelected(int startIndex, int endIndex)
 		{
 			for (int i = startIndex; i <= endIndex; i++)
 			{
 				Guid currentID = mediaList[i].uuid;
 				if (selectedItems.Contains(currentID)) continue;
-				selectedItems.Add(currentID);
+				// selectedItems.Add(currentID); //TODO: is this needed?
 				await ToggleCheck(currentID);
 			}
 		}
 	}
-
+	
 	private static void ImgClicked(MouseEventArgs eventArgs, Guid uuid)
 	{
 		
