@@ -20,7 +20,7 @@ else if (mediaList.Count == 0)
 }
 else
 {
-	<div id="mainDiv">
+	<div id="libContentViewer">
 		<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@AddContentTop" @onscroll="@AddContentTop" @onmousewheel="@AddContentTop" @onpointerenter="@AddContentTop" @ontouchenter="@AddContentTop"></div>
 		@for (int i = 0; i < mediaList.Count; i++)
 		{
@@ -99,6 +99,7 @@ else
 		mediaList = new List<C.MediaRow>(150);
 		selectedItems = new List<Guid>(150);
 		oldestDT = newestDT = null;
+		AddContent(NullDTQuery, null, ref oldestDT, ref moreContentBottomDivVis);
 		moreContentTopDivVis = moreContentBottomDivVis = "visible";
 	}
 	

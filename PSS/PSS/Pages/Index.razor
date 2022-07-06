@@ -15,12 +15,11 @@
         <button class="iconBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
     </header>
-    
-    <LibraryContentViewer
-        NullDTQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 50"
-        NotNullDTQueryTop="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken < @@oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50"
-        NotNullDTQueryBottom="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken > @@oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50"
-    />
+
+    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken < @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50";
+    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken > @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50";
+    <LibraryContentViewer NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery"
+        NullDTQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 50"/>
     
     <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
@@ -31,32 +30,6 @@
         CtrlD="@(() => { DeleteBtnClick(); StateHasChanged(); })"
         AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
         AltS="@(() => { F.VisToggle(ref starChoiceVis); StateHasChanged(); })"/>
-
-    if (mediaList.Count == 0)
-    {
-        <h1>Upload some items to get started</h1>
-    }
-    else
-    {
-        <div id="mainDiv">
-            @foreach (C.MediaRow media in mediaList)
-            {
-                <div class="thumbnail">
-                    @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                    <span @onclick="@(() => ToggleCheck(media.uuid))" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
-                    @if (media.thumbnail != null) //Video
-                    {
-                        <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        <img @onclick="@(() => ImgClicked(media.uuid))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    }
-                    else
-                    {
-                        <img @onclick="@(() => ImgClicked(media.uuid))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    }
-                </div>
-            }
-        </div>
-    }
 }
 
 @code {
