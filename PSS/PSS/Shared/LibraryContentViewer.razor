@@ -28,15 +28,15 @@ else
 			
 			<div class="thumbnail">
 				@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-				<span @onclick="@(() => CheckClicked(new MouseEventArgs(), media.uuid))" title="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
+				<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" title="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
 				@if (media.thumbnail != null) //Video
 				{
 					<span class="material-icons-outlined video-icon">play_circle_outline</span>
-					<img @onclick="@(() => ImgClicked(new MouseEventArgs(), media.uuid))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+					<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, mouseEventArgs))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
 				}
 				else
 				{
-					<img @onclick="@(() => ImgClicked(new MouseEventArgs(), media.uuid))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+					<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
 				}
 			</div>
 		}
@@ -159,7 +159,7 @@ else
 	private void AddContentBottom() => AddContent(NullDTQuery, NotNullDTQueryBottom, ref oldestDT, ref moreContentBottomDivVis);
 
 	///Called when the check for an item is clicked. Toggles that item's check, or multiple items if Shift is held down.
-	private async Task CheckClicked(MouseEventArgs eventArgs, Guid uuid)
+	private async Task CheckClicked(Guid uuid, MouseEventArgs eventArgs)
 	{
 		await ToggleCheck(uuid);
 		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>($"document.getElementById('{uuid}').getAttribute('title')")); //TODO: idk if this will work. Might have to make a js func.
@@ -193,7 +193,7 @@ else
 	}
 	
 	///Called when an &lt;img/&gt; is clicked. Either checks this item, or shows it in fullscreen.
-	private async Task ImgClicked(MouseEventArgs eventArgs, Guid uuid)
+	private async Task ImgClicked(Guid uuid, MouseEventArgs eventArgs)
 	{
 		if (selectedItems.Count > 0 || eventArgs.CtrlKey)
 			await ToggleCheck(uuid);
