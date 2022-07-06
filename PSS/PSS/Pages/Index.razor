@@ -12,15 +12,15 @@
             <button class="iconBtn" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         </div>
         <button class="iconBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+        <span id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
     </header>
 
     const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken < @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50";
     const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken > @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50";
-    <LibraryContentViewer @bind-HeaderVis="@headerVis" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery"
+    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery"
         NullDTQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 50"/>
     
-    <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+    <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItemsCount > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
@@ -32,6 +32,9 @@
 }
 
 @code {
+    private static LibraryContentViewer libContentViewer = new();
+    private static int selectedItemsCount;
+    
     private static string headerVis;
     private static string albumsVis;
     private static List<C.MediaRow> mediaList;
@@ -56,7 +59,7 @@
     protected override void OnInitialized()
     {
         mediaList = C.LoadMediaTable();
-        selectedItems = new List<Guid>(); //Reset on page load/refresh
+        selectedItemsCount = 0;
         headerVis = albumsVis = choiceVis = starChoiceVis = "hidden";
     }
 

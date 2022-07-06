@@ -14,7 +14,7 @@ If it can't find any content, it shows an h1 saying no content.
 {
 	Console.WriteLine("hello lmao"); //TODO
 }
-else if (mediaList.Count == 0)
+else if (MediaList.Count == 0)
 {
 	<h1>Upload some items to get started</h1>
 }
@@ -22,9 +22,9 @@ else
 {
 	<div id="libContentViewer">
 		<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@AddContentTop" @onscroll="@AddContentTop" @onmousewheel="@AddContentTop" @onpointerenter="@AddContentTop" @ontouchenter="@AddContentTop"></div>
-		@for (int i = 0; i < mediaList.Count; i++)
+		@for (int i = 0; i < MediaList.Count; i++)
 		{
-			C.MediaRow media = mediaList[i];
+			C.MediaRow media = MediaList[i];
 			
 			<div class="thumbnail">
 				@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
@@ -47,7 +47,7 @@ else
 @code{
 
 	///Stores all content loaded.
-	private static List<C.MediaRow> mediaList;
+	public static List<C.MediaRow> MediaList { get; private set; }
 
 	///A single item for viewing.
 	private Guid SelectedItem
@@ -62,9 +62,9 @@ else
 	private static Guid _selectedItem;
 
 	///Stores all items user has selected.
-	private static List<Guid> selectedItems;
+	public List<Guid> SelectedItems { get; private set; }
 
-	///Stores the index in mediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
+	///Stores the index in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
 	private static int lastCheckedIndex;
 	
 	///Used to control the visibility of the header element, if there is one. 
@@ -74,6 +74,14 @@ else
 	///Used for binding HeaderVis
 	[Parameter]
 	public EventCallback<string> HeaderVisChanged { get; set; }
+	
+	///Gets how many items are selected. Page using this component needs to bind this so it's properly rendered in the &lt;header&gt;.
+	[Parameter]
+	public int SelectedItemsCount { get; set; }
+
+	///Used for binding SelectedItemsCount.
+	[Parameter]
+	public EventCallback<int> SelectedItemsCountChanged { get; set; }
 
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
 	[Parameter, EditorRequired]
@@ -96,22 +104,30 @@ else
 
 	protected override void OnInitialized()
 	{
-		mediaList = new List<C.MediaRow>(150);
-		selectedItems = new List<Guid>(150);
+		MediaList = new List<C.MediaRow>(150);
+		SelectedItems = new List<Guid>(150);
 		oldestDT = newestDT = null;
 		AddContent(NullDTQuery, null, ref oldestDT, ref moreContentBottomDivVis);
 		moreContentTopDivVis = moreContentBottomDivVis = "visible";
 	}
 	
-	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
-	private async Task ToggleCheck(Guid guid)
+	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
+	private async Task ToggleCheck(Guid uuid)
 	{
-		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", guid);
-		if (newClass.Contains("unchecked")) selectedItems.Remove(guid); //No longer selected.
-		else if (!selectedItems.Contains(guid)) selectedItems.Add(guid); //Needed to prevent adding dupes when shift clicking. TODO: create a hashSet for storing uuids as well so this would be way faster.
+		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
+		if (newClass.Contains("unchecked")) //No longer selected.
+		{
+			SelectedItems.Remove(uuid);
+			await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
+		}
+		else if (!SelectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking. TODO: create a hashSet for storing uuids as well so this would be way faster.
+		{
+			SelectedItems.Add(uuid);
+			await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
+		}
 	}
 
-	///<summary>Adds content either to the front or back of mediaList.</summary>
+	///<summary>Adds content either to the front or back of MediaList.</summary>
 	///<param name="nullDTQuery">The query to be used when oldestOrNewestDT is null. This is used when the page is first loaded.</param>
 	///<param name="notNullDTQuery">The query to be used when oldestOrNewestDT is NOT null. This is used after the page has content and needs more either at the top or bottom of the page. Use &lt; for getting content older than the oldest DT, and &gt; for getting content newer than the newest DT.</param>
 	///<param name="oldestOrNewestDT">The DateTime tracking the oldest or newest DT so far, for adding more content.</param>
@@ -138,9 +154,9 @@ else
 			//If there is no more content available to display, hide the div so user can click through it to click any items below the div.
 			if (!r.HasRows) divVis = "hidden";
 
-			while (r.Read()) mediaList.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+			while (r.Read()) MediaList.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
 			r.Close();
-			oldestDT = mediaList.Last().dateTaken;
+			oldestDT = MediaList.Last().dateTaken;
 		}
 		catch (NpgsqlException e)
 		{
@@ -152,23 +168,23 @@ else
 		}
 	}
 	
-	///Adds content to the front of mediaList when user hovers over top of page after using Ctrl G.
+	///Adds content to the front of MediaList when user hovers over top of page after using Ctrl G.
 	private void AddContentTop() => AddContent(NullDTQuery, NotNullDTQueryTop, ref newestDT, ref moreContentTopDivVis);
 
-	///Adds content to the end of mediaList when user hovers over bottom of page.
+	///Adds content to the end of MediaList when user hovers over bottom of page.
 	private void AddContentBottom() => AddContent(NullDTQuery, NotNullDTQueryBottom, ref oldestDT, ref moreContentBottomDivVis);
 
-	///Called when the check for an item is clicked. Toggles that item's check, or multiple items if Shift is held down.
+	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
 	private async Task CheckClicked(Guid uuid, MouseEventArgs eventArgs)
 	{
 		await ToggleCheck(uuid);
 		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>("getTitle", uuid));
-		await HeaderVisChanged.InvokeAsync(selectedItems.Count > 0 ? "visible" : "hidden");
+		await HeaderVisChanged.InvokeAsync(SelectedItems.Count > 0 ? "visible" : "hidden");
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
 		if (eventArgs.ShiftKey)
 		{
-			//First item is on left and item shift clicked is on the right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selectedItems.
+			//First item is on left and item shift clicked is on the right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to SelectedItems.
 			if (lastCheckedIndex < thisIndex)
 				await AddSelected(lastCheckedIndex, thisIndex);
 			else if (lastCheckedIndex > thisIndex) //Same as above but swap 1 and 2 and the direction.
@@ -178,15 +194,15 @@ else
 		{
 			lastCheckedIndex = thisIndex;
 		}
-		
-		//Add items from start to end into selectedItems. Used for Shift Click.
+	
+		//Add items from start to end into SelectedItems. Used for Shift Click.
 		async Task AddSelected(int startIndex, int endIndex)
 		{
 			for (int i = startIndex; i <= endIndex; i++)
 			{
-				Guid currentID = mediaList[i].uuid;
-				if (selectedItems.Contains(currentID)) continue;
-				// selectedItems.Add(currentID); //TODO: is this needed?
+				Guid currentID = MediaList[i].uuid;
+				if (SelectedItems.Contains(currentID)) continue;
+				// SelectedItems.Add(currentID); //TODO: is this needed?
 				await ToggleCheck(currentID);
 			}
 		}
@@ -195,7 +211,7 @@ else
 	///Called when an &lt;img/&gt; is clicked. Either checks this item, or shows it in fullscreen.
 	private async Task ImgClicked(Guid uuid, MouseEventArgs eventArgs)
 	{
-		if (selectedItems.Count > 0 || eventArgs.CtrlKey)
+		if (SelectedItems.Count > 0 || eventArgs.CtrlKey)
 			await CheckClicked(uuid, eventArgs);
 		else
 			SelectedItem = uuid; //Show this item in fullscreen.
@@ -203,9 +219,9 @@ else
 	
 	private async Task ClearChecks() //TODO: how to call this when <header> clear button is clicked? Action parameter?
 	{
-		foreach (Guid item in selectedItems)
+		foreach (Guid item in SelectedItems)
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
-		selectedItems.Clear();
+		SelectedItems.Clear();
 		await HeaderVisChanged.InvokeAsync("hidden");
 		// albumsVis = "hidden"; //TODO
 		// choiceVis = "hidden";
@@ -219,19 +235,19 @@ else
 			return;
 		}
 		// choiceVis = "visible"; //TODO
-		// choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
+		// choiceMsg = SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
 	}
 
 	///Deletes all selected items.
 	private async void DeleteSelected()
 	{
-		foreach (Guid item in selectedItems) //https://stackoverflow.com/a/604843
+		foreach (Guid item in SelectedItems) //https://stackoverflow.com/a/604843
 		{
 			C.MoveToTrash(item);
 			await HeaderVisChanged.InvokeAsync("hidden");
 		}
 		await ClearChecks();
-		// mediaList = C.LoadMediaTable(); //TODO
+		// MediaList = C.LoadMediaTable(); //TODO
 		StateHasChanged();
 	}
 }
