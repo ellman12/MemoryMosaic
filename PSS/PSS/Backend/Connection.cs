@@ -64,7 +64,7 @@ namespace PSS.Backend
             public readonly string path;
             public readonly DateTime? dateTaken;
             public readonly DateTime dateAdded;
-            public readonly bool starred;
+            public bool starred;
             public readonly bool separate;
             public readonly Guid uuid;
             public readonly string thumbnail;
