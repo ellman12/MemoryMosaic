@@ -89,3 +89,24 @@ h1 {
     margin-right: 3px;
     margin-top: 3px;
 }
+
+#moreContentTopDiv {
+    background-color: transparent;
+    outline: 10px solid red;
+    width: available;
+    width: -moz-available;
+    height: 600px;
+    position: absolute;
+    z-index: 800;
+}
+
+#moreContentBottomDiv {
+    background-color: transparent;
+    outline: 10px solid blue;
+    width: available;
+    width: -moz-available;
+    height: 600px;
+    position: absolute;
+    z-index: 800;
+    bottom: -200px;
+}

@@ -20,8 +20,8 @@ function removeCheck(id) {
     document.getElementById(id).classList.add("unchecked");
 }
 
-//Used in LibraryContentViewer
-function getTitle(id)
+//Used in LibraryContentViewer. No idea what itemid is supposed to be used for but it stores the index in mediaList of the item.
+function getItemId(id)
 {
-    return document.getElementById(id).getAttribute('title')
+    return document.getElementById(id).getAttribute('itemid')
 }

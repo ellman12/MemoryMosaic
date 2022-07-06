@@ -28,7 +28,7 @@ else
 			
 			<div class="thumbnail">
 				@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-				<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" title="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
+				<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" itemid="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
 				@if (media.thumbnail != null) //Video
 				{
 					<span class="material-icons-outlined video-icon">play_circle_outline</span>
@@ -118,8 +118,8 @@ else
 		SelectedItems = new List<Guid>(150);
 		oldestDT = newestDT = null;
 		AddContent(NullDTQuery, null, ref oldestDT, ref moreContentBottomDivVis);
-		moreContentTopDivVis = moreContentBottomDivVis = "visible";
-		delPromptVis = starPromptVis = "hidden";
+		moreContentBottomDivVis = "visible";
+		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
 	}
 	
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
@@ -189,7 +189,7 @@ else
 	private async Task CheckClicked(Guid uuid, MouseEventArgs eventArgs)
 	{
 		await ToggleCheck(uuid);
-		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>("getTitle", uuid));
+		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>("getItemId", uuid));
 		await HeaderVisChanged.InvokeAsync(SelectedItems.Count > 0 ? "visible" : "hidden");
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
