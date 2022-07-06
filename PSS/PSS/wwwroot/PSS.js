@@ -19,3 +19,9 @@ function removeCheck(id) {
     document.getElementById(id).classList.remove("checked");
     document.getElementById(id).classList.add("unchecked");
 }
+
+//Used in LibraryContentViewer
+function getTitle(id)
+{
+    return document.getElementById(id).getAttribute('title')
+}

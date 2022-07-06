@@ -162,7 +162,7 @@ else
 	private async Task CheckClicked(Guid uuid, MouseEventArgs eventArgs)
 	{
 		await ToggleCheck(uuid);
-		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>($"document.getElementById('{uuid}').getAttribute('title')")); //TODO: idk if this will work. Might have to make a js func.
+		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>("getTitle", uuid));
 		HeaderVis = selectedItems.Count > 0 ? "visible" : "hidden";
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
@@ -196,7 +196,7 @@ else
 	private async Task ImgClicked(Guid uuid, MouseEventArgs eventArgs)
 	{
 		if (selectedItems.Count > 0 || eventArgs.CtrlKey)
-			await ToggleCheck(uuid);
+			await CheckClicked(uuid, eventArgs);
 		else
 			SelectedItem = uuid; //Show this item in fullscreen.
 	}
