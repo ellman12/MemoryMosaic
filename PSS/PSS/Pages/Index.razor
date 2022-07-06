@@ -6,12 +6,12 @@
 @{
     <header style="visibility: @headerVis">
         <div id="buttons">
-            <button class="iconBtn"><a style="text-decoration: none" class="material-icons-outlined" @onclick="@DownloadSelected" href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">file_download</a></button>
+            <button class="iconBtn"><a style="text-decoration: none" class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected" href="@S.TMP_REQUEST_PATH/@libContentViewer.ZipFilename" download="@libContentViewer.ZipFilename">file_download</a></button>
             <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))"><span class="material-icons-outlined">collections</span></button>
-            <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref starChoiceVis))"><span class="material-icons-outlined">star_outline</span></button>
-            <button class="iconBtn" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref libContentViewer.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
+            <button class="iconBtn" @onclick="@libContentViewer.DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         </div>
-        <button class="iconBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <button class="iconBtn" @onclick="@libContentViewer.ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
     </header>
 
@@ -20,15 +20,12 @@
     <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery"
         NullDTQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 50"/>
     
-    <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItemsCount > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+    <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
 
-    <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
-    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
-    
     <KeyboardShortcuts
-        CtrlD="@(() => { DeleteBtnClick(); StateHasChanged(); })"
+        CtrlD="@(() => { libContentViewer.DeleteBtnClick(); StateHasChanged(); })"
         AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
-        AltS="@(() => { F.VisToggle(ref starChoiceVis); StateHasChanged(); })"/>
+        AltS="@(() => { F.VisToggle(ref libContentViewer.starPromptVis); StateHasChanged(); })"/>
 }
 
 @code {
@@ -37,78 +34,10 @@
     
     private static string headerVis;
     private static string albumsVis;
-    private static List<C.MediaRow> mediaList;
-    private static List<Guid> selectedItems; //Stores all items user has selected.
-
-    private static string choiceVis;
-    private static string choiceMsg;
-
-    private static string starChoiceVis;
-
-    private static string zipFilename;
-
-    private async void UpdateStars(bool starred)
-    {
-        C.UpdateStarred(selectedItems, starred);
-        await ClearChecks();
-        starChoiceVis = "hidden";
-        mediaList = C.LoadMediaTable();
-        StateHasChanged();
-    }
 
     protected override void OnInitialized()
     {
-        mediaList = C.LoadMediaTable();
         selectedItemsCount = 0;
-        headerVis = albumsVis = choiceVis = starChoiceVis = "hidden";
-    }
-
-    [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
-    public IJSRuntime JSRuntime { get; set; }
-
-    private static async void DownloadSelected()
-    {
-        F.CopyItemsToZipPath((from media in mediaList where selectedItems.Contains(media.uuid) select media.path).ToList());
-        zipFilename = await F.CreateDownloadZip();
-    }
-
-    private async Task ClearChecks()
-    {
-        foreach (Guid item in selectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", item);
-        selectedItems.Clear();
-        headerVis = "hidden";
-        albumsVis = "hidden";
-        choiceVis = "hidden";
-    }
-    
-    //Show choice div
-    private void DeleteBtnClick()
-    {
-        if (S.showPrompts == false)
-        {
-            DeleteSelected();
-            return;
-        }
-        choiceVis = "visible";
-        choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
-    }
-
-    private async void DeleteSelected()
-    {
-        foreach (Guid item in selectedItems) //https://stackoverflow.com/a/604843
-        {
-            C.MoveToTrash(item);
-            headerVis = "hidden";
-        }
-        await ClearChecks();
-        mediaList = C.LoadMediaTable();
-        StateHasChanged();
-    }
-
-    private void CloseChoiceDiv()
-    {
-        choiceVis = "hidden";
-        StateHasChanged();
+        headerVis = albumsVis = "hidden";
     }
 }
