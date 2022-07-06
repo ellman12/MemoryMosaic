@@ -21,6 +21,7 @@ else if (mediaList.Count == 0)
 else
 {
 	<div id="mainDiv">
+		<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@AddContentTop" @onscroll="@AddContentTop" @onmousewheel="@AddContentTop" @onpointerenter="@AddContentTop" @ontouchenter="@AddContentTop"></div>
 		@for (int i = 0; i < mediaList.Count; i++)
 		{
 			C.MediaRow media = mediaList[i];
@@ -39,6 +40,7 @@ else
 				}
 			</div>
 		}
+		<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@AddContentBottom" @onscroll="@AddContentBottom" @onmousewheel="@AddContentBottom" @onpointerenter="@AddContentBottom" @ontouchenter="@AddContentBottom"></div>
 	</div>
 }
 
@@ -73,6 +75,21 @@ else
 	// [Parameter]
 	// public EventCallback<string> HeaderVisChanged { get; set; }
 
+	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	[Parameter, EditorRequired]
+	public string NullDTQuery { get; set; }
+	
+	///The query used to select add more content to the top of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	[Parameter, EditorRequired]
+	public string NotNullDTQueryTop { get; set; }
+	
+	///The query used to select add more content to the bottom of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	[Parameter, EditorRequired]
+	public string NotNullDTQueryBottom { get; set; }
+	
+	private static DateTime? oldestDT, newestDT;
+
+	private static string moreContentTopDivVis, moreContentBottomDivVis;
 }
 
 @functions{
@@ -81,6 +98,8 @@ else
 	{
 		mediaList = new List<C.MediaRow>(150);
 		selectedItems = new List<Guid>(150);
+		oldestDT = newestDT = null;
+		moreContentTopDivVis = moreContentBottomDivVis = "visible";
 	}
 	
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
@@ -90,6 +109,53 @@ else
 		if (newClass.Contains("unchecked")) selectedItems.Remove(guid); //No longer selected.
 		else if (!selectedItems.Contains(guid)) selectedItems.Add(guid); //Needed to prevent adding dupes when shift clicking. TODO: create a hashSet for storing uuids as well so this would be way faster.
 	}
+
+	///<summary>Adds content either to the front or back of mediaList.</summary>
+	///<param name="nullDTQuery">The query to be used when oldestOrNewestDT is null. This is used when the page is first loaded.</param>
+	///<param name="notNullDTQuery">The query to be used when oldestOrNewestDT is NOT null. This is used after the page has content and needs more either at the top or bottom of the page. Use &lt; for getting content older than the oldest DT, and &gt; for getting content newer than the newest DT.</param>
+	///<param name="oldestOrNewestDT">The DateTime tracking the oldest or newest DT so far, for adding more content.</param>
+	///<param name="divVis">The variable controlling the visibility of the div for adding more content.</param>
+	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.</remarks>
+	private static void AddContent(string nullDTQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, ref string divVis)
+	{
+		try
+		{
+			C.Open();
+			using NpgsqlCommand cmd = new(null, C.connection);
+			if (oldestOrNewestDT == null) //Only possible when page first loads and there's no content yet.
+			{
+				cmd.CommandText = nullDTQuery;
+			}
+			else
+			{
+				cmd.CommandText = notNullDTQuery;
+				cmd.Parameters.AddWithValue("@oldestOrNewestDT", oldestOrNewestDT);
+			}
+			cmd.ExecuteNonQuery();
+			using NpgsqlDataReader r = cmd.ExecuteReader();
+
+			//If there is no more content available to display, hide the div so user can click through it to click any items below the div.
+			if (!r.HasRows) divVis = "hidden";
+
+			while (r.Read()) mediaList.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+			r.Close();
+			oldestDT = mediaList.Last().dateTaken;
+		}
+		catch (NpgsqlException e)
+		{
+			Console.WriteLine(e);
+		}
+		finally
+		{
+			C.Close();
+		}
+	}
+	
+	///Adds content to the front of mediaList when user hovers over top of page after using Ctrl G.
+	private void AddContentTop() => AddContent(NullDTQuery, NotNullDTQueryTop, ref newestDT, ref moreContentTopDivVis);
+
+	///Adds content to the end of mediaList when user hovers over bottom of page.
+	private void AddContentBottom() => AddContent(NullDTQuery, NotNullDTQueryBottom, ref oldestDT, ref moreContentBottomDivVis);
 
 	///Called when the check for an item is clicked. Toggles that item's check, or multiple items if Shift is held down.
 	private async Task CheckClicked(MouseEventArgs eventArgs, Guid uuid)

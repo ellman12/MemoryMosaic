@@ -15,6 +15,13 @@
         <button class="iconBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
     </header>
+    
+    <LibraryContentViewer
+        NullDTQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 50"
+        NotNullDTQueryTop="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken < @@oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50"
+        NotNullDTQueryBottom="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken > @@oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50"
+    />
+    
     <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
     <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
