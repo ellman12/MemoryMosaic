@@ -69,11 +69,11 @@ else
 	
 	///Used to control the visibility of the header element, if there is one. 
 	[Parameter]
-	public static string HeaderVis { get; set; }
+	public string HeaderVis { get; set; }
 	
-	// TODO ///Used for binding HeaderVis
-	// [Parameter]
-	// public EventCallback<string> HeaderVisChanged { get; set; }
+	///Used for binding HeaderVis
+	[Parameter]
+	public EventCallback<string> HeaderVisChanged { get; set; }
 
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
 	[Parameter, EditorRequired]
@@ -163,7 +163,7 @@ else
 	{
 		await ToggleCheck(uuid);
 		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>("getTitle", uuid));
-		HeaderVis = selectedItems.Count > 0 ? "visible" : "hidden";
+		await HeaderVisChanged.InvokeAsync(selectedItems.Count > 0 ? "visible" : "hidden");
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
 		if (eventArgs.ShiftKey)
@@ -206,7 +206,7 @@ else
 		foreach (Guid item in selectedItems)
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
 		selectedItems.Clear();
-		HeaderVis = "hidden";
+		await HeaderVisChanged.InvokeAsync("hidden");
 		// albumsVis = "hidden"; //TODO
 		// choiceVis = "hidden";
 	}
@@ -228,7 +228,7 @@ else
 		foreach (Guid item in selectedItems) //https://stackoverflow.com/a/604843
 		{
 			C.MoveToTrash(item);
-			HeaderVis = "hidden";
+			await HeaderVisChanged.InvokeAsync("hidden");
 		}
 		await ClearChecks();
 		// mediaList = C.LoadMediaTable(); //TODO
