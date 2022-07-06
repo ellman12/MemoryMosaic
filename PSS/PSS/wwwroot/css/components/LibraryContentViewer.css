@@ -1,0 +1,91 @@
+h1 {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+    user-select: none;
+}
+
+#libContentViewer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 145px;
+    top: 60px;
+}
+
+#libContentViewer > .thumbnail > .star-icon {
+    position: absolute;
+    left: 8px;
+    bottom: 10px;
+}
+
+#libContentViewer > .thumbnail > .video-icon {
+    position: absolute;
+    right: 8px;
+    top: 10px;
+}
+
+#libContentViewer > .thumbnail > .checkbox {
+    opacity: 0;
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 8px;
+    transition: 0.3s;
+}
+
+#libContentViewer > .thumbnail:hover > .unchecked { /* Show checkbox on hover */
+    opacity: 0.42;
+}
+
+#libContentViewer > .thumbnail > .unchecked:hover { /* Make it 100% opaque */
+    opacity: 1;
+}
+
+#libContentViewer > .thumbnail > .checked {
+    color: #009FFF;
+    opacity: 1;
+}
+
+#libContentViewer > .thumbnail > img {
+    height: 200px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+#libContentViewer > .thumbnail {
+    position: relative; /* https://stackoverflow.com/a/12365963 */
+    cursor: pointer;
+}
+
+#libContentViewer > .thumbnail > .checkbox {
+    opacity: 0;
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 8px;
+    transition: 0.3s;
+}
+
+#libContentViewer > .thumbnail:hover > .unchecked { /* Show checkbox on hover */
+    opacity: 0.42;
+}
+
+#libContentViewer > .thumbnail > .unchecked:hover { /* Make it 100% opaque */
+    opacity: 1;
+}
+
+#libContentViewer > .thumbnail > .checked {
+    color: #009FFF;
+    opacity: 1;
+}
+
+#libContentViewer > .thumbnail > img {
+    height: 200px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+}
