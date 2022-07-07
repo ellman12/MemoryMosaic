@@ -21,11 +21,11 @@ else if (MediaList.Count == 0)
 else
 {
 	<div id="libContentViewer">
-		<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@AddContentTop" @onscroll="@AddContentTop" @onmousewheel="@AddContentTop" @onpointerenter="@AddContentTop" @ontouchenter="@AddContentTop"></div>
+		<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@(() => AddContentTop())" @onscroll="@(() => AddContentTop())" @onmousewheel="@(() => AddContentTop())" @onpointerenter="@(() => AddContentTop())" @ontouchenter="@(() => AddContentTop())"></div>
 		@for (int i = 0; i < MediaList.Count; i++)
 		{
 			C.MediaRow media = MediaList[i];
-			
+		
 			<div class="thumbnail">
 				@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
 				<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" itemid="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
@@ -40,7 +40,7 @@ else
 				}
 			</div>
 		}
-		<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@AddContentBottom" @onscroll="@AddContentBottom" @onmousewheel="@AddContentBottom" @onpointerenter="@AddContentBottom" @ontouchenter="@AddContentBottom"></div>
+		<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
 	</div>
 	
 	<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
@@ -143,9 +143,12 @@ else
 	///<param name="notNullDTQuery">The query to be used when oldestOrNewestDT is NOT null. This is used after the page has content and needs more either at the top or bottom of the page. Use &lt; for getting content older than the oldest DT, and &gt; for getting content newer than the newest DT.</param>
 	///<param name="oldestOrNewestDT">The DateTime tracking the oldest or newest DT so far, for adding more content.</param>
 	///<param name="divVis">The variable controlling the visibility of the div for adding more content.</param>
+	///<returns>The amount of items added to MediaList (0 if none or an error).</returns>
 	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.</remarks>
-	private static void AddContent(string nullDTQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, ref string divVis)
+	private int AddContent(string nullDTQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, ref string divVis)
 	{
+		int amountAdded = 0;
+		
 		try
 		{
 			C.Open();
@@ -165,7 +168,12 @@ else
 			//If there is no more content available to display, hide the div so user can click through it to click any items below the div.
 			if (!r.HasRows) divVis = "hidden";
 
-			while (r.Read()) MediaList.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+			while (r.Read())
+			{
+				MediaList.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+				amountAdded++;
+			}
+			
 			r.Close();
 			oldestOrNewestDT = MediaList.Last().dateTaken;
 		}
@@ -177,13 +185,14 @@ else
 		{
 			C.Close();
 		}
+		return amountAdded;
 	}
 	
-	///Adds content to the front of MediaList when user hovers over top of page after using Ctrl G.
-	private void AddContentTop() => AddContent(NullDTQuery, NotNullDTQueryTop, ref newestDT, ref moreContentTopDivVis);
+	///Adds content to the front of MediaList when user hovers over top of page after using Ctrl G. Returns how many items were added (0 if none or error occurred).
+	public int AddContentTop() => AddContent(NullDTQuery, NotNullDTQueryTop, ref newestDT, ref moreContentTopDivVis);
 
-	///Adds content to the end of MediaList when user hovers over bottom of page.
-	private void AddContentBottom() => AddContent(NullDTQuery, NotNullDTQueryBottom, ref oldestDT, ref moreContentBottomDivVis);
+	///Adds content to the end of MediaList when user hovers over bottom of page. Returns how many items were added (0 if none or error occurred).
+	public int AddContentBottom() => AddContent(NullDTQuery, NotNullDTQueryBottom, ref oldestDT, ref moreContentBottomDivVis);
 
 	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
 	private async Task CheckClicked(Guid uuid, MouseEventArgs eventArgs)
