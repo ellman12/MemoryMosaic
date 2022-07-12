@@ -433,7 +433,7 @@ If it can't find any content, it shows an h1 saying no content.
 	}
 
 	///Deletes all selected items.
-	public async void DeleteSelected()
+	private async void DeleteSelected()
 	{
 		foreach (Guid item in SelectedItems) //https://stackoverflow.com/a/604843
 		{
