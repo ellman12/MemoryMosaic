@@ -12,7 +12,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 @if (MediaList.Count == 0)
 {
-	<h1>Upload some items to get started</h1>
+	<h1>@NoItemsText</h1>
 	return;
 }
 
@@ -216,6 +216,9 @@ If it can't find any content, it shows an h1 saying no content.
 	///The query used to select add more content to the bottom of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
 	[Parameter, EditorRequired]
 	public string NotNullDTQueryBottom { get; set; }
+	
+	[Parameter, EditorRequired]
+	public string NoItemsText { get; set; }
 	
 	///The name of the .zip file of downloaded items.
 	public string ZipFilename { get; private set; }

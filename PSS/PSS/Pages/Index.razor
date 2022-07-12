@@ -17,7 +17,7 @@
 
     const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken > @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50";
     const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken < @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 50";
-    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery"
+    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="Upload some items to get started"
         NullDTQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 50"/>
     
     <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
