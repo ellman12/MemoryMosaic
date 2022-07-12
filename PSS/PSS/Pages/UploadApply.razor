@@ -161,7 +161,7 @@
                 string fullFinalPath = C.CreateFullPath(file.dateTaken, file.filename);
                 File.Move(file.fullPath!, fullFinalPath);
                 rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
-                Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken));
+                D.UpdateDateTaken(fullFinalPath, file.dateTaken);
             }
             catch (IOException e)
             {
