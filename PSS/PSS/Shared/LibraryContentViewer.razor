@@ -117,7 +117,7 @@ If it can't find any content, it shows an h1 saying no content.
 	}
 	else
 	{
-	    <div id="itemDiv"><video src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" loop autofocus controls autoplay></video></div>
+	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine(S.LIB_REQUEST_PATH, MediaList[viewIndex]!.path))" loop autofocus controls autoplay></video></div>
 	}
 
 	@* Last item in the List so far so try adding more. If no more content can be added, don't show next button. *@
