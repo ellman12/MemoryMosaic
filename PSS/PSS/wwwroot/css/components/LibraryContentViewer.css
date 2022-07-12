@@ -1,11 +1,19 @@
-h1 {
+#noItemsDiv { /* Shown when no items are in user's PSS library. */
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%;
-    text-align: center;
     user-select: none;
+    width: 100%;
+}
+
+#noItemsDiv > * {
+    font-size: 40px;
+    margin-right: 10px;
 }
 
 #libContentViewer {
