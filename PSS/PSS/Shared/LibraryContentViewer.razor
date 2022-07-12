@@ -493,6 +493,8 @@ If it can't find any content, it shows an h1 saying no content.
 
 	private void RenameFile()
 	{
+		GC.Collect(); //Those damn videos always stirring up trouble.
+		GC.WaitForPendingFinalizers();
 		string result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
 		if (result == null)
 		{
