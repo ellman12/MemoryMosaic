@@ -39,22 +39,3 @@ header > #starredText {
     position: absolute;
     left: 43%;
 }
-
-h1 {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    text-align: center;
-    user-select: none;
-}
-
-#mainDiv {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    position: absolute;
-    left: 145px;
-    top: 60px;
-}

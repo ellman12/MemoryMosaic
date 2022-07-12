@@ -61,10 +61,10 @@ namespace PSS.Backend
         //Represents a row in the media table.
         public record MediaRow
         {
-            public readonly string path;
-            public readonly DateTime? dateTaken;
+            public string path;
+            public DateTime? dateTaken;
             public readonly DateTime dateAdded;
-            public readonly bool starred;
+            public bool starred;
             public readonly bool separate;
             public readonly Guid uuid;
             public readonly string thumbnail;
