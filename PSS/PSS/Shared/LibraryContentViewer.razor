@@ -443,7 +443,7 @@ If it can't find any content, it shows an h1 saying no content.
 	}
 
 	///Updates the 'starred' field in the DB and the List for the SelectedItems.
-	private async void UpdateStars(bool starred)
+	public async void UpdateStars(bool starred)
 	{
 		C.UpdateStarred(SelectedItems, starred);
 		starPromptVis = "hidden";
