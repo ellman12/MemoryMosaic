@@ -5,51 +5,163 @@ The default amount of items loaded at a time is 50.
 If it can't find any content, it shows an h1 saying no content.
 *@
 
-@* https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/ *@
 @inject IJSRuntime JSRuntime
 
+<link href="/css/components/ViewItem.css" rel="stylesheet">
 <link href="/css/components/LibraryContentViewer.css" rel="stylesheet">
 
-@if (SelectedItem != Guid.Empty)
+@if (MediaList.Count == 0)
 {
-	Console.WriteLine("hello lmao"); //TODO
-}
-else if (MediaList.Count == 0)
-{
-	<h1>Upload some items to get started</h1>
-}
-else
-{
-	<div id="libContentViewer">
-		<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@AddContentTop" @onscroll="@AddContentTop" @onmousewheel="@AddContentTop" @onpointerenter="@AddContentTop" @ontouchenter="@AddContentTop"></div>
-		@for (int i = 0; i < MediaList.Count; i++)
-		{
-			C.MediaRow media = MediaList[i];
-			
-			<div class="thumbnail">
-				@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-				<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" itemid="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
-				@if (media.thumbnail != null) //Video
-				{
-					<span class="material-icons-outlined video-icon">play_circle_outline</span>
-					<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, mouseEventArgs))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-				}
-				else
-				{
-					<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-				}
-			</div>
-		}
-		<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@AddContentBottom" @onscroll="@AddContentBottom" @onmousewheel="@AddContentBottom" @onpointerenter="@AddContentBottom" @ontouchenter="@AddContentBottom"></div>
+	<div id="noItemsDiv">
+		<a style="color: rgb(2, 97, 255)" href="/upload">Upload</a>
+		<h1>some items to get started</h1>
 	</div>
-	
-	<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
-	<TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+	return;
 }
+
+@* Display a single item in full screen, and allow moving left/right in the List. *@
+@*Stuff in top right corner*@
+<div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
+	<div id="buttons">
+	    <button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
+	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+	    <button class="iconBtn" @onclick="@(() => F.VisToggle(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
+	</div>
+
+	<div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
+	    <button class="iconBtn" @onclick="@(() => throw new NotImplementedException())" title="Add to Album"><span class="material-icons-outlined">library_add</span></button>
+	    
+	    <button class="iconBtn" @onclick="@(() => C.UpdateStarred(MediaList[viewIndex].uuid, !MediaList[viewIndex].starred))" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")">
+	        <span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span>
+	    </button>
+	    
+	    @if (AlbumID != -1 && MediaList[viewIndex].thumbnail == null)
+	    {
+	        <button class="iconBtn" @onclick="@(() => C.UpdateAlbumCover(AlbumID, MediaList[viewIndex].path))" title="Use As Album Cover">
+	            <span class="material-icons-outlined">collections</span>
+	        </button>
+	    }
+	</div>
+
+	<div id="infoDiv" style="visibility: @infoVis">
+	    <div class="dataDiv" title="Date Taken">
+	        <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
+	        <span>@(MediaList[viewIndex].dateTaken == null ? "No Date Taken" : MediaList[viewIndex].dateTaken?.ToString("ddd, MMM d, yyyy h:mm:ss tt"))</span>
+	        <button class="iconBtn" @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+	    </div>
+	    
+	    <div class="dataDiv" title="Date Added">
+	        <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
+	        <span>@MediaList[viewIndex].dateAdded.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
+	    </div>
+
+	    <div class="dataDiv">
+	        <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
+	        <span>@Path.GetFileName(MediaList[viewIndex].path)</span>
+	        <button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+	    </div>
+	    
+	    @if (albumsIn != null && albumsIn.Count > 0)
+	    {
+	        <span id="albumsText">Albums</span>
+	        <div id="albumsIn">
+	            @foreach (C.Album album in albumsIn)
+	            {
+	                <a href="/album-view/@album.id">
+	                    <div class="album">
+	                        <div class="coverDiv">
+	                            <img class="cover" src="@S.LIB_REQUEST_PATH/@album.albumCover" alt="">
+	                        </div>
+	                        <span title="@album.name">@album.name</span>
+	                    </div>
+	                </a>
+	            }
+	        </div>
+	    }
+	</div>
+
+	<div class="inputBox" style="visibility: @editDateDivVis">
+	    <span>Enter new date taken:</span>
+	    <input title="" type="datetime-local" @bind="@newDateTaken" step="1"/>
+	    <span class="errorSpan" style="visibility: @dtErrorVis">Error Changing Date Taken</span>
+	    <div>
+	        <button class="iconBtn" @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
+	        <button class="iconBtn" @onclick="@UpdateDateTaken"><span class="material-icons-outlined">check</span></button>
+	    </div>
+	</div>
+
+	<div class="inputBox" style="visibility: @editFilenameDivVis">
+	    <span>Enter new filename:</span>
+	    <input title="" type="text" @bind="@newFilename" required/>
+	    <span class="errorSpan" style="visibility: @filenameErrorVis">A file with the same Date Taken and/or name already exists.</span>
+	    <div>
+	        <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = filenameErrorVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
+	        <button class="iconBtn" @onclick="@RenameFile"><span class="material-icons-outlined">check</span></button>
+	    </div>
+	</div>
+
+	<button class="iconBtn" id="backBtn" @onclick="@(() => SelectedItem = Guid.Empty)"><span class="material-icons-outlined">keyboard_backspace</span></button>
+
+	@* Only show the left button if there's more stuff that can be loaded. *@
+	@if (viewIndex == 0) { viewIndex = AddContentTop(); }
+	@if (viewIndex > 0)
+	{
+	    <div @onclick="@ChangeItemLeft" class="sideBtn" id="leftBtn">
+	        <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"></path></svg>
+	    </div>
+	}
+
+	@if (MediaList[viewIndex].thumbnail == null)
+	{
+	    <div @onkeydown="@ChangeItem" tabindex="0" id="itemDiv"><img onload="document.getElementById('itemDiv').focus()" src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
+	}
+	else
+	{
+	    <div id="itemDiv"><video src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" loop autofocus controls autoplay></video></div>
+	}
+
+	@* Last item in the List so far so try adding more. If no more content can be added, don't show next button. *@
+	@if (viewIndex == MediaList.Count - 1) { AddContentBottom(); }
+	@if (MediaList.Count - 1 > viewIndex)
+	{
+	    <div @onclick="@ChangeItemRight" class="sideBtn" id="rightBtn">
+	        <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path></svg>
+	    </div>
+	}
+</div>
+
+<div id="libContentViewer">
+	<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@(() => AddContentTop())" @onscroll="@(() => AddContentTop())" @onmousewheel="@(() => AddContentTop())" @onpointerenter="@(() => AddContentTop())" @ontouchenter="@(() => AddContentTop())"></div>
+	@for (int i = 0; i < MediaList.Count; i++)
+	{
+		int ii = i;
+		C.MediaRow media = MediaList[i];
+	
+		<div class="thumbnail">
+			@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
+			<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" itemid="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
+			@if (media.thumbnail != null) //Video
+			{
+				<span class="material-icons-outlined video-icon">play_circle_outline</span>
+				<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+			}
+			else
+			{
+				<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+			}
+		</div>
+	}
+	<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
+</div>
+
+<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
+<TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+
+<KeyboardShortcuts AltS="@AltSFired" CtrlD="@CtrlDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"/>
 
 @code{
 	///Stores all content loaded.
-	public static List<C.MediaRow> MediaList { get; private set; }
+	public List<C.MediaRow> MediaList { get; private set; }
 
 	///A single item for viewing.
 	private Guid SelectedItem
@@ -58,17 +170,28 @@ else
 		set
 		{
 			_selectedItem = value;
+			if (value == Guid.Empty)
+			{
+				newFilename = "";
+				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = moreOptionsVis = "hidden";
+			}
+			else LoadData();
 			StateHasChanged();
 		}
 	}
+
 	private static Guid _selectedItem;
 
 	///Stores all items user has selected.
 	public List<Guid> SelectedItems { get; private set; }
 
-	///Stores the index in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
+	///Used only for when viewing the contents of an album.
+	[Parameter]
+	public int AlbumID { get; set; } = -1;
+
+	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
 	private static int lastCheckedIndex;
-	
+
 	///Used to control the visibility of the header element, if there is one. 
 	[Parameter]
 	public string HeaderVis { get; set; }
@@ -109,6 +232,14 @@ else
 	//TwoChoiceInput's
 	private string delPromptVis;
 	public string starPromptVis;
+	
+	//Stuff for viewing a single item.
+	///The index of the item user is currently viewing.
+	public int viewIndex;
+
+	private static DateTime? newDateTaken;
+	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, moreOptionsVis;
+	private static List<C.Album> albumsIn;
 }
 
 @functions{
@@ -117,9 +248,15 @@ else
 		MediaList = new List<C.MediaRow>(150);
 		SelectedItems = new List<Guid>(150);
 		oldestDT = newestDT = null;
-		AddContent(NullDTQuery, null, ref oldestDT, ref moreContentBottomDivVis);
+		AddContentBottom();
+		if (MediaList.Count > 0)
+		{
+			oldestDT = MediaList.Last().dateTaken;
+			newestDT = MediaList.First().dateTaken;
+		}
 		moreContentBottomDivVis = "visible";
 		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
+		infoVis = moreOptionsVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
 	}
 	
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
@@ -142,10 +279,14 @@ else
 	///<param name="nullDTQuery">The query to be used when oldestOrNewestDT is null. This is used when the page is first loaded.</param>
 	///<param name="notNullDTQuery">The query to be used when oldestOrNewestDT is NOT null. This is used after the page has content and needs more either at the top or bottom of the page. Use &lt; for getting content older than the oldest DT, and &gt; for getting content newer than the newest DT.</param>
 	///<param name="oldestOrNewestDT">The DateTime tracking the oldest or newest DT so far, for adding more content.</param>
+	///<param name="bottom">If true, adding items to the end of the List. If false, adding items to the front of the List.</param>
 	///<param name="divVis">The variable controlling the visibility of the div for adding more content.</param>
+	///<returns>The amount of items added to MediaList (0 if none or an error).</returns>
 	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.</remarks>
-	private static void AddContent(string nullDTQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, ref string divVis)
+	private int AddContent(string nullDTQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ref string divVis)
 	{
+		int amountAdded = 0;
+		
 		try
 		{
 			C.Open();
@@ -165,9 +306,14 @@ else
 			//If there is no more content available to display, hide the div so user can click through it to click any items below the div.
 			if (!r.HasRows) divVis = "hidden";
 
-			while (r.Read()) MediaList.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+			while (r.Read())
+			{
+				MediaList.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
+				amountAdded++;
+			}
+			
 			r.Close();
-			oldestOrNewestDT = MediaList.Last().dateTaken;
+			if (MediaList.Count > 0) oldestOrNewestDT = bottom ? MediaList.Last().dateTaken : MediaList.First().dateTaken;
 		}
 		catch (NpgsqlException e)
 		{
@@ -177,13 +323,14 @@ else
 		{
 			C.Close();
 		}
+		return amountAdded;
 	}
 	
-	///Adds content to the front of MediaList when user hovers over top of page after using Ctrl G.
-	private void AddContentTop() => AddContent(NullDTQuery, NotNullDTQueryTop, ref newestDT, ref moreContentTopDivVis);
+	///Adds content to the front of MediaList when user hovers over top of page after using Ctrl G. Returns how many items were added (0 if none or error occurred).
+	public int AddContentTop() => AddContent(NullDTQuery, NotNullDTQueryTop, ref newestDT, false, ref moreContentTopDivVis);
 
-	///Adds content to the end of MediaList when user hovers over bottom of page.
-	private void AddContentBottom() => AddContent(NullDTQuery, NotNullDTQueryBottom, ref oldestDT, ref moreContentBottomDivVis);
+	///Adds content to the end of MediaList when user hovers over bottom of page. Returns how many items were added (0 if none or error occurred).
+	public int AddContentBottom() => AddContent(NullDTQuery, NotNullDTQueryBottom, ref oldestDT, true, ref moreContentBottomDivVis);
 
 	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
 	private async Task CheckClicked(Guid uuid, MouseEventArgs eventArgs)
@@ -219,12 +366,16 @@ else
 	}
 	
 	///Called when an &lt;img/&gt; is clicked. Either checks this item, or shows it in fullscreen.
-	private async Task ImgClicked(Guid uuid, MouseEventArgs eventArgs)
+	private async Task ImgClicked(Guid uuid, int index, MouseEventArgs eventArgs)
 	{
 		if (SelectedItems.Count > 0 || eventArgs.CtrlKey)
 			await CheckClicked(uuid, eventArgs);
-		else
-			SelectedItem = uuid; //Show this item in fullscreen.
+		else //Show this item in fullscreen.
+		{
+			SelectedItem = uuid;
+			viewIndex = index;
+			//StateHasChanged(); //TODO
+		}
 	}
 	
 	public async Task ClearChecks()
@@ -234,6 +385,22 @@ else
 		SelectedItems.Clear();
 		await HeaderVisChanged.InvokeAsync("hidden");
 		delPromptVis = starPromptVis = "hidden";
+	}
+
+	///Either shows the delete prompt (or deletes all selected if disabled), or deletes the currently viewed item.
+	private void CtrlDFired()
+	{
+		if (SelectedItem == Guid.Empty)
+		{
+			DeleteBtnClick();
+			StateHasChanged();
+		}
+		else if (SelectedItem != Guid.Empty)
+		{
+			C.MoveToTrash(SelectedItem);
+			MediaList.RemoveAll(u => u.uuid == SelectedItem);
+			SelectedItem = Guid.Empty;
+		}
 	}
 	
 	///Shows the TwoChoiceInput if enabled. If not, then deletes the selected items.
@@ -259,19 +426,117 @@ else
 		await ClearChecks();
 		StateHasChanged();
 	}
-	
-	public void UpdateStars(bool starred)
+
+	///Either toggles the SelectedItem's starred field, or shows the Star Prompt.
+	private void AltSFired()
 	{
-		// C.UpdateStarred(selectedItems, starred);
-		// await ClearChecks();
-		// starChoiceVis = "hidden";
-		// mediaList = C.LoadMediaTable(); //TODO: what to do here? Maybe set all the ones that changed to starred then re-render page?
-		StateHasChanged();
+		if (SelectedItem == Guid.Empty)
+		{
+			starPromptVis = "visible";
+			StateHasChanged();
+		}
+		else if (SelectedItem != Guid.Empty)
+		{
+			C.UpdateStarred(SelectedItem, !MediaList[viewIndex].starred);
+			MediaList[viewIndex].starred = !MediaList[viewIndex].starred;
+		}
+	}
+
+	///Updates the 'starred' field in the DB and the List for the SelectedItems.
+	private async void UpdateStars(bool starred)
+	{
+		C.UpdateStarred(SelectedItems, starred);
+		starPromptVis = "hidden";
+
+		foreach (C.MediaRow item in MediaList)
+			if (SelectedItems.Contains(item.uuid)) //TODO: make a HashSet + List data structure for this if need more speed
+				item.starred = starred;
+			
+		await ClearChecks();
 	}
 	
 	public void DownloadSelected()
 	{ //TODO
 	// F.CopyItemsToZipPath((from media in mediaList where selectedItems.Contains(media.uuid) select media.path).ToList());
 	// zipFilename = await F.CreateDownloadZip();
+	}
+}
+
+@* Functions only for viewing a single item. *@
+@functions{
+	///Gets all the data for the current item.
+	private void LoadData()
+	{
+		newDateTaken = MediaList[viewIndex].dateTaken;
+		newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
+		albumsIn = C.GetAlbumsItemIn(SelectedItem);
+	}
+
+	private void DeleteSelectedItem()
+	{
+		C.MoveToTrash(SelectedItem);
+		SelectedItem = Guid.Empty;
+	}
+
+	private void UpdateDateTaken()
+	{
+		if (C.UpdateDateTaken(MediaList[viewIndex].path, newDateTaken))
+		{
+			editDateDivVis = "hidden";
+			MediaList[viewIndex].dateTaken = newDateTaken;
+		}
+		else
+		{
+			dtErrorVis = "visible";
+		}
+	}
+
+	private void RenameFile()
+	{
+		string result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
+		if (result == null)
+		{
+			filenameErrorVis = "visible";
+		}
+		else
+		{
+			editFilenameDivVis = "hidden";
+			MediaList[viewIndex].path = result;
+		}
+	}
+
+	private void ChangeItemLeft()
+	{
+		//Last item so try adding more. If no more content can be added, return.
+		if (viewIndex == 0)
+		{
+			viewIndex = AddContentTop();
+			if (viewIndex == 0) return;
+		}
+		else viewIndex--; 
+		SelectedItem = MediaList[viewIndex].uuid;
+	}
+
+	private void ChangeItemRight()
+	{
+		//Last item so try adding more. If no more content can be added, return.
+		if (viewIndex == MediaList.Count - 1)
+		{
+			if (AddContentBottom() == 0) return;
+		}
+		viewIndex++;
+		SelectedItem = MediaList[viewIndex].uuid;
+	}
+
+	private void ChangeItem(KeyboardEventArgs e)
+	{
+		if (e.Code == "KeyB") //Back
+		{
+			SelectedItem = Guid.Empty;
+			return;
+		}
+
+		if (e.Code == "ArrowLeft") ChangeItemLeft();
+		else if (e.Code == "ArrowRight") ChangeItemRight();
 	}
 }

@@ -18,9 +18,6 @@
     public Action AltA { get; set; }
     
     [Parameter]
-    public Action AltLeft { get; set; }
-    
-    [Parameter]
     public Action AltS { get; set; }
     
     protected override void OnInitialized()
@@ -28,8 +25,6 @@
         HotKeysContext = HotKeys.CreateContext()
             .Add(ModKeys.Ctrl, Keys.D, CtrlD)
             .Add(ModKeys.Ctrl, Keys.E, CtrlE)
-            .Add(ModKeys.Alt, Keys.Left, AltLeft)
-            // .Add(ModKeys.Ctrl, Keys.Slash, () => ShortcutsReference.visibility = ShortcutsReference.visibility == "hidden" ? "visible" : "hidden")
             .Add(ModKeys.Alt, Keys.A, AltA)
             .Add(ModKeys.Alt, Keys.S, AltS);        
     }
