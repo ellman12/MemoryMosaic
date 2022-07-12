@@ -13,6 +13,7 @@ If it can't find any content, it shows an h1 saying no content.
 @if (MediaList.Count == 0)
 {
 	<h1>Upload some items to get started</h1>
+	return;
 }
 
 @* TODO *@
@@ -250,8 +251,11 @@ AltS="@(() => { C.UpdateStarred(SelectedItem.uuid, !SelectedItem.starred); State
 		SelectedItems = new List<Guid>(150);
 		oldestDT = newestDT = null;
 		AddContentBottom();
-		oldestDT = MediaList.Last().dateTaken;
-		newestDT = MediaList.First().dateTaken;
+		if (MediaList.Count > 0)
+		{
+			oldestDT = MediaList.Last().dateTaken;
+			newestDT = MediaList.First().dateTaken;
+		}
 		moreContentBottomDivVis = "visible";
 		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
 		infoVis = moreOptionsVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
@@ -311,7 +315,7 @@ AltS="@(() => { C.UpdateStarred(SelectedItem.uuid, !SelectedItem.starred); State
 			}
 			
 			r.Close();
-			oldestOrNewestDT = bottom ? MediaList.Last().dateTaken : MediaList.First().dateTaken;
+			if (MediaList.Count > 0) oldestOrNewestDT = bottom ? MediaList.Last().dateTaken : MediaList.First().dateTaken;
 		}
 		catch (NpgsqlException e)
 		{
