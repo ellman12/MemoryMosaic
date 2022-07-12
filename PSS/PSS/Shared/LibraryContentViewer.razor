@@ -19,13 +19,6 @@ If it can't find any content, it shows an h1 saying no content.
 	return;
 }
 
-@* TODO *@
-@* <KeyboardShortcuts
-CtrlD="@DeleteBtnClick"
-CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
-AltLeft="@(() => SelectedItem = null)"
-AltS="@(() => { C.UpdateStarred(SelectedItem.uuid, !SelectedItem.starred); StateHasChanged(); })"/> *@
-
 @* Display a single item in full screen, and allow moving left/right in the List. *@
 @*Stuff in top right corner*@
 <div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
@@ -163,6 +156,8 @@ AltS="@(() => { C.UpdateStarred(SelectedItem.uuid, !SelectedItem.starred); State
 
 <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+
+<KeyboardShortcuts AltS="@AltSFired" CtrlD="@CtrlDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"/>
 
 @code{
 	///Stores all content loaded.
@@ -391,6 +386,22 @@ AltS="@(() => { C.UpdateStarred(SelectedItem.uuid, !SelectedItem.starred); State
 		await HeaderVisChanged.InvokeAsync("hidden");
 		delPromptVis = starPromptVis = "hidden";
 	}
+
+	///Either shows the delete prompt (or deletes all selected if disabled), or deletes the currently viewed item.
+	private void CtrlDFired()
+	{
+		if (SelectedItem == Guid.Empty)
+		{
+			DeleteBtnClick();
+			StateHasChanged();
+		}
+		else if (SelectedItem != Guid.Empty)
+		{
+			C.MoveToTrash(SelectedItem);
+			MediaList.RemoveAll(u => u.uuid == SelectedItem);
+			SelectedItem = Guid.Empty;
+		}
+	}
 	
 	///Shows the TwoChoiceInput if enabled. If not, then deletes the selected items.
 	public void DeleteBtnClick()
@@ -415,14 +426,33 @@ AltS="@(() => { C.UpdateStarred(SelectedItem.uuid, !SelectedItem.starred); State
 		await ClearChecks();
 		StateHasChanged();
 	}
-	
-	public void UpdateStars(bool starred)
+
+	///Either toggles the SelectedItem's starred field, or shows the Star Prompt.
+	private void AltSFired()
 	{
-		// C.UpdateStarred(selectedItems, starred);
-		// await ClearChecks();
-		// starChoiceVis = "hidden";
-		// mediaList = C.LoadMediaTable(); //TODO: what to do here? Maybe set all the ones that changed to starred then re-render page?
-		StateHasChanged();
+		if (SelectedItem == Guid.Empty)
+		{
+			starPromptVis = "visible";
+			StateHasChanged();
+		}
+		else if (SelectedItem != Guid.Empty)
+		{
+			C.UpdateStarred(SelectedItem, !MediaList[viewIndex].starred);
+			MediaList[viewIndex].starred = !MediaList[viewIndex].starred;
+		}
+	}
+
+	///Updates the 'starred' field in the DB and the List for the SelectedItems.
+	private async void UpdateStars(bool starred)
+	{
+		C.UpdateStarred(SelectedItems, starred);
+		starPromptVis = "hidden";
+
+		foreach (C.MediaRow item in MediaList)
+			if (SelectedItems.Contains(item.uuid)) //TODO: make a HashSet + List data structure for this if need more speed
+				item.starred = starred;
+			
+		await ClearChecks();
 	}
 	
 	public void DownloadSelected()

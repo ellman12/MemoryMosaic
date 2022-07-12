@@ -22,10 +22,7 @@
     
     <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
 
-    <KeyboardShortcuts
-        CtrlD="@(() => { libContentViewer.DeleteBtnClick(); StateHasChanged(); })"
-        AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
-        AltS="@(() => { F.VisToggle(ref libContentViewer.starPromptVis); StateHasChanged(); })"/>
+    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })" />
 }
 
 @code {
