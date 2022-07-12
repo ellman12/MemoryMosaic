@@ -1,4 +1,13 @@
-#albumSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
+#albumSelectorBackground {
+    position: fixed;
+    width: 140%;
+    height: 100%;
+    background-color: rgba(211, 211, 211, 0.1);
+    margin-left: -80px;
+    z-index: 9999;
+}
+
+#albumSelectorBackground > #albumSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
     position: fixed;
     left: 50%;
     top: 50%;
@@ -6,7 +15,7 @@
     background-color: black;
     width: 490px;
     height: 620px;
-    z-index: 999;
+    z-index: 9999;
     border: 1px solid white;
 }
 
