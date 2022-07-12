@@ -5,23 +5,26 @@ The default amount of items loaded at a time is 50.
 If it can't find any content, it shows an h1 saying no content.
 *@
 
-@* https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/ *@
 @inject IJSRuntime JSRuntime
 
-<link href="/css/components/LibraryContentViewer.css" rel="stylesheet">
 <link href="/css/components/ViewItem.css" rel="stylesheet">
+<link href="/css/components/LibraryContentViewer.css" rel="stylesheet">
+
+@if (MediaList.Count == 0)
+{
+	<h1>Upload some items to get started</h1>
+}
+
+@* TODO *@
+@* <KeyboardShortcuts
+CtrlD="@DeleteBtnClick"
+CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
+AltLeft="@(() => SelectedItem = null)"
+AltS="@(() => { C.UpdateStarred(SelectedItem.uuid, !SelectedItem.starred); StateHasChanged(); })"/> *@
 
 @* Display a single item in full screen, and allow moving left/right in the List. *@
-@if (SelectedItem != Guid.Empty)
-{
-	@* TODO *@
-	@* <KeyboardShortcuts
-    CtrlD="@DeleteBtnClick"
-    CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
-    AltLeft="@(() => SelectedItem = null)"
-    AltS="@(() => { C.UpdateStarred(SelectedItem.uuid, !SelectedItem.starred); StateHasChanged(); })"/> *@
-
-	@*Stuff in top right corner*@
+@*Stuff in top right corner*@
+<div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
 	<div id="buttons">
 	    <button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
 	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
@@ -61,7 +64,7 @@ If it can't find any content, it shows an h1 saying no content.
 	        <button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
 	    </div>
 	    
-	    @if (albumsIn.Count > 0)
+	    @if (albumsIn != null && albumsIn.Count > 0)
 	    {
 	        <span id="albumsText">Albums</span>
 	        <div id="albumsIn">
@@ -82,7 +85,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 	<div class="inputBox" style="visibility: @editDateDivVis">
 	    <span>Enter new date taken:</span>
-	    <input title="" type="datetime-local" @bind="@newDateTaken" step=1/>
+	    <input title="" type="datetime-local" @bind="@newDateTaken" step="1"/>
 	    <span class="errorSpan" style="visibility: @dtErrorVis">Error Changing Date Taken</span>
 	    <div>
 	        <button class="iconBtn" @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
@@ -93,7 +96,7 @@ If it can't find any content, it shows an h1 saying no content.
 	<div class="inputBox" style="visibility: @editFilenameDivVis">
 	    <span>Enter new filename:</span>
 	    <input title="" type="text" @bind="@newFilename" required/>
-	    <span class="errorSpan" style="visibility: @filenameErrorVis">A file with the same Date Taken and name already exists.</span>
+	    <span class="errorSpan" style="visibility: @filenameErrorVis">A file with the same Date Taken and/or name already exists.</span>
 	    <div>
 	        <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = filenameErrorVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
 	        <button class="iconBtn" @onclick="@RenameFile"><span class="material-icons-outlined">check</span></button>
@@ -102,67 +105,60 @@ If it can't find any content, it shows an h1 saying no content.
 
 	<button class="iconBtn" id="backBtn" @onclick="@(() => SelectedItem = Guid.Empty)"><span class="material-icons-outlined">keyboard_backspace</span></button>
 
-	//Only show the left button if there's more stuff that can be loaded.
-	if (viewIndex == 0) viewIndex = AddContentTop();
-	if (viewIndex > 0)
+	@* Only show the left button if there's more stuff that can be loaded. *@
+	@if (viewIndex == 0) { viewIndex = AddContentTop(); }
+	@if (viewIndex > 0)
 	{
 	    <div @onclick="@ChangeItemLeft" class="sideBtn" id="leftBtn">
 	        <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"></path></svg>
 	    </div>
 	}
 
-	if (MediaList[viewIndex].thumbnail == null)
+	@if (MediaList[viewIndex].thumbnail == null)
 	{
-	    <div @onkeydown="@ChangeItem" tabindex="0" id="viewDiv"><img onload="document.getElementById('viewDiv').focus()" src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
+	    <div @onkeydown="@ChangeItem" tabindex="0" id="itemDiv"><img onload="document.getElementById('itemDiv').focus()" src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
 	}
 	else
 	{
-	    <div id="viewDiv"><video src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" loop autofocus controls autoplay></video></div>
+	    <div id="itemDiv"><video src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" loop autofocus controls autoplay></video></div>
 	}
 
-	//Last item in the List so far so try adding more. If no more content can be added, don't show next button.
-	if (viewIndex == MediaList.Count - 1) AddContentBottom();
-
-	if (MediaList.Count - 1 > viewIndex)
+	@* Last item in the List so far so try adding more. If no more content can be added, don't show next button. *@
+	@if (viewIndex == MediaList.Count - 1) { AddContentBottom(); }
+	@if (MediaList.Count - 1 > viewIndex)
 	{
 	    <div @onclick="@ChangeItemRight" class="sideBtn" id="rightBtn">
 	        <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path></svg>
 	    </div>
 	}
-}
-else if (MediaList.Count == 0)
-{
-	<h1>Upload some items to get started</h1>
-}
-else
-{
-	<div id="libContentViewer">
-		<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@(() => AddContentTop())" @onscroll="@(() => AddContentTop())" @onmousewheel="@(() => AddContentTop())" @onpointerenter="@(() => AddContentTop())" @ontouchenter="@(() => AddContentTop())"></div>
-		@for (int i = 0; i < MediaList.Count; i++)
-		{
-			int ii = i;
-			C.MediaRow media = MediaList[i];
-		
-			<div class="thumbnail">
-				@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-				<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" itemid="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
-				@if (media.thumbnail != null) //Video
-				{
-					<span class="material-icons-outlined video-icon">play_circle_outline</span>
-					<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-				}
-				else
-				{
-					<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-				}
-			</div>
-		}
-		<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
-	</div>
+</div>
+
+<div id="libContentViewer">
+	<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@(() => AddContentTop())" @onscroll="@(() => AddContentTop())" @onmousewheel="@(() => AddContentTop())" @onpointerenter="@(() => AddContentTop())" @ontouchenter="@(() => AddContentTop())"></div>
+	@for (int i = 0; i < MediaList.Count; i++)
+	{
+		int ii = i;
+		C.MediaRow media = MediaList[i];
 	
-	<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
-	<TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
-}
+		<div class="thumbnail">
+			@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
+			<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" itemid="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
+			@if (media.thumbnail != null) //Video
+			{
+				<span class="material-icons-outlined video-icon">play_circle_outline</span>
+				<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+			}
+			else
+			{
+				<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+			}
+		</div>
+	}
+	<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
+</div>
+
+<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
+<TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
 @code{
 	///Stores all content loaded.
@@ -175,7 +171,12 @@ else
 		set
 		{
 			_selectedItem = value;
-			LoadData();
+			if (value == Guid.Empty)
+			{
+				newFilename = "";
+				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = moreOptionsVis = "hidden";
+			}
+			else LoadData();
 			StateHasChanged();
 		}
 	}

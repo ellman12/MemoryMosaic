@@ -2,8 +2,19 @@
     user-select: none;
 }
 
+#viewDiv {
+    height: 101%;
+    width: 100%;
+    position: fixed;
+    z-index: 9999999;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: black;
+}
+
 /*Buttons div in top right corner*/
-#buttons {
+#viewDiv > #buttons {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -12,12 +23,8 @@
     z-index: 999;
 }
 
-button {
-    margin: 3px;
-}
-
 /* Div below the i button */
-#infoDiv {
+#viewDiv > #infoDiv {
     outline: 1px solid white;
     background-color: black;
     position: absolute;
@@ -27,7 +34,7 @@ button {
 }
 
 /* 3 divs for date taken/added, and filename */
-#infoDiv > .dataDiv {
+#viewDiv > #infoDiv > .dataDiv {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -35,21 +42,21 @@ button {
     height: 55px;
 }
 
-#infoDiv > .dataDiv > svg {
+#viewDiv > #infoDiv > .dataDiv > svg {
     margin-left: 15px;
     margin-right: 15px;
 }
 
-#infoDiv > .dataDiv > span {
+#viewDiv > #infoDiv > .dataDiv > span {
     margin-right: 5px;
 }
 
-#infoDiv > #albumsText {
+#viewDiv > #infoDiv > #albumsText {
     margin-left: 18px;
 }
 
 /* Showing albums this item is in */
-#infoDiv > #albumsIn {
+#viewDiv > #infoDiv > #albumsIn {
     border: 1px solid white;
     padding-right: 2px;
     margin-top: 12px;
@@ -93,7 +100,7 @@ button {
 }
 
 /*Dropdown in top right corner*/
-#moreOptionsDiv {
+#viewDiv > #moreOptionsDiv {
     display: flex;
     flex-direction: column;
     background-color: black;
@@ -104,7 +111,7 @@ button {
     outline: 1px solid white;
 }
 
-.inputBox {
+#viewDiv > .inputBox {
     position: fixed;
     left: 50%;
     top: 50%;
@@ -116,14 +123,14 @@ button {
     border: 1px solid white;
 }
 
-.inputBox > span {
+#viewDiv > .inputBox > span {
     margin-top: 10px;
     margin-right: 10px;
     margin-left: 10px;
     display: inline-block;
 }
 
-.inputBox > input {
+#viewDiv > .inputBox > input {
     color: black;
     border: none;
     outline: none;
@@ -133,14 +140,14 @@ button {
     margin-left: 10px;
 }
 
-.inputBox > .errorSpan {
+#viewDiv > .inputBox > .errorSpan {
     font-size: 12px;
     display: inline-block;
     width: 120px;
     color: red;
 }
 
-.inputBox > div {
+#viewDiv > .inputBox > div {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -149,13 +156,13 @@ button {
     bottom: 0;
 }
 
-.inputBox > div > button {
+#viewDiv > .inputBox > div > button {
     margin-top: 10px;
     margin-right: 5px;
     margin-bottom: 5px;
 }
 
-#backBtn {
+#viewDiv > #backBtn {
     height: 70px;
     width: 70px;
     position: absolute;
@@ -165,7 +172,7 @@ button {
     z-index: 99999;
 }
 
-.sideBtn {
+#viewDiv > .sideBtn {
     background: rgba(66,66,66,0.54);
     border-radius: 50%;
     position: absolute;
@@ -179,14 +186,14 @@ button {
     justify-content: center;
 }
 
-.sideBtn:hover {
+#viewDiv > .sideBtn:hover {
     cursor: pointer;
 }
 
-#leftBtn {left: 10px;}
-#rightBtn {right: 10px;}
+#viewDiv > #leftBtn {left: 10px;}
+#viewDiv > #rightBtn {right: 10px;}
 
-#viewDiv {
+#itemDiv {
     height: 98%;
     display: flex;
     align-content: center;
@@ -199,7 +206,7 @@ button {
 }
 
 /*https://stackoverflow.com/questions/18490334/responsive-image-full-screen-and-centered-maintain-aspect-ratio-not-exceed-wi/18490463*/
-#viewDiv > img, video {
+#itemDiv > img, video {
     height: 100%;
     overflow: auto;
     object-fit: cover;
