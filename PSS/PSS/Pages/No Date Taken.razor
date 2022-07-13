@@ -1,199 +1,39 @@
 @page "/no-dt"
-@inject NavigationManager navigationManager;
 
-<title>No DT - PSS</title>
+<title>No Date Taken - PSS</title>
 <link href="css/IndexStarredNoDT.css" rel="stylesheet"/>
 
 @{
     <header style="visibility: @headerVis">
         <div id="buttons">
-            <button class="iconBtn"><a style="text-decoration: none" class="material-icons-outlined" @onclick="@DownloadSelected" href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">file_download</a></button>
+            <button class="iconBtn"><a style="text-decoration: none" class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected" href="@S.TMP_REQUEST_PATH/@libContentViewer.ZipFilename" download="@libContentViewer.ZipFilename">file_download</a></button>
             <button class="iconBtn" @onclick="@(() => F.VisToggle(ref albumsVis))"><span class="material-icons-outlined">collections</span></button>
-            <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref starChoiceVis))"><span class="material-icons-outlined">star_outline</span></button>
-            <button class="iconBtn" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref libContentViewer.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
+            <button class="iconBtn" @onclick="@libContentViewer.DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         </div>
-        <button class="iconBtn" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+        <button class="iconBtn" @onclick="@libContentViewer.ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
     </header>
-    <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
-    <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
-    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@DeleteSelected" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
+    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added > @oldestOrNewestDT ORDER BY date_added DESC LIMIT 50";
+    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added < @oldestOrNewestDT ORDER BY date_added DESC LIMIT 50";
+    <LibraryContentViewer @ref="@libContentViewer" UseDateAdded="true" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" NoItemsText="Upload some items to get started" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery"
+        FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL ORDER BY date_added DESC LIMIT 50"/>
     
-    <KeyboardShortcuts
-        CtrlD="@(() => { DeleteBtnClick(); StateHasChanged(); })"
-        AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
-        AltS="@(() => { F.VisToggle(ref starChoiceVis); StateHasChanged(); })"/>
+    <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
 
-    if (mediaList.Count == 0)
-    {
-        <h1>There Are No Items Without a Date Taken</h1>
-    }
-    else
-    {
-        <div id="mainDiv">
-            @foreach (C.MediaRow media in mediaList)
-            {
-                <div class="thumbnail">
-                    @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                    <span @onclick="@(() => ToggleCheck(media.uuid))" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
-                    @if (media.thumbnail != null) //Video
-                    {
-                        <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        <img @onclick="@(() => ImgClicked(media.uuid))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    }
-                    else
-                    {
-                        <img @onclick="@(() => ImgClicked(media.uuid))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    }
-                </div>
-            }
-        </div>
-    }
+    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })" />
 }
 
 @code {
-    private static string headerVis;
-    private static string albumsVis;
-    private static List<C.MediaRow> mediaList;
-    private static List<Guid> selectedItems; //Stores all items user has selected.
-
-    private static string choiceVis;
-    private static string choiceMsg;
-
-    //Shit click stuff. Last index is the last item you selected (would not be the current thing obv).
-    private static bool shiftDown;
-    private static int lastIndex;
-    private async Task getShiftDown() => shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
+    private static LibraryContentViewer libContentViewer = new();
+    private static int selectedItemsCount;
     
-    private static bool ctrlDown;
-    private async Task GetCtrlDown() => ctrlDown = await JSRuntime.InvokeAsync<bool>("getCtrlDown");
-    
-    private static string starChoiceVis;
-
-    private static string zipFilename;
-
-    private async void UpdateStars(bool starred)
-    {
-        C.UpdateStarred(selectedItems, starred);
-        await ClearChecks();
-        starChoiceVis = "hidden";
-        mediaList = C.LoadMediaNoDT();
-        StateHasChanged();
-    }
+    private static string headerVis, albumsVis;
 
     protected override void OnInitialized()
     {
-        mediaList = C.LoadMediaNoDT();
-        selectedItems = new List<Guid>(); //Reset on page load/refresh
-        headerVis = albumsVis = choiceVis = starChoiceVis = "hidden";
-    }
-
-    [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
-    public IJSRuntime JSRuntime { get; set; }
-
-    private static async void DownloadSelected()
-    {
-        F.CopyItemsToZipPath((from media in mediaList where selectedItems.Contains(media.uuid) select media.path).ToList());
-        zipFilename = await F.CreateDownloadZip();
-    }
-
-    private async Task ToggleCheck(Guid uuid)
-    {
-        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
-        if (newClass.Contains("unchecked"))
-            selectedItems.Remove(uuid);
-        else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking
-            selectedItems.Add(uuid);
-
-        headerVis = selectedItems.Count > 0 ? "visible" : "hidden";
-
-        //Get mediaList currentIndex of latest selected thing. Needed only for shift click
-        int index = -1;
-        for (int i = 0; i < mediaList.Count; i++)
-        {
-            if (mediaList[i].uuid != uuid) continue;
-            index = i;
-            break;
-        }
-
-        await getShiftDown();
-        if (!shiftDown) //Not shift click so just select 1 item like normal.
-        {
-            lastIndex = index;
-            return;
-        }
-        await ShiftClick(index); //Select multiple.
-    }
-
-    //Add items from start to end into selectedItems. Used for ShiftClick.
-    private async Task AddSelected(int startIndex, int endIndex)
-    {
-        for (int i = startIndex; i <= endIndex; i++)
-        {
-            Guid currentID = mediaList[i].uuid;
-            if (selectedItems.Contains(currentID)) continue;
-            selectedItems.Add(currentID);
-            await ToggleCheck(currentID);
-        }
-    }
-
-    //If shift was held down select multiple things
-    private async Task ShiftClick(int currentIndex)
-    {
-        //First item is on left and item shift clicked is right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selected items
-        if (lastIndex < currentIndex)
-            await AddSelected(lastIndex, currentIndex);
-        else if (lastIndex > currentIndex) //Same as above but swap 1 and 2 and the direction.
-            await AddSelected(currentIndex, lastIndex);
-    }
-
-    private async Task ClearChecks()
-    {
-        foreach (Guid item in selectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", item);
-        selectedItems.Clear();
-        headerVis = "hidden";
-        albumsVis = "hidden";
-        choiceVis = "hidden";
-    }
-
-    private async Task ImgClicked(Guid uuid)
-    {
-        await GetCtrlDown();
-        if (selectedItems.Count > 0 || ctrlDown)
-            await ToggleCheck(uuid);
-        else
-            navigationManager.NavigateTo($"/view-no-dt/{uuid}");
-    }
-    
-    //Show choice div
-    private void DeleteBtnClick()
-    {
-        if (S.showPrompts == false)
-        {
-            DeleteSelected();
-            return;
-        }
-        choiceVis = "visible";
-        choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
-    }
-
-    private async void DeleteSelected()
-    {
-        foreach (Guid item in selectedItems) //https://stackoverflow.com/a/604843
-        {
-            C.MoveToTrash(item);
-            headerVis = "hidden";
-        }
-        await ClearChecks();
-        mediaList = C.LoadMediaNoDT();
-        StateHasChanged();
-    }
-
-    private void CloseChoiceDiv()
-    {
-        choiceVis = "hidden";
-        StateHasChanged();
+        selectedItemsCount = 0;
+        headerVis = albumsVis = "hidden";
     }
 }
