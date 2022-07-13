@@ -304,7 +304,6 @@ If it can't find any content, it shows an h1 saying no content.
 			using NpgsqlCommand cmd = new(null, C.connection);
 			if (oldestOrNewestDT == null) //Only possible when page first loads and there's no content yet.
 			{
-				cmd.CommandText = nullDTQuery;
 				cmd.CommandText = firstQuery;
 			}
 			else

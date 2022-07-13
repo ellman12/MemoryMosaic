@@ -8,7 +8,7 @@
     isFolder = C.IsFolder(statAlbumID);
     string vis = selectedItemsCount > 0 ? "visible" : "hidden";
     
-	<header>
+    <header>
         <button class="iconBtn" @onclick="@libContentViewer.ClearChecks" style="visibility: @vis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
         <span style="visibility: @vis" id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
 
@@ -25,9 +25,9 @@
         </div>
 
         <div id="buttons">
-            <button class="iconBtn"><a style="text-decoration: none; visibility: @vis" class="material-icons-outlined" @onclick="@DownloadSelected" href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">file_download</a></button>
+            <button class="iconBtn"><a style="text-decoration: none; visibility: @vis" class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected" href="@S.TMP_REQUEST_PATH/@libContentViewer.ZipFilename" download="@libContentViewer.ZipFilename">file_download</a></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@(() => albumsVis = "visible")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
-            <button class="iconBtn" style="visibility: @vis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref starChoiceVis))"><span class="material-icons-outlined">star_outline</span></button>
+            <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref libContentViewer.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@libContentViewer.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             <button class="iconBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
@@ -42,6 +42,28 @@
             <button @onclick="@DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(isFolder ? "Delete Folder" : "Delete Album")</span></button>
         </div>
     </header>
+    
+    string orderBy = sortMode switch
+    {
+        C.AVSortMode.OldestDateTaken => "date_taken ASC",
+        C.AVSortMode.NewestDateTaken => "date_taken DESC",
+        C.AVSortMode.OldestAdded => "date_added_to_album ASC",
+        C.AVSortMode.NewestAdded => "date_added_to_album DESC",
+        _ => "date_taken DESC"
+    };
+    
+    string shared = $"SELECT m.path, m.date_taken, m.date_added, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
+    string topQuery = $"{shared} AND date_taken > @oldestOrNewestDT ORDER BY {orderBy} LIMIT 5";
+    string bottomQuery = $"{shared} AND date_taken < @oldestOrNewestDT ORDER BY {orderBy} LIMIT 5";
+    string firstQuery = $"{shared} {(S.displayNoDTInAV ? "" : "AND date_taken IS NOT NULL")} ORDER BY {orderBy} LIMIT 5";
+    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" AlbumID="@statAlbumID"
+        NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
+    
+    <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
+    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })" />
+    
+    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Album")} \"{albumName}\"?")
+        YesBtnClick="@(() => { navigationManager.NavigateTo("/albums"); C.DeleteAlbum(statAlbumID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
 }
 
 @code{
@@ -54,7 +76,7 @@
     private static int selectedItemsCount;
     private static C.AVSortMode sortMode;
     private static List<C.MediaRow> albumMedia;
-    private static string headerVis, albumsVis, buttonsVis, sortDivVis;
+    private static string headerVis, albumsVis, delPromptVis, buttonsVis, sortDivVis;
     private static string albumName, _newAlbumName;
     
     private static string NewAlbumName
@@ -83,7 +105,7 @@
         sortMode = C.AVSortMode.NewestDateTaken; //Default
         albumName = C.GetAlbumName(statAlbumID);
         _newAlbumName = albumName;
-        headerVis = albumsVis = buttonsVis = sortDivVis = "hidden";
+        headerVis = albumsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
     
     //Remove selected from the album
@@ -103,9 +125,7 @@
             return;
         }
 
-        yesBtnFunc = DeleteAlbum;
-        choiceVis = "visible";
-        choiceMsg = "Permanently Delete " + (isFolder ? "Folder" : "Album") + $" \"{albumName}\"?";
+        delPromptVis = "visible";
     }
     
     private void DeleteAlbum()
