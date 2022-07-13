@@ -114,7 +114,7 @@ If it can't find any content, it shows an h1 saying no content.
 	}
 	else
 	{
-	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine(S.LIB_REQUEST_PATH, MediaList[viewIndex]!.path))" loop autofocus controls autoplay></video></div>
+	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine(S.LIB_REQUEST_PATH, MediaList[viewIndex].path!))" loop autofocus controls autoplay></video></div>
 	}
 
 	@* Last item in the List so far so try adding more. If no more content can be added, don't show next button. *@
@@ -204,17 +204,20 @@ If it can't find any content, it shows an h1 saying no content.
 	///Used for binding SelectedItemsCount.
 	[Parameter]
 	public EventCallback<int> SelectedItemsCountChanged { get; set; }
+	
+	[Parameter]
+	public bool UseDateAdded { get; set; } = false;
 
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter, EditorRequired]
+	[Parameter]
 	public string FirstQuery { get; set; }
 	
 	///The query used to select add more content to the top of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter, EditorRequired]
+	[Parameter]
 	public string NotNullDTQueryTop { get; set; }
 	
 	///The query used to select add more content to the bottom of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter, EditorRequired]
+	[Parameter]
 	public string NotNullDTQueryBottom { get; set; }
 	
 	[Parameter, EditorRequired]
@@ -251,8 +254,16 @@ If it can't find any content, it shows an h1 saying no content.
 		AddContentBottom();
 		if (MediaList.Count > 0)
 		{
-			oldestDT = MediaList.Last().dateTaken;
-			newestDT = MediaList.First().dateTaken;
+			if (UseDateAdded)
+			{
+				oldestDT = MediaList.Last().dateAdded;
+				newestDT = MediaList.First().dateAdded;
+			}
+			else
+			{
+				oldestDT = MediaList.Last().dateTaken;
+				newestDT = MediaList.First().dateTaken;				
+			}
 		}
 		moreContentBottomDivVis = "visible";
 		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
@@ -314,7 +325,13 @@ If it can't find any content, it shows an h1 saying no content.
 			}
 			
 			r.Close();
-			if (MediaList.Count > 0) oldestOrNewestDT = bottom ? MediaList.Last().dateTaken : MediaList.First().dateTaken;
+			if (MediaList.Count > 0)
+			{
+				if (UseDateAdded)
+					oldestOrNewestDT = bottom ? MediaList.Last().dateAdded : MediaList.First().dateAdded;
+				else
+					oldestOrNewestDT = bottom ? MediaList.Last().dateTaken : MediaList.First().dateTaken;
+			}
 		}
 		catch (NpgsqlException e)
 		{
