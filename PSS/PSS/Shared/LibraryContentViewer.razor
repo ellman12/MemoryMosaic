@@ -207,7 +207,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
 	[Parameter, EditorRequired]
-	public string NullDTQuery { get; set; }
+	public string FirstQuery { get; set; }
 	
 	///The query used to select add more content to the top of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
 	[Parameter, EditorRequired]
@@ -276,14 +276,14 @@ If it can't find any content, it shows an h1 saying no content.
 	}
 
 	///<summary>Adds content either to the front or back of MediaList.</summary>
-	///<param name="nullDTQuery">The query to be used when oldestOrNewestDT is null. This is used when the page is first loaded.</param>
+	///<param name="firstQuery">The query to be used when oldestOrNewestDT is null. This is used when the page is first loaded.</param>
 	///<param name="notNullDTQuery">The query to be used when oldestOrNewestDT is NOT null. This is used after the page has content and needs more either at the top or bottom of the page. Use &lt; for getting content older than the oldest DT, and &gt; for getting content newer than the newest DT.</param>
 	///<param name="oldestOrNewestDT">The DateTime tracking the oldest or newest DT so far, for adding more content.</param>
 	///<param name="bottom">If true, adding items to the end of the List. If false, adding items to the front of the List.</param>
 	///<param name="divVis">The variable controlling the visibility of the div for adding more content.</param>
 	///<returns>The amount of items added to MediaList (0 if none or an error).</returns>
 	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.</remarks>
-	private int AddContent(string nullDTQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ref string divVis)
+	private int AddContent(string firstQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ref string divVis)
 	{
 		int amountAdded = 0;
 		
@@ -294,6 +294,7 @@ If it can't find any content, it shows an h1 saying no content.
 			if (oldestOrNewestDT == null) //Only possible when page first loads and there's no content yet.
 			{
 				cmd.CommandText = nullDTQuery;
+				cmd.CommandText = firstQuery;
 			}
 			else
 			{
@@ -327,10 +328,10 @@ If it can't find any content, it shows an h1 saying no content.
 	}
 	
 	///Adds content to the front of MediaList when user hovers over top of page after using Ctrl G. Returns how many items were added (0 if none or error occurred).
-	public int AddContentTop() => AddContent(NullDTQuery, NotNullDTQueryTop, ref newestDT, false, ref moreContentTopDivVis);
+	public int AddContentTop() => AddContent(FirstQuery, NotNullDTQueryTop, ref newestDT, false, ref moreContentTopDivVis);
 
 	///Adds content to the end of MediaList when user hovers over bottom of page. Returns how many items were added (0 if none or error occurred).
-	public int AddContentBottom() => AddContent(NullDTQuery, NotNullDTQueryBottom, ref oldestDT, true, ref moreContentBottomDivVis);
+	public int AddContentBottom() => AddContent(FirstQuery, NotNullDTQueryBottom, ref oldestDT, true, ref moreContentBottomDivVis);
 
 	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
 	private async Task CheckClicked(Guid uuid, MouseEventArgs eventArgs)
