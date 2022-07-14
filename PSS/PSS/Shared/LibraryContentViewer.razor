@@ -280,7 +280,7 @@ If it can't find any content, it shows an h1 saying no content.
 			SelectedItems.Remove(uuid);
 			await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
 		}
-		else if (!SelectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking. TODO: create a hashSet for storing uuids as well so this would be way faster.
+		else if (!SelectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking.
 		{
 			SelectedItems.Add(uuid);
 			await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
@@ -396,7 +396,6 @@ If it can't find any content, it shows an h1 saying no content.
 		{
 			SelectedItem = uuid;
 			viewIndex = index;
-			//StateHasChanged(); //TODO
 		}
 	}
 	
@@ -471,7 +470,7 @@ If it can't find any content, it shows an h1 saying no content.
 		starPromptVis = "hidden";
 
 		foreach (C.MediaRow item in MediaList)
-			if (SelectedItems.Contains(item.uuid)) //TODO: make a HashSet + List data structure for this if need more speed
+			if (SelectedItems.Contains(item.uuid))
 				item.starred = starred;
 			
 		await ClearChecks();
