@@ -268,6 +268,7 @@ If it can't find any content, it shows an h1 saying no content.
 		moreContentBottomDivVis = "visible";
 		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
 		infoVis = moreOptionsVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
+		viewIndex = 0;
 	}
 	
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
@@ -319,8 +320,12 @@ If it can't find any content, it shows an h1 saying no content.
 
 			while (r.Read())
 			{
-				MediaList.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
-				amountAdded++;
+				C.MediaRow newRow = new(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5));
+				if (!MediaList.Contains(newRow))
+				{
+					MediaList.Add(newRow);
+					amountAdded++;
+				}
 			}
 			
 			r.Close();
