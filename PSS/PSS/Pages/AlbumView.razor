@@ -53,9 +53,13 @@
     };
     
     string shared = $"SELECT m.path, m.date_taken, m.date_added, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
-    string topQuery = $"{shared} AND date_taken > @oldestOrNewestDT ORDER BY {orderBy} LIMIT 5";
-    string bottomQuery = $"{shared} AND date_taken < @oldestOrNewestDT ORDER BY {orderBy} LIMIT 5";
-    string firstQuery = $"{shared} {(S.displayNoDTInAV ? "" : "AND date_taken IS NOT NULL")} ORDER BY {orderBy} LIMIT 5";
+    string topQuery = $"{shared} AND date_taken IS NOT NULL AND date_taken > @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+    string bottomQuery = $"{shared} AND date_taken IS NOT NULL AND date_taken < @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+    
+    //Loads every item with NULL Date Taken first, then items with Date Taken.
+    string firstQuery = "";
+    if (S.displayNoDTInAV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
+    firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 50) ORDER BY {orderBy}";
     <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" AlbumID="@statAlbumID"
         NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
