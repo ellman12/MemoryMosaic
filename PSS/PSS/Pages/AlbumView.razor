@@ -1,16 +1,16 @@
 @page "/album-view/{albumID}"
-@inject NavigationManager navigationManager; //https://stackoverflow.com/a/58417140
+@inject NavigationManager navigationManager
 
 <title>@albumName - PSS</title>
 <link href="css/AlbumView.css" rel="stylesheet">
 
 @{
     isFolder = C.IsFolder(statAlbumID);
-    string vis = selectedItems.Count > 0 ? "visible" : "hidden";
+    string vis = selectedItemsCount > 0 ? "visible" : "hidden";
     
     <header>
-        <button class="iconBtn" @onclick="@ClearChecks" style="visibility: @vis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
-        <span style="visibility: @vis" id="selectedAmtText">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+        <button class="iconBtn" @onclick="@libContentViewer.ClearChecks" style="visibility: @vis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
+        <span style="visibility: @vis" id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
 
         <div id="albumRenameDiv">
             <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" @bind:event="oninput" autocomplete="off">
@@ -25,97 +25,64 @@
         </div>
 
         <div id="buttons">
-            <button class="iconBtn"><a style="text-decoration: none; visibility: @vis" class="material-icons-outlined" @onclick="@DownloadSelected" href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">file_download</a></button>
+            <button class="iconBtn"><a style="text-decoration: none; visibility: @vis" class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected" href="@S.TMP_REQUEST_PATH/@libContentViewer.ZipFilename" download="@libContentViewer.ZipFilename">file_download</a></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@(() => albumsVis = "visible")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
-            <button class="iconBtn" style="visibility: @vis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref starChoiceVis))"><span class="material-icons-outlined">star_outline</span></button>
+            <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref libContentViewer.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" style="visibility: @vis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
-            <button class="iconBtn" style="visibility: @vis" @onclick="@DeleteSelectedBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <button class="iconBtn" style="visibility: @vis" @onclick="@libContentViewer.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             <button class="iconBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
         </div>
 
         <div id="moreOptionsDiv" style="visibility: @sortDivVis">
-            <button @onclick="@(() => ChangeOrder(C.AVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(mode == C.AVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == C.AVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.AVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(mode == C.AVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == C.AVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.AVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(mode == C.AVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == C.AVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.AVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(mode == C.AVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(mode == C.AVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
+            <button @onclick="@(() => ChangeOrder(C.AVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.AVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.AVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
+            <button @onclick="@(() => ChangeOrder(C.AVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.AVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.AVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
+            <button @onclick="@(() => ChangeOrder(C.AVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.AVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.AVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
+            <button @onclick="@(() => ChangeOrder(C.AVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.AVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.AVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
             <button @onclick="@(() => C.ChangeAlbumType(statAlbumID, !isFolder))"><span class="material-icons-outlined">@(isFolder ? "perm_media" : "collections")</span><span>@(isFolder ? "Change to Album" : "Change to Folder")</span></button>
             <button @onclick="@DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(isFolder ? "Delete Folder" : "Delete Album")</span></button>
         </div>
     </header>
-    <TwoChoiceInput YesBtnIcon="star" NoBtnIcon="star_outline" YesBtnText="Add" NoBtnText="Remove" @bind-TwoChoiceVis="@starChoiceVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(selectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
-
-    <AlbumSelector SelectedItems="@selectedItems" @bind-HeaderVis="@buttonsVis" @bind-AlbumsVis="@albumsVis"/>
-    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@yesBtnFunc" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
     
-    <KeyboardShortcuts
-        CtrlD="@(() => { DeleteSelectedBtnClick(); StateHasChanged(); })"
-        AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"
-        AltS="@(() => { F.VisToggle(ref starChoiceVis); StateHasChanged(); })" />
-
-    if (albumMedia.Count == 0)
+    string orderBy = sortMode switch
     {
-        if (isFolder) {
-            <h1>Folder is empty</h1>
-        }
-        else {
-            <h1>Album is empty</h1>
-        }
-    }
-    else
-    {
-        <div id="mainDiv">
-            @foreach (C.MediaRow media in albumMedia)
-            {
-                <div class="thumbnail">
-                    @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                    <span @onclick="@(() => ToggleCheck(media.uuid))" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
-                    @if (media.thumbnail != null) //Video
-                    {
-                        <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        <img @onclick="@(() => ImgClicked(media.uuid))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    }
-                    else
-                    {
-                        <img @onclick="@(() => ImgClicked(media.uuid))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    }
-                </div>
-            }
-         </div>
-    }
+        C.AVSortMode.OldestDateTaken => "date_taken ASC",
+        C.AVSortMode.NewestDateTaken => "date_taken DESC",
+        C.AVSortMode.OldestAdded => "date_added_to_album ASC",
+        C.AVSortMode.NewestAdded => "date_added_to_album DESC",
+        _ => "date_taken DESC"
+    };
+    
+    string shared = $"SELECT m.path, m.date_taken, m.date_added, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
+    string topQuery = $"{shared} AND date_taken IS NOT NULL AND date_taken > @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+    string bottomQuery = $"{shared} AND date_taken IS NOT NULL AND date_taken < @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+    
+    //Loads every item with NULL Date Taken first, then items with Date Taken.
+    string firstQuery = "";
+    if (S.displayNoDTInAV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
+    firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 50) ORDER BY {orderBy}";
+    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" AlbumID="@statAlbumID"
+        NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
+    
+    <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
+    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })" />
+    
+    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Album")} \"{albumName}\"?")
+        YesBtnClick="@(() => { navigationManager.NavigateTo("/albums"); C.DeleteAlbum(statAlbumID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
 }
 
-@code {
+@code{
     [Parameter]
     public string albumID { get; set; }
     private static int statAlbumID;
     private static bool isFolder;
-
-    private static string albumsVis;
+    
+    private static LibraryContentViewer libContentViewer = new();
+    private static int selectedItemsCount;
+    private static C.AVSortMode sortMode;
     private static List<C.MediaRow> albumMedia;
-    private static List<Guid> selectedItems;
-    private static string sortDivVis;
-    private static C.AVSortMode mode;
-    private static string albumName;
-    private static string _newAlbumName;
-    private static string buttonsVis;
+    private static string headerVis, albumsVis, delPromptVis, buttonsVis, sortDivVis;
+    private static string albumName, _newAlbumName;
     
-    private static string choiceVis;
-    private static string choiceMsg;
-    private static Action yesBtnFunc;
-    
-    private static string starChoiceVis;
-    
-    private static string zipFilename;
-
-    private async void UpdateStars(bool starred)
-    {
-        C.UpdateStarred(selectedItems, starred);
-        await ClearChecks();
-        starChoiceVis = "hidden";
-        albumMedia = C.LoadAlbum(statAlbumID);
-        StateHasChanged();
-    }
-
     private static string NewAlbumName
     {
         get => _newAlbumName;
@@ -132,132 +99,28 @@
             }
         }
     }
-    
-    //Shit click stuff.
-    private static bool shiftDown;
-    private static int lastIndex;
-    private async Task getShiftDown() => shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
-    
-    private static bool ctrlDown;
-    private async Task GetCtrlDown() => ctrlDown = await JSRuntime.InvokeAsync<bool>("getCtrlDown");
+}
 
+@functions{
     protected override void OnInitialized()
     {
-        albumsVis = buttonsVis = choiceVis = sortDivVis = starChoiceVis = "hidden";
+        selectedItemsCount = 0;
         statAlbumID = Int32.Parse(albumID);
-        albumMedia = C.LoadAlbum(statAlbumID);
-        selectedItems = new List<Guid>(); //Reset on page load/refresh
-        mode = C.AVSortMode.NewestDateTaken; //Default
+        sortMode = C.AVSortMode.NewestDateTaken; //Default
         albumName = C.GetAlbumName(statAlbumID);
         _newAlbumName = albumName;
-    }
-
-    [Inject]
-    public IJSRuntime JSRuntime { get; set; }
-    
-    private static async void DownloadSelected()
-    {
-        F.CopyItemsToZipPath((from media in albumMedia where selectedItems.Contains(media.uuid) select media.path).ToList());
-        zipFilename = await F.CreateDownloadZip();
-    }
-
-    private async Task ToggleCheck(Guid uuid)
-    {
-        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
-        if (newClass.Contains("unchecked"))
-            selectedItems.Remove(uuid);
-        else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking
-            selectedItems.Add(uuid);
-
-        //Get currentIndex of latest selected thing. Needed only for shift click
-        int index = -1;
-        for (int i = 0; i < albumMedia.Count; i++)
-        {
-            if (albumMedia[i].uuid != uuid) continue;
-            index = i;
-            break;
-        }
-
-        await getShiftDown();
-        if (!shiftDown) //Not shift click so just select 1 item like normal.
-        {
-            lastIndex = index;
-            return;
-        }
-        await ShiftClick(index); //Select multiple.
-    }
-    //Add items from start to end into selectedItems. Used for ShiftClick.
-    private async Task AddSelected(int startIndex, int endIndex)
-    {
-        for (int i = startIndex; i <= endIndex; i++)
-        {
-            Guid currentID = albumMedia[i].uuid;
-            if (selectedItems.Contains(currentID)) continue;
-            selectedItems.Add(currentID);
-            await ToggleCheck(currentID);
-        }
-    }
-
-    //If shift was held down select multiple things
-    private async Task ShiftClick(int currentIndex)
-    {
-        //First item is on left and item shift clicked is right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selected items
-        if (lastIndex < currentIndex)
-            await AddSelected(lastIndex, currentIndex);
-        else if (lastIndex > currentIndex) //Same as above but swap 1 and 2 and the direction.
-            await AddSelected(currentIndex, lastIndex);
+        headerVis = albumsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
     
-    private async Task ClearChecks()
-    {
-        foreach (Guid item in selectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", item);
-        selectedItems.Clear();
-        albumsVis = "hidden";
-        choiceVis = "hidden";
-    }
-
-    private async Task ImgClicked(Guid uuid)
-    {
-        await GetCtrlDown();
-        if (selectedItems.Count > 0 || ctrlDown)
-            await ToggleCheck(uuid);
-        else
-            navigationManager.NavigateTo($"/view-album-item/{albumID}/{uuid}");
-    }
-
     //Remove selected from the album
-    private async Task RemoveBtnClick()
+    private static async Task RemoveBtnClick()
     {
-        foreach (Guid uuid in selectedItems) C.RemoveFromAlbum(uuid, statAlbumID);
-        await ClearChecks();
-        albumMedia = C.LoadAlbum(statAlbumID, mode);
+        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromAlbum(uuid, statAlbumID);
+        await libContentViewer.ClearChecks();
+        albumMedia.Clear();
+        libContentViewer.AddContentBottom();
     }
     
-    //Choice div stuff
-    //Show prompt and make yes Action the delete selected items
-    private void DeleteSelectedBtnClick()
-    {
-        if (albumMedia.Count == 0) return;
-        if (S.showPrompts == false)
-        {
-            DeleteSelected();
-            return;
-        }
-        
-        yesBtnFunc = DeleteSelected;
-        choiceVis = "visible";
-        choiceMsg = selectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?";
-    }
-
-    private async void DeleteSelected()
-    {
-        foreach (Guid uuid in selectedItems) C.MoveToTrash(uuid);
-        await ClearChecks();
-        albumMedia = C.LoadAlbum(statAlbumID, mode);
-        StateHasChanged();
-    }
-
     private void DeleteAlbumBtnClick()
     {
         if (S.showPrompts == false)
@@ -266,9 +129,7 @@
             return;
         }
 
-        yesBtnFunc = DeleteAlbum;
-        choiceVis = "visible";
-        choiceMsg = "Permanently Delete " + (isFolder ? "Folder" : "Album") + $" \"{albumName}\"?";
+        delPromptVis = "visible";
     }
     
     private void DeleteAlbum()
@@ -276,13 +137,7 @@
         navigationManager.NavigateTo("/albums");
         C.DeleteAlbum(statAlbumID);
     }
-
-    private void CloseChoiceDiv()
-    {
-        choiceVis = "hidden";
-        StateHasChanged();
-    }
-
+    
     //Functions for album stuff
     private static void CancelBtnClick()
     {
@@ -301,7 +156,7 @@
         
     private static void ChangeOrder(C.AVSortMode newMode)
     {
-        mode = newMode;
-        albumMedia = C.LoadAlbum(statAlbumID, mode);
+        sortMode = newMode;
+        albumMedia = C.LoadAlbum(statAlbumID, sortMode);
     }
 }
