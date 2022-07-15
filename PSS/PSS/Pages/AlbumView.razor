@@ -49,7 +49,7 @@
     <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" AlbumID="@statAlbumID"
         NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
-    <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
+    <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
     <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Album")} \"{albumName}\"?")
@@ -149,13 +149,19 @@
     }
 
     //Remove selected from the album
-    private static async Task RemoveBtnClick()
+    private async void RemoveBtnClick()
     {
         foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromAlbum(uuid, statAlbumID);
+        headerVis = "hidden";
+        await libContentViewer.HeaderVisChanged.InvokeAsync("hidden");
         await libContentViewer.ClearChecks();
+        libContentViewer.oldestDT = libContentViewer.newestDT = null;
         libContentViewer.MediaList.Clear();
         libContentViewer.AddContentBottom();
-        libContentViewer.AddContentBottom();
+        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(0);
+        await Task.Delay(1);
     }
     
     private void DeleteAlbumBtnClick()
