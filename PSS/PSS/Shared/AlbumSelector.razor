@@ -3,7 +3,6 @@
 
 <div id="albumSelectorBackground" style="visibility: @AlbumsVis">
     <div id="albumSelector">
-
         <div id="header">
             <span>Add to</span>
             @if (ShowCheckCancelButtons)
@@ -60,7 +59,7 @@
     private static int checkedFolderIndex; //Which index in folders is checked (can only have 1 checked (true)).
 
     [Parameter]
-    public C.MediaRow SelectedItem { get; set; }
+    public Guid SelectedItem { get; set; } = Guid.Empty;
     
     [Parameter] //Needs to be passed in
     public List<Guid> SelectedItems { get; set; } //Passed in from the page. Items selected by user
@@ -145,9 +144,9 @@
     {
         if (checkedFolderIndex != -1) //If a folder is selected this won't be -1
         {
-            if (SelectedItem != null)
+            if (SelectedItem != Guid.Empty)
             {
-                C.AddToAlbum(SelectedItem.uuid, folders[checkedFolderIndex].id);
+                C.AddToAlbum(SelectedItem, folders[checkedFolderIndex].id);
             }
             else
             {
@@ -161,9 +160,9 @@
             {
                 if (checkedAlbums[c] == false) continue;
 
-                if (SelectedItem != null)
+                if (SelectedItem != Guid.Empty)
                 {
-                    C.AddToAlbum(SelectedItem.uuid, albums[c].id);
+                    C.AddToAlbum(SelectedItem, albums[c].id);
                 }
                 else
                 {
