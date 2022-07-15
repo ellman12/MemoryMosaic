@@ -216,7 +216,7 @@ If it can't find any content, it shows an h1 saying no content.
 	public string ZipFilename { get; private set; }
 
 	//Used for loading more content.
-	private static DateTime? oldestDT, newestDT;
+	public DateTime? oldestDT, newestDT;
 
 	//Controls the visibility of the divs that add more content.
 	private static string moreContentTopDivVis, moreContentBottomDivVis;
