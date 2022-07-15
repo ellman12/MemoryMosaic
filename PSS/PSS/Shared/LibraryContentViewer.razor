@@ -17,26 +17,15 @@ If it can't find any content, it shows an h1 saying no content.
 }
 
 @* Display a single item in full screen, and allow moving left/right in the List. *@
-@*Stuff in top right corner*@
 <div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
 	<div id="buttons">
 	    <button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
 	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-	    <button class="iconBtn" @onclick="@(() => F.VisToggle(ref moreOptionsVis))"><span class="material-icons-outlined">more_vert</span></button>
-	</div>
-
-	<div id="moreOptionsDiv" style="visibility: @moreOptionsVis">
-	    <button class="iconBtn" @onclick="@(() => throw new NotImplementedException())" title="Add to Album"><span class="material-icons-outlined">library_add</span></button>
-	    
-	    <button class="iconBtn" @onclick="@(() => C.UpdateStarred(MediaList[viewIndex].uuid, !MediaList[viewIndex].starred))" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")">
-	        <span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span>
-	    </button>
+		<button class="iconBtn" @onclick="@(() => C.UpdateStarred(MediaList[viewIndex].uuid, !MediaList[viewIndex].starred))" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 	    
 	    @if (AlbumID != -1 && MediaList[viewIndex].thumbnail == null)
 	    {
-	        <button class="iconBtn" @onclick="@(() => C.UpdateAlbumCover(AlbumID, MediaList[viewIndex].path))" title="Use As Album Cover">
-	            <span class="material-icons-outlined">collections</span>
-	        </button>
+	        <button class="iconBtn" @onclick="@(() => C.UpdateAlbumCover(AlbumID, MediaList[viewIndex].path))" title="Use As Album Cover"><span class="material-icons-outlined">collections</span></button>
 	    }
 	</div>
 
@@ -161,7 +150,7 @@ If it can't find any content, it shows an h1 saying no content.
 	public List<C.MediaRow> MediaList { get; private set; }
 
 	///A single item for viewing.
-	private Guid SelectedItem
+	public Guid SelectedItem
 	{
 		get => _selectedItem;
 		set
@@ -170,14 +159,14 @@ If it can't find any content, it shows an h1 saying no content.
 			if (value == Guid.Empty)
 			{
 				newFilename = "";
-				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = moreOptionsVis = "hidden";
+				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = "hidden";
 			}
 			else LoadData();
 			StateHasChanged();
 		}
 	}
 
-	private static Guid _selectedItem;
+	private static Guid _selectedItem = Guid.Empty;
 
 	///Stores all items user has selected.
 	public List<Guid> SelectedItems { get; private set; }
@@ -241,7 +230,7 @@ If it can't find any content, it shows an h1 saying no content.
 	public int viewIndex;
 
 	private static DateTime? newDateTaken;
-	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, moreOptionsVis;
+	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis;
 	private static List<C.Album> albumsIn;
 }
 
@@ -267,7 +256,7 @@ If it can't find any content, it shows an h1 saying no content.
 		}
 		moreContentBottomDivVis = "visible";
 		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
-		infoVis = moreOptionsVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
+		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
 		viewIndex = 0;
 	}
 	
