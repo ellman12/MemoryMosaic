@@ -126,6 +126,7 @@
         AlbumsVis = "hidden";
         HeaderVis = "hidden";
         await SelectedItemsCountChanged.InvokeAsync(0);
+        await AlbumsVisChanged.InvokeAsync("hidden");
         await HeaderVisChanged.InvokeAsync("hidden");
     }
 
@@ -176,5 +177,9 @@
 
         if (!ShowCheckCancelButtons) return; //Needed for UploadApply. Can't run these because no checks to clear.
         await ClearChecks();
+        SelectedItems.Clear();
+        await SelectedItemsCountChanged.InvokeAsync(0);
+        await AlbumsVisChanged.InvokeAsync("hidden");
+        await HeaderVisChanged.InvokeAsync("hidden");
     }
 }
