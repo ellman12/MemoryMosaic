@@ -43,28 +43,14 @@
         </div>
     </header>
     
-    string orderBy = sortMode switch
-    {
-        C.AVSortMode.OldestDateTaken => "date_taken ASC",
-        C.AVSortMode.NewestDateTaken => "date_taken DESC",
-        C.AVSortMode.OldestAdded => "date_added_to_album ASC",
-        C.AVSortMode.NewestAdded => "date_added_to_album DESC",
-        _ => "date_taken DESC"
-    };
-    
-    string shared = $"SELECT m.path, m.date_taken, m.date_added, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
-    string topQuery = $"{shared} AND date_taken IS NOT NULL AND date_taken > @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
-    string bottomQuery = $"{shared} AND date_taken IS NOT NULL AND date_taken < @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
-    
+    UpdateQueries();
+
     //Loads every item with NULL Date Taken first, then items with Date Taken.
-    string firstQuery = "";
-    if (S.displayNoDTInAV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
-    firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 50) ORDER BY {orderBy}";
     <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" AlbumID="@statAlbumID"
         NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
     <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
-    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })" />
+    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Album")} \"{albumName}\"?")
         YesBtnClick="@(() => { navigationManager.NavigateTo("/albums"); C.DeleteAlbum(statAlbumID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
@@ -76,10 +62,11 @@
     private static int statAlbumID;
     private static bool isFolder;
     
+    private static C.AVSortMode sortMode;
+    private static string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
+    
     private static LibraryContentViewer libContentViewer = new();
     private static int selectedItemsCount;
-    private static C.AVSortMode sortMode;
-    private static List<C.MediaRow> albumMedia;
     private static string headerVis, albumsVis, delPromptVis, buttonsVis, sortDivVis;
     private static string albumName, _newAlbumName;
     
@@ -111,13 +98,63 @@
         _newAlbumName = albumName;
         headerVis = albumsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
+
+    private static void UpdateQueries()
+    {
+        switch (sortMode)
+        {
+            case C.AVSortMode.OldestDateTaken:
+                orderBy = "date_taken ASC";
+                sortColumn = "date_taken";
+                break;
+            case C.AVSortMode.NewestDateTaken:
+                orderBy = "date_taken DESC";
+                sortColumn = "date_taken";
+                break;
+            case C.AVSortMode.OldestAdded:
+                orderBy = "date_added_to_album ASC";
+                sortColumn = "date_added_to_album";
+                break;
+            case C.AVSortMode.NewestAdded:
+                orderBy = "date_added_to_album DESC";
+                sortColumn = "date_added_to_album";
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     
+        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
+        topQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+        bottomQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+    
+        //Loads every item with NULL Date Taken first, then items with Date Taken.
+        firstQuery = "";
+        if (S.displayNoDTInAV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
+        firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 50) ORDER BY {orderBy}";
+    }
+    
+    private async void ChangeOrder(C.AVSortMode newMode)
+    {
+        sortMode = newMode;
+        libContentViewer.oldestDT = libContentViewer.newestDT = null;
+        libContentViewer.MediaList.Clear();
+        UpdateQueries();
+        libContentViewer.AddContentBottom();
+        
+        //This is stupid
+        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(0);
+        await Task.Delay(1);
+    }
+
     //Remove selected from the album
     private static async Task RemoveBtnClick()
     {
         foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromAlbum(uuid, statAlbumID);
         await libContentViewer.ClearChecks();
-        albumMedia.Clear();
+        libContentViewer.MediaList.Clear();
+        libContentViewer.AddContentBottom();
         libContentViewer.AddContentBottom();
     }
     
@@ -152,11 +189,5 @@
             C.RenameAlbum(NewAlbumName, statAlbumID);
         else
             NewAlbumName = "Please enter a name";
-    }
-        
-    private static void ChangeOrder(C.AVSortMode newMode)
-    {
-        sortMode = newMode;
-        albumMedia = C.LoadAlbum(statAlbumID, sortMode);
     }
 }
