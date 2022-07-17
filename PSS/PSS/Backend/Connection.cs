@@ -631,6 +631,7 @@ namespace PSS.Backend
                     catch (IOException e) { Console.WriteLine(e); }
                 }
 
+                r.Close();
                 cmd.CommandText = "DELETE FROM media WHERE date_deleted IS NOT NULL";
                 cmd.ExecuteNonQuery();
             }
