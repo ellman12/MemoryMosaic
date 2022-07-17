@@ -35,11 +35,10 @@
     </div>
 
     UpdateQueries();
-    <LibraryContentViewer @ref="@libContentViewer" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" @bind-SelectedItemsCount="@selectedItemsCount" NoItemsText="No Items in Trash"/>
+    <LibraryContentViewer @ref="@libContentViewer" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" SelectedItemsCountChanged="@(() => selectedItemsCount = libContentViewer.SelectedItems.Count)" NoItemsText="No Items in Trash"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteItems" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@restorePromptVis" YesBtnClick="@RestoreItems" NoBtnClick="@(() => { restorePromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
-
 }
 
 @code{
@@ -123,6 +122,7 @@
         if (S.showPrompts == false)
         {
             RestoreItems();
+            StateHasChanged();
             return;
         }
         
@@ -137,9 +137,11 @@
 
     private async void RestoreItems()
     {
-        //Restore ALL
-        if (libContentViewer.SelectedItems.Count == 0)
+        if (libContentViewer.SelectedItems.Count == 0) //Restore ALL
+        {
             C.RestoreTrash();
+            libContentViewer.MediaList.Clear();
+        }
         else //Restore selected
         {
             foreach (Guid item in libContentViewer.SelectedItems)
@@ -150,8 +152,8 @@
             }
         }
         await libContentViewer.ClearChecks();
-        libContentViewer.SelectedItems.Clear();
         restorePromptVis = "hidden";
+        selectedItemsCount = 0;
         StateHasChanged();
     }
 
@@ -162,6 +164,7 @@
         if (S.showPrompts == false)
         {
             DeleteItems();
+            StateHasChanged();
             return;
         }
 
@@ -177,7 +180,10 @@
     private async void DeleteItems()
     {
         if (libContentViewer.SelectedItems.Count == 0) //Delete ALL
+        {
             C.EmptyTrash();
+            libContentViewer.MediaList.Clear();
+        }
         else //Delete selected
         {
             foreach (Guid item in libContentViewer.SelectedItems)
@@ -188,8 +194,8 @@
             }
         }
         await libContentViewer.ClearChecks();
-        libContentViewer.SelectedItems.Clear();
         delPromptVis = "hidden";
+        selectedItemsCount = 0;
         StateHasChanged();
     }
 }
