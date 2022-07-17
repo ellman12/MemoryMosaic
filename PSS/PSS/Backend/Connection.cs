@@ -615,6 +615,29 @@ namespace PSS.Backend
             }
         }
 
+        ///PERMANENTLY removes all items in Trash from server and database.
+        public static void EmptyTrash()
+        {
+            try
+            {
+                Open();
+                using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+
+                while (r.Read())
+                {
+                    try { FileSystem.DeleteFile(Path.Combine(S.libFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
+                    catch (IOException e) { Console.WriteLine(e); }
+                }
+
+                cmd.CommandText = "DELETE FROM media WHERE date_deleted IS NOT NULL";
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+            finally { Close(); }
+        }
+
         ///Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
         public static void RestoreItem(Guid uuid)
         {
