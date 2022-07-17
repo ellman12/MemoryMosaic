@@ -649,14 +649,21 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
             }
-            catch (NpgsqlException e)
+            catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+            finally { Close(); }
+        }
+
+        ///Restores EVERY item in the Trash back into library.
+        public static void RestoreTrash()
+        {
+            try
             {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+                Open();
+                using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE date_deleted IS NOT NULL", connection);
+                cmd.ExecuteNonQuery();
             }
-            finally
-            {
-                Close();
-            }
+            catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+            finally { Close(); }
         }
 
         ///<summary>Loads all rows and columns in the media table not in a folder (separate==false), and that have a date taken, into a List&lt;MediaRow&gt;.</summary>
