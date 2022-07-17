@@ -99,12 +99,3 @@ header > #albumRenameDiv {
 #albumRenameDiv > button {
     margin-left: 3px;
 }
-
-#mainDiv {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    position: absolute;
-    left: 145px;
-    top: 60px;
-}
