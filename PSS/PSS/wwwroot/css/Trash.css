@@ -85,12 +85,3 @@ header > div > .textBtn {
     background-color: var(--hover-color);
     cursor: pointer;
 }
-
-#mainDiv {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    position: absolute;
-    left: 145px;
-    top: 64px;
-}

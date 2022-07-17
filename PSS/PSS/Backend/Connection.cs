@@ -615,6 +615,30 @@ namespace PSS.Backend
             }
         }
 
+        ///PERMANENTLY removes all items in Trash from server and database.
+        public static void EmptyTrash()
+        {
+            try
+            {
+                Open();
+                using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", connection);
+                cmd.ExecuteNonQuery();
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+
+                while (r.Read())
+                {
+                    try { FileSystem.DeleteFile(Path.Combine(S.libFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
+                    catch (IOException e) { Console.WriteLine(e); }
+                }
+
+                r.Close();
+                cmd.CommandText = "DELETE FROM media WHERE date_deleted IS NOT NULL";
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+            finally { Close(); }
+        }
+
         ///Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
         public static void RestoreItem(Guid uuid)
         {
@@ -626,14 +650,21 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
             }
-            catch (NpgsqlException e)
+            catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+            finally { Close(); }
+        }
+
+        ///Restores EVERY item in the Trash back into library.
+        public static void RestoreTrash()
+        {
+            try
             {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+                Open();
+                using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE date_deleted IS NOT NULL", connection);
+                cmd.ExecuteNonQuery();
             }
-            finally
-            {
-                Close();
-            }
+            catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+            finally { Close(); }
         }
 
         ///<summary>Loads all rows and columns in the media table not in a folder (separate==false), and that have a date taken, into a List&lt;MediaRow&gt;.</summary>

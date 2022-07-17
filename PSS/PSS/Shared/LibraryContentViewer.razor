@@ -395,6 +395,9 @@ If it can't find any content, it shows an h1 saying no content.
 		SelectedItems.Clear();
 		await HeaderVisChanged.InvokeAsync("hidden");
 		delPromptVis = starPromptVis = "hidden";
+		SelectedItemsCount = 0;
+		await SelectedItemsCountChanged.InvokeAsync(0);
+		StateHasChanged();
 	}
 
 	///Either shows the delete prompt (or deletes all selected if disabled), or deletes the currently viewed item.
