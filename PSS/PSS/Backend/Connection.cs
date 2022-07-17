@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using Microsoft.VisualBasic.FileIO;
 
 namespace PSS.Backend
 {
@@ -590,7 +591,7 @@ namespace PSS.Backend
         ///PERMANENTLY remove an item from the database and DELETES the file from server.
         public static void PermDeleteItem(Guid uuid)
         {
-            File.Delete(Path.Join(S.libFolderPath, GetPathFromUuid(uuid)));
+            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 
             try
             {
