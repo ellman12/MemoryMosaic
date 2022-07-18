@@ -43,7 +43,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 	    <div class="dataDiv">
 	        <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
-	        <span>@Path.GetFileName(MediaList[viewIndex].path)</span>
+	        <span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].path)</span>
 	        <button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
 	    </div>
 	    
@@ -99,7 +99,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 	@if (MediaList[viewIndex].thumbnail == null)
 	{
-	    <div @onkeydown="@ChangeItem" tabindex="0" id="itemDiv"><img onload="document.getElementById('itemDiv').focus()" src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
+	    <div tabindex="0" id="itemDiv"><img onload="document.getElementById('itemDiv').focus()" src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
 	}
 	else
 	{
@@ -143,7 +143,9 @@ If it can't find any content, it shows an h1 saying no content.
 <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
-<KeyboardShortcuts AltS="@AltSFired" CtrlD="@CtrlDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"/>
+<KeyboardShortcuts Left="@(() => ChangeItem("Left"))" Right="@(() => ChangeItem("Right"))" AltLeft="@(() => ChangeItem("Left"))" 
+	AltRight="@(() => ChangeItem("Right"))" AltS="@AltSFired" CtrlD="@CtrlDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
+	Esc="@(() => ChangeItem("Esc"))" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 
 @code{
 	///Stores all content loaded.
@@ -452,6 +454,7 @@ If it can't find any content, it shows an h1 saying no content.
 		{
 			C.UpdateStarred(SelectedItem, !MediaList[viewIndex].starred);
 			MediaList[viewIndex].starred = !MediaList[viewIndex].starred;
+			StateHasChanged();
 		}
 	}
 
@@ -543,15 +546,15 @@ If it can't find any content, it shows an h1 saying no content.
 		SelectedItem = MediaList[viewIndex].uuid;
 	}
 
-	private void ChangeItem(KeyboardEventArgs e)
+	private void ChangeItem(string keyCode)
 	{
-		if (e.Code == "KeyB") //Back
+		if (keyCode == "Esc")
 		{
 			SelectedItem = Guid.Empty;
 			return;
 		}
 
-		if (e.Code == "ArrowLeft") ChangeItemLeft();
-		else if (e.Code == "ArrowRight") ChangeItemRight();
+		if (keyCode == "Left") ChangeItemLeft();
+		else if (keyCode == "Right") ChangeItemRight();
 	}
 }
