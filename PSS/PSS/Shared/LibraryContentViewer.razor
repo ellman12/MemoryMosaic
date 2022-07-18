@@ -144,7 +144,7 @@ If it can't find any content, it shows an h1 saying no content.
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
 <KeyboardShortcuts Left="@(() => ChangeItem("Left"))" Right="@(() => ChangeItem("Right"))" AltLeft="@(() => ChangeItem("Left"))" 
-	AltRight="@(() => ChangeItem("Right"))" AltS="@AltSFired" CtrlD="@CtrlDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
+	AltRight="@(() => ChangeItem("Right"))" AltS="@AltSFired" CtrlD="@CtrlDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))" Del="@DeleteBtnClick"
 	Esc="@(() => ChangeItem("Esc"))" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 
 @code{
@@ -427,15 +427,25 @@ If it can't find any content, it shows an h1 saying no content.
 			return;
 		}
 		delPromptVis = "visible";
+		StateHasChanged();
 	}
 
 	///Deletes all selected items.
 	private async void DeleteSelected()
 	{
-		foreach (Guid item in SelectedItems) //https://stackoverflow.com/a/604843
+		if (SelectedItem != Guid.Empty)
 		{
-			C.MoveToTrash(item);
-			MediaList.RemoveAll(u => u.uuid == item);
+			C.MoveToTrash(SelectedItem);
+			MediaList.RemoveAll(u => u.uuid == SelectedItem);
+			SelectedItem = Guid.Empty;
+		}
+		else
+		{
+			foreach (Guid item in SelectedItems) //https://stackoverflow.com/a/604843
+			{
+				C.MoveToTrash(item);
+				MediaList.RemoveAll(u => u.uuid == item);
+			}
 		}
 
 		await ClearChecks();
