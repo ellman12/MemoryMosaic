@@ -143,12 +143,14 @@ If it can't find any content, it shows an h1 saying no content.
 <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
+@*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)
 {
 	<KeyboardShortcuts Left="@(() => ChangeItem("Left"))" Right="@(() => ChangeItem("Right"))" AltLeft="@(() => ChangeItem("Left"))" 
-		AltRight="@(() => ChangeItem("Right"))" AltS="@AltSFired" CtrlD="@DelOrCtrDFired" Del="@DelOrCtrDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
+		AltRight="@(() => ChangeItem("Right"))" CtrlD="@DelOrCtrDFired" Del="@DelOrCtrDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
 		Esc="@(() => ChangeItem("Esc"))" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 }
+<KeyboardShortcuts AltS="@AltSFired"/>
 
 @code{
 	///Stores all content loaded.
@@ -459,7 +461,7 @@ If it can't find any content, it shows an h1 saying no content.
 	///Either toggles the SelectedItem's starred field, or shows the Star Prompt.
 	private void AltSFired()
 	{
-		if (SelectedItem == Guid.Empty)
+		if (SelectedItem == Guid.Empty && SelectedItems.Count > 0)
 		{
 			starPromptVis = "visible";
 			StateHasChanged();
