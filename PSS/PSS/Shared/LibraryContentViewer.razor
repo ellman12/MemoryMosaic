@@ -436,7 +436,7 @@ If it can't find any content, it shows an h1 saying no content.
 		if (SelectedItem != Guid.Empty)
 		{
 			C.MoveToTrash(SelectedItem);
-			MediaList.RemoveAll(u => u.uuid == SelectedItem);
+			MediaList.RemoveAt(viewIndex);
 			SelectedItem = Guid.Empty;
 		}
 		else
@@ -496,12 +496,6 @@ If it can't find any content, it shows an h1 saying no content.
 		newDateTaken = MediaList[viewIndex].dateTaken;
 		newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
 		albumsIn = C.GetAlbumsItemIn(SelectedItem);
-	}
-
-	private void DeleteSelectedItem()
-	{
-		C.MoveToTrash(SelectedItem);
-		SelectedItem = Guid.Empty;
 	}
 
 	private void UpdateDateTaken()
