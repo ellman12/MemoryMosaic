@@ -435,9 +435,9 @@ If it can't find any content, it shows an h1 saying no content.
 	{
 		if (SelectedItem != Guid.Empty)
 		{
+			SelectedItem = MediaList.Count > 0 ? MediaList[viewIndex].uuid : Guid.Empty;
 			C.MoveToTrash(SelectedItem);
 			MediaList.RemoveAt(viewIndex);
-			SelectedItem = Guid.Empty;
 		}
 		else
 		{
