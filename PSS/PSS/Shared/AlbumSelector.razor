@@ -91,7 +91,7 @@
         albums = C.GetAlbumsTable(true, false);
         folders = C.GetAlbumsTable(false, true);
         checkedAlbums = (from album in albums select new bool()).ToList();
-        checkedFolders = (from album in albums select new bool()).ToList();
+        checkedFolders = (from folder in folders select new bool()).ToList();
         checkedFolderIndex = -1; //-1 = a folder isn't picked
         AlbumsVis = "hidden";
         HeaderVis = "hidden";
@@ -102,7 +102,7 @@
         albums = C.GetAlbumsTable(true, false);
         folders = C.GetAlbumsTable(false, true);
         checkedAlbums = (from album in albums select new bool()).ToList();
-        checkedFolders = (from album in albums select new bool()).ToList();
+        checkedFolders = (from folder in folders select new bool()).ToList();
         checkedFolderIndex = -1; //-1 = a folder isn't picked
 
         await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
