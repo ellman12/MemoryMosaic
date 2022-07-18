@@ -144,7 +144,7 @@ If it can't find any content, it shows an h1 saying no content.
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
 <KeyboardShortcuts Left="@(() => ChangeItem("Left"))" Right="@(() => ChangeItem("Right"))" AltLeft="@(() => ChangeItem("Left"))" 
-	AltRight="@(() => ChangeItem("Right"))" AltS="@AltSFired" CtrlD="@CtrlDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))" Del="@DeleteBtnClick"
+	AltRight="@(() => ChangeItem("Right"))" AltS="@AltSFired" CtrlD="@DelOrCtrDFired" Del="@DelOrCtrDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
 	Esc="@(() => ChangeItem("Esc"))" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 
 @code{
@@ -404,7 +404,7 @@ If it can't find any content, it shows an h1 saying no content.
 	}
 
 	///Either shows the delete prompt (or deletes all selected if disabled), or deletes the currently viewed item.
-	private void CtrlDFired()
+	private void DelOrCtrDFired()
 	{
 		if (SelectedItem == Guid.Empty)
 		{
