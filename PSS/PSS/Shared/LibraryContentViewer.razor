@@ -168,7 +168,7 @@ If it can't find any content, it shows an h1 saying no content.
 		}
 	}
 
-	private static Guid _selectedItem = Guid.Empty;
+	private static Guid _selectedItem;
 
 	///Stores all items user has selected.
 	public List<Guid> SelectedItems { get; private set; }
@@ -240,6 +240,7 @@ If it can't find any content, it shows an h1 saying no content.
 	protected override void OnInitialized()
 	{
 		MediaList = new List<C.MediaRow>(150);
+		_selectedItem = Guid.Empty;
 		SelectedItems = new List<Guid>(150);
 		oldestDT = newestDT = null;
 		AddContentBottom();
