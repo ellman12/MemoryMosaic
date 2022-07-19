@@ -41,11 +41,11 @@
 </header>
 
 <div id="mainDiv">
-    @foreach (C.Album album in albums)
+    @foreach (C.Collection album in albums)
     { 
         <div class="album" onclick="location.href='/album-view/@album.id'"> @*Text and album thumbnail*@
             <div class="thumbnail">
-                @if (album.albumCover != ""){<img src="@S.LIB_REQUEST_PATH/@album.albumCover" alt=""/>}
+                @if (album.cover != ""){<img src="@S.LIB_REQUEST_PATH/@album.cover" alt=""/>}
             </div>
             <span class="albumName">@album.name</span>
         </div>
@@ -53,11 +53,11 @@
 </div>
 
 @code {
-    private static List<C.Album> albums;
+    private static List<C.Collection> albums;
     
     private static string sortBtnText;
     private static string sortDivVis;
-    private static C.AMSortMode mode;
+    private static C.CMSortMode mode;
 
     private static bool showAlbums = true;
     private static bool showFolders = false;
@@ -66,7 +66,7 @@
     {
         GetAlbumsTable();
         
-        mode = C.AMSortMode.LastModified; //Default sort mode
+        mode = C.CMSortMode.LastModified; //Default sort mode
         
         SetSortBtnText();
         sortDivVis = "hidden";
@@ -78,15 +78,15 @@
     {
         sortBtnText = mode switch
         {
-            C.AMSortMode.Title => "Album Title",
-            C.AMSortMode.TitleReversed => "Title Reversed",
-            C.AMSortMode.LastModified => "Last Modified",
-            C.AMSortMode.LastModifiedReversed => "Last Modified Reversed",
-            _ => "Album Title"
+            C.CMSortMode.Title => "Collection Title",
+            C.CMSortMode.TitleReversed => "Title Reversed",
+            C.CMSortMode.LastModified => "Last Modified",
+            C.CMSortMode.LastModifiedReversed => "Last Modified Reversed",
+            _ => "Collection Title"
         };
     }
 
-    private static void ChangeOrder(C.AMSortMode newMode)
+    private static void ChangeOrder(C.CMSortMode newMode)
     {
         mode = newMode;
         GetAlbumsTable();

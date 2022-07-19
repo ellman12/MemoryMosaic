@@ -32,12 +32,12 @@
         </div>
 
         <div id="moreOptionsDiv" style="visibility: @sortDivVis">
-            <button @onclick="@(() => ChangeOrder(C.AVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.AVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.AVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.AVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.AVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.AVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.AVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.AVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.AVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.AVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.AVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.AVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
-            <button @onclick="@(() => C.ChangeAlbumType(statAlbumID, !isFolder))"><span class="material-icons-outlined">@(isFolder ? "perm_media" : "collections")</span><span>@(isFolder ? "Change to Album" : "Change to Folder")</span></button>
-            <button @onclick="@DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(isFolder ? "Delete Folder" : "Delete Album")</span></button>
+            <button @onclick="@(() => ChangeOrder(C.CVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
+            <button @onclick="@(() => ChangeOrder(C.CVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
+            <button @onclick="@(() => ChangeOrder(C.CVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
+            <button @onclick="@(() => ChangeOrder(C.CVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
+            <button @onclick="@(() => C.ChangeCollectionType(statAlbumID, !isFolder))"><span class="material-icons-outlined">@(isFolder ? "perm_media" : "collections")</span><span>@(isFolder ? "Change to Collection" : "Change to Folder")</span></button>
+            <button @onclick="@DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(isFolder ? "Delete Folder" : "Delete Collection")</span></button>
         </div>
     </header>
     
@@ -50,8 +50,8 @@
     <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
     <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"/>
     
-    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Album")} \"{albumName}\"?")
-        YesBtnClick="@(() => { navigationManager.NavigateTo("/albums"); C.DeleteAlbum(statAlbumID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Collection")} \"{albumName}\"?")
+        YesBtnClick="@(() => { navigationManager.NavigateTo("/albums"); C.DeleteCollection(statAlbumID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
 }
 
 @code{
@@ -60,7 +60,7 @@
     private static int statAlbumID;
     private static bool isFolder;
     
-    private static C.AVSortMode sortMode;
+    private static C.CVSortMode sortMode;
     private static string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
     
     private static LibraryContentViewer libContentViewer = new();
@@ -91,8 +91,8 @@
     {
         selectedItemsCount = 0;
         statAlbumID = Int32.Parse(albumID);
-        sortMode = C.AVSortMode.NewestDateTaken; //Default
-        albumName = C.GetAlbumName(statAlbumID);
+        sortMode = C.CVSortMode.NewestDateTaken; //Default
+        albumName = C.GetCollectionName(statAlbumID);
         _newAlbumName = albumName;
         headerVis = albumsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
@@ -101,19 +101,19 @@
     {
         switch (sortMode)
         {
-            case C.AVSortMode.OldestDateTaken:
+            case C.CVSortMode.OldestDateTaken:
                 orderBy = "date_taken ASC";
                 sortColumn = "date_taken";
                 break;
-            case C.AVSortMode.NewestDateTaken:
+            case C.CVSortMode.NewestDateTaken:
                 orderBy = "date_taken DESC";
                 sortColumn = "date_taken";
                 break;
-            case C.AVSortMode.OldestAdded:
+            case C.CVSortMode.OldestAdded:
                 orderBy = "date_added_to_album ASC";
                 sortColumn = "date_added_to_album";
                 break;
-            case C.AVSortMode.NewestAdded:
+            case C.CVSortMode.NewestAdded:
                 orderBy = "date_added_to_album DESC";
                 sortColumn = "date_added_to_album";
                 break;
@@ -121,7 +121,7 @@
                 throw new ArgumentOutOfRangeException();
         }
     
-        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
+        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE collection_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
         topQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
         bottomQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
     
@@ -131,7 +131,7 @@
         firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 50) ORDER BY {orderBy}";
     }
     
-    private void ChangeOrder(C.AVSortMode newMode)
+    private void ChangeOrder(C.CVSortMode newMode)
     {
         sortMode = newMode;
         libContentViewer.oldestDT = libContentViewer.newestDT = null;
@@ -170,7 +170,7 @@
     private void DeleteAlbum()
     {
         navigationManager.NavigateTo("/albums");
-        C.DeleteAlbum(statAlbumID);
+        C.DeleteCollection(statAlbumID);
     }
     
     //Functions for album stuff
@@ -184,7 +184,7 @@
     {
         buttonsVis = "hidden";
         if (NewAlbumName != "")
-            C.RenameAlbum(NewAlbumName, statAlbumID);
+            C.RenameCollection(NewAlbumName, statAlbumID);
         else
             NewAlbumName = "Please enter a name";
     }

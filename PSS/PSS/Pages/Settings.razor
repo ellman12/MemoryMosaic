@@ -193,9 +193,7 @@
         Directory.CreateDirectory(S.tmpFolderPath);
         
         EmptyFoldersBtnClick();
-        
-        //Empty trash.
-        foreach (C.MediaRow item in C.LoadMediaTrash()) C.PermDeleteItem(item.uuid);
+        C.EmptyTrash();
     }
 
     ///Update settings.

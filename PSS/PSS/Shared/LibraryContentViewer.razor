@@ -25,7 +25,7 @@ If it can't find any content, it shows an h1 saying no content.
 	    
 	    @if (AlbumID != -1 && MediaList[viewIndex].thumbnail == null)
 	    {
-	        <button class="iconBtn" @onclick="@(() => C.UpdateAlbumCover(AlbumID, MediaList[viewIndex].path))" title="Use As Album Cover"><span class="material-icons-outlined">collections</span></button>
+	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(AlbumID, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
 	    }
 	</div>
 
@@ -56,7 +56,7 @@ If it can't find any content, it shows an h1 saying no content.
 	                <a href="/album-view/@album.id">
 	                    <div class="album">
 	                        <div class="coverDiv">
-	                            <img class="cover" src="@S.LIB_REQUEST_PATH/@album.albumCover" alt="">
+	                            <img class="cover" src="@S.LIB_REQUEST_PATH/@album.cover" alt="">
 	                        </div>
 	                        <span title="@album.name">@album.name</span>
 	                    </div>
@@ -238,7 +238,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 	private static DateTime? newDateTaken;
 	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis;
-	private static List<C.Album> albumsIn;
+	private static List<C.Collection> albumsIn;
 }
 
 @functions{
@@ -501,7 +501,7 @@ If it can't find any content, it shows an h1 saying no content.
 	{
 		newDateTaken = MediaList[viewIndex].dateTaken;
 		newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
-		albumsIn = C.GetAlbumsItemIn(SelectedItem);
+		albumsIn = C.GetCollectionsContaining(SelectedItem);
 	}
 
 	private void UpdateDateTaken()

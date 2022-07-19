@@ -12,7 +12,7 @@ VALUES ('album1', now(), false),
        ('album2', now(), false),
        ('folder1', now(), true);
 
-INSERT INTO album_entries (uuid, album_id)
+INSERT INTO album_entries (uuid, collection_id)
 VALUES ('56ff78b0-ef4d-11ec-8ea0-0242ac120002', 1),
 ('56ff7b1c-ef4d-11ec-8ea0-0242ac120002', 1),
 ('56ff7fcc-ef4d-11ec-8ea0-0242ac120002', 1),

@@ -14,7 +14,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<C.Album> Albums { get; set; }
+    public List<C.Collection> Albums { get; set; }
 
     public static event EventHandler AlbumCreated;
         
@@ -61,7 +61,7 @@
             return;
         }
 
-        C.CreateAlbum(newAlbumName, folderChecked);
+        C.CreateCollection(newAlbumName, folderChecked);
         newAlbumName = ""; //Reset for next time
         newAlbumBtnIcon = "library_add";
         newAlbumBtnText = "New Album";
