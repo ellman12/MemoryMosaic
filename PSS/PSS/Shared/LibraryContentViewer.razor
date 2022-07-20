@@ -1,12 +1,10 @@
 @*
-Component used in Index, Starred, AlbumView, No Date Taken, and Trash for displaying items in the PSS library in small chunks at a time, as well as other shared behavior like showing prompts when deleting items, etc.
+Component used in Index, Starred, CollectionView, No Date Taken, and Trash for displaying items in the PSS library in small chunks at a time, as well as other shared behavior like showing prompts when deleting items, etc.
 More content is added when mouse enters the top or bottom of the screen, as long as there is more content with date taken before/after the content already loaded.
 The default amount of items loaded at a time is 50.
 If it can't find any content, it shows an h1 saying no content.
 *@
-
 @inject IJSRuntime JSRuntime
-
 <link href="/css/components/ViewItem.css" rel="stylesheet">
 <link href="/css/components/LibraryContentViewer.css" rel="stylesheet">
 
@@ -23,9 +21,9 @@ If it can't find any content, it shows an h1 saying no content.
 	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		<button class="iconBtn" @onclick="@(() => C.UpdateStarred(MediaList[viewIndex].uuid, !MediaList[viewIndex].starred))" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 	    
-	    @if (AlbumID != -1 && MediaList[viewIndex].thumbnail == null)
+	    @if (CollectionID != -1 && MediaList[viewIndex].thumbnail == null)
 	    {
-	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(AlbumID, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
+	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(CollectionID, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
 	    }
 	</div>
 
@@ -47,18 +45,18 @@ If it can't find any content, it shows an h1 saying no content.
 	        <button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
 	    </div>
 	    
-	    @if (albumsIn != null && albumsIn.Count > 0)
+	    @if (collectionsIn != null && collectionsIn.Count > 0)
 	    {
-	        <span id="albumsText">Albums</span>
-	        <div id="albumsIn">
-	            @foreach (C.Album album in albumsIn)
+	        <span id="collectionsText">Collections Containing</span>
+	        <div id="collectionsIn">
+	            @foreach (C.Collection collection in collectionsIn)
 	            {
-	                <a href="/album-view/@album.id">
-	                    <div class="album">
+	                <a href="/collection-view/@collection.id">
+	                    <div class="collection">
 	                        <div class="coverDiv">
-	                            <img class="cover" src="@S.LIB_REQUEST_PATH/@album.cover" alt="">
+	                            <img class="cover" src="@S.LIB_REQUEST_PATH/@collection.cover" alt="">
 	                        </div>
-	                        <span title="@album.name">@album.name</span>
+	                        <span title="@collection.name">@collection.name</span>
 	                    </div>
 	                </a>
 	            }
@@ -99,7 +97,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 	@if (MediaList[viewIndex].thumbnail == null)
 	{
-	    <div tabindex="0" id="itemDiv"><img onload="document.getElementById('itemDiv').focus()" src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
+	    <div tabindex="0" id="itemDiv"><img src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
 	}
 	else
 	{
@@ -178,9 +176,9 @@ If it can't find any content, it shows an h1 saying no content.
 	///Stores all items user has selected.
 	public List<Guid> SelectedItems { get; private set; }
 
-	///Used only for when viewing the contents of an album.
+	///Used only for when viewing the contents of a collection.
 	[Parameter]
-	public int AlbumID { get; set; } = -1;
+	public int CollectionID { get; set; } = -1;
 
 	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
 	private static int lastCheckedIndex;
@@ -238,7 +236,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 	private static DateTime? newDateTaken;
 	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis;
-	private static List<C.Collection> albumsIn;
+	private static List<C.Collection> collectionsIn;
 }
 
 @functions{
@@ -501,7 +499,7 @@ If it can't find any content, it shows an h1 saying no content.
 	{
 		newDateTaken = MediaList[viewIndex].dateTaken;
 		newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
-		albumsIn = C.GetCollectionsContaining(SelectedItem);
+		collectionsIn = C.GetCollectionsContaining(SelectedItem);
 	}
 
 	private void UpdateDateTaken()

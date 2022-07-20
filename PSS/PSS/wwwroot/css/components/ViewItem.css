@@ -51,12 +51,12 @@
     margin-right: 5px;
 }
 
-#viewDiv > #infoDiv > #albumsText {
+#viewDiv > #infoDiv > #collectionsText {
     margin-left: 18px;
 }
 
-/* Showing albums this item is in */
-#viewDiv > #infoDiv > #albumsIn {
+/* Showing collections this item is in */
+#viewDiv > #infoDiv > #collectionsIn {
     border: 1px solid white;
     padding-right: 2px;
     margin-top: 12px;
@@ -64,11 +64,11 @@
     overflow-y: scroll;
 }
 
-#albumsIn > a {
+#collectionsIn > a {
     text-decoration: none; /* Remove underline */
 }
 
-#albumsIn > a > .album {
+#collectionsIn > a > .collection {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -76,13 +76,13 @@
     width: auto;
 }
 
-#albumsIn > a > .album > .coverDiv {
+#collectionsIn > a > .collection > .coverDiv {
     margin: 0;
     padding: 0;
     display: flex;
 }
 
-#albumsIn > a > .album > .coverDiv > .cover {
+#collectionsIn > a > .collection > .coverDiv > .cover {
     border-radius: 4px;
     object-fit: cover;
     width: 60px;
@@ -91,7 +91,7 @@
     background-color: #212121;
 }
 
-#albumsIn > a > .album > span {
+#collectionsIn > a > .collection > span {
     margin-top: -1px;
     margin-left: 6px;
     white-space: nowrap;
