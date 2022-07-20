@@ -18,7 +18,7 @@
     </button>
 
     <button class="textBtn" @onclick="@(() => F.VisToggle(ref collectionSelectorVis))">
-        <span class="material-icons-outlined">@(collectionSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(collectionSelectorVis == "visible" ? "Hide Albums" : "Show Albums")</span>
+        <span class="material-icons-outlined">@(collectionSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(collectionSelectorVis == "visible" ? "Hide Collections" : "Show Collections")</span>
     </button>
 
     <span id="statusSpan">@status</span>
@@ -163,7 +163,7 @@
         StateHasChanged();
     }
 
-    //Adds all the items to photo library, and, if applicable, any albums.
+    //Adds all the items to photo library, and, if applicable, any album(s) or folder.
     private static void AddItems()
     {
         int rowsAffected = 0;
