@@ -483,7 +483,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("SELECT collection_id, name, collection_cover FROM collection_entries AS e INNER JOIN collections AS c ON e.collection_id=c.id WHERE uuid=@uuid ORDER BY name ASC", connection);
+                using NpgsqlCommand cmd = new("SELECT id, name, cover FROM collections AS c INNER JOIN collection_entries AS e ON c.id=e.collection_id WHERE uuid=@uuid ORDER BY name ASC", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
