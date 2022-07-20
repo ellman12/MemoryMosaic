@@ -1,0 +1,73 @@
+@* Reusable component for a simple interface to create new albums and folders *@
+<link href="/css/components/CollectionCreator.css" rel="stylesheet">
+
+<div id="collectionCreator">
+    <button class="textBtn" @onclick="NewCollectionBtnClick"><span class="material-icons-outlined">@newCollectionBtnIcon</span><span class="btnText">@newCollectionBtnText</span></button>
+    <input type="text" placeholder="@("Enter new " + (folderChecked ? "folder" : "album") + " name")" @bind="@newCollectionName" style="display: @collectionInputDisplay"/>
+    <button class="iconBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span></button>
+
+    <div style="display: @confirmBtnDisplay">
+        <input style="margin-left: 12px" type="checkbox" @bind="@folderChecked">
+        <span @onclick="@(() => folderChecked = !folderChecked)" style="margin-left: 1px;">Folder?</span>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<C.Collection> Collections { get; set; }
+
+    public static event EventHandler CollectionCreated;
+        
+    private static string newCollectionBtnIcon;
+    private static string collectionInputDisplay;
+    private static string confirmBtnDisplay;
+    private static string newCollectionBtnText;
+    private static string newCollectionName;
+    private static bool folderChecked;
+    
+    protected override void OnInitialized()
+    {
+        newCollectionBtnIcon = "library_add";
+        newCollectionBtnText = "New Collection";
+        collectionInputDisplay = "none";
+        folderChecked = false;
+        confirmBtnDisplay = "none";
+    }
+    
+    private void NewCollectionBtnClick()
+    {
+        if (newCollectionBtnText == "New Collection")
+        {
+            newCollectionBtnIcon = "close";
+            newCollectionBtnText = "Cancel";
+            collectionInputDisplay = "inline";
+            confirmBtnDisplay = "flex";
+        }
+        else if (newCollectionBtnText == "Cancel")
+        {
+            newCollectionBtnIcon = "library_add";
+            newCollectionBtnText = "New Collection";
+            collectionInputDisplay = "none";
+            confirmBtnDisplay = "none";
+            newCollectionName = "";
+        }
+    }
+    
+    private void ConfirmBtnClick()
+    {
+        if (String.IsNullOrWhiteSpace(newCollectionName) || Collections.Select(n => n.name).Contains(newCollectionName))
+        {
+            newCollectionName = "Invalid Collection Name!";
+            return;
+        }
+
+        C.CreateCollection(newCollectionName, folderChecked);
+        newCollectionName = ""; //Reset for next time
+        newCollectionBtnIcon = "library_add";
+        newCollectionBtnText = "New Collection";
+        collectionInputDisplay = "none";
+        confirmBtnDisplay = "none";
+        folderChecked = false;
+        CollectionCreated?.Invoke(this, EventArgs.Empty);
+    }
+}

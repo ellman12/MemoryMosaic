@@ -14,7 +14,7 @@
             }
         </div>
         
-        <div id="albumCreatorDiv"><AlbumCreator Albums="@(albums.Concat(folders).ToList())"/></div>
+        <div id="collectionCreatorDiv"><CollectionCreator Collections="@(albums.Concat(folders).ToList())"/></div>
 
         <div class="albumsAndFolders">
             <span>Albums</span>
@@ -87,7 +87,7 @@
 
     protected override void OnInitialized()
     {
-        AlbumCreator.AlbumCreated += RefreshData;
+        CollectionCreator.CollectionCreated += RefreshData;
         albums = C.GetAlbumsTable(true, false);
         folders = C.GetAlbumsTable(false, true);
         checkedAlbums = (from album in albums select new bool()).ToList();

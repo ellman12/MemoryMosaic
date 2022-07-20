@@ -1,4 +1,4 @@
-#albumSelectorBackground {
+#collectionSelectorBackground {
     position: fixed;
     width: 140%;
     height: 100%;
@@ -7,7 +7,7 @@
     z-index: 999999;
 }
 
-#albumSelectorBackground > #albumSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
+#collectionSelectorBackground > #collectionSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
     position: fixed;
     left: 50%;
     top: 50%;
@@ -19,7 +19,7 @@
     border: 1px solid white;
 }
 
-#albumSelector > #header {
+#collectionSelector > #header {
     height: 50px;
     padding-top: 4px;
     padding-left: 10px;
@@ -31,7 +31,7 @@
     align-items: center;
 }
 
-#albumSelector > #header > #buttons {
+#collectionSelector > #header > #buttons {
     position: absolute;
     right: 13px;
     display: flex;
@@ -39,7 +39,7 @@
     align-items: center;
 }
 
-#albumSelector > #albumCreatorDiv {
+#collectionSelector > #collectionCreatorDiv {
     display: flex;
     align-items: center;
     position: absolute;
