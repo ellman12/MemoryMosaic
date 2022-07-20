@@ -1,17 +1,17 @@
-@page "/album-view/{albumID}"
+@page "/collection-view/{collectionID}"
 @inject NavigationManager navigationManager
 
-<title>@albumName - PSS</title>
-<link href="css/AlbumView.css" rel="stylesheet">
+<title>@collectionName - PSS</title>
+<link href="css/CollectionView.css" rel="stylesheet">
 
 @{
-    isFolder = C.IsFolder(statAlbumID);
+    isFolder = C.IsFolder(statCollectionID);
     <header>
         <button class="iconBtn" @onclick="@libContentViewer.ClearChecks" style="visibility: @headerVis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
         <span style="visibility: @headerVis" id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
 
-        <div id="albumRenameDiv">
-            <input type="text" placeholder="Enter new album name" @bind="NewAlbumName" @bind:event="oninput" autocomplete="off">
+        <div id="collectionRenameDiv">
+            <input type="text" placeholder="Enter new collection name" @bind="@NewCollectionName" @bind:event="oninput" autocomplete="off">
             
             <button class="iconBtn" @onclick="@CancelBtnClick" style="visibility: @buttonsVis">
                 <span class="material-icons-outlined">close</span>
@@ -24,7 +24,7 @@
 
         <div id="buttons">
             <button class="iconBtn"><a style="text-decoration: none; visibility: @headerVis" class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected" href="@S.TMP_REQUEST_PATH/@libContentViewer.ZipFilename" download="@libContentViewer.ZipFilename">file_download</a></button>
-            <button class="iconBtn" style="visibility: @headerVis" @onclick="@(() => albumsVis = "visible")" title="Add Selected to Album"><span class="material-icons-outlined">library_add</span></button>
+            <button class="iconBtn" style="visibility: @headerVis" @onclick="@(() => collectionsVis = "visible")" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
             <button class="iconBtn" style="visibility: @headerVis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref libContentViewer.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" style="visibility: @headerVis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
             <button class="iconBtn" style="visibility: @headerVis" @onclick="@libContentViewer.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
@@ -36,28 +36,28 @@
             <button @onclick="@(() => ChangeOrder(C.CVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(C.CVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
             <button @onclick="@(() => ChangeOrder(C.CVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
-            <button @onclick="@(() => C.ChangeCollectionType(statAlbumID, !isFolder))"><span class="material-icons-outlined">@(isFolder ? "perm_media" : "collections")</span><span>@(isFolder ? "Change to Collection" : "Change to Folder")</span></button>
-            <button @onclick="@DeleteAlbumBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(isFolder ? "Delete Folder" : "Delete Collection")</span></button>
+            <button @onclick="@(() => C.ChangeCollectionType(statCollectionID, !isFolder))"><span class="material-icons-outlined">@(isFolder ? "perm_media" : "collections")</span><span>@(isFolder ? "Change to Collection" : "Change to Folder")</span></button>
+            <button @onclick="@DeleteCollectionBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(isFolder ? "Delete Folder" : "Delete Collection")</span></button>
         </div>
     </header>
     
     UpdateQueries();
 
     //Loads every item with NULL Date Taken first, then items with Date Taken.
-    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" AlbumID="@statAlbumID"
+    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" CollectionID="@statCollectionID"
         NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
-    <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@albumsVis"/>
-    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"/>
+    <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
+    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
     
-    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Collection")} \"{albumName}\"?")
-        YesBtnClick="@(() => { navigationManager.NavigateTo("/albums"); C.DeleteCollection(statAlbumID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Collection")} \"{collectionName}\"?")
+        YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(statCollectionID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
 }
 
 @code{
     [Parameter]
-    public string albumID { get; set; }
-    private static int statAlbumID;
+    public string collectionID { get; set; }
+    private static int statCollectionID;
     private static bool isFolder;
     
     private static C.CVSortMode sortMode;
@@ -65,21 +65,21 @@
     
     private static LibraryContentViewer libContentViewer = new();
     private static int selectedItemsCount;
-    private static string headerVis, albumsVis, delPromptVis, buttonsVis, sortDivVis;
-    private static string albumName, _newAlbumName;
+    private static string headerVis, collectionsVis, delPromptVis, buttonsVis, sortDivVis;
+    private static string collectionName, _newCollectionName;
     
-    private static string NewAlbumName
+    private static string NewCollectionName
     {
-        get => _newAlbumName;
+        get => _newCollectionName;
         set
         {
-            if (value == albumName) //Same so don't need to reapply
+            if (value == collectionName) //Same so don't need to reapply
             {
                 buttonsVis = "hidden";
             }
-            else if (value != albumName)
+            else if (value != collectionName)
             {
-                _newAlbumName = value;
+                _newCollectionName = value;
                 buttonsVis = "visible";
             }
         }
@@ -90,11 +90,11 @@
     protected override void OnInitialized()
     {
         selectedItemsCount = 0;
-        statAlbumID = Int32.Parse(albumID);
+        statCollectionID = Int32.Parse(collectionID);
         sortMode = C.CVSortMode.NewestDateTaken; //Default
-        albumName = C.GetCollectionName(statAlbumID);
-        _newAlbumName = albumName;
-        headerVis = albumsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
+        collectionName = C.GetCollectionName(statCollectionID);
+        _newCollectionName = collectionName;
+        headerVis = collectionsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
 
     private static void UpdateQueries()
@@ -110,18 +110,18 @@
                 sortColumn = "date_taken";
                 break;
             case C.CVSortMode.OldestAdded:
-                orderBy = "date_added_to_album ASC";
-                sortColumn = "date_added_to_album";
+                orderBy = "date_added_to_collection ASC";
+                sortColumn = "date_added_to_collection";
                 break;
             case C.CVSortMode.NewestAdded:
-                orderBy = "date_added_to_album DESC";
-                sortColumn = "date_added_to_album";
+                orderBy = "date_added_to_collection DESC";
+                sortColumn = "date_added_to_collection";
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
     
-        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
+        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={statCollectionID} AND date_deleted IS NULL AND separate={isFolder}";
         topQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
         bottomQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
     
@@ -142,10 +142,10 @@
         StateHasChanged();
     }
 
-    //Remove selected from the album
+    //Remove selected from the collection
     private async void RemoveBtnClick()
     {
-        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, statAlbumID);
+        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, statCollectionID);
         headerVis = "hidden";
         await libContentViewer.SelectedItemsCountChanged.InvokeAsync(0);
         await libContentViewer.HeaderVisChanged.InvokeAsync("hidden");
@@ -156,36 +156,36 @@
         StateHasChanged();
     }
     
-    private void DeleteAlbumBtnClick()
+    private void DeleteCollectionBtnClick()
     {
         if (S.showPrompts == false)
         {
-            DeleteAlbum();
+            DeleteCollection();
             return;
         }
 
         delPromptVis = "visible";
     }
     
-    private void DeleteAlbum()
+    private void DeleteCollection()
     {
-        navigationManager.NavigateTo("/albums");
-        C.DeleteCollection(statAlbumID);
+        navigationManager.NavigateTo("/collections");
+        C.DeleteCollection(statCollectionID);
     }
     
-    //Functions for album stuff
+    //Functions for collection stuff
     private static void CancelBtnClick()
     {
         buttonsVis = "hidden";
-        _newAlbumName = albumName; //Reset to OG
+        _newCollectionName = collectionName; //Reset to OG
     }
 
     private static void ConfirmBtnClick()
     {
         buttonsVis = "hidden";
-        if (NewAlbumName != "")
-            C.RenameCollection(NewAlbumName, statAlbumID);
+        if (NewCollectionName != "")
+            C.RenameCollection(NewCollectionName, statCollectionID);
         else
-            NewAlbumName = "Please enter a name";
+            NewCollectionName = "Please enter a name";
     }
 }
