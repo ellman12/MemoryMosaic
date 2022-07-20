@@ -121,7 +121,7 @@
                 throw new ArgumentOutOfRangeException();
         }
     
-        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE collection_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
+        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_album, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={statAlbumID} AND date_deleted IS NULL AND separate={isFolder}";
         topQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
         bottomQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
     

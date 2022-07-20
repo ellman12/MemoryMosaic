@@ -332,7 +332,7 @@ namespace PSS.Backend
             return returnVal;
         } 
 
-        ///<summary>Deletes the album with the given ID, and remove all items in this album from collections_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
+        ///<summary>Deletes the album with the given ID, and remove all items in this album from collection_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
         ///<param name="collectionID">The id of the album to delete.</param>
         public static void DeleteCollection(int collectionID)
         {
@@ -341,11 +341,11 @@ namespace PSS.Backend
                 Open();
                 
                 //Set all items to no longer being separate (only matters if this was a folder). If don't do this they won't appear in main library.
-                NpgsqlCommand cmd = new("UPDATE media SET separate=false FROM collections_entries WHERE collection_id=@collectionID AND collections_entries.uuid=media.uuid", connection);
+                NpgsqlCommand cmd = new("UPDATE media SET separate=false FROM collection_entries WHERE collection_id=@collectionID AND collection_entries.uuid=media.uuid", connection);
                 cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
                 
-                //Removing the row for this album in collections table automatically removes any rows in collections_entries referencing this album.
+                //Removing the row for this album in collections table automatically removes any rows in collection_entries referencing this album.
                 cmd = new NpgsqlCommand("DELETE FROM collections WHERE id=@collectionID", connection);
                 cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
@@ -360,7 +360,7 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Add a single item to an album in collections_entries. If it's a folder it handles all that automatically.</summary>
+        ///<summary>Add a single item to an album in collection_entries. If it's a folder it handles all that automatically.</summary>
         ///<param name="uuid">The uuid of the item.</param>
         ///<param name="collectionID">The ID of the album to add the item to.</param>
         public static void AddToAlbum(Guid uuid, int collectionID)
@@ -377,12 +377,12 @@ namespace PSS.Backend
                 if (isFolder)
                 {
                     //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
-                    cmd.CommandText = "DELETE FROM collections_entries WHERE uuid=@uuid; UPDATE media SET separate=true WHERE uuid=@uuid";
+                    cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid; UPDATE media SET separate=true WHERE uuid=@uuid";
                     cmd.ExecuteNonQuery();
                 }
 
                 //Actually add the item to the folder/album and set the album's last updated to now.
-                cmd.CommandText = "INSERT INTO collections_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
+                cmd.CommandText = "INSERT INTO collection_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -403,7 +403,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("DELETE FROM collections_entries WHERE collection_id=@collectionID AND uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("DELETE FROM collection_entries WHERE collection_id=@collectionID AND uuid=@uuid", connection);
                 cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
@@ -511,7 +511,7 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("UPDATE media SET separate=@folder FROM collections_entries WHERE collection_id=@collectionID AND collections_entries.uuid=media.uuid", connection);
+                using NpgsqlCommand cmd = new("UPDATE media SET separate=@folder FROM collection_entries WHERE collection_id=@collectionID AND collection_entries.uuid=media.uuid", connection);
                 cmd.Parameters.AddWithValue("@folder", folder);
                 cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
@@ -564,7 +564,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "DELETE FROM collections_entries WHERE uuid=@uuid AND deleted = TRUE";
+                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid AND deleted = TRUE";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)

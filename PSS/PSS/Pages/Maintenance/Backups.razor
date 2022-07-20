@@ -104,7 +104,7 @@
     {
         //Clears the database.
         C.Open();
-        using NpgsqlCommand cmd = new NpgsqlCommand("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS albums CASCADE; DROP TABLE IF EXISTS album_entries CASCADE;", C.connection);
+        using NpgsqlCommand cmd = new NpgsqlCommand("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS albums CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
         cmd.ExecuteNonQuery();
         C.Close();
         
