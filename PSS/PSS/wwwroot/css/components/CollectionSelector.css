@@ -49,7 +49,7 @@
     top: 45px;
 }
 
-.albumsAndFolders {
+.collections {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -59,11 +59,11 @@
     height: 100%;
 }
 
-.albumsAndFolders > span {
+.collections > span {
     margin-bottom: 8px;
 }
 
-.albumsList {
+.collectionsList {
     margin-bottom: 12px;
     border: 1px solid white;
     padding-right: 2px;
@@ -71,35 +71,35 @@
     overflow-y: scroll;
 }
 
-.albumsList .album {
+.collectionsList > .collection {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
 }
 
-.albumsList .album:hover {
+.collectionsList > .collection:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
-.albumsList .coverDiv {
+.collectionsList > .collection > .coverDiv {
     display: flex;
     width: 60px;
     height: 60px;
 }
 
-.albumsList img {
+.collectionsList > .collection > img {
     object-fit: cover;
     width: 60px;
     height: 60px;
 }
 
-.albumsList .album input[type="checkbox"] {
+.collectionsList .collection input[type="checkbox"] {
     margin-left: 7px;
 }
 
-.albumsList .album span {
+.collectionsList .collection span {
     margin-top: -1px;
     margin-left: 6px;
     white-space: nowrap;

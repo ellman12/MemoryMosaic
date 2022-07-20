@@ -53,7 +53,7 @@
         }
     }
     
-    private void ConfirmBtnClick()
+    public void ConfirmBtnClick()
     {
         if (String.IsNullOrWhiteSpace(newCollectionName) || Collections.Select(n => n.name).Contains(newCollectionName))
         {

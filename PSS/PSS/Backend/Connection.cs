@@ -256,14 +256,14 @@ namespace PSS.Backend
 
         ///This has 3 different use cases: give a collection a cover if it doesn't have a cover, update an existing cover, or remove a collection cover (supply null as path).
         ///Collections aren't required to have a cover.
-        public static void UpdateCollectionCover(string albumName, string path)
+        public static void UpdateCollectionCover(string collectionName, string path)
         {
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("UPDATE collections SET cover=@path WHERE name=@albumName", connection);
+                using NpgsqlCommand cmd = new("UPDATE collections SET cover=@path WHERE name=@collectionName", connection);
                 cmd.Parameters.AddWithValue("@path", path);
-                cmd.Parameters.AddWithValue("@albumName", albumName);
+                cmd.Parameters.AddWithValue("@collectionName", collectionName);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -332,8 +332,8 @@ namespace PSS.Backend
             return returnVal;
         } 
 
-        ///<summary>Deletes the album with the given ID, and remove all items in this album from collection_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
-        ///<param name="collectionID">The id of the album to delete.</param>
+        ///<summary>Deletes the collection with the given ID, and remove all items in this collection from collection_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete a collection without losing the actual photos and videos.</summary>
+        ///<param name="collectionID">The id of the collection to delete.</param>
         public static void DeleteCollection(int collectionID)
         {
             try
@@ -345,7 +345,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
                 
-                //Removing the row for this album in collections table automatically removes any rows in collection_entries referencing this album.
+                //Removing the row for this collection in collections table automatically removes any rows in collection_entries referencing this collection.
                 cmd = new NpgsqlCommand("DELETE FROM collections WHERE id=@collectionID", connection);
                 cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
@@ -360,10 +360,10 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Add a single item to an album in collection_entries. If it's a folder it handles all that automatically.</summary>
+        ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
         ///<param name="uuid">The uuid of the item.</param>
-        ///<param name="collectionID">The ID of the album to add the item to.</param>
-        public static void AddToAlbum(Guid uuid, int collectionID)
+        ///<param name="collectionID">The ID of the collection to add the item to.</param>
+        public static void AddToCollection(Guid uuid, int collectionID)
         {
             bool isFolder = IsFolder(collectionID);
             
@@ -381,7 +381,7 @@ namespace PSS.Backend
                     cmd.ExecuteNonQuery();
                 }
 
-                //Actually add the item to the folder/album and set the album's last updated to now.
+                //Actually add the item to the collection and set the collection's last updated to now.
                 cmd.CommandText = "INSERT INTO collection_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
                 cmd.ExecuteNonQuery();
             }
@@ -395,10 +395,10 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Remove a single item from an album.</summary>
+        ///<summary>Remove a single item from a collection.</summary>
         ///<param name="uuid">The uuid of the item to remove.</param>
-        ///<param name="collectionID">ID of the album to remove from.</param>
-        public static void RemoveFromAlbum(Guid uuid, int collectionID)
+        ///<param name="collectionID">ID of the collection to remove from.</param>
+        public static void RemoveFromCollection(Guid uuid, int collectionID)
         {
             try
             {
@@ -429,7 +429,7 @@ namespace PSS.Backend
         ///<param name="showFolders">Should folders be selected?</param>
         ///<param name="mode">How should the data be sorted?</param>
         ///<returns>A List&lt;Collection&gt; of all the albums and/or folders.</returns>
-        public static List<Collection> GetAlbumsTable(bool showAlbums, bool showFolders, CMSortMode mode = CMSortMode.Title)
+        public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, CMSortMode mode = CMSortMode.Title)
         {
             List<Collection> collections = new();
 
@@ -478,7 +478,7 @@ namespace PSS.Backend
         ///<param name="uuid">Uuid of the item.</param>
         public static List<Collection> GetCollectionsContaining(Guid uuid)
         {
-            List<Collection> albums = new();
+            List<Collection> collections = new();
 
             try
             {
@@ -487,7 +487,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) albums.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
+                while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
                 r.Close();
             }
             catch (NpgsqlException e)
@@ -499,11 +499,11 @@ namespace PSS.Backend
                 Close();
             }
             
-            return albums;
+            return collections;
         }
 
         //https://www.postgresqltutorial.com/postgresql-update-join/
-        ///<summary>Change an album to a folder or vice versa.</summary>
+        ///<summary>Change a collection to a folder or vice versa.</summary>
         ///<param name="collectionID">ID of album or folder to change into folder or album.</param>
         ///<param name="folder">Specify true if want to change album -> folder. False for folder -> album</param>
         public static void ChangeCollectionType(int collectionID, bool folder)
@@ -516,7 +516,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "UPDATE albums SET folder=@folder WHERE id=@collectionID";
+                cmd.CommandText = "UPDATE collections SET folder=@folder WHERE id=@collectionID";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)

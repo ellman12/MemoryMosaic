@@ -47,7 +47,7 @@
     <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" AlbumID="@statAlbumID"
         NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
-    <AlbumSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-AlbumsVis="@albumsVis"/>
+    <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@albumsVis"/>
     <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumsVis); StateHasChanged(); })"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Collection")} \"{albumName}\"?")
@@ -145,7 +145,7 @@
     //Remove selected from the album
     private async void RemoveBtnClick()
     {
-        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromAlbum(uuid, statAlbumID);
+        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, statAlbumID);
         headerVis = "hidden";
         await libContentViewer.SelectedItemsCountChanged.InvokeAsync(0);
         await libContentViewer.HeaderVisChanged.InvokeAsync("hidden");

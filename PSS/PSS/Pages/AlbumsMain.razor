@@ -11,11 +11,11 @@
     <div id="checkboxes">
         <div>
             <input type="checkbox" @bind="@showAlbums">
-            <span @onclick="@(() => { showAlbums = !showAlbums; GetAlbumsTable(); })">Show Albums</span>
+            <span @onclick="@(() => { showAlbums = !showAlbums; GetCollectionsTable(); })">Show Albums</span>
         </div>
         <div>
             <input type="checkbox" @bind="@showFolders">
-            <span @onclick="@(() => { showFolders = !showFolders; GetAlbumsTable(); })">Show Folders</span>
+            <span @onclick="@(() => { showFolders = !showFolders; GetCollectionsTable(); })">Show Folders</span>
         </div>
     </div>
 
@@ -64,7 +64,7 @@
 
     protected override void OnInitialized()
     {
-        GetAlbumsTable();
+        GetCollectionsTable();
         
         mode = C.CMSortMode.LastModified; //Default sort mode
         
@@ -72,7 +72,7 @@
         sortDivVis = "hidden";
     }
 
-    private static void GetAlbumsTable() => albums = C.GetAlbumsTable(showAlbums, showFolders, mode);
+    private static void GetCollectionsTable() => albums = C.GetCollectionsTable(showAlbums, showFolders, mode);
 
     private static void SetSortBtnText()
     {
@@ -89,7 +89,7 @@
     private static void ChangeOrder(C.CMSortMode newMode)
     {
         mode = newMode;
-        GetAlbumsTable();
+        GetCollectionsTable();
         SetSortBtnText();
         sortDivVis = "hidden";
     }
