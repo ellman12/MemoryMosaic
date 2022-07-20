@@ -63,7 +63,6 @@
 }
 
 @functions{
-
     ///Create a backup .zip file of library and database on server, and add the backup to the top of the page of  backups.
     private void CreateBackup()
     {
@@ -104,7 +103,7 @@
     {
         //Clears the database.
         C.Open();
-        using NpgsqlCommand cmd = new NpgsqlCommand("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS albums CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
+        using NpgsqlCommand cmd = new NpgsqlCommand("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
         cmd.ExecuteNonQuery();
         C.Close();
         

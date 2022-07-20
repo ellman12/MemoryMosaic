@@ -53,15 +53,15 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Returns how many albums you have.</summary>
-        ///<returns>The number of albums you have. 0 if none. -1 if error occured.</returns>
-        public static long CountAlbums()
+        ///<summary>Returns how many collections you have.</summary>
+        ///<returns>The number of collections you have. 0 if none. -1 if error occured.</returns>
+        public static long CountCollections()
         {
             long rows = 0;
             try
             {
                 C.Open();
-                using NpgsqlCommand cmd = new("SELECT id FROM albums", C.connection);
+                using NpgsqlCommand cmd = new("SELECT id FROM collections", C.connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 while (r.Read()) rows++;
@@ -69,7 +69,7 @@ namespace PSS.Backend
             }
             catch (Exception e)
             {
-                Console.WriteLine("Counting albums rows error. " + e.Message);
+                Console.WriteLine("Counting collections rows error. " + e.Message);
                 return -1;
             }
             finally
