@@ -91,7 +91,7 @@
         {
             <span>@($"{mediaRowCount} {(mediaRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
             <span>@($"{trashRowCount} {(trashRowCount == 1 ? "Item In Trash" : "Items In Trash")}")</span>
-            <span>@($"{albumsCount} {(albumsCount == 1 ? "Album" : "Albums")}")</span>
+            <span>@($"{collectionsCount} {(collectionsCount == 1 ? "Collection" : "Collections")}")</span>
             <span style="margin-top: 14px;">Library Drive Total Size (Usable): @F.FormatBytes(totalUsableDriveSize)</span>
             <span>Library Drive Free Space: @F.FormatBytes(freeDriveSpace)</span>
             <progress style="margin-bottom: 14px" max="100" value="@((float)freeDriveSpace / totalUsableDriveSize * 100)"></progress>
@@ -150,7 +150,7 @@
     
     //Stats
     private static bool statsLoaded;
-    private static long mediaRowCount, trashRowCount, albumsCount;
+    private static long mediaRowCount, trashRowCount, collectionsCount;
     private static long totalUsableDriveSize; //How much space the drive pss_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
     private static long freeDriveSpace; //Bytes
     private static long librarySize; //Bytes
@@ -178,7 +178,7 @@
         //Stats
         statsLoaded = false;
         mediaRowCount = trashRowCount = 0;
-        albumsCount = 0;
+        collectionsCount = 0;
         totalUsableDriveSize = 0;
         freeDriveSpace = 0;
         librarySize = 0;
@@ -193,9 +193,7 @@
         Directory.CreateDirectory(S.tmpFolderPath);
         
         EmptyFoldersBtnClick();
-        
-        //Empty trash.
-        foreach (C.MediaRow item in C.LoadMediaTrash()) C.PermDeleteItem(item.uuid);
+        C.EmptyTrash();
     }
 
     ///Update settings.
@@ -259,7 +257,7 @@
         statsLoaded = true;
         mediaRowCount = Stats.GetNumItemsInLibrary();
         trashRowCount = Stats.GetNumItemsInTrash();
-        albumsCount = Stats.CountAlbums();
+        collectionsCount = Stats.CountCollections();
         
         DriveInfo driveInfo = new(S.libFolderPath);
         totalUsableDriveSize = driveInfo.TotalSize;

@@ -69,7 +69,7 @@ header > #selectedAmtText {
     padding: 11px 12px 11px 10px;
 }
 
-header > #albumRenameDiv {
+header > #collectionRenameDiv {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -78,7 +78,7 @@ header > #albumRenameDiv {
     left: 20%;
 }
 
-#albumRenameDiv > input[type="text"] {
+#collectionRenameDiv > input[type="text"] {
     background-color: black;
     border: 2px solid black;
     outline: none;
@@ -86,16 +86,16 @@ header > #albumRenameDiv {
     width: 50%;
 }
 
-#albumRenameDiv > input[type="text"]:hover {
+#collectionRenameDiv > input[type="text"]:hover {
     border-bottom: 2px solid #dadce0;
     transition: all .3s cubic-bezier(.4,0,.2,1);
 }
 
-#albumRenameDiv > input[type="text"]:focus {
+#collectionRenameDiv > input[type="text"]:focus {
     border-bottom: 2px solid #4285f4;
     transition: all .3s cubic-bezier(.4,0,.2,1);
 }
 
-#albumRenameDiv > button {
+#collectionRenameDiv > button {
     margin-left: 3px;
 }

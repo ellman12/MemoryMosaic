@@ -1,4 +1,4 @@
-/* Main albums page where user clicks album thumbnail they want to view items of */
+/* Main collections page where user clicks collection thumbnail they want to view items of */
 * {
     user-select: none;
 }
@@ -18,7 +18,7 @@ header {
     background-color: black;
 }
 
-header > #albumsText {
+header > #collectionsText {
     font-size: 1.125rem;
     font-weight: 400;
     letter-spacing: 0;
@@ -86,8 +86,8 @@ header > #sortDiv > button {
     top: 84px;
 }
 
-/* Div containing album name and thumbnail */
-#mainDiv > .album {
+/* Div containing collection name and thumbnail */
+#mainDiv > .collection {
     position: relative;
     margin-bottom: 45px;
     margin-left: 25px;
@@ -95,16 +95,16 @@ header > #sortDiv > button {
     flex-direction: column;
 }
 
-#mainDiv > .album:hover {
+#mainDiv > .collection:hover {
     cursor: pointer;
 }
 
-#mainDiv > .album:hover > .thumbnail > .dotsBtn {
+#mainDiv > .collection:hover > .thumbnail > .dotsBtn {
     opacity: 1;
     transition: all .3s cubic-bezier(0, 0, .2, 1);
 }
 
-#mainDiv > .album > .thumbnail {
+#mainDiv > .collection > .thumbnail {
     margin: 0;
     padding: 0;
     display: flex;
@@ -120,7 +120,7 @@ header > #sortDiv > button {
     height: 200px;
 }
 
-#mainDiv > .album > .albumName {
+#mainDiv > .collection > .collectionName {
     width: 200px;
     overflow: hidden;
     white-space: nowrap;

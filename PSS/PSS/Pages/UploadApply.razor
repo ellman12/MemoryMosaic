@@ -17,8 +17,8 @@
         <span class="material-icons-outlined">delete_forever</span><span>Delete Errors</span>
     </button>
 
-    <button class="textBtn" @onclick="@(() => F.VisToggle(ref albumSelectorVis))">
-        <span class="material-icons-outlined">@(albumSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(albumSelectorVis == "visible" ? "Hide Albums" : "Show Albums")</span>
+    <button class="textBtn" @onclick="@(() => F.VisToggle(ref collectionSelectorVis))">
+        <span class="material-icons-outlined">@(collectionSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(collectionSelectorVis == "visible" ? "Hide Collections" : "Show Collections")</span>
     </button>
 
     <span id="statusSpan">@status</span>
@@ -32,9 +32,9 @@
 </div>
 
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
-<AlbumSelector @ref="@albumSelector" AlbumsVis="@albumSelectorVis" SelectedItems="@allGuids" ShowCheckCancelButtons="false"/>
+<CollectionSelector @ref="@collectionSelector" CollectionsVis="@collectionSelectorVis" SelectedItems="@allGuids" ShowCheckCancelButtons="false"/>
 
-<KeyboardShortcuts AltA="@(() => { F.VisToggle(ref albumSelectorVis); StateHasChanged(); })" />
+<KeyboardShortcuts AltA="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" />
 
 @{
     GC.Collect();
@@ -73,9 +73,9 @@
 }
 
 @code{
-    private static AlbumSelector albumSelector = new();
+    private static CollectionSelector collectionSelector = new();
 
-    private static List<Guid> allGuids; //Passed in to AlbumSelector and gets items added in AddItems().
+    private static List<Guid> allGuids; //Passed in to CollectionSelector and gets items added in AddItems().
     private static List<string> allFullPaths;
     private static List<C.UploadFile> allFiles;
 
@@ -90,7 +90,7 @@
     private static bool errorChecked;
     private static bool infoChecked;
 
-    private static string albumSelectorVis;
+    private static string collectionSelectorVis;
     
     protected override void OnInitialized()
     {
@@ -114,7 +114,7 @@
     
         promptVis = "hidden";
         filterVis = "hidden";
-        albumSelectorVis = "hidden";
+        collectionSelectorVis = "hidden";
         neitherChecked = false;
         warningChecked = false;
         errorChecked = false;
@@ -141,7 +141,7 @@
         StateHasChanged();
     }
 
-    //Adds all the items to photo library, and, if applicable, any albums.
+    //Adds all the items to photo library, and, if applicable, any album(s) or folder.
     private static void AddItems()
     {
         int rowsAffected = 0;
@@ -169,9 +169,9 @@
             }
         }
         
-        albumSelector.ConfirmBtnClick();
+        collectionSelector.ConfirmBtnClick();
         status = $"Added {rowsAffected} items to library";
         allFiles.Clear();
-        albumSelectorVis = "hidden";
+        collectionSelectorVis = "hidden";
     }
 }

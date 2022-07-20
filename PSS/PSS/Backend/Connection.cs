@@ -9,8 +9,8 @@ namespace PSS.Backend
     {
         public static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
 
-        //AM = AlbumsMain
-        public enum AMSortMode
+        ///How items in CollectionsMain should be sorted.
+        public enum CMSortMode
         {
             Title,
             TitleReversed,
@@ -18,8 +18,8 @@ namespace PSS.Backend
             LastModifiedReversed
         }
         
-        //AV = AlbumView
-        public enum AVSortMode
+        ///How items in CollectionView should be sorted.
+        public enum CVSortMode
         {
             OldestDateTaken,
             NewestDateTaken,
@@ -27,6 +27,8 @@ namespace PSS.Backend
             NewestAdded
         }
 
+        
+        ///How items in Trash should be sorted.
         public enum TrashSortMode
         {
             NewestDateDeleted, //Default
@@ -35,26 +37,26 @@ namespace PSS.Backend
             OldestDateTaken
         }
 
-        //Represents a record from the albums table.
-        public record Album
+        //Represents a row from the Collections table.
+        public record Collection
         {
             public readonly int id;
             public readonly string name;
-            public readonly string albumCover;
+            public readonly string cover;
             public readonly DateTime dateUpdated;
 
-            public Album(int id, string name, string albumCover)
+            public Collection(int id, string name, string cover)
             {
                 this.id = id;
                 this.name = name;
-                this.albumCover = albumCover;
+                this.cover = cover;
             }
             
-            public Album(int id, string name, string albumCover, DateTime dateUpdated)
+            public Collection(int id, string name, string cover, DateTime dateUpdated)
             {
                 this.id = id;
                 this.name = name;
-                this.albumCover = albumCover;
+                this.cover = cover;
                 this.dateUpdated = dateUpdated;
             }
         }
@@ -191,7 +193,7 @@ namespace PSS.Backend
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
             }
             finally
             {
@@ -201,19 +203,19 @@ namespace PSS.Backend
             return rowsAffected;
         }
 
-        ///<summary>Create a new album and add it to the albums table.</summary>
-        ///<param name="name">The name for the new album.</param>
-        ///<param name="folder">True if this album should be a folder. False by default.</param>
-        ///<returns>True if successfully created album/folder, false if album/folder couldn't be created (e.g., because duplicate album name).</returns>
-        ///<remarks>The name column in the albums table requires all values to be unique.</remarks>
-        public static bool CreateAlbum(string name, bool folder = false)
+        ///<summary>Create a new Collection and add it to the `collections` table.</summary>
+        ///<param name="name">The name for the new collection.</param>
+        ///<param name="isFolder">True if this collection should be a folder. False by default.</param>
+        ///<returns>True if successfully created collection, false if collection couldn't be created (e.g., because duplicate name).</returns>
+        ///<remarks>The name column in the collection table requires all values to be unique.</remarks>
+        public static bool CreateCollection(string name, bool isFolder = false)
         {
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("INSERT INTO albums (name, last_updated, folder) VALUES (@name, now(), @folder)", connection);
+                using NpgsqlCommand cmd = new("INSERT INTO collections (name, last_updated, folder) VALUES (@name, now(), @isFolder)", connection);
                 cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@folder", folder);
+                cmd.Parameters.AddWithValue("@isFolder", isFolder);
                 cmd.ExecuteNonQuery();
                 return true;
             }
@@ -229,15 +231,15 @@ namespace PSS.Backend
         }
 
         
-        ///<summary>Give an album a new name.</summary>
-        ///<param name="newName">The new name for the album.</param>
-        ///<param name="id">The id of the album to rename.</param>
-        public static void RenameAlbum(string newName, int id)
+        ///<summary>Give a collection a new name.</summary>
+        ///<param name="newName">The new name for the collection.</param>
+        ///<param name="id">The id of the collection to rename.</param>
+        public static void RenameCollection(string newName, int id)
         {
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("UPDATE albums SET name=@newName WHERE id=@id", connection);
+                using NpgsqlCommand cmd = new("UPDATE collections SET name=@newName WHERE id=@id", connection);
                 cmd.Parameters.AddWithValue("@newName", newName);
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.ExecuteNonQuery();
@@ -252,17 +254,16 @@ namespace PSS.Backend
             }
         }
 
-        ///This has 3 different use cases: give an album a cover if it doesn't have a cover,
-        ///update an existing cover, or remove an album cover (supply null as path).
-        ///Albums aren't required to have an album cover.
-        public static void UpdateAlbumCover(string albumName, string path)
+        ///This has 3 different use cases: give a collection a cover if it doesn't have a cover, update an existing cover, or remove a collection cover (supply null as path).
+        ///Collections aren't required to have a cover.
+        public static void UpdateCollectionCover(string collectionName, string path)
         {
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("UPDATE albums SET album_cover=@path WHERE name=@albumName", connection);
+                using NpgsqlCommand cmd = new("UPDATE collections SET cover=@path WHERE name=@collectionName", connection);
                 cmd.Parameters.AddWithValue("@path", path);
-                cmd.Parameters.AddWithValue("@albumName", albumName);
+                cmd.Parameters.AddWithValue("@collectionName", collectionName);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -275,17 +276,16 @@ namespace PSS.Backend
             }
         }
 
-        ///This has 3 different use cases: give an album a cover if it doesn't have a cover,
-        ///update an existing cover, or remove an album cover (supply null as path).
-        ///Albums aren't required to have an album cover.
-        public static void UpdateAlbumCover(int albumID, string path)
+        ///This has 3 different use cases: give a collection a cover if it doesn't have a cover, update an existing cover, or remove a collection cover (supply null as path).
+        ///Collections aren't required to have a cover.
+        public static void UpdateCollectionCover(int collectionID, string path)
         {
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("UPDATE albums SET album_cover=@path WHERE id=@albumID", connection);
+                using NpgsqlCommand cmd = new("UPDATE collections SET cover=@path WHERE id=@collectionID", connection);
                 cmd.Parameters.AddWithValue("@path", path);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -298,50 +298,17 @@ namespace PSS.Backend
             }
         }
 
-        ///Given an album name, will find its ID in the albums table.
-        ///Returns 0 if not found or can't connect. IDs are greater than 0.
-        public static int GetAlbumID(string albumName)
-        {
-            int returnVal = 0;
-            try
-            {
-                Open();
-                using NpgsqlCommand selectCmd = new("SELECT id FROM albums WHERE name=@albumName", connection);
-                selectCmd.Parameters.AddWithValue("@albumName", albumName);
-                selectCmd.ExecuteNonQuery();
-
-                using NpgsqlDataReader r = selectCmd.ExecuteReader();
-                if (r.HasRows)
-                {
-                    r.Read(); //There should only be 1 column in 1 row to read.
-                    returnVal = r.GetInt32(0);
-                    r.Close();
-                }
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return returnVal;
-        }
-
-        ///<summary>Given an album id, attempt to return its album name.</summary>
-        ///<param name="id">The id of the album.</param>
-        ///<returns>Album name.</returns>
-        public static string GetAlbumName(int id)
+        ///<summary>Given an collection id, attempt to return its name.</summary>
+        ///<param name="id">The id of the collection.</param>
+        ///<returns>Collection name.</returns>
+        public static string GetCollectionName(int id)
         {
             string returnVal = "";
             try
             {
                 Open();
 
-                //Find the album ID using the album name.
-                using NpgsqlCommand selectCmd = new("SELECT name FROM albums WHERE id=@id", connection);
+                using NpgsqlCommand selectCmd = new("SELECT name FROM collections WHERE id=@id", connection);
                 selectCmd.Parameters.AddWithValue("@id", id);
                 selectCmd.ExecuteNonQuery();
 
@@ -365,26 +332,22 @@ namespace PSS.Backend
             return returnVal;
         } 
 
-        ///<summary>Deletes the album with the given name, and remove all items in this album from album_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
-        ///<param name="albumName">The name of the album to delete.</param>
-        public static void DeleteAlbum(string albumName) => DeleteAlbum(GetAlbumID(albumName));
-
-        ///<summary>Deletes the album with the given ID, and remove all items in this album from album_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete an album without losing the actual photos and videos.</summary>
-        ///<param name="albumID">The id of the album to delete.</param>
-        public static void DeleteAlbum(int albumID)
+        ///<summary>Deletes the collection with the given ID, and remove all items in this collection from collection_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the media table, so you can safely delete a collection without losing the actual photos and videos.</summary>
+        ///<param name="collectionID">The id of the collection to delete.</param>
+        public static void DeleteCollection(int collectionID)
         {
             try
             {
                 Open();
                 
                 //Set all items to no longer being separate (only matters if this was a folder). If don't do this they won't appear in main library.
-                NpgsqlCommand cmd = new("UPDATE media SET separate=false FROM album_entries WHERE album_id=@albumID AND album_entries.uuid=media.uuid", connection);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
+                NpgsqlCommand cmd = new("UPDATE media SET separate=false FROM collection_entries WHERE collection_id=@collectionID AND collection_entries.uuid=media.uuid", connection);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
                 
-                //Removing the row for this album in albums table automatically removes any rows in album_entries referencing this album.
-                cmd = new NpgsqlCommand("DELETE FROM albums WHERE id=@albumID", connection);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
+                //Removing the row for this collection in collections table automatically removes any rows in collection_entries referencing this collection.
+                cmd = new NpgsqlCommand("DELETE FROM collections WHERE id=@collectionID", connection);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -397,29 +360,29 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Add a single item to an album in album_entries. If it's a folder it handles all that automatically.</summary>
+        ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
         ///<param name="uuid">The uuid of the item.</param>
-        ///<param name="albumID">The ID of the album to add the item to.</param>
-        public static void AddToAlbum(Guid uuid, int albumID)
+        ///<param name="collectionID">The ID of the collection to add the item to.</param>
+        public static void AddToCollection(Guid uuid, int collectionID)
         {
-            bool isFolder = IsFolder(albumID);
+            bool isFolder = IsFolder(collectionID);
             
             try
             {
                 Open();
                 using NpgsqlCommand cmd = new("", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
 
                 if (isFolder)
                 {
                     //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
-                    cmd.CommandText = "DELETE FROM album_entries WHERE uuid=@uuid; UPDATE media SET separate=true WHERE uuid=@uuid";
+                    cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid; UPDATE media SET separate=true WHERE uuid=@uuid";
                     cmd.ExecuteNonQuery();
                 }
 
-                //Actually add the item to the folder/album and set the album's last updated to now.
-                cmd.CommandText = "INSERT INTO album_entries VALUES (@uuid, @albumID) ON CONFLICT (uuid, album_id) DO NOTHING; UPDATE albums SET last_updated = now() WHERE id=@albumID";
+                //Actually add the item to the collection and set the collection's last updated to now.
+                cmd.CommandText = "INSERT INTO collection_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -432,20 +395,20 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Remove a single item from an album.</summary>
+        ///<summary>Remove a single item from a collection.</summary>
         ///<param name="uuid">The uuid of the item to remove.</param>
-        ///<param name="albumID">ID of the album to remove from.</param>
-        public static void RemoveFromAlbum(Guid uuid, int albumID)
+        ///<param name="collectionID">ID of the collection to remove from.</param>
+        public static void RemoveFromCollection(Guid uuid, int collectionID)
         {
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("DELETE FROM album_entries WHERE album_id=@albumID AND uuid=@uuid", connection);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
+                using NpgsqlCommand cmd = new("DELETE FROM collection_entries WHERE collection_id=@collectionID AND uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "UPDATE albums SET last_updated = now() WHERE id=@albumID";
+                cmd.CommandText = "UPDATE collections SET last_updated = now() WHERE id=@collectionID";
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = "UPDATE media SET separate = false WHERE uuid=@uuid AND separate = true";
@@ -461,21 +424,21 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Load all the albums and/or folders in the albums table.</summary>
+        ///<summary>Load all the albums and/or folders in the collections table.</summary>
         ///<param name="showAlbums">Should albums be selected?</param>
         ///<param name="showFolders">Should folders be selected?</param>
         ///<param name="mode">How should the data be sorted?</param>
-        ///<returns>A List&lt;Album&gt; of all the albums and/or folders.</returns>
-        public static List<Album> GetAlbumsTable(bool showAlbums, bool showFolders, AMSortMode mode = AMSortMode.Title)
+        ///<returns>A List&lt;Collection&gt; of all the albums and/or folders.</returns>
+        public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, CMSortMode mode = CMSortMode.Title)
         {
-            List<Album> albums = new();
+            List<Collection> collections = new();
 
             string orderBy = mode switch
             {
-                AMSortMode.Title => "name ASC",
-                AMSortMode.TitleReversed => "name DESC",
-                AMSortMode.LastModified => "last_updated ASC",
-                AMSortMode.LastModifiedReversed => "last_updated DESC",
+                CMSortMode.Title => "name ASC",
+                CMSortMode.TitleReversed => "name DESC",
+                CMSortMode.LastModified => "last_updated ASC",
+                CMSortMode.LastModifiedReversed => "last_updated DESC",
                 _ => "name ASC"
             };
 
@@ -493,39 +456,38 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new($"SELECT id, name, album_cover, last_updated FROM albums {where} ORDER BY {orderBy}", connection);
+                using NpgsqlCommand cmd = new($"SELECT id, name, cover, last_updated FROM collections {where} ORDER BY {orderBy}", connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) albums.Add(new Album(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
+                while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
                 r.Close();
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred in GetAlbumsTable. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
             }
             finally
             {
                 Close();
             }
 
-            return albums;
+            return collections;
         }
 
-        ///<summary>Returns a List&lt;Album&gt; of all the items an album is in.</summary>
+        ///<summary>Returns a List&lt;Collection&gt; of all the Collections this uuid is in.</summary>
         ///<param name="uuid">Uuid of the item.</param>
-        ///<returns>List of the albums the item is in, if any</returns>
-        public static List<Album> GetAlbumsItemIn(Guid uuid)
+        public static List<Collection> GetCollectionsContaining(Guid uuid)
         {
-            List<Album> albums = new();
+            List<Collection> collections = new();
 
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("SELECT album_id, name, album_cover FROM album_entries AS e INNER JOIN albums AS a ON e.album_id=a.id WHERE uuid=@uuid ORDER BY name ASC", connection);
+                using NpgsqlCommand cmd = new("SELECT collection_id, name, collection_cover FROM collection_entries AS e INNER JOIN collections AS c ON e.collection_id=c.id WHERE uuid=@uuid ORDER BY name ASC", connection);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) albums.Add(new Album(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
+                while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
                 r.Close();
             }
             catch (NpgsqlException e)
@@ -537,24 +499,24 @@ namespace PSS.Backend
                 Close();
             }
             
-            return albums;
+            return collections;
         }
 
         //https://www.postgresqltutorial.com/postgresql-update-join/
-        ///<summary>Change an album to a folder or vice versa.</summary>
-        ///<param name="albumID">ID of album or folder to change into folder or album.</param>
+        ///<summary>Change a collection to a folder or vice versa.</summary>
+        ///<param name="collectionID">ID of album or folder to change into folder or album.</param>
         ///<param name="folder">Specify true if want to change album -> folder. False for folder -> album</param>
-        public static void ChangeAlbumType(int albumID, bool folder)
+        public static void ChangeCollectionType(int collectionID, bool folder)
         {
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("UPDATE media SET separate=@folder FROM album_entries WHERE album_id=@albumID AND album_entries.uuid=media.uuid", connection);
+                using NpgsqlCommand cmd = new("UPDATE media SET separate=@folder FROM collection_entries WHERE collection_id=@collectionID AND collection_entries.uuid=media.uuid", connection);
                 cmd.Parameters.AddWithValue("@folder", folder);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "UPDATE albums SET folder=@folder WHERE id=@albumID";
+                cmd.CommandText = "UPDATE collections SET folder=@folder WHERE id=@collectionID";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -602,7 +564,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "DELETE FROM album_entries WHERE uuid=@uuid AND deleted = TRUE";
+                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid AND deleted = TRUE";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -639,7 +601,7 @@ namespace PSS.Backend
             finally { Close(); }
         }
 
-        ///Undoes a call to MoveToTrash(). Will restore albums it was in, as well as re-adding it to the media table.
+        ///Undoes a call to MoveToTrash(). Will restore collections it was in, as well as re-adding it to the media table.
         public static void RestoreItem(Guid uuid)
         {
             try
@@ -667,118 +629,7 @@ namespace PSS.Backend
             finally { Close(); }
         }
 
-        ///<summary>Loads all rows and columns in the media table not in a folder (separate==false), and that have a date taken, into a List&lt;MediaRow&gt;.</summary>
-        ///<returns>List&lt;MediaRow&gt; of items in media table not in a folder, sorted by date taken descending (newest first).</returns>
-        public static List<MediaRow> LoadMediaTable()
-        {
-            List<MediaRow> media = new();
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND date_deleted IS NULL AND separate=false ORDER BY date_taken DESC", connection);
-                cmd.ExecuteNonQuery();
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
-                r.Close();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return media;
-        }
-
-        ///<summary>Loads all rows and columns in the media table not in a folder (separate==false) and that DON'T have a date taken.</summary>
-        ///<returns>A List&lt;MediaRow&gt; containing only items without a date taken (NULL DT).</returns>
-        public static List<MediaRow> LoadMediaNoDT()
-        {
-            List<MediaRow> media = new();
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new("SELECT path, date_added, starred, uuid, thumbnail FROM media WHERE date_taken IS NULL AND date_deleted IS NULL AND separate=false ORDER BY date_added DESC", connection);
-                cmd.ExecuteNonQuery();
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) media.Add(new MediaRow(r.GetString(0), null, r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
-                r.Close();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return media;
-        }
-        
-        ///<summary>Like LoadMediaTable() but only loads items where separate==false AND starred==true.</summary>
-        ///<returns>List&lt;MediaRow&gt; of items in media table not in a folder AND starred, sorted by date taken descending (newest first).</returns>
-        public static List<MediaRow> LoadStarred()
-        {
-            List<MediaRow> media = new();
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL AND separate=FALSE AND starred=TRUE ORDER BY date_taken DESC", connection);
-                cmd.ExecuteNonQuery();
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
-                r.Close();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return media;
-        }
-
-        ///<summary>Get if an item is starred or not.</summary>
-        ///<returns>True if this item is starred, false if not.</returns>
-        public static bool IsStarred(Guid uuid)
-        {
-            bool starred = false;
-            
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new("SELECT starred FROM media WHERE uuid=@uuid", connection);
-                cmd.Parameters.AddWithValue("@uuid", uuid);
-                cmd.ExecuteNonQuery();
-
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                if (r.HasRows)
-                {
-                    r.Read();
-                    starred = r.GetBoolean(0);
-                    r.Close();
-                }
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return starred;
-        }
-
-        ///<summary>Change a single item from either starred or not starred.</summary>
+        ///<summary>Change a single item from either starred (true) or not starred.</summary>
         public static void UpdateStarred(Guid uuid, bool starred)
         {
             try
@@ -821,82 +672,6 @@ namespace PSS.Backend
             {
                 Close();
             }
-        }
-        
-        ///<summary>Loads the contents of an album/folder into a List&lt;MediaRow&gt;, optionally including items without a Date Taken (set in Settings).</summary>        
-        ///<param name="albumID">The id of the album/folder to load.</param>
-        ///<param name="mode">How the items should be sorted.</param>
-        ///<returns>List&lt;MediaRow&gt; of the album/folder contents.</returns>
-        public static List<MediaRow> LoadAlbum(int albumID, AVSortMode mode = AVSortMode.NewestDateTaken)
-        {
-            bool isFolder = IsFolder(albumID);
-            List<MediaRow> media = new();
-            
-            string orderBy = mode switch
-            {
-                AVSortMode.OldestDateTaken => "date_taken ASC",
-                AVSortMode.NewestDateTaken => "date_taken DESC",
-                AVSortMode.OldestAdded => "date_added_to_album ASC",
-                AVSortMode.NewestAdded => "date_added_to_album DESC",
-                _ => "date_taken DESC"
-            };
-
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new($"SELECT m.path, m.date_taken, m.starred, m.uuid, m.thumbnail FROM media AS m INNER JOIN album_entries AS a ON m.uuid=a.uuid WHERE album_id=@albumID AND {(S.displayNoDTInAV ? "" : "date_taken IS NOT NULL AND")} date_deleted IS NULL AND separate={isFolder} ORDER BY {orderBy}", connection);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
-                cmd.ExecuteNonQuery();
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return media;
-        }
-
-        ///<summary>Loads everything in the media table that is in the Trash.</summary>
-        ///<param name="mode">An enum controlling how the items in Trash are sorted.</param>
-        ///<returns>A List&lt;MediaRow&gt; containing everything in the Trash.</returns>
-        public static List<MediaRow> LoadMediaTrash(TrashSortMode mode = TrashSortMode.NewestDateDeleted)
-        {
-            List<MediaRow> media = new(); //Stores every row retrieved; returned later.
-
-            string orderBy = mode switch
-            {
-                TrashSortMode.NewestDateDeleted => "date_deleted DESC",
-                TrashSortMode.NewestDateTaken => "date_taken DESC",
-                TrashSortMode.OldestDateDeleted => "date_deleted ASC",
-                TrashSortMode.OldestDateTaken => "date_taken ASC",
-                _ => "date_deleted DESC"
-            };
-            
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE date_deleted IS NOT NULL ORDER BY {orderBy}", connection);
-                cmd.ExecuteNonQuery();
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5)));
-                r.Close();
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return media;
         }
 
         ///<summary>Update when an item was taken, update its short path, and move it to the new path on the server.</summary>
@@ -948,11 +723,7 @@ namespace PSS.Backend
             }
         }
 
-        ///<summary>Gets an item's path from its uuid.</summary>
-        ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
-        public static string GetPathFromUuid(string uuid) => GetPathFromUuid(new Guid(uuid));
-
-        ///<summary>Gets an item's path from its uuid.</summary>
+        ///<summary>Gets an item's short path from its uuid.</summary>
         ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
         public static string GetPathFromUuid(Guid uuid)
         {
@@ -983,151 +754,15 @@ namespace PSS.Backend
             return path;
         }
 
-        ///<summary>Get the UUID of the item with this short path.</summary>
-        ///<param name="shortPath">The short path of the item.</param>
-        ///<returns>The uuid of the item.</returns>
-        public static Guid GetUuidFromPath(string shortPath)
-        {
-            Guid uuid = new();
-
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new("SELECT uuid FROM media WHERE path=@shortPath", connection);
-                cmd.Parameters.AddWithValue("@shortPath", shortPath);
-                cmd.ExecuteNonQuery();
-
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                if (r.HasRows)
-                {
-                    r.Read(); //There should only be 1 column in 1 row to read.
-                    uuid = r.GetGuid(0);
-                    r.Close();
-                }
-                else uuid = Guid.Empty;
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-            return uuid;
-        }
-
-        ///<summary>Returns the date taken of the item with this uuid.</summary>
-        ///<param name="uuid">The uuid of the item.</param>
-        ///<returns>The DateTime? date taken of the item.</returns>
-        public static DateTime? GetDateTaken(Guid uuid)
-        {
-            DateTime? dateTaken = null;
-
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new("SELECT date_taken FROM media WHERE uuid=@uuid", connection);
-                cmd.Parameters.AddWithValue("@uuid", uuid);
-                cmd.ExecuteNonQuery();
-                
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                if (r.HasRows)
-                {
-                    r.Read();
-                    dateTaken = r.IsDBNull(0) ? null : r.GetDateTime(0);
-                    r.Close();
-                }
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return dateTaken;
-        }
-
-        ///<summary>Get the DateTime of when this item was added to the library.</summary>
-        ///<param name="uuid">The uuid of the item.</param>
-        ///<returns>DateTime representing its date_added value.</returns>
-        public static DateTime GetDateAdded(Guid uuid)
-        {
-            DateTime dateTaken = new();
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new("SELECT date_added FROM media WHERE uuid=@uuid", connection);
-                cmd.Parameters.AddWithValue("@uuid", uuid);
-                cmd.ExecuteNonQuery();
-
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                if (r.HasRows)
-                {
-                    r.Read();
-                    dateTaken = r.GetDateTime(0);
-                    r.Close();
-                }
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return dateTaken;
-        }
-        
-        ///<summary>Get the DateTime a uuid was added to an album.</summary>
-        ///<param name="uuid">The uuid of the item.</param>
-        ///<param name="albumID">The id of the album the item is in.</param>
-        ///<returns>DateTime the uuid was added to the album.</returns>
-        public static DateTime GetDateAddedToAlbum(Guid uuid, int albumID)
-        {
-            DateTime dateTaken = new();
-            try
-            {
-                Open();
-                using NpgsqlCommand cmd = new("SELECT date_added_to_album FROM album_entries WHERE uuid=@uuid AND album_id=@albumID", connection);
-                cmd.Parameters.AddWithValue("@uuid", uuid);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
-                cmd.ExecuteNonQuery();
-
-                using NpgsqlDataReader r = cmd.ExecuteReader();
-                if (r.HasRows)
-                {
-                    r.Read();
-                    dateTaken = r.GetDateTime(0);
-                    r.Close();
-                }
-            }
-            catch (NpgsqlException e)
-            {
-                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-            }
-            finally
-            {
-                Close();
-            }
-
-            return dateTaken;
-        }
-
-        ///Returns true if an album is a folder, false otherwise.
-        public static bool IsFolder(int albumID)
+        ///Returns true if a Collection is a folder, false otherwise.
+        public static bool IsFolder(int collectionID)
         {
             bool isFolder = false;
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("SELECT folder FROM albums WHERE id=@albumID", connection);
-                cmd.Parameters.AddWithValue("@albumID", albumID);
+                using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", connection);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
                 cmd.ExecuteNonQuery();
 
                 using NpgsqlDataReader r = cmd.ExecuteReader();
