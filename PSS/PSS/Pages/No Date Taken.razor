@@ -15,8 +15,8 @@
         <span id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
     </header>
 
-    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added > @oldestOrNewestDT ORDER BY date_added DESC LIMIT 50";
-    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added < @oldestOrNewestDT ORDER BY date_added DESC LIMIT 50";
+    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added >= @oldestOrNewestDT ORDER BY date_added ASC LIMIT 50";
+    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added <= @oldestOrNewestDT ORDER BY date_added DESC LIMIT 50";
     <LibraryContentViewer @ref="@libContentViewer" UseDateAdded="true" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" NoItemsText="Upload some items to get started" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery"
         FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL ORDER BY date_added DESC LIMIT 50"/>
     
