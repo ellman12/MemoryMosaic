@@ -1,7 +1,7 @@
 @* Overlay thing for showing all the shortcuts in PSS *@
 <link href="/css/components/ShortcutsReference.css" rel="stylesheet">
 
-<div id="reference">
+<div id="reference" style="visibility: @visibility">
     <div id="header">
         <span>Keyboard Shortcuts</span>
     </div>
@@ -47,7 +47,7 @@
 </div>
 
 @code {
-    public static string visibility;
+    private static string visibility;
     
     [Parameter]
     public string CtrlDText {get; set; }
