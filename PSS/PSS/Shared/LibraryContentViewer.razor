@@ -317,10 +317,6 @@ else
 			}
 			cmd.ExecuteNonQuery();
 			using NpgsqlDataReader r = cmd.ExecuteReader();
-
-			//If there is no more content available to display, hide the div so user can click through it to click any items below the div.
-			if (!r.HasRows) divVis = "hidden";
-
 			while (r.Read())
 			{
 				C.MediaRow newRow = new(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5));
@@ -347,6 +343,9 @@ else
 		{
 			C.Close();
 		}
+		
+		//If there is no more content available to display, hide the div so user can click through it to click any items below the div.
+		if (amountAdded == 0) divVis = "hidden";
 		return amountAdded;
 	}
 	
