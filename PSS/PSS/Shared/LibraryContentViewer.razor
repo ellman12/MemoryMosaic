@@ -141,6 +141,13 @@ If it can't find any content, it shows an h1 saying no content.
 <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
+<ProgressPopUp Height="200" Width="200" Message="Preparing Zip..." Visible="@progressVisible"/>
+<div id="downloadDivBackground" style="visibility: @downloadDivVis">
+	<div id="downloadDiv">
+		<a href="@S.TMP_REQUEST_PATH/@ZipFilename" download="@ZipFilename">Click to Download</a>
+		<button class="iconBtn"><span class="material-icons-outlined" @onclick="@(() => downloadDivVis = "hidden")">check</span></button>
+	</div>
+</div>
 
 @*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)
@@ -176,7 +183,7 @@ else
 			if (value == Guid.Empty)
 			{
 				newFilename = "";
-				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = "hidden";
+				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = downloadDivVis = "hidden";
 			}
 			else LoadData();
 			StateHasChanged();
@@ -232,6 +239,8 @@ else
 	///The name of the .zip file of downloaded items.
 	public string ZipFilename { get; private set; }
 
+	private bool progressVisible;
+	
 	//Used for loading more content.
 	public DateTime? oldestDT, newestDT;
 
@@ -247,7 +256,7 @@ else
 	public int viewIndex;
 
 	private static DateTime? newDateTaken;
-	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis;
+	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, downloadDivVis;
 	private static List<C.Collection> collectionsIn;
 }
 
@@ -275,7 +284,9 @@ else
 		}
 		moreContentBottomDivVis = "visible";
 		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
-		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
+		progressVisible = false;
+		
+		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = downloadDivVis = "hidden";
 		viewIndex = 0;
 	}
 	
@@ -496,10 +507,38 @@ else
 		await ClearChecks();
 	}
 	
-	public void DownloadSelected()
-	{ //TODO
-	// F.CopyItemsToZipPath((from media in mediaList where selectedItems.Contains(media.uuid) select media.path).ToList());
-	// zipFilename = await F.CreateDownloadZip();
+	///Creates a .zip file for downloading the items the user wants to download.
+	public async void DownloadSelected()
+	{
+		if (SelectedItems.Count == 0) return;
+		
+		progressVisible = true;
+		HeaderVis = "hidden";
+		await HeaderVisChanged.InvokeAsync("hidden");
+		StateHasChanged();
+		await Task.Delay(0);
+
+		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}");
+		Directory.CreateDirectory(zipFolderPath);
+
+		foreach (string shortPath in from media in MediaList where SelectedItems.Contains(media.uuid) select media.path)
+		{
+			string fullPath = Path.Combine(S.libFolderPath, shortPath);
+			string destPath = Path.Combine(zipFolderPath, Path.GetFileName(shortPath));
+			File.Copy(fullPath, destPath);
+		}
+
+		await ClearChecks();
+		
+		ZipFilename = $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
+		string zipFilePath = Path.Combine(S.tmpFolderPath, ZipFilename);
+		System.IO.Compression.ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath);
+		
+		progressVisible = false;
+		downloadDivVis = "visible";
+		StateHasChanged();
+		
+		Directory.Delete(zipFolderPath, true); //Not needed after it's zipped.
 	}
 }
 

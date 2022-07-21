@@ -23,7 +23,7 @@
         </div>
 
         <div id="buttons">
-            <button class="iconBtn"><a style="text-decoration: none; visibility: @headerVis" class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected" href="@S.TMP_REQUEST_PATH/@libContentViewer.ZipFilename" download="@libContentViewer.ZipFilename">file_download</a></button>
+            <button class="iconBtn" style="visibility: @headerVis"><span class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected">file_download</span></button>
             <button class="iconBtn" style="visibility: @headerVis" @onclick="@(() => collectionsVis = "visible")" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
             <button class="iconBtn" style="visibility: @headerVis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref libContentViewer.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" style="visibility: @headerVis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
