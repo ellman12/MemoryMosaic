@@ -19,7 +19,6 @@ header {
     position: fixed;
     left: 146px;
     right: 0;
-    top: 4px;
     z-index: 999;
 }
 
