@@ -30,6 +30,9 @@
 	
 	[Parameter]
 	public Action CtrlG { get; set; }
+	
+	[Parameter]
+	public Action CtrlSlash { get; set; }
 
 	[Parameter]
 	public Action AltF { get; set; }
@@ -57,6 +60,7 @@
 		if (CtrlD != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.D, CtrlD);
 		if (CtrlE != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.E, CtrlE);
 		if (CtrlG != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.G, CtrlG);
+		if (CtrlSlash != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Slash, CtrlSlash);
 		if (AltF != null) HotKeysContext.Add(ModKeys.Alt, Keys.F, AltF);
 		if (AltA != null) HotKeysContext.Add(ModKeys.Alt, Keys.A, AltA);
 		if (AltS != null) HotKeysContext.Add(ModKeys.Alt, Keys.S, AltS);
