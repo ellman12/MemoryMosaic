@@ -12,24 +12,16 @@ h1 {
 }
 
 header {
+    background-color: black;
     display: flex;
     flex-direction: row;
     align-items: center;
-    top: 0;
-    left: 146px;
+    align-content: center;
     position: fixed;
+    left: 146px;
     right: 0;
-    padding-top: 4px;
-    padding-right: 100px;
-    z-index: 999;
-}
-
-header .iconBtn {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
+    top: 4px;
+    z-index: 999999;
 }
 
 #selectedAmtText {
@@ -56,12 +48,12 @@ header > div > .textBtn {
     margin-left: 10px;
 }
 
-#sortDiv {
+header > #sortDiv {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     position: absolute;
-    top: 67px;
+    top: 49px;
     right: 276px;
     background-color: black;
     border: 1px solid white;
