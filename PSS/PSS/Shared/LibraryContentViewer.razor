@@ -145,7 +145,12 @@ If it can't find any content, it shows an h1 saying no content.
 @*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)
 {
-	<KeyboardShortcuts Left="@(() => ChangeItem("Left"))" Right="@(() => ChangeItem("Right"))" AltLeft="@(() => ChangeItem("Left"))" 
+	if (MediaList[viewIndex].thumbnail == null)
+	{
+		<KeyboardShortcuts Left="@(() => ChangeItem("Left"))" Right="@(() => ChangeItem("Right"))" />
+	}
+
+	<KeyboardShortcuts AltLeft="@(() => ChangeItem("Left"))" 
 		AltRight="@(() => ChangeItem("Right"))" CtrlD="@DelOrCtrDFired" Del="@DelOrCtrDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
 		Esc="@(() => ChangeItem("Esc"))" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 }
