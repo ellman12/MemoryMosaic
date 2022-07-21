@@ -141,6 +141,7 @@ If it can't find any content, it shows an h1 saying no content.
 <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
+
 @*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)
 {
@@ -148,9 +149,15 @@ If it can't find any content, it shows an h1 saying no content.
 		AltRight="@(() => ChangeItem("Right"))" CtrlD="@DelOrCtrDFired" Del="@DelOrCtrDFired" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
 		Esc="@(() => ChangeItem("Esc"))" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 }
+else
+{
+	<CtrlGInput @ref=@ctrlGInput StartDateChanged="@StartDateChanged"/>
+}
 <KeyboardShortcuts AltS="@AltSFired"/>
 
 @code{
+	CtrlGInput ctrlGInput;
+	
 	///Stores all content loaded.
 	public List<C.MediaRow> MediaList { get; private set; }
 
@@ -242,6 +249,7 @@ If it can't find any content, it shows an h1 saying no content.
 @functions{
 	protected override void OnInitialized()
 	{
+		ctrlGInput = new CtrlGInput();
 		MediaList = new List<C.MediaRow>(150);
 		_selectedItem = Guid.Empty;
 		SelectedItems = new List<Guid>(150);
@@ -327,10 +335,8 @@ If it can't find any content, it shows an h1 saying no content.
 			r.Close();
 			if (MediaList.Count > 0)
 			{
-				if (UseDateAdded)
-					oldestOrNewestDT = bottom ? MediaList.Last().dateAdded : MediaList.First().dateAdded;
-				else
-					oldestOrNewestDT = bottom ? MediaList.Last().dateTaken : MediaList.First().dateTaken;
+				if (UseDateAdded) oldestOrNewestDT = bottom ? MediaList.Last().dateAdded : MediaList.First().dateAdded;
+				else oldestOrNewestDT = bottom ? MediaList.Last().dateTaken : MediaList.First().dateTaken;
 			}
 		}
 		catch (NpgsqlException e)
@@ -565,5 +571,21 @@ If it can't find any content, it shows an h1 saying no content.
 
 		if (keyCode == "Left") ChangeItemLeft();
 		else if (keyCode == "Right") ChangeItemRight();
+	}
+
+	///Used with Ctrl G to set the new start date for LCV. Resets LCV to that date.
+	private async void StartDateChanged()
+	{
+		oldestDT = newestDT = ctrlGInput.NewStartDate;
+		MediaList.Clear();
+		await ClearChecks();
+		moreContentTopDivVis = "visible";		
+		StateHasChanged();
+		
+		AddContentTop();
+		AddContentBottom();
+		StateHasChanged();
+		await Task.Delay(0);
+		await Task.Delay(1);
 	}
 }
