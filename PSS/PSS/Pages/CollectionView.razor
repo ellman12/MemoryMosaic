@@ -49,7 +49,7 @@
         UseDateAdded="@(sortMode is C.CVSortMode.OldestAdded or C.CVSortMode.NewestAdded)" NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
     <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
-    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
+    <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Collection")} \"{collectionName}\"?")
         YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(statCollectionID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>

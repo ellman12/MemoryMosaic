@@ -34,7 +34,7 @@
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
 <CollectionSelector @ref="@collectionSelector" CollectionsVis="@collectionSelectorVis" SelectedItems="@allGuids" ShowCheckCancelButtons="false"/>
 
-<KeyboardShortcuts AltA="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" />
+<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" />
 
 @{
     GC.Collect();

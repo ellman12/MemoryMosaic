@@ -93,6 +93,14 @@
                 </div>
             }
             
+            @if (AltCText != null)
+            {
+                <div class="shortcut">
+                    <code>Alt C</code>
+                    <span>@AltCText</span>
+                </div>
+            }
+            
             @if (AltSText != null)
             {
                 <div class="shortcut">
@@ -154,6 +162,9 @@
 
     [Parameter]
     public string AltAText { get; set; }
+    
+    [Parameter]
+    public string AltCText { get; set; }
 
     [Parameter]
     public string AltSText { get; set; }
@@ -164,8 +175,5 @@
     [Parameter]
     public string AltRightText { get; set; }
     
-    protected override void OnInitialized()
-    {
-        visibility = "hidden";
-    }
+    protected override void OnInitialized() => visibility = "hidden";
 }
