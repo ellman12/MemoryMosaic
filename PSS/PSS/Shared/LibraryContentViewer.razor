@@ -118,23 +118,60 @@ If it can't find any content, it shows an h1 saying no content.
 	<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@(() => AddContentTop())" @onscroll="@(() => AddContentTop())" @onmousewheel="@(() => AddContentTop())" @onpointerenter="@(() => AddContentTop())" @ontouchenter="@(() => AddContentTop())"></div>
 	@for (int i = 0; i < MediaList.Count; i++)
 	{
-		int ii = i;
-		C.MediaRow media = MediaList[i];
-	
-		<div class="thumbnail">
-			@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-			<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" itemid="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
-			@if (media.thumbnail != null) //Video
+		if (MediaList[i].dateTaken == null)
+		{
+			<span>No Date Taken</span>
+			<div class="row">
+				@while (MediaList[i].dateTaken == null)
+				{
+					int ii = i;
+					<div class="thumbnail">
+						@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+						<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
+						@if (MediaList[ii].thumbnail != null) //Video
+						{
+							<span class="material-icons-outlined video-icon">play_circle_outline</span>
+							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+						}
+						else
+						{
+							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+						}
+					</div>
+					i++;
+				}
+			</div>
+		}
+		else
+		{
+			if (MediaList[i].dateTaken!.Value.Day != previousDay)
 			{
-				<span class="material-icons-outlined video-icon">play_circle_outline</span>
-				<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+				<span>@MediaList[i].dateTaken!.Value.ToString("d")</span>
+				<div class="row">
+					@while (previousDay != MediaList[i].dateTaken!.Value.Day)
+					{
+						int ii = i;
+						<div class="thumbnail">
+							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
+							@if (MediaList[ii].thumbnail != null) //Video
+							{
+								<span class="material-icons-outlined video-icon">play_circle_outline</span>
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							}
+							else
+							{
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							}
+						</div>
+						i++;
+						previousDay = i == MediaList.Count ? MediaList[i - 1].dateTaken.Value.Day : MediaList[i].dateTaken.Value.Day;
+					}
+				</div>
 			}
-			else
-			{
-				<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-			}
-		</div>
+		}
 	}
+
 	<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
 </div>
 
@@ -170,6 +207,8 @@ else
 
 @code{
 	CtrlGInput ctrlGInput;
+
+	private int previousYear, previousMonth, previousDay;
 	
 	///Stores all content loaded.
 	public List<C.MediaRow> MediaList { get; private set; }
