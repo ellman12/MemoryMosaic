@@ -22,7 +22,7 @@
     
     <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
 
-    <KeyboardShortcuts AltA="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })" />
+    <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })" />
 }
 
 @code {

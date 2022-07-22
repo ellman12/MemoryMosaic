@@ -31,10 +31,11 @@
     <label style="color: #00af00"><input type="checkbox" @bind="@infoChecked">Show Info</label>
 </div>
 
-<TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
+<TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@DeleteErrors" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
 <CollectionSelector @ref="@collectionSelector" CollectionsVis="@collectionSelectorVis" SelectedItems="@allGuids" ShowCheckCancelButtons="false"/>
 
-<KeyboardShortcuts AltA="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" />
+<KeyboardShortcuts AltA="@AddItems" AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref filterVis); StateHasChanged(); })" CtrlD="@DeleteErrors" />
+<ShortcutsReference AltAText="Add Items to Library and Album(s)/Folder" AltCText="Show/Hide CollectionSelector" AltFText="Show/Hide Filter" CtrlDText="Delete All Items with Errors"/>
 
 @{
     GC.Collect();
