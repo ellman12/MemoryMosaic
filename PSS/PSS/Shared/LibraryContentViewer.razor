@@ -148,7 +148,7 @@ If it can't find any content, it shows an h1 saying no content.
 			{
 				<span>@MediaList[i].dateTaken!.Value.ToString("d")</span>
 				<div class="row">
-					@while (i < MediaList.Count && previousDay != MediaList[i].dateTaken!.Value.Day)
+					@do
 					{
 						int ii = i;
 						<div class="thumbnail">
@@ -166,7 +166,8 @@ If it can't find any content, it shows an h1 saying no content.
 						</div>
 						previousDay = i == MediaList.Count ? MediaList[i - 1].dateTaken.Value.Day : MediaList[i].dateTaken.Value.Day;
 						i++;
-					}
+					} while (i < MediaList.Count && previousDay == MediaList[i].dateTaken!.Value.Day);
+					@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
 				</div>
 			}
 		}
@@ -208,7 +209,7 @@ else
 @code{
 	CtrlGInput ctrlGInput;
 
-	private int previousYear, previousMonth, previousDay;
+	private int previousDay;
 	
 	///Stores all content loaded.
 	public List<C.MediaRow> MediaList { get; private set; }
