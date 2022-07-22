@@ -10,38 +10,43 @@ h1 {
 
 #libContentViewer {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: wrap;
     position: absolute;
     left: 145px;
     top: 60px;
 }
 
-#libContentViewer > span {
+#libContentViewer > .spanAndRow {
+    display: flex;
+    flex-direction: column;
+}
+
+#libContentViewer > .spanAndRow > span {
     font-size: 20px;
     margin-bottom: 4px;
 }
 
-#libContentViewer > .row {
+#libContentViewer > .spanAndRow > .row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     margin-bottom: 20px;
 }
 
-#libContentViewer > .row > .thumbnail > .star-icon {
+#libContentViewer > .spanAndRow > .row > .thumbnail > .star-icon {
     position: absolute;
     left: 8px;
     bottom: 10px;
 }
 
-#libContentViewer > .row > .thumbnail > .video-icon {
+#libContentViewer > .spanAndRow > .row > .thumbnail > .video-icon {
     position: absolute;
     right: 8px;
     top: 10px;
 }
 
-#libContentViewer > .row > .thumbnail > .checkbox {
+#libContentViewer > .spanAndRow > .row > .thumbnail > .checkbox {
     opacity: 0;
     position: absolute;
     margin-top: 8px;
@@ -49,32 +54,32 @@ h1 {
     transition: 0.3s;
 }
 
-#libContentViewer > .row > .thumbnail:hover > .unchecked { /* Show checkbox on hover */
+#libContentViewer > .spanAndRow > .row > .thumbnail:hover > .unchecked { /* Show checkbox on hover */
     opacity: 0.42;
 }
 
-#libContentViewer > .row > .thumbnail > .unchecked:hover { /* Make it 100% opaque */
+#libContentViewer > .spanAndRow > .row > .thumbnail > .unchecked:hover { /* Make it 100% opaque */
     opacity: 1;
 }
 
-#libContentViewer > .row > .thumbnail > .checked {
+#libContentViewer > .spanAndRow > .row > .thumbnail > .checked {
     color: #009FFF;
     opacity: 1;
 }
 
-#libContentViewer > .row > .thumbnail > img {
+#libContentViewer > .spanAndRow > .row > .thumbnail > img {
     height: 200px;
     margin-left: 3px;
     margin-right: 3px;
     margin-top: 3px;
 }
 
-#libContentViewer > .row > .thumbnail {
+#libContentViewer > .spanAndRow > .row > .thumbnail {
     position: relative; /* https://stackoverflow.com/a/12365963 */
     cursor: pointer;
 }
 
-#libContentViewer > .row > .thumbnail > .checkbox {
+#libContentViewer > .spanAndRow > .row > .thumbnail > .checkbox {
     opacity: 0;
     position: absolute;
     margin-top: 8px;
@@ -82,20 +87,20 @@ h1 {
     transition: 0.3s;
 }
 
-#libContentViewer > .row > .thumbnail:hover > .unchecked { /* Show checkbox on hover */
+#libContentViewer > .spanAndRow > .row > .thumbnail:hover > .unchecked { /* Show checkbox on hover */
     opacity: 0.42;
 }
 
-#libContentViewer > .row > .thumbnail > .unchecked:hover { /* Make it 100% opaque */
+#libContentViewer > .spanAndRow > .row > .thumbnail > .unchecked:hover { /* Make it 100% opaque */
     opacity: 1;
 }
 
-#libContentViewer > .row > .thumbnail > .checked {
+#libContentViewer > .spanAndRow > .row > .thumbnail > .checked {
     color: #009FFF;
     opacity: 1;
 }
 
-#libContentViewer > .row > .thumbnail > img {
+#libContentViewer > .spanAndRow > .row > .thumbnail > img {
     height: 200px;
     margin-left: 3px;
     margin-right: 3px;
