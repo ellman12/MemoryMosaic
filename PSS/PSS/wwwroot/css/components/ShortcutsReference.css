@@ -5,12 +5,12 @@
     height: 100%;
     width: 100%;
     background: rgba(72, 71, 71, 0.41);
+    z-index: 9999999;
 }
 
 #referenceBackground > #reference {
     width: 400px;
     height: 400px;
-    z-index: 9999;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -46,8 +46,9 @@
 
 #referenceBackground > #reference > #allShortcuts > .shortcut > code {
     display: inline-block;
-    text-align: right;
+    text-align: center;
     background-color: rgba(211, 211, 211, 0.2);
+    width: 50px;
 }
 
 #referenceBackground > #reference > #allShortcuts > .shortcut > span {
