@@ -148,7 +148,7 @@ If it can't find any content, it shows an h1 saying no content.
 			{
 				<span>@MediaList[i].dateTaken!.Value.ToString("d")</span>
 				<div class="row">
-					@while (previousDay != MediaList[i].dateTaken!.Value.Day)
+					@while (i < MediaList.Count && previousDay != MediaList[i].dateTaken!.Value.Day)
 					{
 						int ii = i;
 						<div class="thumbnail">
@@ -164,8 +164,8 @@ If it can't find any content, it shows an h1 saying no content.
 								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 							}
 						</div>
-						i++;
 						previousDay = i == MediaList.Count ? MediaList[i - 1].dateTaken.Value.Day : MediaList[i].dateTaken.Value.Day;
+						i++;
 					}
 				</div>
 			}

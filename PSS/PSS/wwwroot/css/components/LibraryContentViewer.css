@@ -10,17 +10,23 @@ h1 {
 
 #libContentViewer {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     position: absolute;
     left: 145px;
     top: 60px;
 }
 
+#libContentViewer > span {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
 #libContentViewer > .row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    margin-bottom: 20px;
 }
 
 #libContentViewer > .row > .thumbnail > .star-icon {
