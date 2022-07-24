@@ -144,36 +144,33 @@ If it can't find any content, it shows an h1 saying no content.
 				</div>
 			</div>
 		}
-		else
+		else if (MediaList[i].dateTaken!.Value.Day != previousDay)
 		{
-			if (MediaList[i].dateTaken!.Value.Day != previousDay)
-			{
-				<div class="spanAndRow">
-					<span>@MediaList[i].dateTaken!.Value.ToString("d")</span>
-					<div class="row">
-						@do
-						{
-							int ii = i;
-							<div class="thumbnail">
-								@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
-								<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-								@if (MediaList[ii].thumbnail != null) //Video
-								{
-									<span class="material-icons-outlined video-icon">play_circle_outline</span>
-									<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-								}
-								else
-								{
-									<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-								}
-							</div>
-							previousDay = i == MediaList.Count ? MediaList[i - 1].dateTaken.Value.Day : MediaList[i].dateTaken.Value.Day;
-							i++;
-						} while (i < MediaList.Count && previousDay == MediaList[i].dateTaken!.Value.Day);
-						@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
-					</div>
+			<div class="spanAndRow">
+				<span>@MediaList[i].dateTaken!.Value.ToString("d")</span>
+				<div class="row">
+					@do
+					{
+						int ii = i;
+						<div class="thumbnail">
+							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
+							@if (MediaList[ii].thumbnail != null) //Video
+							{
+								<span class="material-icons-outlined video-icon">play_circle_outline</span>
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							}
+							else
+							{
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							}
+						</div>
+						previousDay = i == MediaList.Count ? MediaList[i - 1].dateTaken.Value.Day : MediaList[i].dateTaken.Value.Day;
+						i++;
+					} while (i < MediaList.Count && previousDay == MediaList[i].dateTaken!.Value.Day);
+					@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
 				</div>
-			}
+			</div>
 		}
 	}
 
