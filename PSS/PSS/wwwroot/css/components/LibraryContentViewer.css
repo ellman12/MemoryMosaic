@@ -20,10 +20,11 @@ h1 {
 #libContentViewer > .spanAndRow {
     display: flex;
     flex-direction: column;
+    margin-right: 25px;
 }
 
 #libContentViewer > .spanAndRow > span {
-    font-size: 20px;
+    font-size: 16px;
     margin-bottom: 4px;
 }
 
@@ -69,14 +70,12 @@ h1 {
 
 #libContentViewer > .spanAndRow > .row > .thumbnail > img {
     height: 200px;
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-top: 3px;
 }
 
 #libContentViewer > .spanAndRow > .row > .thumbnail {
     position: relative; /* https://stackoverflow.com/a/12365963 */
     cursor: pointer;
+    margin-right: 5px;
 }
 
 #libContentViewer > .spanAndRow > .row > .thumbnail > .checkbox {
@@ -98,13 +97,6 @@ h1 {
 #libContentViewer > .spanAndRow > .row > .thumbnail > .checked {
     color: #009FFF;
     opacity: 1;
-}
-
-#libContentViewer > .spanAndRow > .row > .thumbnail > img {
-    height: 200px;
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-top: 3px;
 }
 
 #moreContentTopDiv {
