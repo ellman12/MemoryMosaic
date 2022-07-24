@@ -118,23 +118,66 @@ If it can't find any content, it shows an h1 saying no content.
 	<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@(() => AddContentTop())" @onscroll="@(() => AddContentTop())" @onmousewheel="@(() => AddContentTop())" @onpointerenter="@(() => AddContentTop())" @ontouchenter="@(() => AddContentTop())"></div>
 	@for (int i = 0; i < MediaList.Count; i++)
 	{
-		int ii = i;
-		C.MediaRow media = MediaList[i];
-	
-		<div class="thumbnail">
-			@if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-			<span @onclick="@(mouseEventArgs => CheckClicked(media.uuid, mouseEventArgs))" itemid="@i" id="@media.uuid" class="material-icons checkbox unchecked">check_circle</span>
-			@if (media.thumbnail != null) //Video
-			{
-				<span class="material-icons-outlined video-icon">play_circle_outline</span>
-				<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-			}
-			else
-			{
-				<img @onclick="@(mouseEventArgs => ImgClicked(media.uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-			}
-		</div>
+		if (MediaList[i].dateTaken == null)
+		{
+			<div class="spanAndRow">
+				<span>No Date Taken</span>
+				<div class="row">
+					@do
+					{
+						int ii = i;
+						<div class="thumbnail">
+							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
+							@if (MediaList[ii].thumbnail != null) //Video
+							{
+								<span class="material-icons-outlined video-icon">play_circle_outline</span>
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							}
+							else
+							{
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							}
+						</div>
+						i++;
+					} while (i < MediaList.Count && MediaList[i].dateTaken == null);
+					@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
+				</div>
+			</div>
+		}
+		else if (MediaList[i].dateTaken != null && MediaList[i].dateTaken!.Value.Day != previousDay)
+		{
+			<div class="spanAndRow">
+				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("ddd, MMM d, yyyy") : MediaList[i].dateTaken!.Value.ToString("ddd, MMM d, yyyy"))</span>
+				<div class="row">
+					@do
+					{
+						int ii = i;
+						<div class="thumbnail">
+							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
+							@if (MediaList[ii].thumbnail != null) //Video
+							{
+								<span class="material-icons-outlined video-icon">play_circle_outline</span>
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							}
+							else
+							{
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							}
+						</div>
+						if (i == MediaList.Count)
+							previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken.Value.Day;
+						else
+							previousDay = UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day;
+						i++;
+					} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == MediaList[i].dateTaken!.Value.Day);
+					@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
+				</div>
+			</div>
+		}
 	}
+
 	<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
 </div>
 
@@ -165,11 +208,13 @@ else
 {
 	<CtrlGInput @ref=@ctrlGInput StartDateChanged="@StartDateChanged"/>
 }
-<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DelOrCtrDFired" Del="@DelOrCtrDFired"/>
+<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick"/>
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code{
 	CtrlGInput ctrlGInput;
+
+	private int previousDay;
 	
 	///Stores all content loaded.
 	public List<C.MediaRow> MediaList { get; private set; }
@@ -429,22 +474,6 @@ else
 		StateHasChanged();
 	}
 
-	///Either shows the delete prompt (or deletes all selected if disabled), or deletes the currently viewed item.
-	private void DelOrCtrDFired()
-	{
-		if (SelectedItem == Guid.Empty)
-		{
-			DeleteBtnClick();
-			StateHasChanged();
-		}
-		else if (SelectedItem != Guid.Empty)
-		{
-			C.MoveToTrash(SelectedItem);
-			MediaList.RemoveAll(u => u.uuid == SelectedItem);
-			SelectedItem = Guid.Empty;
-		}
-	}
-	
 	///Shows the TwoChoiceInput if enabled. If not, then deletes the selected items.
 	public void DeleteBtnClick()
 	{
