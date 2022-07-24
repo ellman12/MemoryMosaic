@@ -123,7 +123,7 @@ If it can't find any content, it shows an h1 saying no content.
 			<div class="spanAndRow">
 				<span>No Date Taken</span>
 				<div class="row">
-					@while (MediaList[i].dateTaken == null)
+					@do
 					{
 						int ii = i;
 						<div class="thumbnail">
@@ -140,14 +140,15 @@ If it can't find any content, it shows an h1 saying no content.
 							}
 						</div>
 						i++;
-					}
+					} while (i < MediaList.Count && MediaList[i].dateTaken == null);
+					@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
 				</div>
 			</div>
 		}
-		else if (MediaList[i].dateTaken!.Value.Day != previousDay)
+		else if (MediaList[i].dateTaken != null && MediaList[i].dateTaken!.Value.Day != previousDay)
 		{
 			<div class="spanAndRow">
-				<span>@MediaList[i].dateTaken!.Value.ToString("d")</span>
+				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("d") : MediaList[i].dateTaken!.Value.ToString("d"))</span>
 				<div class="row">
 					@do
 					{
@@ -165,9 +166,12 @@ If it can't find any content, it shows an h1 saying no content.
 								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 							}
 						</div>
-						previousDay = i == MediaList.Count ? MediaList[i - 1].dateTaken.Value.Day : MediaList[i].dateTaken.Value.Day;
+						if (i == MediaList.Count)
+							previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken.Value.Day;
+						else
+							previousDay = UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day;
 						i++;
-					} while (i < MediaList.Count && previousDay == MediaList[i].dateTaken!.Value.Day);
+					} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == MediaList[i].dateTaken!.Value.Day);
 					@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
 				</div>
 			</div>
