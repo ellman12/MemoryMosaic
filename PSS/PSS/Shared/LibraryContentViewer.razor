@@ -148,7 +148,7 @@ If it can't find any content, it shows an h1 saying no content.
 		else if (MediaList[i].dateTaken != null && MediaList[i].dateTaken!.Value.Day != previousDay)
 		{
 			<div class="spanAndRow">
-				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("d") : MediaList[i].dateTaken!.Value.ToString("d"))</span>
+				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("ddd, MMM d, yyyy") : MediaList[i].dateTaken!.Value.ToString("ddd, MMM d, yyyy"))</span>
 				<div class="row">
 					@do
 					{
