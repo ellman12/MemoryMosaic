@@ -207,7 +207,7 @@ else
 {
 	<CtrlGInput @ref=@ctrlGInput StartDateChanged="@StartDateChanged"/>
 }
-<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DelOrCtrDFired" Del="@DelOrCtrDFired"/>
+<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick"/>
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code{
@@ -473,22 +473,6 @@ else
 		StateHasChanged();
 	}
 
-	///Either shows the delete prompt (or deletes all selected if disabled), or deletes the currently viewed item.
-	private void DelOrCtrDFired()
-	{
-		if (SelectedItem == Guid.Empty)
-		{
-			DeleteBtnClick();
-			StateHasChanged();
-		}
-		else if (SelectedItem != Guid.Empty)
-		{
-			C.MoveToTrash(SelectedItem);
-			MediaList.RemoveAll(u => u.uuid == SelectedItem);
-			SelectedItem = Guid.Empty;
-		}
-	}
-	
 	///Shows the TwoChoiceInput if enabled. If not, then deletes the selected items.
 	public void DeleteBtnClick()
 	{
