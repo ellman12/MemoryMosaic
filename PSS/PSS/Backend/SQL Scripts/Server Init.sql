@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS public.collections
 (
     id serial NOT NULL,
     name text NOT NULL,
-    collection_cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL, -- References short path in media. If the cover is deleted from media, remove cover from any collections.
+    cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL, -- References short path in media. If the cover is deleted from media, remove cover from any collections.
     last_updated timestamp without time zone NOT NULL, -- The last time this item was renamed, added to/removed from, etc.
     folder boolean NOT NULL DEFAULT false, -- If this is a folder and thus its contents should remain separate from rest of library.
     PRIMARY KEY (id),
