@@ -18,22 +18,22 @@ CREATE TABLE IF NOT EXISTS public.media
 ) TABLESPACE pg_default;
 ALTER TABLE public.media OWNER to postgres;
 
-CREATE TABLE IF NOT EXISTS public.albums
+CREATE TABLE IF NOT EXISTS public.collections
 (
     id serial NOT NULL,
     name text NOT NULL,
-    album_cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL, -- References short path in media. If the cover is deleted from media, remove cover from any albums.
+    collection_cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL, -- References short path in media. If the cover is deleted from media, remove cover from any collections.
     last_updated timestamp without time zone NOT NULL, -- The last time this item was renamed, added to/removed from, etc.
     folder boolean NOT NULL DEFAULT false, -- If this is a folder and thus its contents should remain separate from rest of library.
     PRIMARY KEY (id),
     UNIQUE (name)
 ) TABLESPACE pg_default;
-ALTER TABLE public.albums OWNER to postgres;
+ALTER TABLE public.collections OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.collection_entries
 (
     uuid uuid NOT NULL REFERENCES media(uuid) ON DELETE CASCADE,
-    collection_id integer NOT NULL REFERENCES albums(id) ON DELETE CASCADE,
+    collection_id integer NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
     date_added_to_collection timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (uuid, collection_id)
 ) TABLESPACE pg_default;
