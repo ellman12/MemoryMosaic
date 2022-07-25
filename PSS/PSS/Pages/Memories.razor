@@ -22,10 +22,6 @@
     </select>
 
     <input title="" type="number" min="1" max="@maxDay" @bind="@SelectedDay"/>
-
-    <button class="textBtn" @onclick="@LoadMemories" style="margin-left: 10px">
-        <span class="material-icons-outlined">history</span><span>Load Memories</span>
-    </button>
 </header>
 
 @{
@@ -78,6 +74,8 @@
             };
 
             if (_selectedDay > maxDay) _selectedDay = maxDay;
+            
+            LoadMemories();
         }
     }
 
@@ -89,6 +87,8 @@
             if (value > maxDay) _selectedDay = maxDay;
             else if (value is < 1 or > 31) _selectedDay = 1;
             else _selectedDay = value;
+            
+            LoadMemories();
         }
     }
 
