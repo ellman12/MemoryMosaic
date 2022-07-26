@@ -4,6 +4,7 @@
     left: 0;
     height: 100%;
     width: 100%;
+    z-index: 999;
     background: rgba(72, 71, 71, 0.41);
 }
 
@@ -12,7 +13,6 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 9999;
     background-color: black;
     border: 2px solid white;
     border-radius: 8px;
