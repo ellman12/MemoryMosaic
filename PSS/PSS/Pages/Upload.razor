@@ -43,7 +43,7 @@
         get => gpoFolderPath;
         private set
         {
-            gpoFolderPath = value;
+            gpoFolderPath = value.Replace('\\', '/');
             if (!String.IsNullOrWhiteSpace(value) && Directory.Exists(value))
             {
                 errorSpanVis = "hidden";

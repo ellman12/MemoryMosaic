@@ -50,13 +50,10 @@
             int ii = i; @*Necessary for some things like the <input>'s*@
             string dateString = allFiles[i].dateTaken == null ? null : allFiles[i].dateTaken?.ToString("ddd, MMM d, yyy h:mm:ss tt"); 
             
-            //Get the short path to this item relative to pss_upload.
-            string ogShortPath = Path.Join("pss_upload", allFiles[i].fullPath.Replace(S.uploadFolderPath!, null));
-
             <div class="itemDiv">
             @{
-                <img title="Click for Full Size Preview" onclick="window.open('@ogShortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? ogShortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
-                <span class="filename">@Path.GetFileName(ogShortPath)</span>
+                <img title="Click for Full Size Preview" onclick="window.open('@allFiles[i].shortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? allFiles[i].shortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
+                <span class="filename">@allFiles[i].filename</span>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
 
                 if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">Unknown Date Taken</span>}
@@ -103,6 +100,8 @@
         
         Parallel.ForEach(allFullPaths, fullPath =>
         {
+            fullPath = fullPath.Replace('\\', '/');
+            
             //Get the date taken based on this item's fullPath.
             string dtPath = fullPath.Replace(Upload.GpoFolderPath, null);
             dtPath = dtPath.Replace(Path.GetFileName(dtPath), null).Replace('\\', '/');
@@ -133,6 +132,7 @@
             allFiles.Add(new C.UploadFile
             {
                 filename = Path.GetFileName(fullPath),
+                shortPath = Path.Join("pss_upload", fullPath.Replace(S.uploadFolderPath!, null)).Replace('\\', '/'), //Get the short path to this item relative to pss_upload.
                 fullPath = fullPath.Replace('\\', '/'),
                 thumbnail = Path.GetExtension(fullPath) is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 dateTaken = fullDT,
@@ -164,32 +164,34 @@
     }
 
     //Adds all the items to photo library, and, if applicable, any album(s) or folder.
-    private static void AddItems()
+    private async Task AddItems()
     {
         int rowsAffected = 0;
-        
-        foreach (C.UploadFile file in allFiles)
+
+        await Parallel.ForEachAsync(allFiles.ToList(), async (file, _) =>
         {
-            if (file.alreadyInLib) continue; //Ignore duplicates
+            allFiles.RemoveAll(u => u.uuid == file.uuid);
+            UpdateStatus();
+            await InvokeAsync(StateHasChanged);
+
+            if (file.alreadyInLib) return; //Ignore duplicates
 
             string newShortPath = C.CreateShortPath(file.dateTaken, file.filename).Replace('\\', '/');
             allGuids.Add(file.uuid);
             Directory.CreateDirectory(C.CreateFullDateFolderPath(file.dateTaken));
 
-            GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
-            GC.WaitForPendingFinalizers();
             try
             {
                 string fullFinalPath = C.CreateFullPath(file.dateTaken, file.filename);
-                File.Move(file.fullPath!, fullFinalPath);
-                rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
-                D.UpdateDateTaken(fullFinalPath, file.dateTaken);
+                await Task.Run(() => File.Move(file.fullPath!, fullFinalPath), _);
+                rowsAffected += await C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
+                await Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken), _);
             }
             catch (IOException e)
             {
                 Console.WriteLine(e.Message);
             }
-        }
+        });
         
         collectionSelector.ConfirmBtnClick(); //Adds every file to the album(s)/folder.
         status = $"Added {rowsAffected} items to library";
