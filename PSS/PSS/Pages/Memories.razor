@@ -7,21 +7,13 @@
     <span>Memories From</span>
 
     <select name="months" id="months" autocomplete="on" @bind="@SelectedMonth">
-        <option value="January">January</option>
-        <option value="February">February</option>
-        <option value="March">March</option>
-        <option value="April">April</option>
-        <option value="May">May</option>
-        <option value="June">June</option>
-        <option value="July">July</option>
-        <option value="August">August</option>
-        <option value="September">September</option>
-        <option value="October">October</option>
-        <option value="November">November</option>
-        <option value="December">December</option>
+        @foreach (string month in months)
+        {
+            <option value="@month">@month</option>
+        }
     </select>
 
-    <input title="" type="number" min="1" max="@maxDay" @bind="@SelectedDay"/>
+    <input title="" type="number" @bind="@SelectedDay" @bind:event="oninput"/>
 </header>
 
 @{
@@ -88,12 +80,18 @@
             if (value > maxDay)
             {
                 _selectedDay = 1;
-                
+                int newIndex = months.IndexOf(SelectedMonth);
+                if (newIndex > 12) newIndex = 0;
+                else newIndex++;
+                SelectedMonth = months[newIndex];
             }
-            else if (value is < 1 or > 31)
+            else if (value < 1)
             {
-                _selectedDay = 1;
-                
+                int newIndex = months.IndexOf(SelectedMonth);
+                if (newIndex < 0) newIndex = 11;
+                else newIndex--;
+                SelectedMonth = months[newIndex];
+                _selectedDay = maxDay;
             }
             else _selectedDay = value;
             
@@ -104,6 +102,8 @@
     ///Stores the years, and a List of each item corresponding to that year.
     private static Dictionary<int, List<C.MediaRow>> grouped;
 
+    private static readonly List<string> months = new(new[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
+    
     protected override void OnInitialized()
     {
         grouped = new Dictionary<int, List<C.MediaRow>>();
@@ -124,5 +124,4 @@
                 grouped[memory.dateTaken!.Value.Year].Add(memory);
         }
     }
-
 }
