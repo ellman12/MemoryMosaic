@@ -203,7 +203,7 @@ namespace PSS.Backend
             }
             finally
             {
-                Close();
+                await localConn.CloseAsync();
             }
 
             return rowsAffected;
