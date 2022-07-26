@@ -39,7 +39,7 @@
 <KeyboardShortcuts AltA="@AddItemsBtnClick" AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref filterVis); StateHasChanged(); })" CtrlD="@DeleteErrors" />
 <ShortcutsReference AltAText="Add Items to Library and Album(s)/Folder" AltCText="Show/Hide CollectionSelector" AltFText="Show/Hide Filter" CtrlDText="Delete All Items with Errors"/>
 
-<ProgressPopUp Message="Adding Items to Library..." Height="400" Width="400" Visible="@popupVisible"/>
+<ProgressPopUp Message="@popupMsg" Height="400" Width="400" Visible="@popupVisible"/>
 @{
     GC.Collect();
     GC.WaitForPendingFinalizers();
@@ -80,7 +80,7 @@
     private static List<string> allFullPaths;
     private static List<C.UploadFile> allFiles;
 
-    private static string status;
+    private static string status, popupMsg;
     private static int progressValue, progressMax;
     private static bool popupVisible;
     private static string statusDisplay, progressDisplay, promptVis, addItemsPromptVis;
@@ -102,12 +102,11 @@
         allFiles = new List<C.UploadFile>(allFullPaths.Count);
         status = "";
         progressValue = progressMax = 0;
-        popupVisible = false;
         statusDisplay = "inline";
         progressDisplay = "none";
         promptVis = addItemsPromptVis = filterVis = collectionSelectorVis = "hidden";
         neitherChecked = warningChecked = errorChecked = false;
-        infoChecked = true;
+        popupVisible = infoChecked = true;
         
         await Parallel.ForEachAsync(allFullPaths, async (fullPath, _) => 
         {
@@ -163,6 +162,7 @@
         int rowsAffected = 0;
         progressMax = allFiles.Count;
         popupVisible = true;
+        popupMsg = $"Adding {progressMax} Items to Library...";
         progressDisplay = "inline";
         statusDisplay = "none";
         StateHasChanged();
