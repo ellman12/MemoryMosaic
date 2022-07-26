@@ -121,9 +121,13 @@
             file.dateTaken = D.GetDateTakenAuto(fullPath, out file.dateTakenSrc);
             file.alreadyInLib = ItemInLibrary(file.dateTaken, Path.GetFileName(fullPath));
             allFiles.Add(file);
+            await InvokeAsync(StateHasChanged);
         });
         
+        allFiles = allFiles.OrderByDescending(o => o.dateTaken).ToList();
         UpdateStatus();
+        popupMsg = "Loading Items in pss_upload...";
+        popupVisible = false;
     }
 }
 
