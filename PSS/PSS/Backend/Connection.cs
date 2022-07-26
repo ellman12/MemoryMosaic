@@ -170,13 +170,16 @@ namespace PSS.Backend
         ///<param name="starred">Is this item starred or not?</param>
         ///<param name="separate">Is this item separate from main library (i.e., is it in a folder)?</param>
         ///<returns>Int saying how many rows were affected.</returns>
-        public static int InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
+        public static async System.Threading.Tasks.Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
         {
+            NpgsqlConnection localConn = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
+            await localConn.OpenAsync();
+
             int rowsAffected = 0;
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("", connection);
+                await using NpgsqlCommand cmd = new("", localConn);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.Parameters.AddWithValue("@starred", starred);
@@ -192,7 +195,7 @@ namespace PSS.Backend
                 }
 
                 cmd.CommandText += " ON CONFLICT(path) DO NOTHING";
-                rowsAffected = cmd.ExecuteNonQuery();
+                rowsAffected = await cmd.ExecuteNonQueryAsync();
             }
             catch (NpgsqlException e)
             {
