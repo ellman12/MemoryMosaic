@@ -1,14 +1,17 @@
 * {
     scrollbar-width: none !important;
-    --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
+    --left-margin: 145px; /* For things with absolute positioning, how far to be away from left side of page */
 }
 
 header {
     display: flex;
     flex-direction: row;
     align-items: center;
-    position: absolute;
+    position: fixed;
     top: 0;
+    background-color: black;
+    z-index: 999;
+    padding-bottom: 10px;
     left: var(--left-margin);
 }
 
