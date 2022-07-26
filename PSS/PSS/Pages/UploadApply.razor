@@ -95,7 +95,7 @@
 
     private static string collectionSelectorVis;
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         allGuids = new List<Guid>();
         allFullPaths = F.GetSupportedFiles(S.uploadFolderPath);
@@ -109,14 +109,14 @@
         neitherChecked = warningChecked = errorChecked = false;
         infoChecked = true;
         
-        Parallel.ForEach(allFullPaths, fullPath => 
+        await Parallel.ForEachAsync(allFullPaths, async (fullPath, _) => 
         {
             C.UploadFile file = new()
             {
                 filename = Path.GetFileName(fullPath),
                 shortPath = Path.Join("pss_upload", fullPath.Replace(S.uploadFolderPath!, null)).Replace('\\', '/'), //Get the short path to this item relative to pss_upload.
                 fullPath = fullPath.Replace('\\', '/'),
-                thumbnail = Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
+                thumbnail = await Task.Run(() => Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null, _),
                 uuid = Guid.NewGuid()
             };
             file.dateTaken = D.GetDateTakenAuto(fullPath, out file.dateTakenSrc);
