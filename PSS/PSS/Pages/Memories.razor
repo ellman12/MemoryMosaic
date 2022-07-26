@@ -57,8 +57,8 @@
 }
 
 @code{
-    private static string _selectedMonth;
     private static int maxDay, _selectedDay;
+    private static string _selectedMonth;
     private static string SelectedMonth
     {
         get => _selectedMonth;
@@ -73,6 +73,7 @@
                 _ => 31
             };
 
+            //If switching from a month with more days than the new month, don't create invalid input like Feb 30, etc.
             if (_selectedDay > maxDay) _selectedDay = maxDay;
             
             LoadMemories();
@@ -84,8 +85,16 @@
         get => _selectedDay;
         set
         {
-            if (value > maxDay) _selectedDay = maxDay;
-            else if (value is < 1 or > 31) _selectedDay = 1;
+            if (value > maxDay)
+            {
+                _selectedDay = 1;
+                
+            }
+            else if (value is < 1 or > 31)
+            {
+                _selectedDay = 1;
+                
+            }
             else _selectedDay = value;
             
             LoadMemories();
@@ -97,9 +106,9 @@
 
     protected override void OnInitialized()
     {
+        grouped = new Dictionary<int, List<C.MediaRow>>();
         SelectedMonth = DateTime.Today.ToString("MMMM");
         SelectedDay = DateTime.Today.Day;
-        grouped = new Dictionary<int, List<C.MediaRow>>();
     }
 
     private static void LoadMemories()
