@@ -51,13 +51,10 @@
             
             int ii = i; @*Necessary for some things like the <input>'s*@
             string dateString = allFiles[i].dateTaken == null ? "None" : allFiles[i].dateTaken?.ToString("ddd, MMM d, yyy h:mm:ss tt"); 
-            
-            //Get the short path to this item relative to pss_upload.
-            string ogShortPath = Path.Join("pss_upload", allFiles[i].fullPath.Replace(S.uploadFolderPath!, null));
 
             <div class="itemDiv">
             @{
-                <img title="Click for Full Size Preview" onclick="window.open('@ogShortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? ogShortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
+                <img title="Click for Full Size Preview" onclick="window.open('@allFiles[i].shortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? allFiles[i].shortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
                 <input class="filename" @bind="@allFiles[ii].filename"/>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
                                                                            
@@ -105,6 +102,7 @@
             C.UploadFile file = new()
             {
                 filename = Path.GetFileName(fullPath),
+                shortPath = Path.Join("pss_upload", fullPath.Replace(S.uploadFolderPath!, null)).Replace('\\', '/'), //Get the short path to this item relative to pss_upload.
                 fullPath = fullPath.Replace('\\', '/'),
                 thumbnail = Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
                 uuid = Guid.NewGuid()
