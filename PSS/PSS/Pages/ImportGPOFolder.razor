@@ -164,32 +164,34 @@
     }
 
     //Adds all the items to photo library, and, if applicable, any album(s) or folder.
-    private static void AddItems()
+    private async Task AddItems()
     {
         int rowsAffected = 0;
-        
-        foreach (C.UploadFile file in allFiles)
+
+        await Parallel.ForEachAsync(allFiles.ToList(), async (file, _) =>
         {
-            if (file.alreadyInLib) continue; //Ignore duplicates
+            allFiles.RemoveAll(u => u.uuid == file.uuid);
+            UpdateStatus();
+            await InvokeAsync(StateHasChanged);
+
+            if (file.alreadyInLib) return; //Ignore duplicates
 
             string newShortPath = C.CreateShortPath(file.dateTaken, file.filename).Replace('\\', '/');
             allGuids.Add(file.uuid);
             Directory.CreateDirectory(C.CreateFullDateFolderPath(file.dateTaken));
 
-            GC.Collect(); //Dumb but it prevents file in use error for File.Move. https://stackoverflow.com/a/21137207
-            GC.WaitForPendingFinalizers();
             try
             {
                 string fullFinalPath = C.CreateFullPath(file.dateTaken, file.filename);
-                File.Move(file.fullPath!, fullFinalPath);
-                rowsAffected += C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
-                D.UpdateDateTaken(fullFinalPath, file.dateTaken);
+                await Task.Run(() => File.Move(file.fullPath!, fullFinalPath), _);
+                rowsAffected += await C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
+                await Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken), _);
             }
             catch (IOException e)
             {
                 Console.WriteLine(e.Message);
             }
-        }
+        });
         
         collectionSelector.ConfirmBtnClick(); //Adds every file to the album(s)/folder.
         status = $"Added {rowsAffected} items to library";
