@@ -128,6 +128,9 @@ namespace PSS.Backend
             ///The original (or new if changed by user) filename of this item.
             public string filename;
 
+            ///The path relative to pss_upload of this item.
+            public string shortPath;
+
             ///The absolute path to the file to upload.
             public string fullPath;
             
