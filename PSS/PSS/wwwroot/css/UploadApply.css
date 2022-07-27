@@ -46,15 +46,6 @@ header > button {
     background-color: rgba(211, 211, 211, 0.1);
 }
 
-header > input[type="text"] {
-    color: black; /* Font */
-    margin-top: 12px;
-    margin-left: 0;
-    width: 200px;
-    font-size: 16px;
-    margin-right: 11px;
-}
-
 header > #statusSpan {
     margin-top: 10px;
     margin-left: 10px;
