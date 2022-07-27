@@ -3,12 +3,13 @@
 
 <title>Test - PSS</title>
 @{
-    //Metadata.DateTakenSrc yes = new();
-    //Metadata.GetFilenameTimestamp("Screenshot 2021-11-16 213028 - Copy.jpg", out DateTime dateTaken, ref yes);
-    //Console.WriteLine(dateTaken);
-    <button style="margin-left: 50%; margin-top: 10%; color: black;" @onclick="@(F.CreateDownloadZip)">click me</button>
+    <button style="margin-left: 50%; margin-top: 10%; color: black;" @onclick="@(Yes)">click me</button>
 }
 
 @code{
-    
+
+    private static void Yes()
+    {
+        C.AddToCollection(new Guid("56ff78b0-ef4d-11ec-8ea0-0242ac120002"), 4);
+    }
 }

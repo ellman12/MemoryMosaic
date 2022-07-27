@@ -1,10 +1,10 @@
-﻿#albumCreator {
+﻿#collectionCreator {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-#albumCreator > input[type="text"] {
+#collectionCreator > input[type="text"] {
     width: 200px;
     font-size: 16px;
     margin-left: 12px;

@@ -1,0 +1,182 @@
+@* Reusable component that allows user to choose album(s) or a folder to add selected item(s) to. *@
+@inject IJSRuntime JSRuntime
+<link href="/css/components/CollectionSelector.css" rel="stylesheet">
+
+<div id="collectionSelectorBackground" style="visibility: @CollectionsVis">
+    <div id="collectionSelector">
+        <div id="header">
+            <span>Add to</span>
+            @if (ShowCheckCancelButtons)
+            {
+                <div id="buttons">
+                    <button class="iconBtn" @onclick="CloseBtnClick"><span class="material-icons-outlined">close</span></button>
+                    <button class="iconBtn" @onclick="ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+                </div>
+            }
+        </div>
+        
+        <div id="collectionCreatorDiv"><CollectionCreator Collections="@(albums.Concat(folders).ToList())"/></div>
+
+        <div class="collections">
+            <span>Albums</span>
+            <div class="collectionsList">
+                @for (int i = 0; i < albums.Count; i++)
+                {
+                    int ii = i;
+                    <div class="collection" @onclick="@(() => { checkedAlbums[ii] = !checkedAlbums[ii]; ClearFolderChecks(); checkedFolderIndex = -1; })">
+                        <div class="coverDiv">
+                            @if (albums[i].cover != ""){<img src="@S.LIB_REQUEST_PATH/@albums[i].cover" alt="">}
+                        </div>
+                        <input type="checkbox" @bind="@checkedAlbums[ii]" @bind:event="oninput">
+                        <span title="@albums[i].name">@albums[i].name</span>
+                    </div>
+                }
+            </div>
+        
+            <span>Folders</span>
+            <div class="collectionsList">
+                @for (int i = 0; i < folders.Count; i++)
+                {
+                    int ii = i;
+                    <div class="collection" @onclick="@(() => { checkedFolderIndex = ii; ClearAlbumChecks(); ClearFolderChecks(); checkedFolders[ii] = true; })">
+                        <div class="coverDiv">
+                            @if (folders[i].cover != ""){<img src="@S.LIB_REQUEST_PATH/@folders[i].cover" alt="">}
+                        </div>
+                        <input type="checkbox" @bind="@checkedFolders[ii]" @bind:event="oninput">
+                        <span title="@folders[i].name">@folders[i].name</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private static List<C.Collection> albums;
+    private static List<C.Collection> folders;
+    
+    private static List<bool> checkedAlbums;
+    private static List<bool> checkedFolders;
+    private static int checkedFolderIndex; //Which index in folders is checked (can only have 1 checked (true)).
+
+    [Parameter]
+    public Guid SelectedItem { get; set; } = Guid.Empty;
+    
+    [Parameter]
+    public List<Guid> SelectedItems { get; set; } //Passed in from the page. Items selected by user.
+    
+    [Parameter]
+    public EventCallback<int> SelectedItemsCountChanged { get; set; } //Used for clearing SelectedItems. https://blazor-university.com/components/two-way-binding/
+    
+    [Parameter]
+    public string HeaderVis { get; set; } //Passed in from the calling page. Visibility of the header that displays selected items count, misc buttons, etc.
+    
+    [Parameter]
+    public EventCallback<string> HeaderVisChanged { get; set; } //Changing the passed in headerVis.
+    
+    [Parameter]
+    public string CollectionsVis { get; set; } //Visibility of the selector
+    
+    [Parameter]
+    public EventCallback<string> CollectionsVisChanged { get; set; }
+
+    [Parameter]
+    public bool ShowCheckCancelButtons { get; set; } = true; //Show 2 buttons in top right (turned off for UploadApply).
+    
+    protected override void OnInitialized()
+    {
+        CollectionCreator.CollectionCreated += RefreshData;
+        albums = C.GetCollectionsTable(true, false);
+        folders = C.GetCollectionsTable(false, true);
+        checkedAlbums = (from album in albums select new bool()).ToList();
+        checkedFolders = (from folder in folders select new bool()).ToList();
+        checkedFolderIndex = -1; //-1 = a folder isn't picked
+        CollectionsVis = "hidden";
+        HeaderVis = "hidden";
+    }
+
+    private async void RefreshData(object sender, EventArgs e)
+    {
+        albums = C.GetCollectionsTable(true, false);
+        folders = C.GetCollectionsTable(false, true);
+        checkedAlbums = (from album in albums select new bool()).ToList();
+        checkedFolders = (from folder in folders select new bool()).ToList();
+        checkedFolderIndex = -1; //-1 = a folder isn't picked
+
+        await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
+    }
+
+    //Closing the div for selecting album(s) to add selected items to.
+    private async Task CloseBtnClick()
+    {
+        CollectionsVis = "hidden";
+        await CollectionsVisChanged.InvokeAsync("hidden");
+        ClearAlbumChecks();
+        ClearFolderChecks();
+    }
+    
+    private async Task ClearChecks()
+    {
+        foreach (Guid item in SelectedItems)
+            await JSRuntime.InvokeAsync<string>("removeCheck", item);
+        SelectedItems.Clear();
+        CollectionsVis = "hidden";
+        HeaderVis = "hidden";
+        await SelectedItemsCountChanged.InvokeAsync(0);
+        await CollectionsVisChanged.InvokeAsync("hidden");
+        await HeaderVisChanged.InvokeAsync("hidden");
+    }
+
+    private static void ClearAlbumChecks()
+    {
+        for (int i = 0; i < checkedAlbums.Count; i++) checkedAlbums[i] = false;
+    }
+
+    private static void ClearFolderChecks()
+    {
+        for (int i = 0; i < checkedFolders.Count; i++) checkedFolders[i] = false;
+    }
+
+    //Add item(s) to album(s) or folder selected.
+    public async void ConfirmBtnClick()
+    {
+        if (checkedFolderIndex != -1) //If a folder is selected this won't be -1
+        {
+            if (SelectedItem != Guid.Empty)
+            {
+                C.AddToCollection(SelectedItem, folders[checkedFolderIndex].id);
+            }
+            else
+            {
+                foreach (Guid item in SelectedItems)
+                    C.AddToCollection(item, folders[checkedFolderIndex].id);
+            }
+        }
+        else //Adding to album(s).
+        {
+            for (int c = 0; c < checkedAlbums.Count; c++)
+            {
+                if (checkedAlbums[c] == false) continue;
+
+                if (SelectedItem != Guid.Empty)
+                {
+                    C.AddToCollection(SelectedItem, albums[c].id);
+                }
+                else
+                {
+                    foreach (Guid item in SelectedItems)
+                        C.AddToCollection(item, albums[c].id);
+                }
+            }
+        }
+
+        await CloseBtnClick();
+
+        if (!ShowCheckCancelButtons) return; //Needed for UploadApply. Can't run these because no checks to clear.
+        await ClearChecks();
+        SelectedItems.Clear();
+        await SelectedItemsCountChanged.InvokeAsync(0);
+        await CollectionsVisChanged.InvokeAsync("hidden");
+        await HeaderVisChanged.InvokeAsync("hidden");
+    }
+}

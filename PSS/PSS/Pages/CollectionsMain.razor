@@ -1,0 +1,96 @@
+@* Show all collections and allow user to sort them and make new ones *@
+@page "/collections"
+
+<title>Collections - PSS</title>
+<link href="css/CollectionsMain.css" rel="stylesheet">
+
+<header>
+    <span id="collectionsText">Collections</span>
+    <CollectionCreator Collections="@collections"/>
+    
+    <div id="checkboxes">
+        <div>
+            <input type="checkbox" @bind="@showAlbums">
+            <span @onclick="@(() => { showAlbums = !showAlbums; GetCollectionsTable(); })">Show Albums</span>
+        </div>
+        <div>
+            <input type="checkbox" @bind="@showFolders">
+            <span @onclick="@(() => { showFolders = !showFolders; GetCollectionsTable(); })">Show Folders</span>
+        </div>
+    </div>
+
+    <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
+    <div id="sortDiv" style="visibility: @sortDivVis">
+        <button class="textBtn" @onclick="@(() => ChangeOrder(C.CMSortMode.Title))">
+            <span class="material-icons-outlined" style="@(mode == C.CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(mode == C.CMSortMode.Title ? "#1a73e8" : "white")">Album Title</span>
+        </button>
+        <button class="textBtn" @onclick="@(() => ChangeOrder(C.CMSortMode.TitleReversed))">
+            <span class="material-icons-outlined" style="@(mode == C.CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(mode == C.CMSortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
+        </button>
+        <button class="textBtn" @onclick="@(() => ChangeOrder(C.CMSortMode.LastModified))">
+            <span class="material-icons-outlined" style="@(mode == C.CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(mode == C.CMSortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
+        </button>
+        <button class="textBtn" @onclick="@(() => ChangeOrder(C.CMSortMode.LastModifiedReversed))">
+            <span class="material-icons-outlined" style="@(mode == C.CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(mode == C.CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
+        </button>
+    </div>
+</header>
+
+<div id="mainDiv">
+    @foreach (C.Collection collection in collections)
+    { 
+        <div class="collection" onclick="location.href='/collection-view/@collection.id'"> @*Text and collection thumbnail*@
+            <div class="thumbnail">
+                @if (collection.cover != ""){<img src="@S.LIB_REQUEST_PATH/@collection.cover" alt=""/>}
+            </div>
+            <span class="collectionName">@collection.name</span>
+        </div>
+    }
+</div>
+
+@code {
+    private static List<C.Collection> collections;
+    
+    private static string sortBtnText;
+    private static string sortDivVis;
+    private static C.CMSortMode mode;
+
+    private static bool showAlbums = true;
+    private static bool showFolders = false;
+
+    protected override void OnInitialized()
+    {
+        GetCollectionsTable();
+        
+        mode = C.CMSortMode.LastModified; //Default sort mode
+        
+        SetSortBtnText();
+        sortDivVis = "hidden";
+    }
+
+    private static void GetCollectionsTable() => collections = C.GetCollectionsTable(showAlbums, showFolders, mode);
+
+    private static void SetSortBtnText()
+    {
+        sortBtnText = mode switch
+        {
+            C.CMSortMode.Title => "Collection Title",
+            C.CMSortMode.TitleReversed => "Title Reversed",
+            C.CMSortMode.LastModified => "Last Modified",
+            C.CMSortMode.LastModifiedReversed => "Last Modified Reversed",
+            _ => "Collection Title"
+        };
+    }
+
+    private static void ChangeOrder(C.CMSortMode newMode)
+    {
+        mode = newMode;
+        GetCollectionsTable();
+        SetSortBtnText();
+        sortDivVis = "hidden";
+    }
+}

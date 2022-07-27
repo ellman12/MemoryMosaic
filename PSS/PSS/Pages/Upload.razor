@@ -6,12 +6,16 @@
 
 @{
     <div id="mainDiv">
-        @if (allPaths.Length > 0)
+        @if (allPaths.Count > 0)
         {
             <span class="bigText">Items Found in pss_upload Waiting to Be Added to Library</span>
             <button class="textBtn">
-                <span class="material-icons-outlined">add_photo_alternate</span><a href="apply-upload">Go to Upload Apply</a>
+                <span class="material-icons-outlined">add_photo_alternate</span><a href="apply-upload">Go to Apply Upload</a>
             </button>
+        }
+        else
+        {
+            <span class="bigText">No Items Found in pss_upload to Add to Library</span>
         }
         
         <span class="bigText">Import a Folder in pss_upload Sorted with GPO</span>
@@ -30,7 +34,7 @@
 }
 
 @code {
-    private static string[] jpgPaths, pngPaths, gifPaths, mp4Paths, mkvPaths, movPaths, allPaths;
+    private static List<string> allPaths;
 
     private static string gpoFolderPath;
 
@@ -39,7 +43,7 @@
         get => gpoFolderPath;
         private set
         {
-            gpoFolderPath = value;
+            gpoFolderPath = value.Replace('\\', '/');
             if (!String.IsNullOrWhiteSpace(value) && Directory.Exists(value))
             {
                 errorSpanVis = "hidden";
@@ -61,14 +65,8 @@
         gpoFolderInputVis = "hidden";
         errorSpanVis = "hidden";
         gpoBtnVis = "hidden";
-        
-        jpgPaths = Directory.GetFiles(S.uploadFolderPath, "*.jp*g", SearchOption.AllDirectories);
-        pngPaths = Directory.GetFiles(S.uploadFolderPath, "*.png", SearchOption.AllDirectories);
-        gifPaths = Directory.GetFiles(S.uploadFolderPath, "*.gif", SearchOption.AllDirectories);
-        mp4Paths = Directory.GetFiles(S.uploadFolderPath, "*.mp4", SearchOption.AllDirectories);
-        mkvPaths = Directory.GetFiles(S.uploadFolderPath, "*.mkv", SearchOption.AllDirectories);
-        movPaths = Directory.GetFiles(S.uploadFolderPath, "*.mov", SearchOption.AllDirectories);
-        allPaths = jpgPaths.Concat(pngPaths).Concat(gifPaths).Concat(mp4Paths).Concat(mkvPaths).Concat(movPaths).ToArray();
+
+        allPaths = F.GetSupportedFiles(S.uploadFolderPath);
     }
 
 }

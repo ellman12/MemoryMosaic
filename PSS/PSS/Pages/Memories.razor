@@ -1,0 +1,127 @@
+@page "/memories"
+
+<link rel="stylesheet" href="css/Memories.css">
+<title>Memories - PSS</title>
+
+<header>
+    <span>Memories From</span>
+
+    <select name="months" id="months" autocomplete="on" @bind="@SelectedMonth">
+        @foreach (string month in months)
+        {
+            <option value="@month">@month</option>
+        }
+    </select>
+
+    <input title="" type="number" @bind="@SelectedDay" @bind:event="oninput"/>
+</header>
+
+@{
+    if (grouped.Count == 0)
+    {
+        <h1>No items were taken on this day</h1>
+        return;
+    }
+    
+    <div id="mainDiv">
+        @foreach (KeyValuePair<int, List<C.MediaRow>> group in grouped)
+        {
+            <span>@group.Key</span>
+            <div>
+                @foreach (C.MediaRow media in group.Value)
+                {
+                    <div class="thumbnail">
+                        @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
+                        @if (media.thumbnail != null) //Video
+                        {
+                            <span class="material-icons-outlined video-icon">play_circle_outline</span>
+                            <img src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        }
+                        else
+                        {
+                            <img src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code{
+    private static int maxDay, _selectedDay;
+    private static string _selectedMonth;
+    private static string SelectedMonth
+    {
+        get => _selectedMonth;
+        set
+        {
+            _selectedMonth = value;
+
+            maxDay = value switch
+            {
+                "April" or "June" or "September" or "November" => 30,
+                "February" => 29,
+                _ => 31
+            };
+
+            //If switching from a month with more days than the new month, don't create invalid input like Feb 30, etc.
+            if (_selectedDay > maxDay) _selectedDay = maxDay;
+            
+            LoadMemories();
+        }
+    }
+
+    private static int SelectedDay
+    {
+        get => _selectedDay;
+        set
+        {
+            if (value > maxDay)
+            {
+                _selectedDay = 1;
+                int newIndex = months.IndexOf(SelectedMonth);
+                if (newIndex > 12) newIndex = 0;
+                else newIndex++;
+                SelectedMonth = months[newIndex];
+            }
+            else if (value < 1)
+            {
+                int newIndex = months.IndexOf(SelectedMonth);
+                if (newIndex < 0) newIndex = 11;
+                else newIndex--;
+                SelectedMonth = months[newIndex];
+                _selectedDay = maxDay;
+            }
+            else _selectedDay = value;
+            
+            LoadMemories();
+        }
+    }
+
+    ///Stores the years, and a List of each item corresponding to that year.
+    private static Dictionary<int, List<C.MediaRow>> grouped;
+
+    private static readonly List<string> months = new(new[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
+    
+    protected override void OnInitialized()
+    {
+        grouped = new Dictionary<int, List<C.MediaRow>>();
+        SelectedMonth = DateTime.Today.ToString("MMMM");
+        SelectedDay = DateTime.Today.Day;
+    }
+
+    private static void LoadMemories()
+    {
+        grouped.Clear();
+        
+        //Get all the items taken on this month and day and group them by their DT year.
+        foreach (C.MediaRow memory in C.LoadMemories(SelectedMonth, SelectedDay))
+        {
+            if (!grouped.ContainsKey(memory.dateTaken!.Value.Year))
+                grouped.Add(memory.dateTaken!.Value.Year, new List<C.MediaRow> {memory});
+            else
+                grouped[memory.dateTaken!.Value.Year].Add(memory);
+        }
+    }
+}

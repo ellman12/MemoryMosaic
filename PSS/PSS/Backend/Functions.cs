@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PSS.Backend
@@ -69,7 +70,7 @@ namespace PSS.Backend
                 {
                     CreateNoWindow = true,
                     FileName = "ffmpeg",
-                    Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v 25 \"{thumbnailFullPath}\""
+                    Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\""
                 };
                 Process ffmpegProcess = Process.Start(ffmpegInfo);
                 ffmpegProcess!.WaitForExit();
@@ -80,33 +81,16 @@ namespace PSS.Backend
             //Then convert that file's bytes into its base64 equivalent. This is stored in the DB as the thumbnail (no actual file required).
             return Convert.ToBase64String(bytes);
         }
-
-        ///<summary>Copy the supplied short paths to the Download Folder in pss_tmp.</summary>
-        public static void CopyItemsToZipPath(List<string> shortPaths)
-        {
-            string folderToZip = Path.Combine(S.tmpFolderPath, "Download Folder");
-            Directory.CreateDirectory(folderToZip);
-            
-            foreach(string shortPath in shortPaths)
-            {
-                string fullPath = Path.Combine(S.libFolderPath, shortPath);
-                string destPath = Path.Combine(folderToZip, Path.GetFileName(shortPath));
-                File.Copy(fullPath, destPath);
-            }
-        }
         
-        ///<summary>Zips up the items in the Download Folder in pss_tmp.</summary>
-        ///<returns>Zip file's filename.</returns>
-        public static async Task<string> CreateDownloadZip()
+        ///<summary>
+        ///<para>Return a List&lt;string&gt; of the full paths of all supported file types in rootPath.</para>
+        ///Supported file types are: ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov", and case is ignored.
+        ///</summary>
+        public static List<string> GetSupportedFiles(string rootPath)
         {
-            string folderToZip = Path.Combine(S.tmpFolderPath, "Download Folder");
-
-            string filename = $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
-            string zipPath = Path.Combine(S.tmpFolderPath, filename);
-            await Task.Run(() => ZipFile.CreateFromDirectory(folderToZip, zipPath));
-
-            await Task.Run(() => Directory.Delete(folderToZip, true)); //Not needed after it's zipped.
-            return filename;
+            string[] validExts = {".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov"};
+            string[] allPaths = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories);
+            return allPaths.Where(path => validExts.Contains(Path.GetExtension(path).ToLower())).ToList();
         }
     }
 }

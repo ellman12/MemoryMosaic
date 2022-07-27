@@ -1,0 +1,45 @@
+@* Reusable component for a simple popup for long-running processes to prevent user from navigating away from page. *@
+<link href="/css/components/ProgressPopUp.css" rel="stylesheet">
+
+<div id="popupBackground" style="display: @(Visible ? "inline" : "none")">
+    <div id="progressPopUp" style="width: @(Width + "px"); height: @(Height + "px")">
+        <span style="font-size: @(FontSize + "px")">@Message</span>
+    </div>
+</div>
+
+@code{
+
+    private bool _visible;
+    private string _message;
+
+    [Parameter]
+    public bool Visible
+    {
+        get => _visible;
+        set
+        {
+            _visible = value;
+            StateHasChanged();
+        }
+    }
+
+    [Parameter, EditorRequired]
+    public string Message
+    {
+        get => _message;
+        set
+        {
+            _message = value;
+            StateHasChanged();
+        }
+    }
+
+    [Parameter]
+    public int Width { get; set; } = 320;
+
+    [Parameter]
+    public int Height { get; set; } = 300;
+
+    [Parameter]
+    public int FontSize { get; set; } = 20;
+}

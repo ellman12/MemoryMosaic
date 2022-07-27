@@ -1,27 +1,7 @@
 @page "/maintenance/missing-files"
 
 <title>Missing Files — Maintenance - PSS</title>
-
-<style>
-    header {
-        background-color: black;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        align-content: center;
-        position: fixed;
-        left: 146px;
-        right: 0;
-        top: 4px;
-        z-index: 999;
-    }
-    
-    #mainDiv {
-        position: absolute;
-        left: 145px;
-        top: 70px;
-    }
-</style>
+<link href="css/maintenance/MissingFiles.css" rel="stylesheet">
 
 <header>
     <button class="textBtn" @onclick="@DeleteMissingPaths">
@@ -31,42 +11,32 @@
 </header>
 
 <div id="mainDiv">
-    <span>media</span><br>
-    @foreach (string path in media){<span>@path</span><br>}
-    
-    <br><span>media_trash</span><br>
-    @foreach (string path in media_trash){<span>@path</span><br>}
-
-    <br><span>album_entries</span><br>
-    @foreach (string path in album_entries){<span>@path</span><br>}
-
-    <br><span>album_entries_trash</span><br>
-    @foreach (string path in album_entries_trash){<span>@path</span><br>}
+    @foreach (C.MediaRow row in mediaMissingItems)
+    {
+        <div class="missingItem">
+            <div class="thumbnail">
+                @if (row.thumbnail != null){<img src="data:image/jpg;base64,@row.thumbnail" alt="">}
+            </div>
+            <div class="info">
+                <span>@row.path</span>
+                <span>DT: @row.dateTaken</span>
+                <span>DA: @row.dateAdded</span>
+                <span>Star: @row.starred</span>
+                <span>Separate: @row.separate</span>
+                <span>@row.uuid</span>
+            </div>
+        </div>
+    }
 </div>
 
 @code{
-    private static List<string> media;
-    private static List<string> media_trash;
-    private static List<string> album_entries;
-    private static List<string> album_entries_trash;
+    private static List<C.MediaRow> mediaMissingItems;
 
-    protected override void OnInitialized()
-    {
-        media = M.GetMissingFiles(M.MissingFilesTable.media);
-        media_trash = M.GetMissingFiles(M.MissingFilesTable.media_trash);
-        album_entries = M.GetMissingFiles(M.MissingFilesTable.album_entries);
-        album_entries_trash = M.GetMissingFiles(M.MissingFilesTable.album_entries_trash);
-    }
+    protected override void OnInitialized() => mediaMissingItems = M.GetMediaMissingFiles();
 
     private static void DeleteMissingPaths()
     {
-        M.RemoveMissingFiles(media, M.MissingFilesTable.media);
-        M.RemoveMissingFiles(media_trash, M.MissingFilesTable.media_trash);
-        M.RemoveMissingFiles(album_entries, M.MissingFilesTable.album_entries);
-        M.RemoveMissingFiles(album_entries_trash, M.MissingFilesTable.album_entries_trash);
-        media.Clear();
-        media_trash.Clear();
-        album_entries.Clear();
-        album_entries_trash.Clear();
+        M.RemoveMediaMissingFiles(mediaMissingItems);
+        mediaMissingItems.Clear();
     }
 }

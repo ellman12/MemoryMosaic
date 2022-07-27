@@ -1,4 +1,13 @@
-#albumSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
+#collectionSelectorBackground {
+    position: fixed;
+    width: 140%;
+    height: 100%;
+    background-color: rgba(211, 211, 211, 0.1);
+    margin-left: -80px;
+    z-index: 999999;
+}
+
+#collectionSelectorBackground > #collectionSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
     position: fixed;
     left: 50%;
     top: 50%;
@@ -6,11 +15,11 @@
     background-color: black;
     width: 490px;
     height: 620px;
-    z-index: 999;
+    z-index: 999999;
     border: 1px solid white;
 }
 
-#albumSelector > #header {
+#collectionSelector > #header {
     height: 50px;
     padding-top: 4px;
     padding-left: 10px;
@@ -22,7 +31,7 @@
     align-items: center;
 }
 
-#albumSelector > #header > #buttons {
+#collectionSelector > #header > #buttons {
     position: absolute;
     right: 13px;
     display: flex;
@@ -30,7 +39,7 @@
     align-items: center;
 }
 
-#albumSelector > #albumCreatorDiv {
+#collectionSelector > #collectionCreatorDiv {
     display: flex;
     align-items: center;
     position: absolute;
@@ -40,7 +49,7 @@
     top: 45px;
 }
 
-.albumsAndFolders {
+.collections {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -50,11 +59,11 @@
     height: 100%;
 }
 
-.albumsAndFolders > span {
+.collections > span {
     margin-bottom: 8px;
 }
 
-.albumsList {
+.collectionsList {
     margin-bottom: 12px;
     border: 1px solid white;
     padding-right: 2px;
@@ -62,35 +71,35 @@
     overflow-y: scroll;
 }
 
-.albumsList .album {
+.collectionsList > .collection {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
 }
 
-.albumsList .album:hover {
+.collectionsList > .collection:hover {
     background-color: rgba(211, 211, 211, 0.1);
     cursor: pointer;
 }
 
-.albumsList .coverDiv {
+.collectionsList > .collection > .coverDiv {
     display: flex;
     width: 60px;
     height: 60px;
 }
 
-.albumsList img {
+.collectionsList > .collection > img {
     object-fit: cover;
     width: 60px;
     height: 60px;
 }
 
-.albumsList .album input[type="checkbox"] {
+.collectionsList .collection input[type="checkbox"] {
     margin-left: 7px;
 }
 
-.albumsList .album span {
+.collectionsList .collection span {
     margin-top: -1px;
     margin-left: 6px;
     white-space: nowrap;

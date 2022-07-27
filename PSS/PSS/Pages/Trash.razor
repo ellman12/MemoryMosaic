@@ -1,199 +1,134 @@
 ﻿@page "/trash"
-@inject NavigationManager navigationManager;
+@inject IJSRuntime JSRuntime
 
 <title>Trash - PSS</title>
 <link href="css/Trash.css" rel="stylesheet"/>
 
 @{
     <header>
-        <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")" @onclick="ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText" style="visibility: @(selectedItems.Count == 0 ? "hidden" : "visible")">@selectedItems.Count selected</span>
+        <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItemsCount == 0 ? "hidden" : "visible")" @onclick="@libContentViewer.ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText" style="visibility: @(selectedItemsCount == 0 ? "hidden" : "visible")">@selectedItemsCount selected</span>
         <div>
             <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
-            <button class="textBtn" @onclick="RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")</span></button>
-            <button class="textBtn" @onclick="DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")</span></button>
+            <button class="textBtn" @onclick="RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
+            <button class="textBtn" @onclick="DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
+        </div>
+    
+        <div id="sortDiv" style="visibility: @sortDivVis">
+            <button @onclick="@(() => ChangeOrder(C.TrashSortMode.NewestDateDeleted))">
+                <span class="material-icons-outlined" style="@(sortMode == C.TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
+                <span class="btnText" style="color: @(sortMode == C.TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")">Newest Date Deleted First</span>
+            </button>
+            <button @onclick="@(() => ChangeOrder(C.TrashSortMode.NewestDateTaken))">
+                <span class="material-icons-outlined" style="@(sortMode == C.TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
+                <span class="btnText" style="color: @(sortMode == C.TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span>
+            </button>
+            <button @onclick="@(() => ChangeOrder(C.TrashSortMode.OldestDateDeleted))">
+                <span class="material-icons-outlined" style="@(sortMode == C.TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
+                <span class="btnText" style="color: @(sortMode == C.TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")">Oldest Date Deleted First</span>
+            </button>
+            <button @onclick="@(() => ChangeOrder(C.TrashSortMode.OldestDateTaken))">
+                <span class="material-icons-outlined" style="@(sortMode == C.TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
+                <span class="btnText" style="color: @(sortMode == C.TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span>
+            </button>
         </div>
     </header>
-    
-    <div id="sortDiv" style="visibility: @sortDivVis">
-        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateDeleted))">
-            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateDeleted ? "#1a73e8" : "white")">Date Deleted</span>
-        </button>
-        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateTaken))">
-            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateTaken ? "#1a73e8" : "white")">Date Taken</span>
-        </button>
-        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateDeletedReversed))">
-            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateDeletedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateDeletedReversed ? "#1a73e8" : "white")">Date Deleted Reversed</span>
-        </button>
-        <button @onclick="@(() => ChangeOrder(C.TrashSortMode.DateTakenReversed))">
-            <span class="material-icons-outlined" style="@(mode == C.TrashSortMode.DateTakenReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span class="btnText" style="color: @(mode == C.TrashSortMode.DateTakenReversed ? "#1a73e8" : "white")">Date Taken Reversed</span>
-        </button>
-    </div>
-    
-    <TwoChoiceInput @bind-TwoChoiceVis="@choiceVis" YesBtnClick="@yesBtnFunc" NoBtnClick="@CloseChoiceDiv" Message="@choiceMsg"/>
 
-    if (mediaTrashList.Count == 0)
-    {
-        <h1>Trash is empty</h1>
-    }
-    else
-    {
-        <div id="mainDiv">
-            @foreach (C.MediaRow media in mediaTrashList)
-            {
-                <div class="thumbnail">
-                    @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                    <span @onclick="@(() => ToggleCheck(media.path))" id="@media.path" class="material-icons checkbox unchecked">check_circle</span>
-                    @if (media.thumbnail != null) //Video
-                    {
-                        <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        <img @onclick="@(() => ImgClicked(media.path))" src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    }
-                    else
-                    {
-                        <img @onclick="@(() => ImgClicked(media.path))" src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    }
-                </div>
-            }
-        </div>
-    }
+    UpdateQueries();
+    @* Date Added in this case is actually Date Deleted. *@
+    <LibraryContentViewer @ref="@libContentViewer" UseDateAdded="@(sortMode is C.TrashSortMode.OldestDateDeleted or C.TrashSortMode.NewestDateDeleted)" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" SelectedItemsCountChanged="@(() => selectedItemsCount = libContentViewer.SelectedItems.Count)" NoItemsText="No Items in Trash"/>
+    
+    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteItems" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@restorePromptVis" YesBtnClick="@RestoreItems" NoBtnClick="@(() => { restorePromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
 }
 
-@code {
-    private static List<C.MediaRow> mediaTrashList;
-    private static List<string> selectedItems; //Stores all items (paths) user selected. If unchecked, removed from list.
+@code{
+    private static C.TrashSortMode sortMode;
+    private static LibraryContentViewer libContentViewer = new();
+    private static int selectedItemsCount;
+    private static string sortBtnText, choiceMsg, orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
+    private static string delPromptVis, restorePromptVis, sortDivVis;
 
-    private static string sortBtnText;
-    private static string sortDivVis;
-    private static C.TrashSortMode mode;
-
-    private static string choiceVis;
-    private static Action yesBtnFunc;
-    private static string choiceMsg;
-
-    private static bool shiftDown;
-    private static int lastIndex;
-    private async Task getShiftDown() => shiftDown = await JSRuntime.InvokeAsync<bool>("getShiftDown");
-    
-    private static bool ctrlDown;
-    private async Task GetCtrlDown() => ctrlDown = await JSRuntime.InvokeAsync<bool>("getCtrlDown");
-    
     protected override void OnInitialized()
     {
-        mediaTrashList = C.LoadMediaTrashTable();
-        selectedItems = new List<string>(); //Reset on page load/refresh
+        selectedItemsCount = 0;
+        sortMode = C.TrashSortMode.NewestDateDeleted; //Default sort mode
         SetSortBtnText();
-        mode = C.TrashSortMode.DateDeleted; //Default sort mode
-        choiceVis = "hidden";
-        sortDivVis = "hidden";
+        delPromptVis = restorePromptVis = sortDivVis = "hidden";
     }
 
     private static void SetSortBtnText()
     {
-        sortBtnText = mode switch
+        sortBtnText = sortMode switch
         {
-            C.TrashSortMode.DateDeleted => "Date Deleted",
-            C.TrashSortMode.DateTaken => "Date Taken",
-            C.TrashSortMode.DateDeletedReversed => "Date Deleted Reversed",
-            C.TrashSortMode.DateTakenReversed => "Date Taken Reversed",
-            _ => "Date Deleted"
+            C.TrashSortMode.NewestDateDeleted => "Newest Date Deleted",
+            C.TrashSortMode.NewestDateTaken => "Newest Date Taken",
+            C.TrashSortMode.OldestDateDeleted => "Oldest Date Deleted",
+            C.TrashSortMode.OldestDateTaken => "Oldest Date Taken",
+            _ => "Newest Date Deleted"
         };
+    }
+
+    private static void UpdateQueries()
+    {
+        switch (sortMode)
+        {
+            case C.TrashSortMode.NewestDateTaken:
+                orderBy = "date_taken DESC";
+                sortColumn = "date_taken";
+                break;
+            
+            case C.TrashSortMode.OldestDateTaken:
+                orderBy = "date_taken ASC";
+                sortColumn = "date_taken";
+                break;
+                
+            case C.TrashSortMode.NewestDateDeleted:
+                orderBy = "date_deleted DESC";
+                sortColumn = "date_deleted";
+                break;
+                
+            case C.TrashSortMode.OldestDateDeleted:
+                orderBy = "date_deleted ASC";
+                sortColumn = "date_deleted";
+                break;
+            default: throw new ArgumentOutOfRangeException();
+        }
+
+        const string shared = "SELECT path, date_taken, date_deleted, starred, uuid, thumbnail FROM media WHERE date_deleted IS NOT NULL";
+        topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? ">=" : "<=")} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+        bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? "<=" : ">=")} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+    
+        //Loads every item with NULL Date Taken first, then items with Date Taken.
+        firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 50) ORDER BY {orderBy}";
     }
     
     private async void ChangeOrder(C.TrashSortMode newMode)
     {
-        mode = newMode;
-        mediaTrashList = C.LoadMediaTrashTable(newMode);
+        sortMode = newMode;
         SetSortBtnText();
         sortDivVis = "hidden";
-        await ClearChecks();
+        await libContentViewer.ClearChecks();
+        libContentViewer.oldestDT = libContentViewer.newestDT = null;
+        libContentViewer.MediaList.Clear();
+        UpdateQueries();
+        libContentViewer.AddContentBottom();
         StateHasChanged();
-    }
-
-    [Inject] //https://code-maze.com/how-to-call-javascript-code-from-net-blazor-webassembly/
-    public IJSRuntime JSRuntime { get; set; }
-
-    private async Task ToggleCheck(string id) //id = string path
-    {
-        string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", id);
-        if (newClass.Contains("unchecked"))
-            selectedItems.Remove(id);
-        else if (!selectedItems.Contains(id)) //Needed to prevent adding dupes when shift clicking
-            selectedItems.Add(id);
-
-        //Get mediaList currentIndex of latest selected thing. Needed only for shift click
-        int index = -1;
-        for (int i = 0; i < mediaTrashList.Count; i++)
-        {
-            if (mediaTrashList[i].path != id) continue;
-            index = i;
-            break;
-        }
-
-        await getShiftDown();
-        if (!shiftDown) //Not shift click so just select 1 item like normal.
-        {
-            lastIndex = index;
-            return;
-        }
-        await ShiftClick(index); //Select multiple.
-    }
-    
-    //Add items from start to end into selectedItems. Used for ShiftClick.
-    private async Task AddSelected(int startIndex, int endIndex)
-    {
-        for (int i = startIndex; i <= endIndex; i++)
-        {
-            string currentID = mediaTrashList[i].path;
-            if (selectedItems.Contains(currentID)) continue;
-            selectedItems.Add(currentID);
-            await ToggleCheck(currentID);
-        }
-    }
-
-    //If shift was held down select multiple things
-    private async Task ShiftClick(int currentIndex)
-    {
-        //First item is on left and item shift clicked is right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selected items
-        if (lastIndex < currentIndex)
-            await AddSelected(lastIndex, currentIndex);
-        else if (lastIndex > currentIndex) //Same as above but swap 1 and 2 and the direction.
-            await AddSelected(currentIndex, lastIndex);
-    }
-
-    private async Task ClearChecks()
-    {
-        foreach (string item in selectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", item);
-        selectedItems.Clear();
-        choiceVis = "hidden";
-    }
-    
-    private async Task ImgClicked(string path)
-    {
-        await GetCtrlDown();
-        if (selectedItems.Count > 0 || ctrlDown)
-            await ToggleCheck(path);
     }
 
     //Show choice div
     private void RestoreBtnClick()
     {
-        if (mediaTrashList.Count == 0) return;
+        if (libContentViewer.MediaList.Count == 0) return;
         if (S.showPrompts == false)
         {
             RestoreItems();
+            StateHasChanged();
             return;
         }
-
-        yesBtnFunc = RestoreItems;
         
-        choiceVis = "visible";
-        choiceMsg = selectedItems.Count switch
+        restorePromptVis = "visible";
+        choiceMsg = libContentViewer.SelectedItems.Count switch
         {
             0 => "Restore Everything?",
             1 => "Restore Selected Item?",
@@ -203,37 +138,39 @@
 
     private async void RestoreItems()
     {
-        //Restore ALL
-        if (selectedItems.Count == 0)
-            foreach (C.MediaRow item in mediaTrashList) C.RestoreItem(item.path);
+        if (libContentViewer.SelectedItems.Count == 0) //Restore ALL
+        {
+            C.RestoreTrash();
+            libContentViewer.MediaList.Clear();
+        }
         else //Restore selected
         {
-            foreach (string item in selectedItems)
+            foreach (Guid item in libContentViewer.SelectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
+                libContentViewer.MediaList.RemoveAll(u => u.uuid == item);
                 C.RestoreItem(item);
             }
         }
-        await ClearChecks();
-        mediaTrashList = C.LoadMediaTrashTable();
-        selectedItems.Clear();
+        await libContentViewer.ClearChecks();
+        restorePromptVis = "hidden";
+        selectedItemsCount = 0;
         StateHasChanged();
     }
 
     //Show choice div
     private void DeleteBtnClick()
     {
-        if (mediaTrashList.Count == 0) return;
+        if (libContentViewer.MediaList.Count == 0) return;
         if (S.showPrompts == false)
         {
             DeleteItems();
+            StateHasChanged();
             return;
         }
 
-        yesBtnFunc = DeleteItems;
-
-        choiceVis = "visible";
-        choiceMsg = selectedItems.Count switch
+        delPromptVis = "visible";
+        choiceMsg = libContentViewer.SelectedItems.Count switch
         {
             0 => "PERMANENTLY Delete Everything?",
             1 => "PERMANENTLY Delete Selected Item?",
@@ -243,25 +180,23 @@
 
     private async void DeleteItems()
     {
-        if (selectedItems.Count == 0) //Delete ALL
-            foreach (C.MediaRow item in mediaTrashList) C.PermDeleteItem(item.path);
+        if (libContentViewer.SelectedItems.Count == 0) //Delete ALL
+        {
+            C.EmptyTrash();
+            libContentViewer.MediaList.Clear();
+        }
         else //Delete selected
         {
-            foreach (string item in selectedItems)
+            foreach (Guid item in libContentViewer.SelectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
+                libContentViewer.MediaList.RemoveAll(u => u.uuid == item);
                 C.PermDeleteItem(item);
             }
         }
-        await ClearChecks();
-        mediaTrashList = C.LoadMediaTrashTable();
-        selectedItems.Clear();
-        StateHasChanged();
-    }
-
-    private void CloseChoiceDiv()
-    {
-        choiceVis = "hidden";
+        await libContentViewer.ClearChecks();
+        delPromptVis = "hidden";
+        selectedItemsCount = 0;
         StateHasChanged();
     }
 }

@@ -1,36 +1,74 @@
-@implements IDisposable 
+@implements IDisposable
 @using Toolbelt.Blazor.HotKeys
 @inject HotKeys HotKeys
 @inject NavigationManager navigationManager
 
 @code {
-    public void Dispose() => HotKeysContext.Dispose();
+	public void Dispose() => HotKeysContext.Dispose();
+	HotKeysContext HotKeysContext;
 
-    HotKeysContext HotKeysContext;
+	[Parameter]
+	public Action I { get; set; }
 
-    [Parameter]
-    public Action CtrlD { get; set; }
-    
-    [Parameter]
-    public Action CtrlE { get; set; }
-    
-    [Parameter]
-    public Action AltA { get; set; }
-    
-    [Parameter]
-    public Action AltLeft { get; set; }
-    
-    [Parameter]
-    public Action AltS { get; set; }
-    
-    protected override void OnInitialized()
-    {
-        HotKeysContext = HotKeys.CreateContext()
-            .Add(ModKeys.Ctrl, Keys.D, CtrlD)
-            .Add(ModKeys.Ctrl, Keys.E, CtrlE)
-            .Add(ModKeys.Alt, Keys.Left, AltLeft)
-            // .Add(ModKeys.Ctrl, Keys.Slash, () => ShortcutsReference.visibility = ShortcutsReference.visibility == "hidden" ? "visible" : "hidden")
-            .Add(ModKeys.Alt, Keys.A, AltA)
-            .Add(ModKeys.Alt, Keys.S, AltS);        
-    }
+	[Parameter]
+	public Action Del { get; set; }
+
+	[Parameter]
+	public Action Esc { get; set; }
+
+	[Parameter]
+	public Action Left { get; set; }
+
+	[Parameter]
+	public Action Right { get; set; }
+
+	[Parameter]
+	public Action CtrlD { get; set; }
+
+	[Parameter]
+	public Action CtrlE { get; set; }
+	
+	[Parameter]
+	public Action CtrlG { get; set; }
+	
+	[Parameter]
+	public Action CtrlSlash { get; set; }
+
+	[Parameter]
+	public Action AltF { get; set; }
+
+	[Parameter]
+	public Action AltA { get; set; }
+
+	[Parameter]
+	public Action AltC { get; set; }
+
+	[Parameter]
+	public Action AltS { get; set; }
+
+	[Parameter]
+	public Action AltLeft { get; set; }
+	
+	[Parameter]
+	public Action AltRight { get; set; }
+
+	protected override void OnInitialized()
+	{
+		HotKeysContext = HotKeys.CreateContext();
+		if (I != null) HotKeysContext.Add(ModKeys.None, Keys.I, I);
+		if (Del != null) HotKeysContext.Add(ModKeys.None, Keys.Delete, Del);
+		if (Esc != null) HotKeysContext.Add(ModKeys.None, Keys.ESC, Esc);
+		if (Left != null) HotKeysContext.Add(ModKeys.None, Keys.Left, Left);
+		if (Right != null) HotKeysContext.Add(ModKeys.None, Keys.Right, Right);
+		if (CtrlD != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.D, CtrlD);
+		if (CtrlE != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.E, CtrlE);
+		if (CtrlG != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.G, CtrlG);
+		if (CtrlSlash != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Slash, CtrlSlash);
+		if (AltF != null) HotKeysContext.Add(ModKeys.Alt, Keys.F, AltF);
+		if (AltA != null) HotKeysContext.Add(ModKeys.Alt, Keys.A, AltA);
+		if (AltC != null) HotKeysContext.Add(ModKeys.Alt, Keys.C, AltC);
+		if (AltS != null) HotKeysContext.Add(ModKeys.Alt, Keys.S, AltS);
+		if (AltLeft != null) HotKeysContext.Add(ModKeys.Alt, Keys.Left, AltLeft);
+		if (AltRight != null) HotKeysContext.Add(ModKeys.Alt, Keys.Right, AltRight);
+	}
 }

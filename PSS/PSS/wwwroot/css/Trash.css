@@ -12,24 +12,16 @@ h1 {
 }
 
 header {
+    background-color: black;
     display: flex;
     flex-direction: row;
     align-items: center;
-    top: 0;
-    left: 146px;
+    align-content: center;
     position: fixed;
+    left: 145px;
     right: 0;
-    padding-top: 4px;
-    padding-right: 100px;
     z-index: 999;
-}
-
-header .iconBtn {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: none;
+    height: 60px;
 }
 
 #selectedAmtText {
@@ -40,11 +32,9 @@ header .iconBtn {
 #clearBtn {
     margin-left: 5px;
     margin-right: 5px;
-    margin-top: 2px;
 }
 
 header > div {
-    margin-top: 6px;
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -56,13 +46,13 @@ header > div > .textBtn {
     margin-left: 10px;
 }
 
-#sortDiv {
+header > #sortDiv {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     position: absolute;
-    top: 67px;
-    right: 276px;
+    top: 54px;
+    right: 330px;
     background-color: black;
     border: 1px solid white;
     padding-right: 12px;
@@ -81,11 +71,7 @@ header > div > .textBtn {
     padding: 11px 11px 11px 10px;
 }
 
-#mainDiv {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    position: absolute;
-    left: 145px;
-    top: 64px;
+#sortDiv > button:hover {
+    background-color: var(--hover-color);
+    cursor: pointer;
 }
