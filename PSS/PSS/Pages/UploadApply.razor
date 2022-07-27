@@ -36,7 +36,7 @@
 <TwoChoiceInput TwoChoiceVis="@addItemsPromptVis" YesBtnClick="@AddItemsBtnClick" NoBtnClick="@(() => { addItemsPromptVis = "hidden"; StateHasChanged(); })" Message="Add All Items to Your Library and Any Album(s)/Folder?"/>
 <CollectionSelector @ref="@collectionSelector" CollectionsVis="@collectionSelectorVis" SelectedItems="@allGuids" ShowCheckCancelButtons="false"/>
 
-<KeyboardShortcuts AltA="@AddItemsBtnClick" AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref filterVis); StateHasChanged(); })" CtrlD="@DeleteErrors" />
+<KeyboardShortcuts AltA="@AddItemsBtnClick" AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref filterVis); StateHasChanged(); })" CtrlD="@DeleteErrors"/>
 <ShortcutsReference AltAText="Add Items to Library and Album(s)/Folder" AltCText="Show/Hide CollectionSelector" AltFText="Show/Hide Filter" CtrlDText="Delete All Items with Errors"/>
 
 <ProgressPopUp Message="@popupMsg" Height="400" Width="400" Visible="@popupVisible"/>
@@ -75,6 +75,7 @@
 
 @code{
     private static CollectionSelector collectionSelector = new();
+    private static string collectionSelectorVis;
 
     private static List<Guid> allGuids; //Passed in to CollectionSelector and gets items added in AddItems().
     private static List<string> allFullPaths;
@@ -92,8 +93,6 @@
     private static bool warningChecked;
     private static bool errorChecked;
     private static bool infoChecked;
-
-    private static string collectionSelectorVis;
     
     protected override async Task OnInitializedAsync()
     {
