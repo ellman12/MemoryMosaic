@@ -1,30 +1,32 @@
 # Photos Storage Server
 
 ## About
-Improved clone(ish) of Google Photos developed for my personal use on the local network.<br>
-PSS is a Blazor Server App that utilizes a PostgreSQL database. The database is for storing things like:
-* What photos/videos are in the library
-* What albums there are and what items are in them
-* What items are in the trash
+### **The Ultimate Way to Store, Sort, and Organize a Lifetime of Photos and Videos. Never Dig Through Folders Ever Again!**
+Photos Storage Server (PSS or pss) is a free and open source locally-hosted replacement for Google Photos, intended to be used by a single person. The app itself is intended to run on a locally-hosted Windows (Linux isn't tested) server on the local network.<br><br>
+PSS is a Blazor Server App that is powered by a PostgreSQL database. This database manages your library of items, what albums you have, what is in your Trash, everything. The files themselves are stored on the local file system, while the database stores relative paths (also known as short paths or shortPaths) to where they are.<br>
 
-Since starting this project I've started to realize just how slow, bloated, and occasionally glitchy Google Photos is. Lots of slow, annoying animations and ads throughout the app, as well as some other buggy behavior sometimes. One goal I had/have with this is to make it as fast, simple, and streamlined as possible: no annoying animations that waste time, no weird behavior, etc.
-
-For right now PSS will probably only work on a Windows machine but adding Linux support probably wouldn't be hard.
-
-## Features
-* Store your photos and videos on a local server as opposed to giving Google—or another cloud provider—access to all your media.
-* Group items together in albums
-  * Good use cases include making albums for vacation pictures, family/pet pictures, or other things.
-* Put items in folders to keep them separate from your main library.
-  * Like Photos' archiving but can have as many as you want as opposed to Photos' single 'Archive' option.
+## Features Not Found in Google Photos
+* PSS has Folders, which act like the Archive feature in Google Photos, but without being limited to just one.
+  * They can easily transform into a normal Album and back.
+  * Can be easily deleted and allow the items to return back to your Library.
   * Best used for things like documents or school notes you don't want mixed in your main library.
-* Easily backup your photos and videos, as well as your library (the database) to wherever you want. Also makes it easy to move your library to another location or another machine.
+* PSS has the ability to create snapshots of your library, allowing you to easily return your library to that point in time.
+* Items don't have to have a Date Taken value, like they do with Google Photos. This is useful for when you don't know when an item was taken, or you don't want it to have a Date Taken value, like a meme e.g.
 
-## How to Use and Setup
-On the server, install .NET 6 and PostgreSQL (with all the default settings and whatnot). Then, cd into PSS-Init (Photos-Storage-Server/PSS/PSS-Init), and run<br>
-```dotnet run``` <br>
-and follow the steps/prompts. That should initialize the server automatically.<br>
-One more thing you will need to install and add to your PATH thing is ffmpeg: https://www.ffmpeg.org/
+### Features That Might Be Added Someday
+* Multiple user accounts on one server, and sharing of items between them.
+* Run PSS on a cloud provider instead of local only.
+
+## Installation
+1. Download the [ExifTool](https://exiftool.org/) Windows Executable. This is required for modifying Date Taken metadata.
+   1. Change the name of the .exe from `exiftool(-k).exe` to `exiftool.exe`
+   2. Add exiftool.exe to your system's `PATH` or move it to a folder already in the `PATH`, like `C:/Windows`.
+2. Install [ffmpeg](https://www.ffmpeg.org/) and add it to your `PATH`.
+3. Download the source code of PSS from the latest release, unzip it, and place it wherever.
+4. On the server, install .NET 6 and PostgreSQL (with all the default settings and whatnot). Then, cd into PSS-Init (Photos-Storage-Server/PSS/PSS-Init), and run ```dotnet run``` and follow the steps and prompts. That should initialize the server automatically.<br>
+
+## Remarks
+PSS is designed to look and feel a lot like Google Photos, only a lot better. It fixes stuff I found annoying with Google Photos, like only being able to add selected items to one album at a time, lots of slow and pointless animations, etc. PSS is ideal for anyone who, like myself, was looking for a free replacement for Google Photos. To learn more about PSS and how it works and how to use it, check out the [Wiki](https://github.com/ellman12/Photos-Storage-Server/wiki).
 
 ## Contributing
 Feel free to open a PR or shoot me a message if you have ideas for PSS or you spot a bug 🐛. 
