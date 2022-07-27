@@ -53,7 +53,7 @@
             <div class="itemDiv">
             @{
                 <img title="Click for Full Size Preview" onclick="window.open('@allFiles[i].shortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? allFiles[i].shortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
-                <span class="filename">@allFiles[i].filename</span>
+                <input class="filename" @bind="@allFiles[ii].filename"/>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
 
                 if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">Unknown Date Taken</span>}
@@ -131,7 +131,8 @@
 
             allFiles.Add(new C.UploadFile
             {
-                filename = Path.GetFileName(fullPath),
+                filename = Path.GetFileNameWithoutExtension(fullPath),
+                extension = Path.GetExtension(fullPath),
                 shortPath = Path.Join("pss_upload", fullPath.Replace(S.uploadFolderPath!, null)).Replace('\\', '/'), //Get the short path to this item relative to pss_upload.
                 fullPath = fullPath.Replace('\\', '/'),
                 thumbnail = Path.GetExtension(fullPath) is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null,
@@ -176,13 +177,13 @@
 
             if (file.alreadyInLib) return; //Ignore duplicates
 
-            string newShortPath = C.CreateShortPath(file.dateTaken, file.filename).Replace('\\', '/');
+            string newShortPath = C.CreateShortPath(file.dateTaken, file.filename + file.extension).Replace('\\', '/');
             allGuids.Add(file.uuid);
             Directory.CreateDirectory(C.CreateFullDateFolderPath(file.dateTaken));
 
             try
             {
-                string fullFinalPath = C.CreateFullPath(file.dateTaken, file.filename);
+                string fullFinalPath = C.CreateFullPath(file.dateTaken, file.filename + file.extension);
                 await Task.Run(() => File.Move(file.fullPath!, fullFinalPath), _);
                 rowsAffected += await C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
                 await Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken), _);

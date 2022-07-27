@@ -112,7 +112,8 @@
         {
             C.UploadFile file = new()
             {
-                filename = Path.GetFileName(fullPath),
+                filename = Path.GetFileNameWithoutExtension(fullPath),
+                extension = Path.GetExtension(fullPath),
                 shortPath = Path.Join("pss_upload", fullPath.Replace(S.uploadFolderPath!, null)).Replace('\\', '/'), //Get the short path to this item relative to pss_upload.
                 fullPath = fullPath.Replace('\\', '/'),
                 thumbnail = await Task.Run(() => Path.GetExtension(fullPath).ToLower() is ".mp4" or ".mkv" or ".mov" ? F.GenerateThumbnail(fullPath) : null, _),
@@ -123,7 +124,6 @@
             allFiles.Add(file);
             await InvokeAsync(StateHasChanged);
         });
-        
         allFiles = allFiles.OrderByDescending(o => o.dateTaken).ToList();
         UpdateStatus();
         popupMsg = "Loading Items in pss_upload...";
@@ -178,13 +178,13 @@
 
             if (file.alreadyInLib) return; //Ignore duplicates
 
-            string newShortPath = C.CreateShortPath(file.dateTaken, file.filename).Replace('\\', '/');
+            string newShortPath = C.CreateShortPath(file.dateTaken, file.filename + file.extension).Replace('\\', '/');
             allGuids.Add(file.uuid);
             Directory.CreateDirectory(C.CreateFullDateFolderPath(file.dateTaken));
 
             try
             {
-                string fullFinalPath = C.CreateFullPath(file.dateTaken, file.filename);
+                string fullFinalPath = C.CreateFullPath(file.dateTaken, file.filename + file.extension);
                 await Task.Run(() => File.Move(file.fullPath!, fullFinalPath), _);
                 rowsAffected += await C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
                 await Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken), _);
@@ -195,7 +195,6 @@
                 Console.WriteLine(e.Message);
             }
         });
-        
         collectionSelector.ConfirmBtnClick();
         progressDisplay = "none";
         statusDisplay = "inline";
