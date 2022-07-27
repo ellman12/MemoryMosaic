@@ -21,7 +21,8 @@
         <span class="material-icons-outlined">@(collectionSelectorVis == "visible" ? "image_not_supported" : "image")</span><span>@(collectionSelectorVis == "visible" ? "Hide Collections" : "Show Collections")</span>
     </button>
 
-    <span id="statusSpan">@status</span>
+    <span style="display: @statusDisplay" id="statusSpan">@status</span>
+    <progress style="display: @progressDisplay" max="@progressMax" value="@progressValue"></progress>
 </header>
 
 <div id="filter" style="visibility: @filterVis">
@@ -32,10 +33,13 @@
 </div>
 
 <TwoChoiceInput TwoChoiceVis="@promptVis" YesBtnClick="@(() => DeleteErrors())" NoBtnClick="@(() => { promptVis = "hidden"; StateHasChanged(); })" Message="@message"/>
+<TwoChoiceInput TwoChoiceVis="@addItemsPromptVis" YesBtnClick="@AddItemsBtnClick" NoBtnClick="@(() => { addItemsPromptVis = "hidden"; StateHasChanged(); })" Message="Add All Items to Your Library and Any Album(s)/Folder?"/>
 <CollectionSelector @ref="@collectionSelector" CollectionsVis="@collectionSelectorVis" SelectedItems="@allGuids" ShowCheckCancelButtons="false"/>
 
-<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" />
+<KeyboardShortcuts AltA="@AddItemsBtnClick" AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" />
+<ShortcutsReference AltAText="Add Items to Library and Album(s)/Folder" AltCText="Show/Hide CollectionSelector" AltFText="Show/Hide Filter" CtrlDText="Delete All Items with Errors"/>
 
+<ProgressPopUp Message="@popupMsg" Height="400" Width="400" Visible="@popupVisible"/>
 @{
     GC.Collect();
     GC.WaitForPendingFinalizers();
@@ -77,12 +81,12 @@
     private static List<string> allFullPaths;
     private static List<C.UploadFile> allFiles;
 
-    private static string status;
-    
-    //Two Choice Input
-    private static string promptVis;
+    private static string status, popupMsg;
+    private static int progressValue, progressMax;
+    private static bool popupVisible;
+    private static string statusDisplay, progressDisplay, promptVis, addItemsPromptVis;
     private static string message;
-
+    
     //Filtering
     private static string filterVis;
     private static bool neitherChecked;
@@ -90,15 +94,21 @@
     private static bool errorChecked;
     private static bool timeInfoChecked;
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         allGuids = new List<Guid>();
         allFullPaths = F.GetSupportedFiles(Upload.GpoFolderPath);
         allFiles = new List<C.UploadFile>(allFullPaths.Count);
-        promptVis = filterVis = collectionSelectorVis = "hidden";
         timeInfoChecked = true;
-        
-        Parallel.ForEach(allFullPaths, fullPath =>
+        status = "";
+        progressValue = progressMax = 0;
+        statusDisplay = "inline";
+        progressDisplay = "none";
+        promptVis = addItemsPromptVis = filterVis = collectionSelectorVis = "hidden";
+        neitherChecked = warningChecked = errorChecked = false;
+        popupVisible = timeInfoChecked = true;
+
+        await Parallel.ForEachAsync(allFullPaths, async (fullPath, _) =>
         {
             fullPath = fullPath.Replace('\\', '/');
             
@@ -141,8 +151,12 @@
                 alreadyInLib = ItemInLibrary(fullDT, Path.GetFileName(fullPath)),
                 uuid = Guid.NewGuid()
             });
+            await InvokeAsync(StateHasChanged);
         });
+        allFiles = allFiles.OrderByDescending(o => o.dateTaken).ToList();
         UpdateStatus();
+        popupMsg = "Loading Items...";
+        popupVisible = false;
     }
 }
 
@@ -163,16 +177,32 @@
         promptVis = "hidden";
         StateHasChanged();
     }
+    
+    private async void AddItemsBtnClick()
+    {
+        if (S.showPrompts == false)
+            await AddItems();
+        else
+        {
+            addItemsPromptVis = "visible";
+            StateHasChanged();
+        }
+    }
 
     //Adds all the items to photo library, and, if applicable, any album(s) or folder.
     private async Task AddItems()
     {
         int rowsAffected = 0;
+        progressMax = allFiles.Count;
+        popupVisible = true;
+        popupMsg = $"Adding {progressMax} Items to Library...";
+        progressDisplay = "inline";
+        statusDisplay = "none";
+        StateHasChanged();
 
         await Parallel.ForEachAsync(allFiles.ToList(), async (file, _) =>
         {
             allFiles.RemoveAll(u => u.uuid == file.uuid);
-            UpdateStatus();
             await InvokeAsync(StateHasChanged);
 
             if (file.alreadyInLib) return; //Ignore duplicates
@@ -187,16 +217,20 @@
                 await Task.Run(() => File.Move(file.fullPath!, fullFinalPath), _);
                 rowsAffected += await C.InsertMedia(newShortPath, file.dateTaken, file.uuid, file.thumbnail);
                 await Task.Run(() => D.UpdateDateTaken(fullFinalPath, file.dateTaken), _);
+                progressValue++;
             }
             catch (IOException e)
             {
                 Console.WriteLine(e.Message);
             }
         });
-        
-        collectionSelector.ConfirmBtnClick(); //Adds every file to the album(s)/folder.
-        status = $"Added {rowsAffected} items to library";
-        allFiles.Clear();
+        collectionSelector.ConfirmBtnClick();
+        progressDisplay = "none";
+        statusDisplay = "inline";
+        popupVisible = false;
         collectionSelectorVis = "hidden";
+        status = $"Added {rowsAffected} items to library";
+        StateHasChanged();
+        allFiles.Clear();
     }
 }
