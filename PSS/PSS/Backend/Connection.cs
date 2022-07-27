@@ -128,6 +128,9 @@ namespace PSS.Backend
             ///The original (or new if changed by user) filename of this item.
             public string filename;
 
+            ///The file extension of the item.
+            public string extension;
+
             ///The path relative to pss_upload of this item.
             public string shortPath;
 
