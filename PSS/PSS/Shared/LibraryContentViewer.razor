@@ -200,7 +200,7 @@ If it can't find any content, it shows an h1 saying no content.
 		<KeyboardShortcuts Left="@(() => ChangeItem("Left"))" Right="@(() => ChangeItem("Right"))" />
 	}
 
-	<KeyboardShortcuts AltLeft="@(() => ChangeItem("Left"))" 
+	<KeyboardShortcuts AltLeft="@(() => ChangeItem("Esc"))" 
 		AltRight="@(() => ChangeItem("Right"))" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
 		Esc="@(() => ChangeItem("Esc"))" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 }
