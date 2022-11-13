@@ -896,5 +896,61 @@ namespace PSS.Backend
             }
             return memories;
         }
+
+        ///<summary>Gets the description of an item.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<returns>The description of the item.</returns>
+        public static string GetDescription(Guid uuid)
+        {
+            string description = "";
+            
+            try
+            {
+                Open();
+                using NpgsqlCommand cmd = new("SELECT description FROM media WHERE uuid=@uuid LIMIT 1", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
+                {
+                    r.Read();
+                    description = r.IsDBNull(0) ? null : r.GetString(0);
+                    r.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+            return description;
+        }
+
+        /// <summary>Sets the description of an item.</summary>
+        /// <param name="uuid">The uuid of the item.</param>
+        /// <param name="newDescription">The new description of the item.</param>
+        public static void UpdateDescription(Guid uuid, string newDescription)
+        {
+            try
+            {
+                Open();
+                using NpgsqlCommand cmd = new("UPDATE media SET description = @newDescription WHERE uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("@newDescription", newDescription);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+        }
     }
 }
