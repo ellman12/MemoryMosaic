@@ -83,7 +83,7 @@ Process.Start(dbCreateCmd)!.WaitForExit();
 ProcessStartInfo dbInitCmd = new()
 {
     FileName = psqlPath,
-    Arguments = $"-U postgres -d PSS -f \"{Path.Combine(pssRoot, "Backend/SQL Scripts/Server Init.sql")}\""
+    Arguments = $"-U postgres -d PSS -f \"{Path.Combine(pssRoot, "Backend/SQL Scripts/Create Tables.sql")}\""
 }; //Note the "-d PSS" ↑. That is necessary to tell it which DB to connect to/use. Thus why the first command needs to be run first and separately.
 Process.Start(dbInitCmd)!.WaitForExit(); //User needs to enter password to get into database to run this ↑ script 
 
