@@ -19,8 +19,13 @@
     flex-direction: row;
     justify-content: space-evenly;
     position: absolute;
+    top: 8px;
     right: 0;
     z-index: 999;
+}
+
+#viewDiv > #buttons > .iconBtn {
+    margin-right: 2px;
 }
 
 /* Div below the i button */
@@ -166,7 +171,7 @@
     height: 70px;
     width: 70px;
     position: absolute;
-    top: 4px;
+    top: 8px;
     left: 4px;
     margin: 0;
     z-index: 99999;
