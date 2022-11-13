@@ -71,6 +71,7 @@ namespace PSS.Backend
             public readonly bool separate;
             public readonly Guid uuid;
             public readonly string thumbnail;
+            public string description;
 
             public MediaRow(string p, DateTime? dt, bool starred, Guid uuid, string thumbnail)
             {
@@ -99,7 +100,7 @@ namespace PSS.Backend
                 this.thumbnail = thumbnail;
             }
 
-            public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail)
+            public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail, string description)
             {
                 path = p;
                 dateTaken = dt;
@@ -107,6 +108,7 @@ namespace PSS.Backend
                 this.starred = starred;
                 this.uuid = uuid;
                 this.thumbnail = thumbnail;
+                this.description = description;
             }
             
             //Row storing every column in media.
