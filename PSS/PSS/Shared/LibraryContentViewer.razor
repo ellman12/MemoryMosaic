@@ -19,7 +19,7 @@ If it can't find any content, it shows an h1 saying no content.
 	<div id="buttons">
 	    <button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
 	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-		<button class="iconBtn" @onclick="@(() => C.UpdateStarred(MediaList[viewIndex].uuid, !MediaList[viewIndex].starred))" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
+		<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 	    
 	    @if (CollectionID != -1 && MediaList[viewIndex].thumbnail == null)
 	    {
@@ -484,6 +484,12 @@ else
 		}
 		delPromptVis = "visible";
 		StateHasChanged();
+	}
+
+	private void StarBtnClick()
+	{
+		MediaList[viewIndex].starred = !MediaList[viewIndex].starred;
+		C.UpdateStarred(MediaList[viewIndex].uuid, MediaList[viewIndex].starred);
 	}
 
 	///Deletes all selected items.
