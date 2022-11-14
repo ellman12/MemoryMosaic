@@ -18,11 +18,11 @@
         <div id="collectionCreatorDiv"><CollectionCreator Collections="@(albums.Concat(folders).ToList())"/></div>
 
         <div id="collectionGroups">
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(0, mouseEventArgs))"><span class="material-icons-outlined">history</span></button>
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(1, mouseEventArgs))"><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(2, mouseEventArgs))"><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(3, mouseEventArgs))"><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(4, mouseEventArgs))"><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(0, mouseEventArgs))" title="Restore the last selection of collections."><span class="material-icons-outlined">history</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(1, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(2, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(3, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(4, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
         </div>
         
         <div class="collections">
@@ -188,17 +188,17 @@
         await HeaderVisChanged.InvokeAsync("hidden");
     }
 
+    ///Handles saving and restoring of groups of saved Collections.
     private void SaveBtnClick(int id, MouseEventArgs mouseEventArgs)
     {
-        string filePath = Path.Join(Environment.CurrentDirectory, $"saved_slot{id}.txt");
+        string filePath = Path.Join(Environment.CurrentDirectory, $"slot{id}.tmp");
         if (mouseEventArgs.CtrlKey) //Save/overwrite selection.
         {
-            if (File.Exists(filePath)) File.Delete(filePath);
-            
-            if (checkedFolders.Any(_ => true))
-                File.WriteAllText(filePath, checkedFolderIndex.ToString());
+            if (checkedFolders.Any(b => b))
+                File.WriteAllText(filePath, $"F\n{folders[checkedFolderIndex].id}");
             else
             {
+                File.WriteAllText(filePath, "A\n");
                 for (int i = 0; i < checkedAlbums.Count; i++)
                 {
                     if (checkedAlbums[i])
@@ -212,6 +212,35 @@
             ClearFolderChecks();
 
             string[] input = File.ReadAllLines(filePath);
+            if (input[0] == "F")
+            {
+                checkedFolderIndex = FindIndex(checkedFolders, folders, input[1]);
+                checkedFolders[checkedFolderIndex] = true;
+            }
+            else if (input[0] == "A")
+            {
+                for (int i = 1; i < input.Length; i++)
+                {
+                    int index = FindIndex(checkedAlbums, albums, input[i]);
+                    checkedAlbums[index] = true;
+                }
+            }
+        }
+        else
+        {
+            ClearAlbumChecks();
+            ClearFolderChecks();
+        }
+        
+        //From checkedAlbums or checkedFolders, figure out the index for it in checkedAlbums.
+        int FindIndex(List<bool> checkedList, List<C.Collection> collections, string albumID)
+        {
+            int parsedID = Int32.Parse(albumID);
+            for (int i = 0; i < checkedList.Count; i++)
+                if (collections[i].id == parsedID)
+                    return i;
+            
+            return -1;
         }
     }
 }
