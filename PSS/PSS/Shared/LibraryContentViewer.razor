@@ -203,12 +203,12 @@ If it can't find any content, it shows an h1 saying no content.
 {
 	if (MediaList[viewIndex].thumbnail == null)
 	{
-		<KeyboardShortcuts Left="@(() => ChangeItem("Left"))" Right="@(() => ChangeItem("Right"))" />
+		<KeyboardShortcuts Left="@ChangeItemLeft" Right="@ChangeItemRight" />
 	}
 
-	<KeyboardShortcuts AltLeft="@(() => ChangeItem("Esc"))" 
-		AltRight="@(() => ChangeItem("Right"))" CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
-		Esc="@(() => ChangeItem("Esc"))" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
+	<KeyboardShortcuts AltLeft="@(() => SelectedItem = Guid.Empty)" CtrlLeft="@ChangeItemLeft" CtrlRight="@ChangeItemRight" 
+		CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
+		Esc="@(() => SelectedItem = Guid.Empty)" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 }
 else
 {
@@ -655,18 +655,6 @@ else
 		}
 		viewIndex++;
 		SelectedItem = MediaList[viewIndex].uuid;
-	}
-
-	private void ChangeItem(string keyCode)
-	{
-		if (keyCode == "Esc")
-		{
-			SelectedItem = Guid.Empty;
-			return;
-		}
-
-		if (keyCode == "Left") ChangeItemLeft();
-		else if (keyCode == "Right") ChangeItemRight();
 	}
 
 	///Used with Ctrl G to set the new start date for LCV. Resets LCV to that date.
