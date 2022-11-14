@@ -917,7 +917,7 @@ namespace PSS.Backend
                 if (r.HasRows)
                 {
                     r.Read();
-                    description = r.IsDBNull(0) ? null : r.GetString(0);
+                    description = r.IsDBNull(0) ? "" : r.GetString(0);
                     r.Close();
                 }
             }
@@ -940,8 +940,16 @@ namespace PSS.Backend
             try
             {
                 Open();
-                using NpgsqlCommand cmd = new("UPDATE media SET description = @newDescription WHERE uuid=@uuid", connection);
-                cmd.Parameters.AddWithValue("@newDescription", newDescription);
+                using NpgsqlCommand cmd = new(null, connection);
+                if (String.IsNullOrWhiteSpace(newDescription))
+                {
+                    cmd.CommandText = "UPDATE media SET description = NULL WHERE uuid=@uuid";
+                }
+                else
+                {
+                    cmd.CommandText = "UPDATE media SET description = @newDescription WHERE uuid=@uuid";
+                    cmd.Parameters.AddWithValue("@newDescription", newDescription);
+                }
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
             }
