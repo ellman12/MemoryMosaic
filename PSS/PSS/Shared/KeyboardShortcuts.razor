@@ -50,6 +50,12 @@
 	public Action AltLeft { get; set; }
 	
 	[Parameter]
+	public Action CtrlLeft { get; set; }
+	
+	[Parameter]
+	public Action CtrlRight { get; set; }
+	
+	[Parameter]
 	public Action AltRight { get; set; }
 
 	protected override void OnInitialized()
@@ -70,5 +76,7 @@
 		if (AltS != null) HotKeysContext.Add(ModKeys.Alt, Keys.S, AltS);
 		if (AltLeft != null) HotKeysContext.Add(ModKeys.Alt, Keys.Left, AltLeft);
 		if (AltRight != null) HotKeysContext.Add(ModKeys.Alt, Keys.Right, AltRight);
+		if (CtrlLeft != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Left, CtrlLeft);
+		if (CtrlRight != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Right, CtrlRight);
 	}
 }
