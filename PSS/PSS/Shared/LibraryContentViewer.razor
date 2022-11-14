@@ -237,7 +237,13 @@ else
 				newFilename = "";
 				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = downloadDivVis = "hidden";
 			}
-			else LoadData();
+			else
+			{
+				newDateTaken = MediaList[viewIndex].dateTaken;
+				newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
+				collectionsIn = C.GetCollectionsContaining(SelectedItem);
+				itemDescription = MediaList[viewIndex].description;
+			}
 			StateHasChanged();
 		}
 	}
@@ -466,8 +472,8 @@ else
 			await CheckClicked(uuid, eventArgs);
 		else //Show this item in fullscreen.
 		{
-			SelectedItem = uuid;
 			viewIndex = index;
+			SelectedItem = uuid;
 		}
 	}
 	
@@ -599,15 +605,6 @@ else
 
 @* Functions only for viewing a single item. *@
 @functions{
-	///Gets all the data for the current item.
-	private void LoadData()
-	{
-		newDateTaken = MediaList[viewIndex].dateTaken;
-		newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
-		collectionsIn = C.GetCollectionsContaining(SelectedItem);
-		itemDescription = MediaList[viewIndex].description;
-	}
-
 	private void UpdateDateTaken()
 	{
 		if (C.UpdateDateTaken(MediaList[viewIndex].path, newDateTaken))
