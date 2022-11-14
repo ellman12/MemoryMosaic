@@ -28,40 +28,46 @@ If it can't find any content, it shows an h1 saying no content.
 	</div>
 
 	<div id="infoDiv" style="visibility: @infoVis">
-	    <div class="dataDiv" title="Date Taken">
-	        <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
-	        <span>@(MediaList[viewIndex].dateTaken == null ? "No Date Taken" : MediaList[viewIndex].dateTaken?.ToString("ddd, MMM d, yyyy h:mm:ss tt"))</span>
-	        <button class="iconBtn" @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
-	    </div>
-	    
-	    <div class="dataDiv" title="Date Added">
-	        <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
-	        <span>@MediaList[viewIndex].dateAdded.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
-	    </div>
+		<div id="itemInfo">
+			<div class="dataDiv" title="Date Taken">
+				<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
+				<span>@(MediaList[viewIndex].dateTaken == null ? "No Date Taken" : MediaList[viewIndex].dateTaken?.ToString("ddd, MMM d, yyyy h:mm:ss tt"))</span>
+				<button class="iconBtn" @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+			</div>
 
-	    <div class="dataDiv">
-	        <svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
-	        <span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].path)</span>
-	        <button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
-	    </div>
-	    
-	    @if (collectionsIn != null && collectionsIn.Count > 0)
-	    {
-	        <span id="collectionsText">Collections Containing</span>
-	        <div id="collectionsIn">
-	            @foreach (C.Collection collection in collectionsIn)
-	            {
-	                <a href="/collection-view/@collection.id">
-	                    <div class="collection">
-	                        <div class="coverDiv">
-	                            <img class="cover" src="@S.LIB_REQUEST_PATH/@collection.cover" alt="">
-	                        </div>
-	                        <span title="@collection.name">@collection.name</span>
-	                    </div>
-	                </a>
-	            }
-	        </div>
-	    }
+			<div class="dataDiv" title="Date Added">
+				<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
+				<span>@MediaList[viewIndex].dateAdded.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
+			</div>
+
+			<div class="dataDiv">
+				<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
+				<span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].path)</span>
+				<button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+			</div>
+
+			<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
+		</div>
+
+		@if (collectionsIn != null && collectionsIn.Count > 0)
+		{
+			<div id="collectionsInfo">
+				<span id="collectionsText">Collections Containing</span>
+				<div id="collectionsIn">
+					@foreach (C.Collection collection in collectionsIn)
+					{
+						<a href="/collection-view/@collection.id">
+							<div class="collection">
+								<div class="coverDiv">
+									<img class="cover" src="@S.LIB_REQUEST_PATH/@collection.cover" alt="">
+								</div>
+								<span title="@collection.name">@collection.name</span>
+							</div>
+						</a>
+					}
+				</div>
+			</div>
+		}
 	</div>
 
 	<div class="inputBox" style="visibility: @editDateDivVis">
@@ -231,7 +237,13 @@ else
 				newFilename = "";
 				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = downloadDivVis = "hidden";
 			}
-			else LoadData();
+			else
+			{
+				newDateTaken = MediaList[viewIndex].dateTaken;
+				newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
+				collectionsIn = C.GetCollectionsContaining(SelectedItem);
+				itemDescription = MediaList[viewIndex].description;
+			}
 			StateHasChanged();
 		}
 	}
@@ -303,6 +315,7 @@ else
 
 	private static DateTime? newDateTaken;
 	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, downloadDivVis;
+	private static string itemDescription;
 	private static List<C.Collection> collectionsIn;
 }
 
@@ -334,6 +347,8 @@ else
 		
 		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = downloadDivVis = "hidden";
 		viewIndex = 0;
+
+		itemDescription = "";
 	}
 	
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
@@ -359,7 +374,7 @@ else
 	///<param name="bottom">If true, adding items to the end of the List. If false, adding items to the front of the List.</param>
 	///<param name="divVis">The variable controlling the visibility of the div for adding more content.</param>
 	///<returns>The amount of items added to MediaList (0 if none or an error).</returns>
-	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.</remarks>
+	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.</remarks>
 	private int AddContent(string firstQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ref string divVis)
 	{
 		int amountAdded = 0;
@@ -381,7 +396,7 @@ else
 			using NpgsqlDataReader r = cmd.ExecuteReader();
 			while (r.Read())
 			{
-				C.MediaRow newRow = new(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5));
+				C.MediaRow newRow = new(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6));
 				if (!MediaList.Contains(newRow))
 				{
 					if (bottom) MediaList.Add(newRow);
@@ -457,8 +472,8 @@ else
 			await CheckClicked(uuid, eventArgs);
 		else //Show this item in fullscreen.
 		{
-			SelectedItem = uuid;
 			viewIndex = index;
+			SelectedItem = uuid;
 		}
 	}
 	
@@ -490,6 +505,16 @@ else
 	{
 		MediaList[viewIndex].starred = !MediaList[viewIndex].starred;
 		C.UpdateStarred(MediaList[viewIndex].uuid, MediaList[viewIndex].starred);
+	}
+
+	///Called when description textarea's focus is lost. Updates the item's description, if it's been updated.
+	private void UpdateDescription()
+	{
+		if (MediaList[viewIndex].description != itemDescription)
+		{
+			MediaList[viewIndex].description = itemDescription;
+			C.UpdateDescription(_selectedItem, itemDescription);
+		}
 	}
 
 	///Deletes all selected items.
@@ -580,14 +605,6 @@ else
 
 @* Functions only for viewing a single item. *@
 @functions{
-	///Gets all the data for the current item.
-	private void LoadData()
-	{
-		newDateTaken = MediaList[viewIndex].dateTaken;
-		newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
-		collectionsIn = C.GetCollectionsContaining(SelectedItem);
-	}
-
 	private void UpdateDateTaken()
 	{
 		if (C.UpdateDateTaken(MediaList[viewIndex].path, newDateTaken))

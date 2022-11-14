@@ -95,7 +95,7 @@
             default: throw new ArgumentOutOfRangeException();
         }
 
-        const string shared = "SELECT path, date_taken, date_deleted, starred, uuid, thumbnail FROM media WHERE date_deleted IS NOT NULL";
+        const string shared = "SELECT path, date_taken, date_deleted, starred, uuid, thumbnail, description FROM media WHERE date_deleted IS NOT NULL";
         topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? ">=" : "<=")} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
         bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? "<=" : ">=")} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
     
