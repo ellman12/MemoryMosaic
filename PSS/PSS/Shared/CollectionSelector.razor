@@ -18,11 +18,11 @@
         <div id="collectionCreatorDiv"><CollectionCreator Collections="@(albums.Concat(folders).ToList())"/></div>
 
         <div id="collectionGroups">
-            <button class="iconBtn"><span class="material-icons-outlined">history</span></button>
-            <button class="iconBtn"><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn"><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn"><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn"><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(0, mouseEventArgs))"><span class="material-icons-outlined">history</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(1, mouseEventArgs))"><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(2, mouseEventArgs))"><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(3, mouseEventArgs))"><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(4, mouseEventArgs))"><span class="material-icons-outlined">save</span></button>
         </div>
         
         <div class="collections">
@@ -186,5 +186,32 @@
         await SelectedItemsCountChanged.InvokeAsync(0);
         await CollectionsVisChanged.InvokeAsync("hidden");
         await HeaderVisChanged.InvokeAsync("hidden");
+    }
+
+    private void SaveBtnClick(int id, MouseEventArgs mouseEventArgs)
+    {
+        string filePath = Path.Join(Environment.CurrentDirectory, $"saved_slot{id}.txt");
+        if (mouseEventArgs.CtrlKey) //Save/overwrite selection.
+        {
+            if (File.Exists(filePath)) File.Delete(filePath);
+            
+            if (checkedFolders.Any(_ => true))
+                File.WriteAllText(filePath, checkedFolderIndex.ToString());
+            else
+            {
+                for (int i = 0; i < checkedAlbums.Count; i++)
+                {
+                    if (checkedAlbums[i])
+                        File.AppendAllText(filePath, $"{albums[i].id}\n");
+                }
+            }
+        }
+        else if (File.Exists(filePath)) //Load and apply existing one.
+        {
+            ClearAlbumChecks();
+            ClearFolderChecks();
+
+            string[] input = File.ReadAllLines(filePath);
+        }
     }
 }
