@@ -194,6 +194,46 @@
         string filePath = Path.Join(Environment.CurrentDirectory, $"slot{id}.tmp");
         if (mouseEventArgs.CtrlKey) //Save/overwrite selection.
         {
+            SaveSelectionToDisk();
+        }
+        else if (File.Exists(filePath)) //Load and apply existing one.
+        {
+            bool rewrite = false; //If it encountered an ID that no longer exists in DB and it should rewrite the tmp file to remove it/them.
+            
+            ClearAlbumChecks();
+            ClearFolderChecks();
+            
+            string[] input = File.ReadAllLines(filePath);
+            if (input[0] == "F")
+            {
+                checkedFolderIndex = FindIndex(checkedFolders, folders, input[1]);
+                if (checkedFolderIndex == -1) rewrite = true;
+                else checkedFolders[checkedFolderIndex] = true;
+            }
+            else if (input[0] == "A")
+            {
+                for (int i = 1; i < input.Length; i++)
+                {
+                    int index = FindIndex(checkedAlbums, albums, input[i]);
+                    if (index == -1)
+                    {
+                        rewrite = true;
+                        continue;
+                    }
+                    checkedAlbums[index] = true;
+                }
+            }
+            
+            if (rewrite) SaveSelectionToDisk();
+        }
+        else
+        {
+            ClearAlbumChecks();
+            ClearFolderChecks();
+        }
+
+        void SaveSelectionToDisk()
+        {
             if (checkedFolders.Any(b => b))
                 File.WriteAllText(filePath, $"F\n{folders[checkedFolderIndex].id}");
             else
@@ -205,31 +245,6 @@
                         File.AppendAllText(filePath, $"{albums[i].id}\n");
                 }
             }
-        }
-        else if (File.Exists(filePath)) //Load and apply existing one.
-        {
-            ClearAlbumChecks();
-            ClearFolderChecks();
-
-            string[] input = File.ReadAllLines(filePath);
-            if (input[0] == "F")
-            {
-                checkedFolderIndex = FindIndex(checkedFolders, folders, input[1]);
-                checkedFolders[checkedFolderIndex] = true;
-            }
-            else if (input[0] == "A")
-            {
-                for (int i = 1; i < input.Length; i++)
-                {
-                    int index = FindIndex(checkedAlbums, albums, input[i]);
-                    checkedAlbums[index] = true;
-                }
-            }
-        }
-        else
-        {
-            ClearAlbumChecks();
-            ClearFolderChecks();
         }
         
         //From checkedAlbums or checkedFolders, figure out the index for it in checkedAlbums.
