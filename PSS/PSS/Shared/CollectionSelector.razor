@@ -18,7 +18,7 @@
         <div id="collectionCreatorDiv"><CollectionCreator Collections="@(albums.Concat(folders).ToList())"/></div>
 
         <div id="collectionGroups">
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(0, mouseEventArgs))" title="Restore the last selection of collections."><span class="material-icons-outlined">history</span></button>
+            <button class="iconBtn" @onclick="@(() => PreviousSelectionBtnClick(false))" title="Restore the last selection of collections."><span class="material-icons-outlined">history</span></button>
             <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(1, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
             <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(2, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
             <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(3, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
@@ -177,6 +177,9 @@
                 }
             }
         }
+        
+        //Save this selection of albums/folder for next time.
+        PreviousSelectionBtnClick(true);
 
         await CloseBtnClick();
 
@@ -186,6 +189,12 @@
         await SelectedItemsCountChanged.InvokeAsync(0);
         await CollectionsVisChanged.InvokeAsync("hidden");
         await HeaderVisChanged.InvokeAsync("hidden");
+    }
+
+    private void PreviousSelectionBtnClick(bool save)
+    {
+        MouseEventArgs mouseEventArgs = new() {CtrlKey = save};
+        SaveBtnClick(0, mouseEventArgs);
     }
 
     ///Handles saving and restoring of groups of saved Collections.
