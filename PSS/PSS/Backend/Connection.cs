@@ -71,6 +71,7 @@ namespace PSS.Backend
             public readonly bool separate;
             public readonly Guid uuid;
             public readonly string thumbnail;
+            public string description;
 
             public MediaRow(string p, DateTime? dt, bool starred, Guid uuid, string thumbnail)
             {
@@ -99,7 +100,7 @@ namespace PSS.Backend
                 this.thumbnail = thumbnail;
             }
 
-            public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail)
+            public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail, string description)
             {
                 path = p;
                 dateTaken = dt;
@@ -107,6 +108,7 @@ namespace PSS.Backend
                 this.starred = starred;
                 this.uuid = uuid;
                 this.thumbnail = thumbnail;
+                this.description = description;
             }
             
             //Row storing every column in media.
@@ -895,6 +897,70 @@ namespace PSS.Backend
                 Close();
             }
             return memories;
+        }
+
+        ///<summary>Gets the description of an item.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<returns>The description of the item.</returns>
+        public static string GetDescription(Guid uuid)
+        {
+            string description = "";
+            
+            try
+            {
+                Open();
+                using NpgsqlCommand cmd = new("SELECT description FROM media WHERE uuid=@uuid LIMIT 1", connection);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+
+                using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
+                {
+                    r.Read();
+                    description = r.IsDBNull(0) ? "" : r.GetString(0);
+                    r.Close();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+            return description;
+        }
+
+        /// <summary>Sets the description of an item.</summary>
+        /// <param name="uuid">The uuid of the item.</param>
+        /// <param name="newDescription">The new description of the item.</param>
+        public static void UpdateDescription(Guid uuid, string newDescription)
+        {
+            try
+            {
+                Open();
+                using NpgsqlCommand cmd = new(null, connection);
+                if (String.IsNullOrWhiteSpace(newDescription))
+                {
+                    cmd.CommandText = "UPDATE media SET description = NULL WHERE uuid=@uuid";
+                }
+                else
+                {
+                    cmd.CommandText = "UPDATE media SET description = @newDescription WHERE uuid=@uuid";
+                    cmd.Parameters.AddWithValue("@newDescription", newDescription);
+                }
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Close();
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS public.media
     uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
     thumbnail text DEFAULT NULL, -- Base64 string representing video thumbnail.
     date_deleted timestamp without time zone DEFAULT NULL, -- If this has a value, it's not in the Trash.
+    description text DEFAULT NULL,
     PRIMARY KEY (path, uuid),
     UNIQUE (path),
     UNIQUE (uuid)
