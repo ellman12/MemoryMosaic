@@ -49,11 +49,26 @@
     top: 45px;
 }
 
+#collectionGroups {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    top: 110px;
+    left: 6px;
+    height: 70px;
+    width: 450px;
+}
+
+#collectionGroups > button {
+    margin-right: 10px;
+}
+
 .collections {
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 110px;
+    top: 190px;
     left: 6px;
     width: 97.5%;
     height: 100%;
@@ -67,7 +82,7 @@
     margin-bottom: 12px;
     border: 1px solid white;
     padding-right: 2px;
-    height: 217px;
+    height: 175px;
     overflow-y: scroll;
 }
 

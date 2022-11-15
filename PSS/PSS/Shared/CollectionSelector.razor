@@ -17,6 +17,14 @@
         
         <div id="collectionCreatorDiv"><CollectionCreator Collections="@(albums.Concat(folders).ToList())"/></div>
 
+        <div id="collectionGroups">
+            <button class="iconBtn" @onclick="@(() => PreviousSelectionBtnClick(false))" title="Restore the last selection of collections."><span class="material-icons-outlined">history</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(1, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(2, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(3, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
+            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(4, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
+        </div>
+        
         <div class="collections">
             <span>Albums</span>
             <div class="collectionsList">
@@ -169,6 +177,9 @@
                 }
             }
         }
+        
+        //Save this selection of albums/folder for next time.
+        PreviousSelectionBtnClick(true);
 
         await CloseBtnClick();
 
@@ -178,5 +189,82 @@
         await SelectedItemsCountChanged.InvokeAsync(0);
         await CollectionsVisChanged.InvokeAsync("hidden");
         await HeaderVisChanged.InvokeAsync("hidden");
+    }
+
+    private void PreviousSelectionBtnClick(bool save)
+    {
+        MouseEventArgs mouseEventArgs = new() {CtrlKey = save};
+        SaveBtnClick(0, mouseEventArgs);
+    }
+
+    ///Handles saving and restoring of groups of saved Collections.
+    private void SaveBtnClick(int id, MouseEventArgs mouseEventArgs)
+    {
+        string filePath = Path.Join(Environment.CurrentDirectory, $"slot{id}.tmp");
+        if (mouseEventArgs.CtrlKey) //Save/overwrite selection.
+        {
+            SaveSelectionToDisk();
+        }
+        else if (File.Exists(filePath)) //Load and apply existing one.
+        {
+            bool rewrite = false; //If it encountered an ID that no longer exists in DB and it should rewrite the tmp file to remove it/them.
+            
+            ClearAlbumChecks();
+            ClearFolderChecks();
+            
+            string[] input = File.ReadAllLines(filePath);
+            if (input[0] == "F")
+            {
+                checkedFolderIndex = FindIndex(checkedFolders, folders, input[1]);
+                if (checkedFolderIndex == -1) rewrite = true;
+                else checkedFolders[checkedFolderIndex] = true;
+            }
+            else if (input[0] == "A")
+            {
+                for (int i = 1; i < input.Length; i++)
+                {
+                    int index = FindIndex(checkedAlbums, albums, input[i]);
+                    if (index == -1)
+                    {
+                        rewrite = true;
+                        continue;
+                    }
+                    checkedAlbums[index] = true;
+                }
+            }
+            
+            if (rewrite) SaveSelectionToDisk();
+        }
+        else
+        {
+            ClearAlbumChecks();
+            ClearFolderChecks();
+        }
+
+        void SaveSelectionToDisk()
+        {
+            if (checkedFolders.Any(b => b))
+                File.WriteAllText(filePath, $"F\n{folders[checkedFolderIndex].id}");
+            else
+            {
+                File.WriteAllText(filePath, "A\n");
+                for (int i = 0; i < checkedAlbums.Count; i++)
+                {
+                    if (checkedAlbums[i])
+                        File.AppendAllText(filePath, $"{albums[i].id}\n");
+                }
+            }
+        }
+        
+        //From checkedAlbums or checkedFolders, figure out the index for it in checkedAlbums.
+        int FindIndex(List<bool> checkedList, List<C.Collection> collections, string albumID)
+        {
+            int parsedID = Int32.Parse(albumID);
+            for (int i = 0; i < checkedList.Count; i++)
+                if (collections[i].id == parsedID)
+                    return i;
+            
+            return -1;
+        }
     }
 }
