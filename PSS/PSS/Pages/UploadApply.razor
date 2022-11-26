@@ -57,7 +57,7 @@
             <div class="itemDiv">
             @{
                 <img title="Click for Full Size Preview" onclick="window.open('@allFiles[i].shortPath', '_blank').focus();" src=@(allFiles[i].thumbnail == null ? allFiles[i].shortPath : "data:image/jpg;base64," + allFiles[i].thumbnail) alt="" loading="lazy"/>
-                <input class="filename" @bind="@allFiles[ii].filename"/>
+                <input class="filename" @bind=@allFiles[ii].filename @bind:event="oninput" @onchange="@(() => { allFiles[ii].alreadyInLib = ItemInLibrary(allFiles[ii].dateTaken, allFiles[ii].filename + allFiles[ii].extension); StateHasChanged(); })"/>
                 <span title="@dateString" class="dateTakenSpan">@dateString</span>
 
                 if (allFiles[i].dateTaken == null && !allFiles[i].alreadyInLib){<span class="warnSpan">Unknown Date Taken</span>}
