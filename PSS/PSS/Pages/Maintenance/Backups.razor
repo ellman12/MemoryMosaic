@@ -86,7 +86,7 @@
         process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
         process.WaitForExit();
         
-        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.SmallestSize, false);
+        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.Fastest, false);
         File.Delete(dbBakPath);
         
         backups.Insert(0, new ValueTuple<string, DateTime, long>
