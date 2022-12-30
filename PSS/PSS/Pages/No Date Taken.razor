@@ -15,10 +15,10 @@
         <span id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
     </header>
 
-    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added >= @oldestOrNewestDT ORDER BY date_added ASC LIMIT 50";
-    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added <= @oldestOrNewestDT ORDER BY date_added DESC LIMIT 50";
+    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added >= @oldestOrNewestDT ORDER BY date_added ASC LIMIT 100";
+    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added <= @oldestOrNewestDT ORDER BY date_added DESC LIMIT 100";
     <LibraryContentViewer @ref="@libContentViewer" UseDateAdded="true" @bind-HeaderVis="@headerVis" @bind-SelectedItemsCount="@selectedItemsCount" NoItemsText="Items Without a Date Taken Appear Here" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery"
-        FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL ORDER BY date_added DESC LIMIT 50"/>
+        FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL ORDER BY date_added DESC LIMIT 100"/>
     
     <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
 

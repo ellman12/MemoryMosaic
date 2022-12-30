@@ -96,11 +96,11 @@
         }
 
         const string shared = "SELECT path, date_taken, date_deleted, starred, uuid, thumbnail, description FROM media WHERE date_deleted IS NOT NULL";
-        topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? ">=" : "<=")} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
-        bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? "<=" : ">=")} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 50";
+        topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? ">=" : "<=")} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
+        bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? "<=" : ">=")} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
     
         //Loads every item with NULL Date Taken first, then items with Date Taken.
-        firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 50) ORDER BY {orderBy}";
+        firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100) ORDER BY {orderBy}";
     }
     
     private async void ChangeOrder(C.TrashSortMode newMode)
