@@ -54,8 +54,8 @@ namespace PSS
             app.UseStaticFiles(new StaticFileOptions()
             {
                 ServeUnknownFileTypes = true,
-                FileProvider = new PhysicalFileProvider(S.uploadFolderPath),
-                RequestPath = new PathString(S.UPLOAD_REQUEST_PATH)
+                FileProvider = new PhysicalFileProvider(S.importFolderPath),
+                RequestPath = new PathString(S.IMPORT_REQUEST_PATH)
             });
             app.UseStaticFiles(new StaticFileOptions()
             {

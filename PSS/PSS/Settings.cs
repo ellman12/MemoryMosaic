@@ -7,8 +7,8 @@ namespace PSS
     {
         [JsonProperty] public static string serverIP;
         
-        ///The full path to the pss_upload folder on the server. This is where items live before being added to the library.
-        [JsonProperty] public static string uploadFolderPath;
+        ///The full path to the pss_import folder on the server. This is where items live before being added to the library.
+        [JsonProperty] public static string importFolderPath;
 
         ///The full path to the library folder (pss_library) on the server.
         [JsonProperty] public static string libFolderPath;
@@ -28,9 +28,9 @@ namespace PSS
         ///Controls the quality of video thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
         [JsonProperty] public static int thumbnailQuality;
         
-        ///Acts as a kind of shortcut to where the library, upload, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
+        ///Acts as a kind of shortcut to where the library, import, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
         public const string LIB_REQUEST_PATH = "/pss_library";
-        public const string UPLOAD_REQUEST_PATH = "/pss_upload";
+        public const string IMPORT_REQUEST_PATH = "/pss_import";
         public const string TMP_REQUEST_PATH = "/pss_tmp";
 
         public static void WriteSettings() => File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
@@ -39,7 +39,7 @@ namespace PSS
         {
             new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(Environment.CurrentDirectory + "/pss_settings.json").Build();
             JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json"));
-            uploadFolderPath = uploadFolderPath.Replace('\\', '/');
+            importFolderPath = importFolderPath.Replace('\\', '/');
             libFolderPath = libFolderPath.Replace('\\', '/');
             backupFolderPath = backupFolderPath.Replace('\\', '/');
             tmpFolderPath = tmpFolderPath.Replace('\\', '/');
@@ -49,7 +49,7 @@ namespace PSS
         public static void ResetSettings()
         {
             serverIP = "localhost"; 
-            uploadFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_upload";
+            importFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_import";
             libFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_library";
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_backup";
             tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_tmp";
