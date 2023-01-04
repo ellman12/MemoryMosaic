@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using Microsoft.VisualBasic.FileIO;
 
 namespace PSS.Backend
@@ -144,7 +145,7 @@ namespace PSS.Backend
         ///<param name="starred">Is this item starred or not?</param>
         ///<param name="separate">Is this item separate from main library (i.e., is it in a folder)?</param>
         ///<returns>Int saying how many rows were affected.</returns>
-        public static async System.Threading.Tasks.Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
+        public static async Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
         {
             NpgsqlConnection localConn = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
             await localConn.OpenAsync();
@@ -930,6 +931,36 @@ namespace PSS.Backend
             {
                 Close();
             }
+        }
+        
+        ///<summary>Searches the entire media table for files with similar names to the filename provided.</summary>
+        ///<param name="filename">The filename to search for.</param>
+        ///<returns>A List&lt;MediaRow&gt; of rows found, null if none found.</returns>
+        ///<remarks>The way it searches the paths in the media table is a wildcard like this: %@filename%, so any filenames that are the exact same or similar are found.</remarks>
+        public static async Task<List<MediaRow>> FindFilesWithSimilarName(string filename)
+        {
+            List<MediaRow> files = null;
+            try
+            {
+                Open();
+                await using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media WHERE path LIKE '%{filename}%'", connection);
+                await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync();
+                if (r.HasRows)
+                {
+                    files = new List<MediaRow>();
+                    while (await r.ReadAsync()) files.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Close();
+            }
+
+            return files;
         }
     }
 }
