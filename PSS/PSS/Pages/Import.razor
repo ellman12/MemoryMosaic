@@ -1,0 +1,37 @@
+﻿@page "/import"
+
+<title>Import - PSS</title>
+<link href="css/Import.css" rel="stylesheet">
+
+@{
+	if (allAbsPaths is null || allAbsPaths.Count is 0)
+	{
+		<h1>No supported files found in pss_upload.</h1>
+	}
+	else
+	{
+		<h1>kill me</h1>
+	}
+}
+
+@code {
+	///Stores the absolute path of every supported file in pss_import.
+	private static List<string> allAbsPaths;
+
+	///List of data about each supported file in pss_import.
+	private static List<ImportFile> importFiles;
+
+	protected override async Task OnInitializedAsync()
+	{
+		//This string is removed from each fullPath to get the item's shortPath, which looks like 'pss_import/...'.
+		string importFolderParent = Path.GetDirectoryName(S.importFolderPath)!.Replace('\\', '/');
+
+		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
+		importFiles = new List<ImportFile>(allAbsPaths.Count);
+
+		await Parallel.ForEachAsync(allAbsPaths, async (absPath, _) =>
+		{
+			importFiles.Add(new ImportFile(absPath, importFolderParent));
+		});
+	}
+}
