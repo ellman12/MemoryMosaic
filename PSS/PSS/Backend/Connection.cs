@@ -8,7 +8,8 @@ namespace PSS.Backend
     ///Contains static methods for interacting with the PSS PostgreSQL database.
     public static class Connection
     {
-        public static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
+        private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS";
+        public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
 
         ///How items in CollectionsMain should be sorted.
         public enum CMSortMode
@@ -147,7 +148,7 @@ namespace PSS.Backend
         ///<returns>Int saying how many rows were affected.</returns>
         public static async Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
         {
-            NpgsqlConnection localConn = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
+            NpgsqlConnection localConn = new(CONNECTION_STRING);
             await localConn.OpenAsync();
 
             int rowsAffected = 0;
@@ -939,11 +940,14 @@ namespace PSS.Backend
         ///<remarks>The way it searches the paths in the media table is a wildcard like this: %@filename%, so any filenames that are the exact same or similar are found.</remarks>
         public static async Task<List<MediaRow>> FindFilesWithSimilarName(string filename)
         {
+            NpgsqlConnection localConn = new(CONNECTION_STRING);
+            await localConn.OpenAsync();
+            
             List<MediaRow> files = null;
             try
             {
                 Open();
-                await using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media WHERE path LIKE '%{filename}%'", connection);
+                await using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media WHERE path LIKE '%{filename}%'", localConn);
                 await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync();
                 if (r.HasRows)
                 {
@@ -957,7 +961,7 @@ namespace PSS.Backend
             }
             finally
             {
-                Close();
+                await localConn.CloseAsync();
             }
 
             return files;
