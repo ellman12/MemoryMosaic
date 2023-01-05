@@ -1,4 +1,4 @@
-﻿@page "/import"
+@page "/import"
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -23,15 +23,14 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		//This string is removed from each fullPath to get the item's shortPath, which looks like 'pss_import/...'.
-		string importFolderParent = Path.GetDirectoryName(S.importFolderPath)!.Replace('\\', '/');
-
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
 
 		await Parallel.ForEachAsync(allAbsPaths, async (absPath, _) =>
 		{
-			importFiles.Add(new ImportFile(absPath, importFolderParent));
+			ImportFile importFile = new(absPath);
+			importFiles.Add(importFile);
+			// similarFilenames.Add(await C.FindFilesWithSimilarName(importFile.renamedFilename));
 		});
 	}
 }

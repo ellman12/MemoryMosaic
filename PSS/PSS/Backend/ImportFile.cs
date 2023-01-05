@@ -12,8 +12,7 @@ public class ImportFile
 	///The file extension of the item.
 	public string extension;
 
-	///The path relative to pss_import of this item.
-	///<remarks>Contains 'pss_import' at the front as this is necessary for Blazor to be able to display the item in Import.razor.</remarks>
+	///The path relative to pss_import of this item, which does NOT contain 'pss_import' at the front.
 	public string shortPath;
 
 	///The absolute path to the file to import.
@@ -36,11 +35,10 @@ public class ImportFile
 
 	///<summary>Constructs a new instance of an <see cref="ImportFile"/>.</summary>
 	///<param name="absPath">The absolute path to where this item is.</param>
-	///<param name="importFolderParent">The parent folder of pss_import.</param>
-	public ImportFile(string absPath, string importFolderParent)
+	public ImportFile(string absPath)
 	{
 		absolutePath = absPath.Replace('\\', '/');
-		shortPath = absolutePath.Replace(importFolderParent!, "");
+		shortPath = absolutePath.Replace(S.importFolderPath, "");
 		renamedFilename = originalFilename = Path.GetFileName(absolutePath);
 		extension = Path.GetExtension(absolutePath);
 		thumbnail = D.IsVideoExt(extension!) ? F.GenerateThumbnail(absolutePath) : null;
