@@ -4,20 +4,20 @@
 <link href="css/Import.css" rel="stylesheet">
 
 @{
+	if (!finishedRendering)
+		return;
+	
 	if (allAbsPaths is null || allAbsPaths.Count is 0)
 	{
 		<h1>No supported files found in pss_upload.</h1>
 		return;
 	}
 	
-	importFiles = importFiles.OrderBy(file => file.renamedFilename).ToList();
 	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
 			if (i + 1 < importFiles.Count && importFiles[i].renamedFilename == importFiles[i + 1].renamedFilename)
 			{
-				importHasItemsWithSameName = true;
-				
 				<div class="errorDiv">
 					@do
 					{
@@ -28,6 +28,7 @@
 						</div>
 						i++;
 					} while (i < importFiles.Count && importFiles[i - 1].renamedFilename == importFiles[i].renamedFilename);
+					@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
 				</div>
 			}
 			else
@@ -49,6 +50,8 @@
 
 @code {
 
+	private static bool finishedRendering;
+
 	///Stores the absolute path of every supported file in pss_import.
 	private static List<string> allAbsPaths;
 
@@ -68,8 +71,36 @@
 			ImportFile importFile = new(absPath);
 			importFiles.Add(importFile);
 		});
-
 		
+		PrepareData();
+		finishedRendering = true;
+		StateHasChanged();
 	}
 
+	private static void PrepareData()
+	{
+		List<ImportFile> errors = new(), good = new();
+
+		importFiles = importFiles.OrderBy(file => file.renamedFilename).ToList();
+		for (int i = 0; i < importFiles.Count; i++)
+		{
+			if (i + 1 < importFiles.Count && importFiles[i].renamedFilename == importFiles[i + 1].renamedFilename)
+			{
+				importHasItemsWithSameName = true;
+				
+				do
+				{
+					errors.Add(importFiles[i]);
+					i++;
+				} while (i < importFiles.Count && importFiles[i - 1].renamedFilename == importFiles[i].renamedFilename);
+				i--; //Kind of stupid but fixes a problem where some items could be skipped.
+			}
+			else
+			{
+				good.Add(importFiles[i]);
+			}
+		}
+
+		importFiles = errors.Concat(good).ToList();
+	}
 }
