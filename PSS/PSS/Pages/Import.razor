@@ -24,7 +24,7 @@
 						<div class="listItem">
 							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 							<span>@importFiles[i].shortPath</span>
-							<input type="text">
+							@* <input type="text"> *@
 						</div>
 						i++;
 					} while (i < importFiles.Count && importFiles[i - 1].renamedFilename == importFiles[i].renamedFilename);
@@ -35,6 +35,7 @@
 				<div class="listItem">
 					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 					<span>@importFiles[i].shortPath</span>
+					@* <input type="text"> *@
 				</div>
 			}
 		}
@@ -55,7 +56,7 @@
 	private static List<ImportFile> importFiles;
 
 	///If pss_import contains files with the same name but in different folders, make sure the user fixes this first as it will most likely cause problems when the items get added to pss_library.
-	private static bool importHasItemsWithSameName = false;
+	private static bool importHasItemsWithSameName;
 
 	protected override async Task OnInitializedAsync()
 	{
