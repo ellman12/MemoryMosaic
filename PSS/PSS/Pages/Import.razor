@@ -22,9 +22,9 @@
 					@do
 					{
 						<div class="listItem">
-							<img src="pss_import/@importFiles[i].shortPath" alt=""/>
+							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 							<span>@importFiles[i].shortPath</span>
-							<input type="text"> @* TODO: even if files are different they still display the same...? *@
+							<input type="text">
 						</div>
 						i++;
 					} while (i < importFiles.Count && importFiles[i - 1].renamedFilename == importFiles[i].renamedFilename);
@@ -33,7 +33,7 @@
 			else
 			{
 				<div class="listItem">
-					<img src="pss_import/@importFiles[i].shortPath" alt=""/>
+					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 					<span>@importFiles[i].shortPath</span>
 				</div>
 			}
