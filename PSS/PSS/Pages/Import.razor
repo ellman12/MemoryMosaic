@@ -9,28 +9,37 @@
 		<h1>No supported files found in pss_upload.</h1>
 		return;
 	}
-
-	importFiles = importFiles.OrderBy(file => file.originalFilename).ToList();
-	for (int i = 0; i < importFiles.Count; i++)
-	{
-		if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename)
-		{
-			importHasItemsWithSameName = true;
-			
-			<div class="errorDiv">
-				@do
-				{
-					<span>@importFiles[i].shortPath</span><br/>
-					i++;
-				} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
-			</div>
-		}
-		else
-		{
-			<span style="color: green">@importFiles[i].shortPath</span><br/>
-		}
-	}
 	
+	importFiles = importFiles.OrderBy(file => file.renamedFilename).ToList();
+	<div id="mainDiv">
+		@for (int i = 0; i < importFiles.Count; i++)
+		{
+			if (i + 1 < importFiles.Count && importFiles[i].renamedFilename == importFiles[i + 1].renamedFilename)
+			{
+				importHasItemsWithSameName = true;
+				
+				<div class="errorDiv">
+					@do
+					{
+						<div class="listItem">
+							<img src="pss_import/@importFiles[i].shortPath" alt=""/>
+							<span>@importFiles[i].shortPath</span>
+							<input type="text"> @* TODO: even if files are different they still display the same...? *@
+						</div>
+						i++;
+					} while (i < importFiles.Count && importFiles[i - 1].renamedFilename == importFiles[i].renamedFilename);
+				</div>
+			}
+			else
+			{
+				<div class="listItem">
+					<img src="pss_import/@importFiles[i].shortPath" alt=""/>
+					<span>@importFiles[i].shortPath</span>
+				</div>
+			}
+		}
+	</div>
+
 	if (importHasItemsWithSameName)
 		return;
 	
