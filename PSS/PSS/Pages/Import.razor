@@ -1,5 +1,4 @@
 @page "/import"
-@using System.Diagnostics
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -17,14 +16,25 @@
 		if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename)
 		{
 			importHasItemsWithSameName = true;
-			<span style="color: red">@importFiles[i].shortPath</span><br/>
-			<span style="color: red">@importFiles[++i].shortPath</span><br/>
+			
+			<div class="errorDiv">
+				@do
+				{
+					<span>@importFiles[i].shortPath</span><br/>
+					i++;
+				} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
+			</div>
 		}
 		else
 		{
 			<span style="color: green">@importFiles[i].shortPath</span><br/>
 		}
 	}
+	
+	if (importHasItemsWithSameName)
+		return;
+	
+	<span>shouldn't see me</span>
 }
 
 @code {

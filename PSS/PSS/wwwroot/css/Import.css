@@ -4,3 +4,14 @@
     left: 50%;
     transform: translate(50%, 50%);
 }
+
+.errorDiv {
+    border: 2px solid red;
+    border-radius: 4px;
+    padding: 4px;
+    width: fit-content;
+}
+
+.errorDiv > span {
+    color: red;
+}
