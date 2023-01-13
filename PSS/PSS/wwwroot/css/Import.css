@@ -16,6 +16,29 @@ h1 {
     flex-direction: column;
 }
 
+#mainDiv .listItem > .checkbox {
+    opacity: 0;
+    margin-left: 4px;
+    margin-right: 10px;
+}
+
+#mainDiv .listItem > .checkbox:hover {
+    cursor: pointer;
+}
+
+#mainDiv .listItem > .checked {
+    color: #009FFF;
+    opacity: 1;
+}
+
+#mainDiv .listItem > .unchecked { /* Show checkbox on hover */
+    opacity: 0.42;
+}
+
+#mainDiv .listItem > .unchecked:hover { /* Make it 100% opaque */
+    opacity: 1;
+}
+
 #mainDiv > .errorDiv {
     border-radius: 4px;
     padding: 4px;
@@ -39,15 +62,21 @@ h1 {
     margin-right: 10px;
 }
 
+#mainDiv img:hover {
+    cursor: pointer;
+}
+
 #mainDiv input[type="text"] {
     color: black;
     margin-left: 10px;
 }
 
-#mainDiv > .errorDiv > .listItem > span {
+#mainDiv > .errorDiv > .listItem > .filename {
     color: red;
+    margin-right: 10px;
 }
 
-#mainDiv > .listItem > span {
+#mainDiv > .listItem > .filename {
     color: green;
+    margin-right: 10px;
 }
