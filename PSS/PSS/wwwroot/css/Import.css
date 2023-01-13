@@ -1,4 +1,4 @@
-﻿* {
+* {
     scrollbar-width: none !important;
     --left-margin: 145px; /* For things with absolute positioning, how far to be away from left side of page */
 }
@@ -7,7 +7,7 @@ h1 {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(50%, 50%);
+    transform: translate(-50%, -50%);
 }
 
 #mainDiv {
@@ -19,7 +19,7 @@ h1 {
 #mainDiv > .errorDiv {
     border-radius: 4px;
     padding: 4px;
-    background-color: rgba(255, 0, 0, 0.075);
+    background-color: rgba(255, 0, 0, 0.12);
 }
 
 #mainDiv .listItem {
