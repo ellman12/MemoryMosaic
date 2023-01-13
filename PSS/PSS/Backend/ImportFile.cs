@@ -3,10 +3,10 @@
 ///Represents an item that is pending importing in Import.razor.
 public class ImportFile
 {
-	///The original filename of this item.
+	///The original filename of this item, without the extension.
 	public string originalFilename;
 
-	///Tracks what the user has updated the filename to, if applicable.
+	///Tracks what the user has updated the filename to, if applicable, without the extension.
 	public string renamedFilename;
 
 	///The file extension of the item.
@@ -39,7 +39,7 @@ public class ImportFile
 	{
 		absolutePath = absPath.Replace('\\', '/');
 		shortPath = absolutePath.Replace(S.importFolderPath, "");
-		renamedFilename = originalFilename = Path.GetFileName(absolutePath);
+		originalFilename = renamedFilename = Path.GetFileNameWithoutExtension(absolutePath);
 		extension = Path.GetExtension(absolutePath);
 		thumbnail = D.IsVideoExt(extension!) ? F.GenerateThumbnail(absolutePath) : null;
 		D.GetDateTakenFromBoth(absolutePath!, out metadataDateTaken, out filenameDateTaken);
