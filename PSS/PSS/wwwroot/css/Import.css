@@ -17,6 +17,7 @@ h1 {
 }
 
 #mainDiv .listItem > .checkbox {
+    user-select: none;
     opacity: 0;
     margin-left: 4px;
     margin-right: 10px;
@@ -26,13 +27,27 @@ h1 {
     cursor: pointer;
 }
 
+#mainDiv .listItem > .filename {
+    cursor: default;
+}
+
+#mainDiv .listItem > .editBtn {
+    display: none;
+    transition: 0.15s;
+}
+
+#mainDiv .listItem:hover > .editBtn {
+    display: inline;
+}
+
 #mainDiv .listItem > .checked {
     color: #009FFF;
     opacity: 1;
 }
 
-#mainDiv .listItem > .unchecked { /* Show checkbox on hover */
+#mainDiv .listItem:hover > .unchecked { /* Show checkbox on hover */
     opacity: 0.42;
+    transition: 0.15s;
 }
 
 #mainDiv .listItem > .unchecked:hover { /* Make it 100% opaque */
