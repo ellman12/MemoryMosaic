@@ -42,7 +42,7 @@
 		}
 	</div>
 
-	if (importHasItemsWithSameName)
+	if (errorAmount > 0)
 		return;
 	
 	<span>shouldn't see me</span>
@@ -58,8 +58,7 @@
 	///List of data about each supported file in pss_import.
 	private static List<ImportFile> importFiles;
 
-	///If pss_import contains files with the same name but in different folders, make sure the user fixes this first as it will most likely cause problems when the items get added to pss_library.
-	private static bool importHasItemsWithSameName;
+	private static int errorAmount;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -86,7 +85,7 @@
 		{
 			if (i + 1 < importFiles.Count && importFiles[i].renamedFilename == importFiles[i + 1].renamedFilename)
 			{
-				importHasItemsWithSameName = true;
+				errorAmount++;
 				
 				do
 				{
