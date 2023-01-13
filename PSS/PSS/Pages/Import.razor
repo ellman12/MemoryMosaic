@@ -24,7 +24,7 @@
 					{
 						int ii = i;
 						<div class="listItem">
-							<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(() => CheckClicked(importFiles[ii].uuid))">check_circle</span>
+							<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
 							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 							<span class="filename">@importFiles[i].shortPath</span>
 							<button class="iconBtn editBtn" id="edit @i" onclick="openEdit(@i)"><span class="material-icons-outlined">edit</span></button>
@@ -41,7 +41,7 @@
 			{
 				int ii = i;
 				<div class="listItem">
-					<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(() => CheckClicked(importFiles[ii].uuid))">check_circle</span>
+					<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
 					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 					<span class="filename">@importFiles[i].shortPath</span>
 					<button class="iconBtn editBtn" id="edit @i" onclick="openEdit(@i)"><span class="material-icons-outlined">edit</span></button>
@@ -71,6 +71,9 @@
 
 	///Stores what items are selected by the user.
 	private readonly HashList<Guid> selectedItems = new();
+
+	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
+	private int lastCheckedIndex;
 
 	private static int errorAmount;
 
@@ -146,22 +149,47 @@
 		}
 	}
 
-	private async Task CheckClicked(Guid uuid)
+	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
+	private async Task CheckClicked(MouseEventArgs eventArgs, Guid listItemId, int index)
 	{
-		await ToggleCheck(uuid);
-	}
-	
-	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
-	private async Task ToggleCheck(Guid uuid)
-	{
-		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
-		if (newClass.Contains("unchecked")) //No longer selected.
+		await ToggleCheck(listItemId);
+
+		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
+		if (eventArgs.ShiftKey)
 		{
-			selectedItems.Remove(uuid);
+			//First item is on left and item shift clicked is on the right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selectedItems.
+			if (lastCheckedIndex < index)
+				await AddSelected(lastCheckedIndex, index);
+			else if (lastCheckedIndex > index) //Same as above but swap 1 and 2 and the direction.
+				await AddSelected(index, lastCheckedIndex);
 		}
-		else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking.
+		else
 		{
-			selectedItems.Add(uuid);
+			lastCheckedIndex = index;
+		}
+		
+		//Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
+		async Task ToggleCheck(Guid uuid)
+		{
+			string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
+			if (newClass.Contains("unchecked")) //No longer selected.
+			{
+				selectedItems.Remove(uuid);
+			}
+			else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking.
+			{
+				selectedItems.Add(uuid);
+			}
+		}
+	
+		//Add items from start to end into selectedItems. Used for Shift Click.
+		async Task AddSelected(int startIndex, int endIndex)
+		{
+			for (int i = startIndex; i <= endIndex; i++)
+			{
+				Guid currentID = importFiles[i].uuid;
+				if (!selectedItems.Contains(currentID)) await ToggleCheck(currentID);
+			}
 		}
 	}
 }
