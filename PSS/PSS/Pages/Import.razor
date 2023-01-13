@@ -24,7 +24,7 @@
 					{
 						int ii = i;
 						<div class="listItem">
-							<span class="material-icons-outlined checkbox unchecked">check_circle</span>
+							<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(() => CheckClicked(importFiles[ii].uuid))">check_circle</span>
 							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 							<span class="filename">@importFiles[i].shortPath</span>
 							<button class="iconBtn editBtn" id="edit @i" onclick="openEdit(@i)"><span class="material-icons-outlined">edit</span></button>
@@ -41,7 +41,7 @@
 			{
 				int ii = i;
 				<div class="listItem">
-					<span class="material-icons-outlined checkbox unchecked">check_circle</span>
+					<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(() => CheckClicked(importFiles[ii].uuid))">check_circle</span>
 					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 					<span class="filename">@importFiles[i].shortPath</span>
 					<button class="iconBtn editBtn" id="edit @i" onclick="openEdit(@i)"><span class="material-icons-outlined">edit</span></button>
@@ -68,6 +68,9 @@
 
 	///List of data about each supported file in pss_import.
 	private static List<ImportFile> importFiles;
+
+	///Stores what items are selected by the user.
+	private readonly HashList<Guid> selectedItems = new();
 
 	private static int errorAmount;
 
@@ -140,6 +143,25 @@
 			JSRuntime.InvokeAsync<int>("closeEdit", index);
 			file.originalFilename = file.renamedFilename;
 			file.shortPath = newShortPath;
+		}
+	}
+
+	private async Task CheckClicked(Guid uuid)
+	{
+		await ToggleCheck(uuid);
+	}
+	
+	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
+	private async Task ToggleCheck(Guid uuid)
+	{
+		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
+		if (newClass.Contains("unchecked")) //No longer selected.
+		{
+			selectedItems.Remove(uuid);
+		}
+		else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking.
+		{
+			selectedItems.Add(uuid);
 		}
 	}
 }
