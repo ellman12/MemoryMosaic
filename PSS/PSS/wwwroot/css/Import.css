@@ -12,13 +12,12 @@ h1 {
 }
 
 header {
+    display: flex;
     flex-direction: row;
     align-items: center;
     position: fixed;
     top: 0;
     margin-left: var(--left-margin);
-    margin-right: 1px;
-    padding-left: 2px;
     height: 60px;
     background-color: black;
     border: 1px solid white;
@@ -27,12 +26,20 @@ header {
     z-index: 999;
 }
 
-header > span {
-    margin-left: 4px;
+header > .iconBtn {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+header > #headerMsg {
+    color: red;
+    position: absolute;
+    left: 180px;
 }
 
 #mainDiv {
     margin-left: var(--left-margin);
+    position: absolute;
     display: flex;
     flex-direction: column;
 }

@@ -14,12 +14,14 @@
 		return;
 	}
 	
-	<header style="display: @(selectedItems.Count > 0 ? "flex" : "none")">
-		<button class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
-		<span>@selectedItems.Count&nbsp;&nbsp;Selected</span>
+	<header style="visibility: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? "visible" : "hidden")">
+		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
+		<span style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+
+		<span style="visibility: @(String.IsNullOrWhiteSpace(headerMsg) ? "hidden" : "visible")" id="headerMsg">@headerMsg</span>
 	</header>
 	
-	<div id="mainDiv">
+	<div id="mainDiv" style="top: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? 60 : 0)px">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
@@ -67,6 +69,9 @@
 @code {
 
 	private bool finishedRendering;
+
+	///Used to show error or other messages in the header.
+	private string headerMsg;
 
 	///Stores the absolute path of every supported file in pss_import.
 	private List<string> allAbsPaths;
@@ -123,6 +128,7 @@
 		}
 
 		importFiles = errors.Concat(good).ToList();
+		headerMsg = errorAmount > 0 ? $"{errorAmount} Filename Errors" : "";
 	}
 
 	private void FilenameChanged(int index)
