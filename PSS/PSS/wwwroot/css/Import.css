@@ -1,4 +1,4 @@
-﻿* {
+* {
     scrollbar-width: none !important;
     --left-margin: 145px; /* For things with absolute positioning, how far to be away from left side of page */
 }
@@ -37,11 +37,6 @@ h1 {
 #mainDiv img {
     width: 4%;
     margin-right: 10px;
-}
-
-#mainDiv img:hover { /*https://stackoverflow.com/a/25036868*/
-    transform: scale(1.9);
-    cursor: pointer;
 }
 
 #mainDiv input[type="text"] {
