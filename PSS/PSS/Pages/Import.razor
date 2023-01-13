@@ -1,4 +1,5 @@
-@page "/import"
+@page "/"
+@inject IJSRuntime JSRuntime
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -21,10 +22,14 @@
 				<div class="errorDiv">
 					@do
 					{
+						int ii = i;
 						<div class="listItem">
 							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 							<span>@importFiles[i].shortPath</span>
-							@* <input type="text"> *@
+							<button class="iconBtn" id="edit @i" onclick="openEdit(@i)"><span class="material-icons-outlined">edit</span></button>
+                            <input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
+							<button class="iconBtn" id="save @i" @onclick="@(() => FilenameChanged(ii))" style="display: none"><span class="material-icons-outlined">save</span></button>
+							<button class="iconBtn" id="close @i" onclick="closeEdit(@i)" style="display: none"><span class="material-icons-outlined">close</span></button>
 						</div>
 						i++;
 					} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
@@ -33,10 +38,14 @@
 			}
 			else
 			{
+				int ii = i;
 				<div class="listItem">
 					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 					<span>@importFiles[i].shortPath</span>
-					@* <input type="text"> *@
+					<button class="iconBtn" id="edit @i" onclick="openEdit(@i)"><span class="material-icons-outlined">edit</span></button>
+					<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
+					<button class="iconBtn" id="save @i" @onclick="@(() => FilenameChanged(ii))" style="display: none"><span class="material-icons-outlined">save</span></button>
+					<button class="iconBtn" id="close @i" onclick="closeEdit(@i)" style="display: none"><span class="material-icons-outlined">close</span></button>
 				</div>
 			}
 		}
@@ -101,5 +110,34 @@
 		}
 
 		importFiles = errors.Concat(good).ToList();
+	}
+
+	private void FilenameChanged(int index)
+	{
+		const string DUPE_ERROR_MSG = "File with same name in folder.";
+		ImportFile file = importFiles[index];
+		if (file.originalFilename == file.renamedFilename || file.renamedFilename == DUPE_ERROR_MSG)
+		{
+			JSRuntime.InvokeAsync<int>("closeEdit", index);
+			file.renamedFilename = file.originalFilename;
+			return;
+		}
+		
+		string newShortPath = file.shortPath.Replace(file.originalFilename, file.renamedFilename);
+		string newPath = Path.Join(S.importFolderPath, newShortPath);
+		if (!newPath.EndsWith(file.extension))
+			newPath += file.extension;
+		
+		if (File.Exists(newPath))
+		{
+			file.renamedFilename = DUPE_ERROR_MSG;
+		}
+		else
+		{
+			File.Move(file.absolutePath, newPath);
+			JSRuntime.InvokeAsync<int>("closeEdit", index);
+			file.originalFilename = file.renamedFilename;
+			file.shortPath = newShortPath;
+		}
 	}
 }
