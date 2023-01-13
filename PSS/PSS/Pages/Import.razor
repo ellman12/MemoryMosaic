@@ -66,13 +66,13 @@
 
 @code {
 
-	private static bool finishedRendering;
+	private bool finishedRendering;
 
 	///Stores the absolute path of every supported file in pss_import.
-	private static List<string> allAbsPaths;
+	private List<string> allAbsPaths;
 
 	///List of data about each supported file in pss_import.
-	private static List<ImportFile> importFiles;
+	private List<ImportFile> importFiles;
 
 	///Stores what items are selected by the user.
 	private readonly HashList<Guid> selectedItems = new();
@@ -80,7 +80,7 @@
 	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
 	private int lastCheckedIndex;
 
-	private static int errorAmount;
+	private int errorAmount;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -98,7 +98,7 @@
 		StateHasChanged();
 	}
 
-	private static void PrepareData()
+	private void PrepareData()
 	{
 		List<ImportFile> errors = new(), good = new();
 
