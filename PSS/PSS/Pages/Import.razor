@@ -16,7 +16,7 @@
 	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
-			if (i + 1 < importFiles.Count && importFiles[i].renamedFilename == importFiles[i + 1].renamedFilename)
+			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
 				<div class="errorDiv">
 					@do
@@ -27,7 +27,7 @@
 							@* <input type="text"> *@
 						</div>
 						i++;
-					} while (i < importFiles.Count && importFiles[i - 1].renamedFilename == importFiles[i].renamedFilename);
+					} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 					@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
 				</div>
 			}
@@ -80,10 +80,10 @@
 	{
 		List<ImportFile> errors = new(), good = new();
 
-		importFiles = importFiles.OrderBy(file => file.renamedFilename).ToList();
+		importFiles = importFiles.OrderBy(file => file.originalFilename).ToList();
 		for (int i = 0; i < importFiles.Count; i++)
 		{
-			if (i + 1 < importFiles.Count && importFiles[i].renamedFilename == importFiles[i + 1].renamedFilename)
+			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
 				errorAmount++;
 				
@@ -91,8 +91,8 @@
 				{
 					errors.Add(importFiles[i]);
 					i++;
-				} while (i < importFiles.Count && importFiles[i - 1].renamedFilename == importFiles[i].renamedFilename);
-				i--; //Kind of stupid but fixes a problem where some items could be skipped.
+				} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename && importFiles[i - 1].extension == importFiles[i].extension);
+				i--; //Kind of stupid but fixes a problem where some items could be skipped because of the i++.
 			}
 			else
 			{
