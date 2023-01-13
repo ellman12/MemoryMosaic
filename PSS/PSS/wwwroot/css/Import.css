@@ -1,6 +1,7 @@
-* {
+﻿* {
     scrollbar-width: none !important;
     --left-margin: 145px; /* For things with absolute positioning, how far to be away from left side of page */
+    user-select: none;
 }
 
 h1 {
@@ -8,6 +9,26 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+header {
+    flex-direction: row;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    margin-left: var(--left-margin);
+    margin-right: 1px;
+    padding-left: 2px;
+    height: 60px;
+    background-color: black;
+    border: 1px solid white;
+    width: available;
+    width: -moz-available;
+    z-index: 999;
+}
+
+header > span {
+    margin-left: 4px;
 }
 
 #mainDiv {
@@ -36,7 +57,6 @@ h1 {
 }
 
 #mainDiv .listItem > .checkbox {
-    user-select: none;
     opacity: 0;
     margin-left: 4px;
     margin-right: 10px;

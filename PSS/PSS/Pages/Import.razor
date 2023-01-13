@@ -14,6 +14,11 @@
 		return;
 	}
 	
+	<header style="display: @(selectedItems.Count > 0 ? "flex" : "none")">
+		<button class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
+		<span>@selectedItems.Count&nbsp;&nbsp;Selected</span>
+	</header>
+	
 	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
@@ -149,6 +154,7 @@
 		}
 	}
 
+	#region Checkbox Methods
 	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
 	private async Task CheckClicked(MouseEventArgs eventArgs, Guid listItemId, int index)
 	{
@@ -192,4 +198,12 @@
 			}
 		}
 	}
+	
+	private async Task ClearChecks()
+	{
+		foreach (Guid item in selectedItems)
+			await JSRuntime.InvokeAsync<string>("removeCheck", item);
+		selectedItems.Clear();
+	}
+	#endregion
 }
