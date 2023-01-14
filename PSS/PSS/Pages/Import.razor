@@ -102,12 +102,13 @@
 			importFiles.Add(importFile);
 		});
 		
-		PrepareData();
+		OrganizeItems();
 		finishedRendering = true;
 		StateHasChanged();
 	}
 
-	private void PrepareData()
+	///Organizes the import items by putting the errors at the top of the page above the other files.
+	private void OrganizeItems()
 	{
 		errorAmount = 0;
 		List<ImportFile> errors = new(), good = new();
@@ -226,7 +227,7 @@
 			importFiles.RemoveAll(f => selectedItems.Contains(f.uuid));
 		}
 		await ClearChecks();
-		PrepareData();
+		OrganizeItems();
 		StateHasChanged();
 	}
 }
