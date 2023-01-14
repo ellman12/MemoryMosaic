@@ -37,6 +37,14 @@ header > #headerMsg {
     left: 180px;
 }
 
+header > #buttons {
+    position: absolute;
+    right: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 #mainDiv {
     margin-left: var(--left-margin);
     position: absolute;
