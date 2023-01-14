@@ -91,7 +91,14 @@ header > #buttons {
 }
 
 #mainDiv .listItem > .filename {
-    cursor: default;
+    width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#mainDiv .listItem > .filename:hover {
+    width: auto;
 }
 
 #mainDiv img {
@@ -103,14 +110,14 @@ header > #buttons {
     cursor: pointer;
 }
 
-#mainDiv input[type="text"] {
-    color: black;
-    margin-left: 10px;
-}
-
 #mainDiv > .errorDiv > .listItem > .filename {
     color: red;
     margin-right: 10px;
+}
+
+#mainDiv input[type="text"] {
+    color: black;
+    margin-left: 10px;
 }
 
 #mainDiv > .listItem > .filename {
