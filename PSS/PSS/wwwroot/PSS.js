@@ -16,6 +16,8 @@ function toggleCheck(id) {
 
 //Used in ClearChecks()
 function removeCheck(id) {
+    let element = document.getElementById(id);
+    if (element == null) return;
     document.getElementById(id).classList.remove("checked");
     document.getElementById(id).classList.add("unchecked");
 }
