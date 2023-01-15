@@ -1,4 +1,4 @@
-﻿* {
+* {
     scrollbar-width: none !important;
     --left-margin: 145px; /* For things with absolute positioning, how far to be away from left side of page */
     user-select: none;
@@ -117,11 +117,11 @@ header > #buttons {
     margin-right: 10px;
 }
 
-#mainDiv img:hover {
+#mainDiv .listItem > img:hover {
     cursor: pointer;
 }
 
-#mainDiv input[type="text"] {
+#mainDiv .listItem > input[type="text"] {
     color: black;
     margin-left: 10px;
 }
