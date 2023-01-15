@@ -32,7 +32,6 @@ function getItemId(id)
 function openEdit(index)
 {
     document.getElementById('text ' + index).style.display = 'inline';
-    document.getElementById('edit ' + index).style.display = 'none'
     document.getElementById('close ' + index).style.display = 'inline'
     document.getElementById('save ' + index).style.display = 'inline'
 }
@@ -41,7 +40,6 @@ function openEdit(index)
 function closeEdit(index)
 {
     document.getElementById('text ' + index).style.display = 'none';
-    document.getElementById('edit ' + index).style.display = 'inline'
     document.getElementById('close ' + index).style.display = 'none'
     document.getElementById('save ' + index).style.display = 'none'
 }

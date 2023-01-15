@@ -124,12 +124,3 @@ header > #buttons {
     color: green;
     margin-right: 10px;
 }
-
-#mainDiv .listItem > .editBtn {
-    display: none;
-    transition: 0.15s;
-}
-
-#mainDiv .listItem:hover > .editBtn {
-    display: inline;
-}
