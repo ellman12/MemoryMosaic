@@ -38,7 +38,7 @@
 					{
 						int ii = i;
 						<div class="listItem">
-							<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
+							<span class="material-icons-outlined checkbox @(selectedItems.Contains(importFiles[i].uuid) ? "checked" : "unchecked")" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
 							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 							<span class="shortPath" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
 							<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
@@ -54,7 +54,7 @@
 			{
 				int ii = i;
 				<div class="listItem">
-					<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
+					<span class="material-icons-outlined checkbox @(selectedItems.Contains(importFiles[i].uuid) ? "checked" : "unchecked")" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
 					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
 					<span class="shortPath" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
 					<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
@@ -164,18 +164,18 @@
 
 	#region Checkbox Methods
 	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
-	private async Task CheckClicked(MouseEventArgs eventArgs, Guid listItemId, int index)
+	private void CheckClicked(MouseEventArgs eventArgs, Guid listItemId, int index)
 	{
-		await ToggleCheck(listItemId);
+		ToggleCheck(listItemId);
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
 		if (eventArgs.ShiftKey)
 		{
 			//First item is on left and item shift clicked is on the right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selectedItems.
 			if (lastCheckedIndex < index)
-				await AddSelected(lastCheckedIndex, index);
+				AddSelected(lastCheckedIndex, index);
 			else if (lastCheckedIndex > index) //Same as above but swap 1 and 2 and the direction.
-				await AddSelected(index, lastCheckedIndex);
+				AddSelected(index, lastCheckedIndex);
 		}
 		else
 		{
@@ -183,56 +183,43 @@
 		}
 		
 		//Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
-		async Task ToggleCheck(Guid uuid)
+		void ToggleCheck(Guid uuid)
 		{
-			string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
-			if (newClass.Contains("unchecked")) //No longer selected.
-			{
+			if (selectedItems.Contains(uuid))
 				selectedItems.Remove(uuid);
-			}
-			else if (!selectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking.
-			{
+			else if (!selectedItems.Contains(uuid))
 				selectedItems.Add(uuid);
-			}
 		}
 	
 		//Add items from start to end into selectedItems. Used for Shift Click.
-		async Task AddSelected(int startIndex, int endIndex)
+		void AddSelected(int startIndex, int endIndex)
 		{
 			for (int i = startIndex; i <= endIndex; i++)
 			{
 				Guid currentID = importFiles[i].uuid;
-				if (!selectedItems.Contains(currentID)) await ToggleCheck(currentID);
+				if (!selectedItems.Contains(currentID)) ToggleCheck(currentID);
 			}
 		}
 	}
 	
-	private async Task ClearChecks()
-	{
-		foreach (Guid item in selectedItems)
-			await JSRuntime.InvokeAsync<string>("removeCheck", item);
-		selectedItems.Clear();
-	}
+	private void ClearChecks() => selectedItems.Clear();
 
-	private async void SelectAll()
+	private void SelectAll()
 	{
 		foreach (ImportFile file in importFiles)
-		{
-			await JSRuntime.InvokeAsync<string>("addCheck", file.uuid);
 			selectedItems.Add(file.uuid);
-		}
 		StateHasChanged();
 	}
 	#endregion
 	
-	private async void DeleteSelected()
+	private void DeleteSelected()
 	{
 		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
 		{
 			FileSystem.DeleteFile(file.absolutePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 			importFiles.RemoveAll(f => selectedItems.Contains(f.uuid));
 		}
-		await ClearChecks();
+		ClearChecks();
 		OrganizeItems();
 		StateHasChanged();
 	}
