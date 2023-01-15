@@ -90,15 +90,26 @@ header > #buttons {
     opacity: 1;
 }
 
-#mainDiv .listItem > .filename {
-    width: 180px;
+#mainDiv .listItem > .shortPath {
+    max-width: 180px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-#mainDiv .listItem > .filename:hover {
+#mainDiv .listItem > .shortPath:hover {
+    max-width: initial;
     width: auto;
+}
+
+#mainDiv > .errorDiv > .listItem > .shortPath {
+    color: red;
+    margin-right: 10px;
+}
+
+#mainDiv > .listItem > .shortPath {
+    color: green;
+    margin-right: 10px;
 }
 
 #mainDiv img {
@@ -110,17 +121,7 @@ header > #buttons {
     cursor: pointer;
 }
 
-#mainDiv > .errorDiv > .listItem > .filename {
-    color: red;
-    margin-right: 10px;
-}
-
 #mainDiv input[type="text"] {
     color: black;
     margin-left: 10px;
-}
-
-#mainDiv > .listItem > .filename {
-    color: green;
-    margin-right: 10px;
 }

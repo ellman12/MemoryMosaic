@@ -38,7 +38,7 @@
 						<div class="listItem">
 							<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
 							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
-							<span class="filename" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
+							<span class="shortPath" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
 							<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
 							<button class="iconBtn" id="save @i" @onclick="@(() => FilenameChanged(ii))" style="display: none"><span class="material-icons-outlined">save</span></button>
 							<button class="iconBtn" id="close @i" onclick="closeEdit(@i)" style="display: none"><span class="material-icons-outlined">close</span></button>
@@ -54,7 +54,7 @@
 				<div class="listItem">
 					<span class="material-icons-outlined checkbox unchecked" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
 					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
-					<span class="filename" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
+					<span class="shortPath" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
 					<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
 					<button class="iconBtn" id="save @i" @onclick="@(() => FilenameChanged(ii))" style="display: none"><span class="material-icons-outlined">save</span></button>
 					<button class="iconBtn" id="close @i" onclick="closeEdit(@i)" style="display: none"><span class="material-icons-outlined">close</span></button>
