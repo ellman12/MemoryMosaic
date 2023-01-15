@@ -15,7 +15,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts CtrlA="@SelectAll"/>
+	<KeyboardShortcuts CtrlA="@SelectAll" Esc="@ClearChecks"/>
 	
 	<header style="visibility: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? "visible" : "hidden")">
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
@@ -202,7 +202,11 @@
 		}
 	}
 	
-	private void ClearChecks() => selectedItems.Clear();
+	private void ClearChecks()
+	{
+		selectedItems.Clear();
+		StateHasChanged();
+	}
 
 	private void SelectAll()
 	{
