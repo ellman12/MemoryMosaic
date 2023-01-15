@@ -32,14 +32,14 @@ function getItemId(id)
 function openEdit(index)
 {
     document.getElementById('text ' + index).style.display = 'inline';
-    document.getElementById('close ' + index).style.display = 'inline'
-    document.getElementById('save ' + index).style.display = 'inline'
+    document.getElementById('close ' + index).style.display = 'inline';
+    document.getElementById('save ' + index).style.display = 'inline';
 }
 
 //Used in Import.razor
 function closeEdit(index)
 {
     document.getElementById('text ' + index).style.display = 'none';
-    document.getElementById('close ' + index).style.display = 'none'
-    document.getElementById('save ' + index).style.display = 'none'
+    document.getElementById('close ' + index).style.display = 'none';
+    document.getElementById('save ' + index).style.display = 'none';
 }
