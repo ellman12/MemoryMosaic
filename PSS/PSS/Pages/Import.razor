@@ -14,6 +14,8 @@
 		<h1>No supported files found in pss_import.</h1>
 		return;
 	}
+
+	<KeyboardShortcuts CtrlA="@SelectAll"/>
 	
 	<header style="visibility: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? "visible" : "hidden")">
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
@@ -210,6 +212,16 @@
 		foreach (Guid item in selectedItems)
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
 		selectedItems.Clear();
+	}
+
+	private async void SelectAll()
+	{
+		foreach (ImportFile file in importFiles)
+		{
+			await JSRuntime.InvokeAsync<string>("addCheck", file.uuid);
+			selectedItems.Add(file.uuid);
+		}
+		StateHasChanged();
 	}
 	#endregion
 	
