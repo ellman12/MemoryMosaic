@@ -54,8 +54,7 @@ header > #buttons {
 
 #mainDiv > .errorDiv {
     border-radius: 4px;
-    padding: 4px;
-    background-color: rgba(255, 0, 0, 0.12);
+    border-bottom: 2px solid red;
 }
 
 #mainDiv .listItem {
@@ -65,10 +64,6 @@ header > #buttons {
     margin-top: 7px;
     margin-bottom: 7px;
     min-height: 60px;
-}
-
-#mainDiv > .listItem {
-    margin-left: 7px;
 }
 
 #mainDiv .listItem > .checkbox {
