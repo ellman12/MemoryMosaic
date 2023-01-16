@@ -1,4 +1,5 @@
 ﻿@using PSS.Pages
+@using static ImportFile
 @inject IJSRuntime JSRuntime
 
 <link href="css/components/ListItem.css" rel="stylesheet">
@@ -34,7 +35,7 @@
     	}
     </div>
     
-	<select id="select @Index" style="display: none" @bind="@dtSource" @bind:after="@DtSourceChanged">
+	<select id="select @Index" style="display: none" @bind="@ImportFile.dateTakenSource" @bind:after="@DtSourceChanged">
 		@{
 			if (ImportFile.metadataDateTaken != null)
 			{
@@ -59,7 +60,7 @@
 	
 	[Parameter, EditorRequired] public Action OnCheckClick { get; set; }
 
-	private string dtSource, datePickerDisplay = "none";
+	private string datePickerDisplay = "none";
 }
 
 @functions {
@@ -137,5 +138,5 @@
 		OnCheckClick.Invoke();
 	}
 
-	private void DtSourceChanged() => datePickerDisplay = dtSource == "Custom" ? "inline" : "none";
+	private void DtSourceChanged() => datePickerDisplay = ImportFile.dateTakenSource == DateTakenSource.Custom ? "inline" : "none";
 }
