@@ -32,6 +32,18 @@ public class ImportFile
 
 	///The new date and time (or null) that the user chose in Import.
 	public DateTime? customDateTaken;
+
+	///Where the Date Taken data for an item came from.
+	public enum DateTakenSource
+	{
+		Metadata,
+		Filename,
+		None,
+		Custom
+	}
+
+	///Where the dateTaken for this item is coming from.
+	public DateTakenSource dateTakenSource;
 	
 	///The uuid of the item, which will be added to the database upon completion of importing.
 	public Guid uuid; //TODO: idk if this will be needed
@@ -46,6 +58,7 @@ public class ImportFile
 		extension = Path.GetExtension(absolutePath);
 		thumbnail = D.IsVideoExt(extension!) ? F.GenerateThumbnail(absolutePath) : null;
 		D.GetDateTakenFromBoth(absolutePath!, out metadataDateTaken, out filenameDateTaken);
+		dateTakenSource = DateTakenSource.None;
 		uuid = Guid.NewGuid();
 	}
 }
