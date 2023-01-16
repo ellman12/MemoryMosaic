@@ -10,6 +10,44 @@
 	<input type="text" @bind="@ImportFile.renamedFilename" style="display: none" id="text @Index">
 	<button class="iconBtn" id="save @Index" @onclick="@FilenameChanged" style="display: none"><span class="material-icons-outlined">save</span></button>
 	<button class="iconBtn" id="close @Index" onclick="closeEdit(@Index)" style="display: none"><span class="material-icons-outlined">close</span></button>
+	
+	<div class="dateTakenDisplay">
+    	@if (ImportFile.metadataDateTaken == null && ImportFile.filenameDateTaken == null)
+    	{
+    		<span style="color: yellow">No Date Taken</span>
+    	}
+    	else if (ImportFile.metadataDateTaken == ImportFile.filenameDateTaken)
+    	{
+    		<span style="color: green">M:&nbsp;@ImportFile.metadataDateTaken</span>
+    		<span style="color: green">F:&nbsp;@ImportFile.filenameDateTaken</span>
+    	}
+    	else
+    	{
+    		if (ImportFile.metadataDateTaken != null)
+    		{
+    			<span>M:&nbsp;@ImportFile.metadataDateTaken</span>
+    		}
+    		if (ImportFile.filenameDateTaken != null)
+    		{
+    			<span>F:&nbsp;@ImportFile.filenameDateTaken</span>
+    		}
+    	}
+    </div>
+    
+    <select>
+    	@{
+    		if (ImportFile.metadataDateTaken != null)
+    		{
+    			<option>Metadata</option>
+    		}
+    		if (ImportFile.filenameDateTaken != null)
+    		{
+    			<option>Filename</option>
+    		}
+    		<option>None</option>
+    		<option>Custom</option>
+    	}
+    </select>
 </div>
 
 @code {
