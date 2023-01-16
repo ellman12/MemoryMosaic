@@ -1,4 +1,5 @@
 ﻿@using PSS.Pages
+@using static ImportFile
 @inject IJSRuntime JSRuntime
 
 <link href="css/components/ListItem.css" rel="stylesheet">
@@ -10,53 +11,70 @@
 	<input type="text" @bind="@ImportFile.renamedFilename" style="display: none" id="text @Index">
 	<button class="iconBtn" id="save @Index" @onclick="@FilenameChanged" style="display: none"><span class="material-icons-outlined">save</span></button>
 	<button class="iconBtn" id="close @Index" onclick="closeEdit(@Index)" style="display: none"><span class="material-icons-outlined">close</span></button>
+	
+	<div ondblclick="toggleSelect(@Index)" class="dateTakenDisplay">
+		@if (ImportFile.dateTakenSource == DateTakenSource.Custom)
+		{
+			if (ImportFile.customDateTaken == null)
+			{
+				<span style="color: yellow">C: No Date Taken</span>
+			}
+			else
+			{
+				<span style="color: green;">C:&nbsp;@ImportFile.customDateTaken</span>
+			}
+		}
+		else if (ImportFile.metadataDateTaken == null && ImportFile.filenameDateTaken == null)
+    	{
+    		<span style="color: yellow">No Date Taken</span>
+    	}
+    	else if (ImportFile.metadataDateTaken == ImportFile.filenameDateTaken)
+    	{
+    		<span style="color: green">M:&nbsp;@ImportFile.metadataDateTaken</span>
+    		<span style="color: green">F:&nbsp;@ImportFile.filenameDateTaken</span>
+    	}
+    	else
+    	{
+    		if (ImportFile.metadataDateTaken != null)
+    		{
+    			<span>M:&nbsp;@ImportFile.metadataDateTaken</span>
+    		}
+    		if (ImportFile.filenameDateTaken != null)
+    		{
+    			<span>F:&nbsp;@ImportFile.filenameDateTaken</span>
+    		}
+    	}
+    </div>
+    
+	<select id="select @Index" style="display: none" @bind="@ImportFile.dateTakenSource" @bind:after="@DtSourceChanged">
+		@{
+			if (ImportFile.metadataDateTaken != null)
+			{
+				<option>Metadata</option>
+			}
+			if (ImportFile.filenameDateTaken != null)
+			{
+				<option>Filename</option>
+			}
+			<option>None</option>
+			<option>Custom</option>
+		}
+	</select>
+	
+	<input type="datetime-local" title="Choose New Date Taken" @bind="@ImportFile.customDateTaken" @bind:event="oninput" style="display: @datePickerDisplay" step="1"/> @* step="1" shows the seconds part. *@
 </div>
 
 @code {
-
 	[Parameter, EditorRequired] public ImportFile ImportFile { get; set; }
 	
 	[Parameter, EditorRequired] public int Index { get; set; }
 	
 	[Parameter, EditorRequired] public Action OnCheckClick { get; set; }
+
+	private string datePickerDisplay = "none";
 }
 
 @functions {
-
-	private void FilenameChanged()
-	{
-		const string EMPTY_ERROR_MSG = "Name cannot be empty or whitespace.";
-		const string DUPE_ERROR_MSG = "File with same name in folder.";
-		if (String.IsNullOrWhiteSpace(ImportFile.renamedFilename))
-		{
-			ImportFile.renamedFilename = EMPTY_ERROR_MSG;
-			return;
-		}
-		if (ImportFile.originalFilename == ImportFile.renamedFilename || ImportFile.renamedFilename is EMPTY_ERROR_MSG or DUPE_ERROR_MSG)
-		{
-			JSRuntime.InvokeAsync<int>("closeEdit", Index);
-			ImportFile.renamedFilename = ImportFile.originalFilename;
-			return;
-		}
-		
-		string newShortPath = ImportFile.shortPath.Replace(ImportFile.originalFilename, ImportFile.renamedFilename);
-		string newAbsPath = Path.Join(S.importFolderPath, newShortPath);
-		
-		if (File.Exists(newAbsPath))
-		{
-			ImportFile.renamedFilename = DUPE_ERROR_MSG;
-		}
-		else
-		{
-			File.Move(ImportFile.absolutePath, newAbsPath);
-			JSRuntime.InvokeAsync<int>("closeEdit", Index);
-			ImportFile.originalFilename = ImportFile.renamedFilename;
-			ImportFile.shortPath = newShortPath;
-			ImportFile.absolutePath = newAbsPath;
-		}
-		OnCheckClick.Invoke();
-	}
-	
 	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
 	private void CheckClicked(MouseEventArgs eventArgs)
 	{
@@ -96,4 +114,40 @@
 			}
 		}
 	}
+	
+	private void FilenameChanged()
+	{
+		const string EMPTY_ERROR_MSG = "Name cannot be empty or whitespace.";
+		const string DUPE_ERROR_MSG = "File with same name in folder.";
+		if (String.IsNullOrWhiteSpace(ImportFile.renamedFilename))
+		{
+			ImportFile.renamedFilename = EMPTY_ERROR_MSG;
+			return;
+		}
+		if (ImportFile.originalFilename == ImportFile.renamedFilename || ImportFile.renamedFilename is EMPTY_ERROR_MSG or DUPE_ERROR_MSG)
+		{
+			JSRuntime.InvokeAsync<int>("closeEdit", Index);
+			ImportFile.renamedFilename = ImportFile.originalFilename;
+			return;
+		}
+		
+		string newShortPath = ImportFile.shortPath.Replace(ImportFile.originalFilename, ImportFile.renamedFilename);
+		string newAbsPath = Path.Join(S.importFolderPath, newShortPath);
+		
+		if (File.Exists(newAbsPath))
+		{
+			ImportFile.renamedFilename = DUPE_ERROR_MSG;
+		}
+		else
+		{
+			File.Move(ImportFile.absolutePath, newAbsPath);
+			JSRuntime.InvokeAsync<int>("closeEdit", Index);
+			ImportFile.originalFilename = ImportFile.renamedFilename;
+			ImportFile.shortPath = newShortPath;
+			ImportFile.absolutePath = newAbsPath;
+		}
+		OnCheckClick.Invoke();
+	}
+
+	private void DtSourceChanged() => datePickerDisplay = ImportFile.dateTakenSource == DateTakenSource.Custom ? "inline" : "none";
 }

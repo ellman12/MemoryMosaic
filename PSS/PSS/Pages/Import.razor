@@ -117,9 +117,6 @@
 		headerMsg = errorAmount > 0 ? $"{errorAmount} Filename Errors" : "";
 	}
 
-	#region Checkbox Methods
-	
-	
 	private void ClearChecks()
 	{
 		selectedItems.Clear();
@@ -132,7 +129,6 @@
 			selectedItems.Add(file.uuid);
 		StateHasChanged();
 	}
-	#endregion
 	
 	private void DeleteSelected()
 	{
