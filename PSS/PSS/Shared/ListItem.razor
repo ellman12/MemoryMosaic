@@ -11,7 +11,7 @@
 	<button class="iconBtn" id="save @Index" @onclick="@FilenameChanged" style="display: none"><span class="material-icons-outlined">save</span></button>
 	<button class="iconBtn" id="close @Index" onclick="closeEdit(@Index)" style="display: none"><span class="material-icons-outlined">close</span></button>
 	
-	<div class="dateTakenDisplay">
+	<div ondblclick="toggleSelect(@Index)" class="dateTakenDisplay">
     	@if (ImportFile.metadataDateTaken == null && ImportFile.filenameDateTaken == null)
     	{
     		<span style="color: yellow">No Date Taken</span>
@@ -34,7 +34,7 @@
     	}
     </div>
     
-    <select>
+    <select id="select @Index" style="display: none">
     	@{
     		if (ImportFile.metadataDateTaken != null)
     		{
