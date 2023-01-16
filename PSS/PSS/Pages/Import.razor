@@ -1,6 +1,5 @@
 @page "/"
 @using Microsoft.VisualBasic.FileIO
-@inject IJSRuntime JSRuntime
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -37,14 +36,7 @@
 					@do
 					{
 						int ii = i;
-						<div class="listItem">
-							<span class="material-icons-outlined checkbox @(selectedItems.Contains(importFiles[i].uuid) ? "checked" : "unchecked")" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
-							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
-							<span class="shortPath" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
-							<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
-							<button class="iconBtn" id="save @i" @onclick="@(() => FilenameChanged(ii))" style="display: none"><span class="material-icons-outlined">save</span></button>
-							<button class="iconBtn" id="close @i" onclick="closeEdit(@i)" style="display: none"><span class="material-icons-outlined">close</span></button>
-						</div>
+						<ListItem OnCheckClick="@StateHasChanged" Index="@ii" ImportFile="@importFiles[ii]"/>
 						i++;
 					} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 					@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
@@ -53,14 +45,7 @@
 			else
 			{
 				int ii = i;
-				<div class="listItem">
-					<span class="material-icons-outlined checkbox @(selectedItems.Contains(importFiles[i].uuid) ? "checked" : "unchecked")" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
-					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
-					<span class="shortPath" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
-					<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
-					<button class="iconBtn" id="save @i" @onclick="@(() => FilenameChanged(ii))" style="display: none"><span class="material-icons-outlined">save</span></button>
-					<button class="iconBtn" id="close @i" onclick="closeEdit(@i)" style="display: none"><span class="material-icons-outlined">close</span></button>
-				</div>
+				<ListItem OnCheckClick="@StateHasChanged" Index="@ii" ImportFile="@importFiles[ii]"/>
 			}
 		}
 	</div>
@@ -77,13 +62,13 @@
 	private List<string> allAbsPaths;
 
 	///List of data about each supported file in pss_import.
-	private List<ImportFile> importFiles;
+	public static List<ImportFile> importFiles;
 
 	///Stores what items are selected by the user.
-	private readonly HashList<Guid> selectedItems = new();
+	public static readonly HashList<Guid> selectedItems = new();
 
 	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
-	private int lastCheckedIndex;
+	public static int lastCheckedIndex = 0;
 
 	private int errorAmount;
 
@@ -91,6 +76,7 @@
 	{
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
+		selectedItems.Clear();
 
 		await Parallel.ForEachAsync(allAbsPaths, async (absPath, _) =>
 		{
@@ -133,74 +119,8 @@
 		headerMsg = errorAmount > 0 ? $"{errorAmount} Filename Errors" : "";
 	}
 
-	private void FilenameChanged(int index)
-	{
-		const string DUPE_ERROR_MSG = "File with same name in folder.";
-		ImportFile file = importFiles[index];
-		if (file.originalFilename == file.renamedFilename || file.renamedFilename == DUPE_ERROR_MSG)
-		{
-			JSRuntime.InvokeAsync<int>("closeEdit", index);
-			file.renamedFilename = file.originalFilename;
-			return;
-		}
-		
-		string newShortPath = file.shortPath.Replace(file.originalFilename, file.renamedFilename);
-		string newPath = Path.Join(S.importFolderPath, newShortPath);
-		if (!newPath.EndsWith(file.extension))
-			newPath += file.extension;
-		
-		if (File.Exists(newPath))
-		{
-			file.renamedFilename = DUPE_ERROR_MSG;
-		}
-		else
-		{
-			File.Move(file.absolutePath, newPath);
-			JSRuntime.InvokeAsync<int>("closeEdit", index);
-			file.originalFilename = file.renamedFilename;
-			file.shortPath = newShortPath;
-		}
-	}
-
 	#region Checkbox Methods
-	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
-	private void CheckClicked(MouseEventArgs eventArgs, Guid listItemId, int index)
-	{
-		ToggleCheck(listItemId);
-
-		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
-		if (eventArgs.ShiftKey)
-		{
-			//First item is on left and item shift clicked is on the right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selectedItems.
-			if (lastCheckedIndex < index)
-				AddSelected(lastCheckedIndex, index);
-			else if (lastCheckedIndex > index) //Same as above but swap 1 and 2 and the direction.
-				AddSelected(index, lastCheckedIndex);
-		}
-		else
-		{
-			lastCheckedIndex = index;
-		}
-		
-		//Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
-		void ToggleCheck(Guid uuid)
-		{
-			if (selectedItems.Contains(uuid))
-				selectedItems.Remove(uuid);
-			else if (!selectedItems.Contains(uuid))
-				selectedItems.Add(uuid);
-		}
 	
-		//Add items from start to end into selectedItems. Used for Shift Click.
-		void AddSelected(int startIndex, int endIndex)
-		{
-			for (int i = startIndex; i <= endIndex; i++)
-			{
-				Guid currentID = importFiles[i].uuid;
-				if (!selectedItems.Contains(currentID)) ToggleCheck(currentID);
-			}
-		}
-	}
 	
 	private void ClearChecks()
 	{
