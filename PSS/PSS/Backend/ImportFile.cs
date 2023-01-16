@@ -29,6 +29,9 @@ public class ImportFile
 
 	///The date and time this file was taken, taken from the file's filename. null if none found.
 	public DateTime? filenameDateTaken;
+
+	///The new date and time (or null) that the user chose in Import.
+	public DateTime? customDateTaken;
 	
 	///The uuid of the item, which will be added to the database upon completion of importing.
 	public Guid uuid; //TODO: idk if this will be needed
