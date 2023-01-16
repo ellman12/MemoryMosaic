@@ -13,7 +13,18 @@
 	<button class="iconBtn" id="close @Index" onclick="closeEdit(@Index)" style="display: none"><span class="material-icons-outlined">close</span></button>
 	
 	<div ondblclick="toggleSelect(@Index)" class="dateTakenDisplay">
-    	@if (ImportFile.metadataDateTaken == null && ImportFile.filenameDateTaken == null)
+		@if (ImportFile.dateTakenSource == DateTakenSource.Custom)
+		{
+			if (ImportFile.customDateTaken == null)
+			{
+				<span style="color: yellow">C: No Date Taken</span>
+			}
+			else
+			{
+				<span style="color: green;">C:&nbsp;@ImportFile.customDateTaken</span>
+			}
+		}
+		else if (ImportFile.metadataDateTaken == null && ImportFile.filenameDateTaken == null)
     	{
     		<span style="color: yellow">No Date Taken</span>
     	}
