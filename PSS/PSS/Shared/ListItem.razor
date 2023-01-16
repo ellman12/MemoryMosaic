@@ -34,20 +34,19 @@
 		}
 		
 		string newShortPath = ImportFile.shortPath.Replace(ImportFile.originalFilename, ImportFile.renamedFilename);
-		string newPath = Path.Join(S.importFolderPath, newShortPath);
-		if (!newPath.EndsWith(ImportFile.extension))
-			newPath += ImportFile.extension;
+		string newAbsPath = Path.Join(S.importFolderPath, newShortPath);
 		
-		if (File.Exists(newPath))
+		if (File.Exists(newAbsPath))
 		{
 			ImportFile.renamedFilename = DUPE_ERROR_MSG;
 		}
 		else
 		{
-			File.Move(ImportFile.absolutePath, newPath);
+			File.Move(ImportFile.absolutePath, newAbsPath);
 			JSRuntime.InvokeAsync<int>("closeEdit", Index);
 			ImportFile.originalFilename = ImportFile.renamedFilename;
 			ImportFile.shortPath = newShortPath;
+			ImportFile.absolutePath = newAbsPath;
 		}
 		OnCheckClick.Invoke();
 	}
