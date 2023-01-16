@@ -18,15 +18,21 @@
 	
 	[Parameter, EditorRequired] public int Index { get; set; }
 	
-	[Parameter] public Action OnCheckClick { get; set; }
+	[Parameter, EditorRequired] public Action OnCheckClick { get; set; }
 }
 
 @functions {
 
 	private void FilenameChanged()
 	{
+		const string EMPTY_ERROR_MSG = "Name cannot be empty or whitespace.";
 		const string DUPE_ERROR_MSG = "File with same name in folder.";
-		if (ImportFile.originalFilename == ImportFile.renamedFilename || ImportFile.renamedFilename == DUPE_ERROR_MSG)
+		if (String.IsNullOrWhiteSpace(ImportFile.renamedFilename))
+		{
+			ImportFile.renamedFilename = EMPTY_ERROR_MSG;
+			return;
+		}
+		if (ImportFile.originalFilename == ImportFile.renamedFilename || ImportFile.renamedFilename is EMPTY_ERROR_MSG or DUPE_ERROR_MSG)
 		{
 			JSRuntime.InvokeAsync<int>("closeEdit", Index);
 			ImportFile.renamedFilename = ImportFile.originalFilename;
