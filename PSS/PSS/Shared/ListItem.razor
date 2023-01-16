@@ -34,20 +34,22 @@
     	}
     </div>
     
-    <select id="select @Index" style="display: none">
-    	@{
-    		if (ImportFile.metadataDateTaken != null)
-    		{
-    			<option>Metadata</option>
-    		}
-    		if (ImportFile.filenameDateTaken != null)
-    		{
-    			<option>Filename</option>
-    		}
-    		<option>None</option>
-    		<option>Custom</option>
-    	}
-    </select>
+	<select id="select @Index" style="display: none" @bind="@dtSource" @bind:after="@DtSourceChanged">
+		@{
+			if (ImportFile.metadataDateTaken != null)
+			{
+				<option>Metadata</option>
+			}
+			if (ImportFile.filenameDateTaken != null)
+			{
+				<option>Filename</option>
+			}
+			<option>None</option>
+			<option>Custom</option>
+		}
+	</select>
+	
+	<input type="datetime-local" title="Choose New Date Taken" @bind="@ImportFile.customDateTaken" @bind:event="oninput" style="display: @datePickerDisplay" step="1"/> @* step="1" shows the seconds part. *@
 </div>
 
 @code {
@@ -56,10 +58,11 @@
 	[Parameter, EditorRequired] public int Index { get; set; }
 	
 	[Parameter, EditorRequired] public Action OnCheckClick { get; set; }
+
+	private string dtSource, datePickerDisplay = "none";
 }
 
 @functions {
-
 	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
 	private void CheckClicked(MouseEventArgs eventArgs)
 	{
@@ -133,4 +136,6 @@
 		}
 		OnCheckClick.Invoke();
 	}
+
+	private void DtSourceChanged() => datePickerDisplay = dtSource == "Custom" ? "inline" : "none";
 }
