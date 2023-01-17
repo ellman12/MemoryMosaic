@@ -71,13 +71,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-right: 10px;
 }
 
-.listItem > .dateTakenDisplay > span {
+.listItem > .yearWarn {
+    color: yellow;
+    margin-left: 10px;
+    margin-right: 5px;
 }
 
 .listItem > select {
-    margin-left: 10px;
     background-color: black;
     border: 1px solid white;
     border-radius: 4px;
