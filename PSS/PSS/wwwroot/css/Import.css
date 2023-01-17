@@ -31,10 +31,15 @@ header > .iconBtn {
     margin-right: 5px;
 }
 
-header > #headerMsg {
-    color: red;
+header > #statsDiv {
     position: absolute;
     left: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+header > #statsDiv > #errorAmount {
+    color: red;
 }
 
 header > #buttons {
@@ -47,7 +52,7 @@ header > #buttons {
 
 header > #yearWarnInputs {
     position: absolute;
-    left: 390px;
+    right: 80px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -62,7 +67,15 @@ header > #yearWarnInputs > input[type="text"] {
 
 header > #clearDTBtn {
     position: absolute;
-    left: 710px;
+    left: 350px;
+}
+
+header > #search {
+    background-color: black;
+    border: 1px solid white;
+    position: absolute;
+    width: 210px;
+    left: 500px;
 }
 
 #mainDiv {
