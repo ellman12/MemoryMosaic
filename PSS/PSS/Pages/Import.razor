@@ -36,6 +36,11 @@
 				<input type="text" @bind="@maxYear" placeholder="Max Year"/>
 			}
 		</div>
+		
+		<button id="clearDTBtn" class="textBtn">
+			<span class="material-icons-outlined">dangerous</span>
+			<span>Clear DT</span>
+		</button>
 	</header>
 	
 	<div id="mainDiv" style="top: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? 60 : 0)px">
