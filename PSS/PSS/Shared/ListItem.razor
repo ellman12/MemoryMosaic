@@ -1,4 +1,4 @@
-﻿@using PSS.Pages
+@using PSS.Pages
 @using static ImportFile
 @inject IJSRuntime JSRuntime
 
@@ -45,7 +45,7 @@
     		}
     	}
     </div>
-    
+	
 	<select id="select @Index" style="display: none" @bind="@ImportFile.dateTakenSource" @bind:after="@DtSourceChanged">
 		@{
 			if (ImportFile.metadataDateTaken != null)
