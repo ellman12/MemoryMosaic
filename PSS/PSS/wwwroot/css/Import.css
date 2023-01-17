@@ -47,7 +47,7 @@ header > #buttons {
 
 header > #yearWarnInputs {
     position: absolute;
-    left: 390px;
+    right: 80px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -62,14 +62,14 @@ header > #yearWarnInputs > input[type="text"] {
 
 header > #clearDTBtn {
     position: absolute;
-    left: 870px;
+    left: 350px;
 }
 
 header > #search {
     background-color: black;
     border: 1px solid white;
     position: absolute;
-    left: 650px;
+    left: 500px;
 }
 
 #mainDiv {
