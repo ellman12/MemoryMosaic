@@ -69,6 +69,7 @@ header > #search {
     background-color: black;
     border: 1px solid white;
     position: absolute;
+    width: 210px;
     left: 500px;
 }
 

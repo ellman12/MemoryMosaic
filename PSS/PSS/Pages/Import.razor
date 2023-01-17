@@ -42,12 +42,14 @@
 			<span>Clear DT</span>
 		</button>
 		
-		<input id="search" type="text" placeholder="Search filenames"/>
+		<input id="search" type="text" @bind="@searchText" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 	</header>
 	
 	<div id="mainDiv" style="top: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? 60 : 0)px">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
+			if (!String.IsNullOrWhiteSpace(searchText) && !searchResults.Contains(i)) continue;
+			
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
 				<div class="errorDiv">
@@ -85,6 +87,9 @@
 	///List of data about each supported file in pss_import.
 	public static List<ImportFile> importFiles;
 
+	///If the user searches for filenames, store the results as the indexes of where they are in importFiles.
+	private readonly HashList<int> searchResults = new();
+
 	///Stores what items are selected by the user.
 	public static readonly HashList<Guid> selectedItems = new();
 
@@ -93,10 +98,13 @@
 
 	private int errorAmount;
 
+	private string searchText;
+
 	protected override async Task OnInitializedAsync()
 	{
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
+		searchResults.Clear();
 		selectedItems.Clear();
 		minYear = 2000;
 		maxYear = DateTime.Today.Year;
@@ -140,6 +148,18 @@
 
 		importFiles = errors.Concat(good).ToList();
 		headerMsg = errorAmount > 0 ? $"{errorAmount} Filename Errors" : "";
+	}
+
+	private void SearchItems()
+	{
+		searchResults.Clear();
+		if (String.IsNullOrWhiteSpace(searchText)) return;
+		
+		for (int i = 0; i < importFiles.Count; i++)
+		{
+			if (importFiles[i].renamedFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1 || importFiles[i].originalFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1)
+				searchResults.Add(i);
+		}
 	}
 
 	private void ClearChecks()
