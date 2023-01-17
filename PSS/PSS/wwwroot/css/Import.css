@@ -31,10 +31,15 @@ header > .iconBtn {
     margin-right: 5px;
 }
 
-header > #errorAmount {
-    color: red;
+header > #statsDiv {
     position: absolute;
     left: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+header > #statsDiv > #errorAmount {
+    color: red;
 }
 
 header > #buttons {
