@@ -41,8 +41,8 @@
 			<span class="material-icons-outlined">dangerous</span>
 			<span>Clear DT</span>
 		</button>
-		
-		<input id="search" type="text" @bind="@searchText" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
+
+		<input id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 	</header>
 	
 	<div id="mainDiv" style="top: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? 60 : 0)px">
