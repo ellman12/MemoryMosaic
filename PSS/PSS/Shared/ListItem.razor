@@ -45,7 +45,7 @@
     		}
     	}
     </div>
-    
+	
 	<select id="select @Index" style="display: none" @bind="@ImportFile.dateTakenSource" @bind:after="@DtSourceChanged">
 		@{
 			if (ImportFile.metadataDateTaken != null)
@@ -60,6 +60,23 @@
 			<option>Custom</option>
 		}
 	</select>
+	
+	@if (ImportFile.dateTakenSource is DateTakenSource.Metadata or DateTakenSource.Filename && ImportFile.metadataDateTaken?.Year < Import.minYear)
+    {
+    	<span class="yearWarn">M Year is less than the min year.</span>
+    }
+    @if (ImportFile.dateTakenSource is DateTakenSource.Metadata or DateTakenSource.Filename && ImportFile.filenameDateTaken?.Year < Import.minYear)
+    {
+        <span class="yearWarn">F Year is less than the min year.</span>
+    }
+    @if (ImportFile.dateTakenSource is DateTakenSource.Metadata or DateTakenSource.Filename && ImportFile.metadataDateTaken?.Year > Import.maxYear)
+    {
+        <span class="yearWarn">M Year is greater than the max year.</span>
+    }
+    @if (ImportFile.dateTakenSource is DateTakenSource.Metadata or DateTakenSource.Filename && ImportFile.filenameDateTaken?.Year > Import.maxYear)
+    {
+        <span class="yearWarn">F Year is greater than the max year.</span>
+    }
 	
 	<input type="datetime-local" title="Choose New Date Taken" @bind="@ImportFile.customDateTaken" @bind:event="oninput" style="display: @datePickerDisplay" step="1"/> @* step="1" shows the seconds part. *@
 </div>

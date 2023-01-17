@@ -45,6 +45,21 @@ header > #buttons {
     align-items: center;
 }
 
+header > #yearWarnInputs {
+    position: absolute;
+    left: 390px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+header > #yearWarnInputs > input[type="text"] {
+    background-color: black;
+    border: 1px solid white;
+    width: 60px;
+    margin-left: 5px;
+}
+
 #mainDiv {
     margin-left: var(--left-margin);
     position: absolute;
