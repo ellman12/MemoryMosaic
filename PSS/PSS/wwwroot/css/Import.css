@@ -60,6 +60,11 @@ header > #yearWarnInputs > input[type="text"] {
     margin-left: 5px;
 }
 
+header > #clearDTBtn {
+    position: absolute;
+    left: 710px;
+}
+
 #mainDiv {
     margin-left: var(--left-margin);
     position: absolute;

@@ -36,6 +36,11 @@
 				<input type="text" @bind="@maxYear" placeholder="Max Year"/>
 			}
 		</div>
+		
+		<button id="clearDTBtn" class="textBtn" @onclick="@ClearDateTaken" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
+			<span class="material-icons-outlined">dangerous</span>
+			<span>Clear DT</span>
+		</button>
 	</header>
 	
 	<div id="mainDiv" style="top: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? 60 : 0)px">
@@ -158,5 +163,14 @@
 		ClearChecks();
 		OrganizeItems();
 		StateHasChanged();
+	}
+
+	private void ClearDateTaken()
+	{
+		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
+		{
+			file.dateTakenSource = ImportFile.DateTakenSource.Custom;
+			file.customDateTaken = null;
+		}
 	}
 }
