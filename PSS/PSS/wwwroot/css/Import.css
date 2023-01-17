@@ -42,12 +42,17 @@ header > #statsDiv > #errorAmount {
     color: red;
 }
 
-header > #buttons {
+header > #clearDTBtn {
     position: absolute;
-    right: 20px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+    left: 470px;
+}
+
+header > #search {
+    background-color: black;
+    border: 1px solid white;
+    position: absolute;
+    width: 210px;
+    left: 610px;
 }
 
 header > #yearWarnInputs {
@@ -65,17 +70,12 @@ header > #yearWarnInputs > input[type="text"] {
     margin-left: 5px;
 }
 
-header > #clearDTBtn {
+header > #buttons {
     position: absolute;
-    left: 350px;
-}
-
-header > #search {
-    background-color: black;
-    border: 1px solid white;
-    position: absolute;
-    width: 210px;
-    left: 500px;
+    right: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 #mainDiv {
