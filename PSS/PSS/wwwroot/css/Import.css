@@ -31,7 +31,7 @@ header > .iconBtn {
     margin-right: 5px;
 }
 
-header > #headerMsg {
+header > #errorAmount {
     color: red;
     position: absolute;
     left: 180px;
