@@ -1,6 +1,5 @@
 @page "/"
 @using Microsoft.VisualBasic.FileIO
-@inject IJSRuntime JSRuntime
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -26,6 +25,22 @@
 		<div id="buttons" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
 			<button class="iconBtn" @onclick="@DeleteSelected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		</div>
+		
+		<div id="yearWarnInputs">
+			<input id="yearCheck" type="checkbox" @bind="@yearCheckEnabled"/>
+			<label for="yearCheck">Enable Year Check</label>
+			
+			@if (yearCheckEnabled)
+			{
+				<input type="text" @bind="@minYear" placeholder="Min Year"/>
+				<input type="text" @bind="@maxYear" placeholder="Max Year"/>
+			}
+		</div>
+		
+		<button id="clearDTBtn" class="textBtn" @onclick="@ClearDateTaken" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
+			<span class="material-icons-outlined">dangerous</span>
+			<span>Clear DT</span>
+		</button>
 	</header>
 	
 	<div id="mainDiv" style="top: @(!String.IsNullOrWhiteSpace(headerMsg) || selectedItems.Count > 0 ? 60 : 0)px">
@@ -36,15 +51,7 @@
 				<div class="errorDiv">
 					@do
 					{
-						int ii = i;
-						<div class="listItem">
-							<span class="material-icons-outlined checkbox @(selectedItems.Contains(importFiles[i].uuid) ? "checked" : "unchecked")" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
-							<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
-							<span class="shortPath" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
-							<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
-							<button class="iconBtn" id="save @i" @onclick="@(() => FilenameChanged(ii))" style="display: none"><span class="material-icons-outlined">save</span></button>
-							<button class="iconBtn" id="close @i" onclick="closeEdit(@i)" style="display: none"><span class="material-icons-outlined">close</span></button>
-						</div>
+						<ListItem OnCheckClick="@StateHasChanged" Index="@i" ImportFile="@importFiles[i]"/>
 						i++;
 					} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 					@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
@@ -52,38 +59,35 @@
 			}
 			else
 			{
-				int ii = i;
-				<div class="listItem">
-					<span class="material-icons-outlined checkbox @(selectedItems.Contains(importFiles[i].uuid) ? "checked" : "unchecked")" id="@importFiles[i].uuid" @onclick="@(eventArgs => CheckClicked(eventArgs, importFiles[ii].uuid, ii))">check_circle</span>
-					<img src=@(importFiles[i].thumbnail == null ? $"pss_import/{importFiles[i].shortPath}" : $"data:image/jpg;base64,{importFiles[i].thumbnail}") onclick="window.open('pss_import/@importFiles[i].shortPath', '_blank').focus();" alt="" loading="lazy"/>
-					<span class="shortPath" ondblclick="openEdit(@i)">@importFiles[i].shortPath</span>
-					<input type="text" @bind="@importFiles[ii].renamedFilename" style="display: none" id="text @i">
-					<button class="iconBtn" id="save @i" @onclick="@(() => FilenameChanged(ii))" style="display: none"><span class="material-icons-outlined">save</span></button>
-					<button class="iconBtn" id="close @i" onclick="closeEdit(@i)" style="display: none"><span class="material-icons-outlined">close</span></button>
-				</div>
+				<ListItem OnCheckClick="@StateHasChanged" Index="@i" ImportFile="@importFiles[i]"/>
 			}
 		}
 	</div>
 }
 
 @code {
-
 	private bool finishedRendering;
 
 	///Used to show error or other messages in the header.
 	private string headerMsg;
 
+	///If Import should check the DT year of each item to see if it's outside of a range of valid values.
+	public static bool yearCheckEnabled = true;
+
+	///Show a warning if any items have a DT year less than or greater than these values.
+	public static int minYear, maxYear;
+
 	///Stores the absolute path of every supported file in pss_import.
 	private List<string> allAbsPaths;
 
 	///List of data about each supported file in pss_import.
-	private List<ImportFile> importFiles;
+	public static List<ImportFile> importFiles;
 
 	///Stores what items are selected by the user.
-	private readonly HashList<Guid> selectedItems = new();
+	public static readonly HashList<Guid> selectedItems = new();
 
 	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
-	private int lastCheckedIndex;
+	public static int lastCheckedIndex = 0;
 
 	private int errorAmount;
 
@@ -91,6 +95,9 @@
 	{
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
+		selectedItems.Clear();
+		minYear = 2000;
+		maxYear = DateTime.Today.Year;
 
 		await Parallel.ForEachAsync(allAbsPaths, async (absPath, _) =>
 		{
@@ -133,75 +140,6 @@
 		headerMsg = errorAmount > 0 ? $"{errorAmount} Filename Errors" : "";
 	}
 
-	private void FilenameChanged(int index)
-	{
-		const string DUPE_ERROR_MSG = "File with same name in folder.";
-		ImportFile file = importFiles[index];
-		if (file.originalFilename == file.renamedFilename || file.renamedFilename == DUPE_ERROR_MSG)
-		{
-			JSRuntime.InvokeAsync<int>("closeEdit", index);
-			file.renamedFilename = file.originalFilename;
-			return;
-		}
-		
-		string newShortPath = file.shortPath.Replace(file.originalFilename, file.renamedFilename);
-		string newPath = Path.Join(S.importFolderPath, newShortPath);
-		if (!newPath.EndsWith(file.extension))
-			newPath += file.extension;
-		
-		if (File.Exists(newPath))
-		{
-			file.renamedFilename = DUPE_ERROR_MSG;
-		}
-		else
-		{
-			File.Move(file.absolutePath, newPath);
-			JSRuntime.InvokeAsync<int>("closeEdit", index);
-			file.originalFilename = file.renamedFilename;
-			file.shortPath = newShortPath;
-		}
-	}
-
-	#region Checkbox Methods
-	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
-	private void CheckClicked(MouseEventArgs eventArgs, Guid listItemId, int index)
-	{
-		ToggleCheck(listItemId);
-
-		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
-		if (eventArgs.ShiftKey)
-		{
-			//First item is on left and item shift clicked is on the right. E.g., ###1####2### Loop from 1 --> 2, and add stuff in between to selectedItems.
-			if (lastCheckedIndex < index)
-				AddSelected(lastCheckedIndex, index);
-			else if (lastCheckedIndex > index) //Same as above but swap 1 and 2 and the direction.
-				AddSelected(index, lastCheckedIndex);
-		}
-		else
-		{
-			lastCheckedIndex = index;
-		}
-		
-		//Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
-		void ToggleCheck(Guid uuid)
-		{
-			if (selectedItems.Contains(uuid))
-				selectedItems.Remove(uuid);
-			else if (!selectedItems.Contains(uuid))
-				selectedItems.Add(uuid);
-		}
-	
-		//Add items from start to end into selectedItems. Used for Shift Click.
-		void AddSelected(int startIndex, int endIndex)
-		{
-			for (int i = startIndex; i <= endIndex; i++)
-			{
-				Guid currentID = importFiles[i].uuid;
-				if (!selectedItems.Contains(currentID)) ToggleCheck(currentID);
-			}
-		}
-	}
-	
 	private void ClearChecks()
 	{
 		selectedItems.Clear();
@@ -214,7 +152,6 @@
 			selectedItems.Add(file.uuid);
 		StateHasChanged();
 	}
-	#endregion
 	
 	private void DeleteSelected()
 	{
@@ -226,5 +163,14 @@
 		ClearChecks();
 		OrganizeItems();
 		StateHasChanged();
+	}
+
+	private void ClearDateTaken()
+	{
+		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
+		{
+			file.dateTakenSource = ImportFile.DateTakenSource.Custom;
+			file.customDateTaken = null;
+		}
 	}
 }

@@ -45,6 +45,26 @@ header > #buttons {
     align-items: center;
 }
 
+header > #yearWarnInputs {
+    position: absolute;
+    left: 390px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+header > #yearWarnInputs > input[type="text"] {
+    background-color: black;
+    border: 1px solid white;
+    width: 60px;
+    margin-left: 5px;
+}
+
+header > #clearDTBtn {
+    position: absolute;
+    left: 710px;
+}
+
 #mainDiv {
     margin-left: var(--left-margin);
     position: absolute;
@@ -55,73 +75,4 @@ header > #buttons {
 #mainDiv > .errorDiv {
     border-radius: 4px;
     border-bottom: 2px solid red;
-}
-
-#mainDiv .listItem {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 7px;
-    margin-bottom: 7px;
-    min-height: 60px;
-}
-
-#mainDiv .listItem > .checkbox {
-    opacity: 0;
-    margin-left: 4px;
-    margin-right: 10px;
-}
-
-#mainDiv .listItem > .checkbox:hover {
-    cursor: pointer;
-}
-
-#mainDiv .listItem > .checked {
-    color: #009FFF;
-    opacity: 1;
-}
-
-#mainDiv .listItem:hover > .unchecked { /* Show checkbox on hover */
-    opacity: 0.42;
-    transition: 0.15s;
-}
-
-#mainDiv .listItem > .unchecked:hover { /* Make it 100% opaque */
-    opacity: 1;
-}
-
-#mainDiv .listItem > .shortPath {
-    max-width: 180px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-#mainDiv .listItem > .shortPath:hover {
-    max-width: initial;
-    width: auto;
-}
-
-#mainDiv > .errorDiv > .listItem > .shortPath {
-    color: red;
-    margin-right: 10px;
-}
-
-#mainDiv > .listItem > .shortPath {
-    color: green;
-    margin-right: 10px;
-}
-
-#mainDiv img {
-    width: 4%;
-    margin-right: 10px;
-}
-
-#mainDiv .listItem > img:hover {
-    cursor: pointer;
-}
-
-#mainDiv .listItem > input[type="text"] {
-    color: black;
-    margin-left: 10px;
 }

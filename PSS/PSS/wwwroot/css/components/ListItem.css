@@ -1,0 +1,97 @@
+﻿.listItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    min-height: 60px;
+}
+
+.errorDiv > .listItem > .shortPath {
+    color: red;
+    margin-right: 10px;
+}
+
+.listItem > .shortPath {
+    color: green;
+    margin-right: 10px;
+}
+
+.listItem > .checkbox {
+    opacity: 0;
+    margin-left: 4px;
+    margin-right: 10px;
+}
+
+.listItem > .checkbox:hover {
+    cursor: pointer;
+}
+
+.listItem > .checked {
+    color: #009FFF;
+    opacity: 1;
+}
+
+.listItem:hover > .unchecked { /* Show checkbox on hover */
+    opacity: 0.42;
+    transition: 0.15s;
+}
+
+.listItem > .unchecked:hover { /* Make it 100% opaque */
+    opacity: 1;
+}
+
+.listItem > .shortPath {
+    max-width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.listItem > .shortPath:hover {
+    max-width: initial;
+    width: auto;
+}
+
+.listItem > img {
+    width: 4%;
+    margin-right: 10px;
+}
+
+.listItem > .listItem > img:hover {
+    cursor: pointer;
+}
+
+.listItem > input[type="text"] {
+    color: black;
+    margin-left: 10px;
+}
+
+.listItem > .dateTakenDisplay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.listItem > .yearWarn {
+    color: yellow;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.listItem > select {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    outline: none;
+}
+
+.listItem > select:active, .listItem > select:focus {
+    outline: 2px solid dodgerblue;
+}
+
+.listItem > input[type="datetime-local"] {
+    color: black;
+    margin-left: 10px;
+}

@@ -29,7 +29,22 @@ public class ImportFile
 
 	///The date and time this file was taken, taken from the file's filename. null if none found.
 	public DateTime? filenameDateTaken;
-	
+
+	///The new date and time (or null) that the user chose in Import.
+	public DateTime? customDateTaken;
+
+	///Where the Date Taken data for an item came from.
+	public enum DateTakenSource
+	{
+		Metadata,
+		Filename,
+		None,
+		Custom
+	}
+
+	///Where the dateTaken for this item is coming from.
+	public DateTakenSource dateTakenSource;
+
 	///The uuid of the item, which will be added to the database upon completion of importing.
 	public Guid uuid; //TODO: idk if this will be needed
 
@@ -44,5 +59,13 @@ public class ImportFile
 		thumbnail = D.IsVideoExt(extension!) ? F.GenerateThumbnail(absolutePath) : null;
 		D.GetDateTakenFromBoth(absolutePath!, out metadataDateTaken, out filenameDateTaken);
 		uuid = Guid.NewGuid();
+
+		//Determine default DT source for select control.
+		if (metadataDateTaken == null && filenameDateTaken == null)
+			dateTakenSource = DateTakenSource.None;
+		else if (metadataDateTaken != null || metadataDateTaken == filenameDateTaken)
+			dateTakenSource = DateTakenSource.Metadata;
+		else if (filenameDateTaken != null)
+			dateTakenSource = DateTakenSource.Filename;
 	}
 }
