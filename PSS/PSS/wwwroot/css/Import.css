@@ -62,7 +62,14 @@ header > #yearWarnInputs > input[type="text"] {
 
 header > #clearDTBtn {
     position: absolute;
-    left: 710px;
+    left: 870px;
+}
+
+header > #search {
+    background-color: black;
+    border: 1px solid white;
+    position: absolute;
+    left: 650px;
 }
 
 #mainDiv {
