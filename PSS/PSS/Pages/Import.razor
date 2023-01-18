@@ -160,7 +160,15 @@
 
 	private void ClearChecks()
 	{
-		selectedItems.Clear();
+		if (searchResults.Count > 0)
+		{
+			foreach (Guid uuid in searchResults)
+				selectedItems.Remove(uuid);
+		}
+		else
+		{
+			selectedItems.Clear();
+		}
 		StateHasChanged();
 	}
 
