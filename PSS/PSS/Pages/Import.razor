@@ -164,13 +164,23 @@
 		StateHasChanged();
 	}
 
+	///Either adds all search results to selectedItems, or adds every ImportFile to selectedItems.
 	private void SelectAll()
 	{
-		foreach (ImportFile file in importFiles)
-			selectedItems.Add(file.uuid);
+		if (searchResults.Count > 0)
+		{
+			foreach (int i in searchResults)
+				selectedItems.Add(importFiles[i].uuid);
+		}
+		else
+		{
+			foreach (ImportFile file in importFiles)
+				selectedItems.Add(file.uuid);
+		}
 		StateHasChanged();
 	}
 	
+	///Sends all selected files to the Recycle Bin.
 	private void DeleteSelected()
 	{
 		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
