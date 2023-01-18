@@ -14,7 +14,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts CtrlA="@SelectAll" Esc="@ClearChecks"/>
+	<KeyboardShortcuts CtrlA="@SelectAll" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
 	<header style="visibility: @(errorAmount > 0 || selectedItems.Count > 0 ? "visible" : "hidden")">
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
@@ -27,7 +27,7 @@
 		
 		<button id="clearDTBtn" class="textBtn" @onclick="@ClearDateTaken" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")"><span class="material-icons-outlined">dangerous</span><span>Clear DT</span></button>
         
-        <input id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
+        <input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 		
 		<div id="yearWarnInputs">
 			<input id="yearCheck" type="checkbox" @bind="@yearCheckEnabled"/>
@@ -70,6 +70,8 @@
 }
 
 @code {
+	ElementReference searchInput;
+
 	private bool finishedRendering;
 
 	///If Import should check the DT year of each item to see if it's outside of a range of valid values.
@@ -209,4 +211,6 @@
 			file.customDateTaken = null;
 		}
 	}
+
+	private async void FocusSearchInput() => await searchInput.FocusAsync();
 }

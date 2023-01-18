@@ -60,6 +60,9 @@
 	
 	[Parameter]
 	public Action AltRight { get; set; }
+	
+	[Parameter]
+	public Action Slash { get; set; }
 
 	protected override void OnInitialized()
 	{
@@ -82,5 +85,6 @@
 		if (AltRight != null) HotKeysContext.Add(ModKeys.Alt, Keys.Right, AltRight);
 		if (CtrlLeft != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Left, CtrlLeft);
 		if (CtrlRight != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Right, CtrlRight);
+		if (Slash != null) HotKeysContext.Add(ModKeys.None, Keys.Slash, Slash);
 	}
 }
