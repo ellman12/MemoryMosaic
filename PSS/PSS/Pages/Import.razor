@@ -48,7 +48,7 @@
 	<div id="mainDiv" style="top: @(errorAmount > 0 || selectedItems.Count > 0 ? 60 : 0)px">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
-			if (!String.IsNullOrWhiteSpace(searchText) && !searchResults.Contains(i)) continue;
+			if (!String.IsNullOrWhiteSpace(searchText) && !searchResults.Contains(importFiles[i].uuid)) continue;
 			
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
@@ -84,8 +84,8 @@
 	///List of data about each supported file in pss_import.
 	public static List<ImportFile> importFiles;
 
-	///If the user searches for filenames, store the results as the indexes of where they are in importFiles.
-	private readonly HashList<int> searchResults = new();
+	///If the user does a search, store the results as the uuids of the items.
+	private readonly HashList<Guid> searchResults = new();
 
 	///Stores what items are selected by the user.
 	public static readonly HashList<Guid> selectedItems = new();
@@ -151,10 +151,10 @@
 		searchResults.Clear();
 		if (String.IsNullOrWhiteSpace(searchText)) return;
 		
-		for (int i = 0; i < importFiles.Count; i++)
+		foreach (ImportFile file in importFiles)
 		{
-			if (importFiles[i].renamedFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1 || importFiles[i].originalFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1)
-				searchResults.Add(i);
+			if (file.renamedFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1 || file.originalFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1)
+				searchResults.Add(file.uuid);
 		}
 	}
 
@@ -169,8 +169,8 @@
 	{
 		if (searchResults.Count > 0)
 		{
-			foreach (int i in searchResults)
-				selectedItems.Add(importFiles[i].uuid);
+			foreach (Guid uuid in searchResults)
+				selectedItems.Add(uuid);
 		}
 		else
 		{
