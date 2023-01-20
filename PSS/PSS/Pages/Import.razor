@@ -147,6 +147,18 @@
 
 		importFiles = errors.Concat(good).ToList();
 	}
+    
+	///Searches pss_library for items with the same filename and returns a List&lt;string&gt; of their absolute paths.
+	private static List<string> FindLibraryFilesWithSameName(string filename)
+	{
+		List<string> result = new();
+		foreach (string file in Directory.GetFiles(S.libFolderPath, $"*{filename}", System.IO.SearchOption.AllDirectories))
+		{
+			if (Path.GetFileName(file) == filename)
+				result.Add(file.Replace('\\', '/'));
+		}
+		return result;
+	}
 
 	private void SearchItems()
 	{
