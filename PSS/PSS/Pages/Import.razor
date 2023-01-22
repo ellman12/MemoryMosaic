@@ -148,15 +148,26 @@
 		importFiles = errors.Concat(good).ToList();
 	}
     
-	///Searches pss_library for items with the same filename and returns a List&lt;string&gt; of their absolute paths.
-	private static List<string> FindLibraryFilesWithSameName(string filename)
+	///Searches the database for items with the same filename and returns a List&lt;string&gt; of their absolute paths, or null if none.
+	///TODO: only select path, DT, and thumbnail. Add necessary constructor, etc.
+	private static List<C.MediaRow> FindLibraryFilesWithSameName(string filename)
 	{
-		List<string> result = new();
-		foreach (string file in Directory.GetFiles(S.libFolderPath, $"*{filename}", System.IO.SearchOption.AllDirectories))
+		List<C.MediaRow> result = new();
+		C.Open();
+		using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media WHERE path LIKE '%{filename}' ORDER BY date_taken DESC", C.connection);
+		cmd.ExecuteNonQuery();
+		using NpgsqlDataReader r = cmd.ExecuteReader();
+
+		// if (r.HasRows) return null; //TODO, if none found it should return null
+
+		while (r.Read())
 		{
-			if (Path.GetFileName(file) == filename)
-				result.Add(file.Replace('\\', '/'));
+			string path = r.GetString(0);
+			if (Path.GetFileName(path) == filename)
+				result.Add(new C.MediaRow(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
 		}
+		r.Close();
+		C.Close();
 		return result;
 	}
 
