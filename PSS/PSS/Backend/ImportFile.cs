@@ -56,7 +56,7 @@ public class ImportFile
 		shortPath = absolutePath.Replace(S.importFolderPath, "");
 		originalFilename = renamedFilename = Path.GetFileNameWithoutExtension(absolutePath);
 		extension = Path.GetExtension(absolutePath);
-		thumbnail = D.IsVideoExt(extension!) ? F.GenerateThumbnail(absolutePath) : null;
+		thumbnail = D.IsVideoExt(extension!) ? F.GenerateThumbnail(absolutePath, true) : null;
 		D.GetDateTakenFromBoth(absolutePath!, out metadataDateTaken, out filenameDateTaken);
 		uuid = Guid.NewGuid();
 

@@ -49,14 +49,15 @@ namespace PSS.Backend
         ///Toggle a string variable to either "visible" or "hidden".
         ///</summary>
         public static void VisToggle(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
-        
+
         ///<summary>
         ///Given the full final path where the video file will end up on the server, generate a temporary compressed thumbnail file for it,
         ///turn that into its base64 representation, and return the base64 string.<br/>
         ///Make sure to clear the pss_tmp directory when done in UploadApply!
         ///</summary>
         ///<param name="videoFullFinalPath">The full path to where the video file either is right now, or where it will be.</param>
-        public static string GenerateThumbnail(string videoFullFinalPath)
+        ///<param name="deleteFile">Delete the thumbnail file from disk after it's generated and the bytes are read.</param>
+        public static string GenerateThumbnail(string videoFullFinalPath, bool deleteFile)
         {
             //First create the thumbnail from the first frame of the video file.
             //https://stackoverflow.com/questions/4425413/how-to-extract-the-1st-frame-and-restore-as-an-image-with-ffmpeg/4425466
@@ -77,6 +78,8 @@ namespace PSS.Backend
             }
 
             byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
+            
+            if (deleteFile) File.Delete(thumbnailFullPath);
 
             //Then convert that file's bytes into its base64 equivalent. This is stored in the DB as the thumbnail (no actual file required).
             return Convert.ToBase64String(bytes);
