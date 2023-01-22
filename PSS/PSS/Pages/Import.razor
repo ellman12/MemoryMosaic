@@ -185,11 +185,11 @@
 		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename]?.Count).ToList();
 	}
     
-	///Searches the database for items with the same filename and returns a List&lt;string&gt; of their absolute paths, or null if none.
-	private static List<C.MediaRow> FindLibraryFilesWithSameName(string filename)
+	///Searches the database for items with the same filename and returns a List&lt;MediaRow&gt; of the DB items.
+	private static List<C.MediaRow> FindLibraryFilesWithSameName(string filenameWithExt)
 	{
 		C.Open();
-		using NpgsqlCommand cmd = new($"SELECT path, date_taken, thumbnail FROM media WHERE path LIKE '%{filename}' ORDER BY date_taken DESC", C.connection);
+		using NpgsqlCommand cmd = new($"SELECT path, date_taken, thumbnail FROM media WHERE path LIKE '%{filenameWithExt}' ORDER BY date_taken DESC", C.connection);
 		cmd.ExecuteNonQuery();
 		using NpgsqlDataReader r = cmd.ExecuteReader();
 		if (!r.HasRows) return null;
@@ -198,14 +198,14 @@
 		while (r.Read())
 		{
 			string path = r.GetString(0);
-			if (Path.GetFileName(path) == filename)
+			if (Path.GetFileName(path) == filenameWithExt)
 				result.Add(new C.MediaRow(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.IsDBNull(2) ? null : r.GetString(2)));
 		}
 		r.Close();
 		C.Close();
 		return result;
 	}
-
+	
 	private static void SearchItems()
 	{
 		searchResults.Clear();
