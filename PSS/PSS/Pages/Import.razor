@@ -186,17 +186,15 @@
 	}
     
 	///Searches the database for items with the same filename and returns a List&lt;string&gt; of their absolute paths, or null if none.
-	///TODO: only select path, DT, and thumbnail. Add necessary constructor, etc.
 	private static List<C.MediaRow> FindLibraryFilesWithSameName(string filename)
 	{
-		List<C.MediaRow> result = new();
 		C.Open();
 		using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media WHERE path LIKE '%{filename}' ORDER BY date_taken DESC", C.connection);
 		cmd.ExecuteNonQuery();
 		using NpgsqlDataReader r = cmd.ExecuteReader();
+		if (!r.HasRows) return null;
 
-		// if (r.HasRows) return null; //TODO, if none found it should return null
-
+		List<C.MediaRow> result = new();
 		while (r.Read())
 		{
 			string path = r.GetString(0);
