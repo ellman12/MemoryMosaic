@@ -164,6 +164,8 @@
 			ImportFile.originalFilename = ImportFile.renamedFilename;
 			ImportFile.shortPath = newShortPath;
 			ImportFile.absolutePath = newAbsPath;
+			Import.OrganizeItems();
+			OnCheckClick.Invoke();
 		}
 		OnCheckClick.Invoke();
 	}

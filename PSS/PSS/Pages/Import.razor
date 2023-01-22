@@ -104,7 +104,7 @@
 	///List of data about each supported file in pss_import.
 	public static List<ImportFile> importFiles;
 
-	private static LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName;
+	private static readonly LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName = new();
 
 	///If the user does a search, store the results as the uuids of the items.
 	private static readonly HashList<Guid> searchResults = new();
@@ -123,11 +123,12 @@
 	{
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
-		libFilesWithSameName = new LazyDictionary<string, List<C.MediaRow>>();
+		libFilesWithSameName.Clear();
 		searchResults.Clear();
 		selectedItems.Clear();
 		minYear = 2000;
 		maxYear = DateTime.Today.Year;
+		errorAmount = 0;
 
 		await Parallel.ForEachAsync(allAbsPaths, async (absPath, _) =>
 		{
@@ -141,7 +142,7 @@
 	}
 
 	///Organizes the import items by putting the errors at the top of the page above the other files.
-	private static void OrganizeItems()
+	public static void OrganizeItems()
 	{
 		errorAmount = 0;
 		List<ImportFile> errors = new(), good = new();
