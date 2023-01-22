@@ -104,7 +104,7 @@
 	///List of data about each supported file in pss_import.
 	public static List<ImportFile> importFiles;
 
-	private static Dictionary<string, List<C.MediaRow>> libFilesWithSameName;
+	private static LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName;
 
 	///If the user does a search, store the results as the uuids of the items.
 	private readonly HashList<Guid> searchResults = new();
@@ -123,7 +123,7 @@
 	{
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
-		libFilesWithSameName = new Dictionary<string, List<C.MediaRow>>();
+		libFilesWithSameName = new LazyDictionary<string, List<C.MediaRow>>();
 		searchResults.Clear();
 		selectedItems.Clear();
 		minYear = 2000;
@@ -177,7 +177,7 @@
 			}
 		}
 
-		importFiles = errors.Concat(good).ToList();
+		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename]?.Count).ToList();
 	}
     
 	///Searches the database for items with the same filename and returns a List&lt;string&gt; of their absolute paths, or null if none.
