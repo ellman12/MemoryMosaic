@@ -75,6 +75,13 @@ namespace PSS.Backend
             public readonly string thumbnail;
             public string description;
 
+            public MediaRow(string p, DateTime? dt, string thumbnail)
+            {
+                path = p;
+                dateTaken = dt;
+                this.thumbnail = thumbnail;
+            }
+
             public MediaRow(string p, DateTime? dt, bool starred, Guid uuid, string thumbnail)
             {
                 path = p;
