@@ -16,7 +16,7 @@
 
 	<KeyboardShortcuts CtrlA="@SelectAll" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
-	<header style="visibility: @(errorAmount > 0 || selectedItems.Count > 0 ? "visible" : "hidden")">
+	<header>
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
 		<span style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">@selectedItems.Count&nbsp;&nbsp;Selected</span>
 
