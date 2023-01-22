@@ -205,7 +205,26 @@
 		C.Close();
 		return result;
 	}
-	
+
+	///Searches the database for items with similar filenames and returns a List&lt;MediaRow&gt; of the DB items.
+	public static List<C.MediaRow> FindLibraryFilesWithSimilarName(string filenameNoExt)
+	{
+		C.Open();
+		using NpgsqlCommand cmd = new($"SELECT path, date_taken, thumbnail FROM media WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection);
+		cmd.ExecuteNonQuery();
+		using NpgsqlDataReader r = cmd.ExecuteReader();
+		if (!r.HasRows) return null;
+
+		List<C.MediaRow> result = new();
+		while (r.Read())
+		{
+			result.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.IsDBNull(2) ? null : r.GetString(2)));
+		}
+		r.Close();
+		C.Close();
+		return result;
+	}
+
 	private static void SearchItems()
 	{
 		searchResults.Clear();
