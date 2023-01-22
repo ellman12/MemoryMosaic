@@ -157,7 +157,11 @@
 			if (!libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
 			{
 				List<C.MediaRow> result = FindLibraryFilesWithSameName(importFiles[i].originalFilename + importFiles[i].extension);
-				if (result?.Count > 0) libFilesWithSameName.Add(importFiles[i].originalFilename, result);
+				if (result?.Count > 0)
+				{
+					libFilesWithSameName.Add(importFiles[i].originalFilename, result);
+					errorAmount++;
+				}
 			}
 
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
