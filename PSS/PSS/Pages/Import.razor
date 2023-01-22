@@ -5,7 +5,7 @@
 <link href="css/Import.css" rel="stylesheet">
 
 @{
-	if (!finishedRendering)
+	if (!finishedLoading)
 		return;
 	
 	if (allAbsPaths is null || allAbsPaths.Count is 0)
@@ -88,18 +88,18 @@
 }
 
 @code {
-	ElementReference searchInput;
+	private static ElementReference searchInput;
 
-	private bool finishedRendering;
+	private static bool finishedLoading;
 
 	///If Import should check the DT year of each item to see if it's outside of a range of valid values.
-	private bool yearCheckEnabled = true;
+	private static bool yearCheckEnabled = true;
 
 	///Show a warning if any items have a DT year less than or greater than these values.
 	public static int minYear, maxYear;
 
 	///Stores the absolute path of every supported file in pss_import.
-	private List<string> allAbsPaths;
+	private static List<string> allAbsPaths;
 
 	///List of data about each supported file in pss_import.
 	public static List<ImportFile> importFiles;
@@ -107,7 +107,7 @@
 	private static LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName;
 
 	///If the user does a search, store the results as the uuids of the items.
-	private readonly HashList<Guid> searchResults = new();
+	private static readonly HashList<Guid> searchResults = new();
 
 	///Stores what items are selected by the user.
 	public static readonly HashList<Guid> selectedItems = new();
@@ -115,9 +115,9 @@
 	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
 	public static int lastCheckedIndex = 0;
 
-	private int errorAmount;
+	private static int errorAmount;
 
-	private string searchText;
+	private static string searchText;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -136,12 +136,12 @@
 		});
 		
 		OrganizeItems();
-		finishedRendering = true;
+		finishedLoading = true;
 		StateHasChanged();
 	}
 
 	///Organizes the import items by putting the errors at the top of the page above the other files.
-	private void OrganizeItems()
+	private static void OrganizeItems()
 	{
 		errorAmount = 0;
 		List<ImportFile> errors = new(), good = new();
@@ -203,7 +203,7 @@
 		return result;
 	}
 
-	private void SearchItems()
+	private static void SearchItems()
 	{
 		searchResults.Clear();
 		if (String.IsNullOrWhiteSpace(searchText)) return;
@@ -258,7 +258,7 @@
 		StateHasChanged();
 	}
 
-	private void ClearDateTaken()
+	private static void ClearDateTaken()
 	{
 		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
 		{
@@ -267,5 +267,5 @@
 		}
 	}
 
-	private async void FocusSearchInput() => await searchInput.FocusAsync();
+	private static async void FocusSearchInput() => await searchInput.FocusAsync();
 }
