@@ -1,4 +1,4 @@
-﻿.listItem {
+﻿.importItem {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -7,91 +7,87 @@
     min-height: 60px;
 }
 
-.errorDiv > .listItem > .shortPath {
+.errorDiv > .importItem > .shortPath {
     color: red;
     margin-right: 10px;
 }
 
-.listItem > .shortPath {
+.importItem > .shortPath {
     color: green;
     margin-right: 10px;
 }
 
-.listItem > .checkbox {
+.importItem > .checkbox {
     opacity: 0;
     margin-left: 4px;
     margin-right: 10px;
 }
 
-.listItem > .checkbox:hover {
+.importItem > .checkbox:hover {
     cursor: pointer;
 }
 
-.listItem > .checked {
+.importItem > .checked {
     color: #009FFF;
     opacity: 1;
 }
 
-.listItem:hover > .unchecked { /* Show checkbox on hover */
+.importItem:hover > .unchecked { /* Show checkbox on hover */
     opacity: 0.42;
     transition: 0.15s;
 }
 
-.listItem > .unchecked:hover { /* Make it 100% opaque */
+.importItem > .unchecked:hover {
     opacity: 1;
 }
 
-.listItem > .shortPath {
+.importItem > .shortPath {
     max-width: 180px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.listItem > .shortPath:hover {
+.importItem > .shortPath:hover {
     max-width: initial;
     width: auto;
 }
 
-.listItem > img {
+.importItem > img {
     width: 4%;
     margin-right: 10px;
 }
 
-.listItem > .listItem > img:hover {
-    cursor: pointer;
-}
-
-.listItem > input[type="text"] {
+.importItem > input[type="text"] {
     color: black;
     margin-left: 10px;
 }
 
-.listItem > .dateTakenDisplay {
+.importItem > .dateTakenDisplay {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-right: 10px;
 }
 
-.listItem > .yearWarn {
+.importItem > .yearWarn {
     color: yellow;
     margin-left: 10px;
     margin-right: 5px;
 }
 
-.listItem > select {
+.importItem > select {
     background-color: black;
     border: 1px solid white;
     border-radius: 4px;
     outline: none;
 }
 
-.listItem > select:active, .listItem > select:focus {
+.importItem > select:active, .importItem > select:focus {
     outline: 2px solid dodgerblue;
 }
 
-.listItem > input[type="datetime-local"] {
+.importItem > input[type="datetime-local"] {
     color: black;
     margin-left: 10px;
 }

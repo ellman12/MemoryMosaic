@@ -1,0 +1,14 @@
+﻿<link href="css/components/LibraryItem.css" rel="stylesheet">
+
+<div class="libraryItem">
+	<span class="material-icons-outlined checkbox unchecked">check_circle</span>
+	<img src=@(MediaRow.thumbnail == null ? $"pss_library/{MediaRow.path}" : $"data:image/jpg;base64,{MediaRow.thumbnail}") onclick="window.open('pss_library/@MediaRow.path', '_blank').focus();" alt="" loading="lazy"/>
+	<span class="shortPath">@("Library/" + MediaRow.path)</span>
+	<span class="dateTaken">@(MediaRow.dateTaken == null ? "No Date Taken" : MediaRow.dateTaken)</span>
+</div>
+
+@code{
+
+	[Parameter, EditorRequired] public C.MediaRow MediaRow { get; set; }
+
+}
