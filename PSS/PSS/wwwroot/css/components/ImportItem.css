@@ -37,7 +37,7 @@
     transition: 0.15s;
 }
 
-.importItem > .unchecked:hover { /* Make it 100% opaque */
+.importItem > .unchecked:hover {
     opacity: 1;
 }
 
@@ -56,10 +56,6 @@
 .importItem > img {
     width: 4%;
     margin-right: 10px;
-}
-
-.importItem > .importItem > img:hover {
-    cursor: pointer;
 }
 
 .importItem > input[type="text"] {
