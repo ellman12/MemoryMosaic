@@ -55,7 +55,7 @@
 				<div class="errorDiv">
 					@do
 					{
-						<ImportItem OnCheckClick="@StateHasChanged" Index="@i"/>
+						<ImportItem Rerender="@StateHasChanged" Index="@i"/>
 						i++;
 					} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 					@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
@@ -72,7 +72,7 @@
 			else if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
 			{
 				<div class="errorDiv">
-					<ImportItem OnCheckClick="@StateHasChanged" Index="@i"/>
+					<ImportItem Rerender="@StateHasChanged" Index="@i"/>
 					@foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
 					{
 						<LibraryItem MediaRow="@mediaRow"/>
@@ -81,7 +81,7 @@
 			}
 			else
 			{
-				<ImportItem OnCheckClick="@StateHasChanged" Index="@i"/>
+				<ImportItem Rerender="@StateHasChanged" Index="@i"/>
 			}
 		}
 	</div>
