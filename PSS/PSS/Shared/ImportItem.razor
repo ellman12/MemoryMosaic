@@ -82,13 +82,15 @@
 </div>
 
 @code {
-	[Parameter, EditorRequired] public ImportFile ImportFile { get; set; }
+	private ImportFile ImportFile { get; set; }
 	
 	[Parameter, EditorRequired] public int Index { get; set; }
 	
 	[Parameter, EditorRequired] public Action OnCheckClick { get; set; }
 
 	private string datePickerDisplay = "none";
+
+	protected override void OnInitialized() => ImportFile = Import.importFiles[Index];
 }
 
 @functions {

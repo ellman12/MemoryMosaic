@@ -55,7 +55,7 @@
 				<div class="errorDiv">
 					@do
 					{
-						<ImportItem OnCheckClick="@StateHasChanged" Index="@i" ImportFile="@importFiles[i]"/>
+						<ImportItem OnCheckClick="@StateHasChanged" Index="@i"/>
 						i++;
 					} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 					@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
@@ -63,7 +63,7 @@
 			}
 			else
 			{
-				<ImportItem OnCheckClick="@StateHasChanged" Index="@i" ImportFile="@importFiles[i]"/>
+				<ImportItem OnCheckClick="@StateHasChanged" Index="@i"/>
 			}
 		}
 	</div>
