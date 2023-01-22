@@ -50,38 +50,24 @@ namespace PSS.Backend
         ///</summary>
         public static void VisToggle(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
 
-        ///<summary>
-        ///Given the full final path where the video file will end up on the server, generate a temporary compressed thumbnail file for it,
-        ///turn that into its base64 representation, and return the base64 string.<br/>
-        ///Make sure to clear the pss_tmp directory when done in UploadApply!
-        ///</summary>
-        ///<param name="videoFullFinalPath">The full path to where the video file either is right now, or where it will be.</param>
-        ///<param name="deleteFile">Delete the thumbnail file from disk after it's generated and the bytes are read.</param>
-        public static string GenerateThumbnail(string videoFullFinalPath, bool deleteFile)
+        ///<summary>Given the absolute path to a video file, use ffmpeg to generate a compressed thumbnail of the first frame.</summary>
+        ///<param name="videoAbsPath">The absolute path to where the video file is.</param>
+        ///<returns>A base64 string representing the first frame of the video, but heavily compressed.</returns>
+        public static string GenerateThumbnail(string videoAbsPath)
         {
-            //First create the thumbnail from the first frame of the video file.
-            //https://stackoverflow.com/questions/4425413/how-to-extract-the-1st-frame-and-restore-as-an-image-with-ffmpeg/4425466
-            //Store this file in the tmp folder and name it as the same name as the video file except with the extension '.tmp.jpg'.
-            string thumbnailFullPath = Path.Combine(S.tmpFolderPath, $"{Path.GetFileNameWithoutExtension(videoFullFinalPath)}_thumbnail_{DateTime.Now:M-d-yyyy}.tmp.jpg");
-
-            if (!File.Exists(thumbnailFullPath)) //Re-use it if it exists from a previous run of this command.
+            string thumbnailFullPath = Path.Join(S.tmpFolderPath, Guid.NewGuid() + ".jpg");
+            ProcessStartInfo ffmpegInfo = new()
             {
-                //Something to note is this command produces a bunch of stupid output and also says it failed but it still produces the thumbnail so... ¯\_(ツ)_/¯ 
-                ProcessStartInfo ffmpegInfo = new()
-                {
-                    CreateNoWindow = true,
-                    FileName = "ffmpeg",
-                    Arguments = $"-i \"{videoFullFinalPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\""
-                };
-                Process ffmpegProcess = Process.Start(ffmpegInfo);
-                ffmpegProcess!.WaitForExit();
-            }
+                CreateNoWindow = true,
+                FileName = "ffmpeg",
+                Arguments = $"-i \"{videoAbsPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\""
+            };
+            Process ffmpegProcess = Process.Start(ffmpegInfo);
+            ffmpegProcess!.WaitForExit();
 
             byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
+            File.Delete(thumbnailFullPath);
             
-            if (deleteFile) File.Delete(thumbnailFullPath);
-
-            //Then convert that file's bytes into its base64 equivalent. This is stored in the DB as the thumbnail (no actual file required).
             return Convert.ToBase64String(bytes);
         }
         
