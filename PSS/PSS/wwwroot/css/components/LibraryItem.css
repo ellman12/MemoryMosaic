@@ -1,4 +1,4 @@
-﻿.libraryItem {
+.libraryItem {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -9,6 +9,11 @@
 
 .errorDiv > .libraryItem > .shortPath {
     color: red;
+    margin-right: 10px;
+}
+
+.warnDiv > .libraryItem > .shortPath {
+    color: yellow;
     margin-right: 10px;
 }
 

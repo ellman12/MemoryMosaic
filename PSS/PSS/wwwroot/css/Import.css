@@ -86,7 +86,13 @@ header > #buttons {
     top: 60px;
 }
 
-#mainDiv > .errorDiv {
-    border-radius: 4px;
-    border-bottom: 2px solid red;
+#mainDiv > .itemGroup {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#mainDiv > .itemGroup > .errorDiv {
+}
+
+#mainDiv > .itemGroup > .warnDiv {
 }
