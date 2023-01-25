@@ -83,6 +83,7 @@ header > #buttons {
     position: absolute;
     display: flex;
     flex-direction: column;
+    top: 60px;
 }
 
 #mainDiv > .errorDiv {

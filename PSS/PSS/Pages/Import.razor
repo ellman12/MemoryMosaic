@@ -45,7 +45,7 @@
         </div>
 	</header>
 	
-	<div id="mainDiv" style="top: @(errorAmount > 0 || selectedItems.Count > 0 ? 60 : 0)px">
+	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
 			if (!String.IsNullOrWhiteSpace(searchText) && !searchResults.Contains(importFiles[i].uuid)) continue;
