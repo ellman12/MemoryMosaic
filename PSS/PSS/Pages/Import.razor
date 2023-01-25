@@ -67,6 +67,14 @@
 							<LibraryItem MediaRow="@mediaRow"/>
 						}
 					}
+					
+					@if (libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename))
+                    {
+						foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
+                    	{
+                    		<LibraryItem MediaRow="@mediaRow"/>
+                    	}
+                    }
 				</div>
 			}
 			else if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
@@ -77,6 +85,14 @@
 					{
 						<LibraryItem MediaRow="@mediaRow"/>
 					}
+					
+					@if (libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename))
+                    {
+                    	foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
+                        {
+                            <LibraryItem MediaRow="@mediaRow"/>
+                        }
+                    }
 				</div>
 			}
 			else
