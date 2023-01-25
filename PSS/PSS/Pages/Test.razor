@@ -11,12 +11,5 @@
 
     private static void Yes()
     {
-        Stopwatch s = Stopwatch.StartNew();
-        foreach (C.MediaRow mediaRow in Import.FindLibraryFilesWithSimilarName("413150_20210829220456_1"))
-        {
-            Console.WriteLine(mediaRow.path);
-        }
-        s.Stop();
-        Console.WriteLine(s.ElapsedMilliseconds);
     }
 }

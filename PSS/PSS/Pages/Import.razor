@@ -104,7 +104,7 @@
 	///List of data about each supported file in pss_import.
 	public static List<ImportFile> importFiles;
 
-	private static readonly LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName = new();
+	private static readonly LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName = new(), libFilesWithSimilarName = new();
 
 	///If the user does a search, store the results as the uuids of the items.
 	private static readonly HashList<Guid> searchResults = new();
@@ -124,6 +124,7 @@
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
 		libFilesWithSameName.Clear();
+		libFilesWithSimilarName.Clear();
 		searchResults.Clear();
 		selectedItems.Clear();
 		minYear = 2000;
@@ -147,23 +148,12 @@
 		errorAmount = 0;
 		List<ImportFile> errors = new(), good = new();
 		libFilesWithSameName.Clear();
+		libFilesWithSimilarName.Clear();
 
 		importFiles = importFiles.OrderBy(file => file.originalFilename).ToList();
 		for (int i = 0; i < importFiles.Count; i++)
 		{
-			/* List<C.MediaRow> result = FindLibraryFilesWithSameName(importFiles[i].originalFilename); //TODO alternative
-			// if (result?.Count > 0 && !libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
-				// libFilesWithSameName.Add(importFiles[i].originalFilename, result); */
-
-			if (!libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
-			{
-				List<C.MediaRow> result = FindLibraryFilesWithSameName(importFiles[i].originalFilename + importFiles[i].extension);
-				if (result?.Count > 0)
-				{
-					libFilesWithSameName.Add(importFiles[i].originalFilename, result);
-					errorAmount++;
-				}
-			}
+			FindLibraryFilesWithSameOrSimilarName(importFiles[i].originalFilename);
 
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
@@ -184,45 +174,42 @@
 
 		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename]?.Count).ToList();
 	}
-    
-	///Searches the database for items with the same filename and returns a List&lt;MediaRow&gt; of the DB items.
-	private static List<C.MediaRow> FindLibraryFilesWithSameName(string filenameWithExt)
-	{
-		C.Open();
-		using NpgsqlCommand cmd = new($"SELECT path, date_taken, thumbnail FROM media WHERE path LIKE '%{filenameWithExt}' ORDER BY date_taken DESC", C.connection);
-		cmd.ExecuteNonQuery();
-		using NpgsqlDataReader r = cmd.ExecuteReader();
-		if (!r.HasRows) return null;
 
-		List<C.MediaRow> result = new();
-		while (r.Read())
-		{
-			string path = r.GetString(0);
-			if (Path.GetFileName(path) == filenameWithExt)
-				result.Add(new C.MediaRow(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.IsDBNull(2) ? null : r.GetString(2)));
-		}
-		r.Close();
-		C.Close();
-		return result;
-	}
-
-	///Searches the database for items with similar filenames and returns a List&lt;MediaRow&gt; of the DB items.
-	public static List<C.MediaRow> FindLibraryFilesWithSimilarName(string filenameNoExt)
+	private static void FindLibraryFilesWithSameOrSimilarName(string filenameNoExt)
 	{
 		C.Open();
 		using NpgsqlCommand cmd = new($"SELECT path, date_taken, thumbnail FROM media WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection);
 		cmd.ExecuteNonQuery();
 		using NpgsqlDataReader r = cmd.ExecuteReader();
-		if (!r.HasRows) return null;
+		if (!r.HasRows)
+		{
+			r.Close();
+			C.Close();
+			return;
+		}
 
-		List<C.MediaRow> result = new();
 		while (r.Read())
 		{
-			result.Add(new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.IsDBNull(2) ? null : r.GetString(2)));
+			string path = r.GetString(0);
+			string thisFilename = Path.GetFileNameWithoutExtension(path);
+			C.MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.IsDBNull(2) ? null : r.GetString(2));
+			if (filenameNoExt == thisFilename)
+			{
+				if (!libFilesWithSameName.ContainsKey(filenameNoExt))
+					libFilesWithSameName.Add(filenameNoExt, new List<C.MediaRow> {result});
+				else
+					libFilesWithSameName[filenameNoExt].Add(result);
+			}
+			else
+			{
+				if (!libFilesWithSimilarName.ContainsKey(filenameNoExt))
+					libFilesWithSimilarName.Add(filenameNoExt, new List<C.MediaRow> {result});
+				else
+					libFilesWithSimilarName[filenameNoExt].Add(result);
+			}
 		}
 		r.Close();
 		C.Close();
-		return result;
 	}
 
 	private static void SearchItems()
