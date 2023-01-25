@@ -52,52 +52,74 @@
 			
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
-				<div class="errorDiv">
-					@do
-					{
-						<ImportItem Rerender="@StateHasChanged" Index="@i"/>
-						i++;
-					} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
-					@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
-					
-					@if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
-					{
-						foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
+				<div class="itemGroup">
+					<div class="errorDiv">
+						@do
 						{
-							<LibraryItem MediaRow="@mediaRow"/>
+							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							i++;
+						} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
+						@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
+						
+						@if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
+						{
+							foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
+							{
+								<LibraryItem MediaRow="@mediaRow"/>
+							}
 						}
-					}
-					
-					@if (libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename))
-                    {
-						foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
-                    	{
-                    		<LibraryItem MediaRow="@mediaRow"/>
-                    	}
-                    }
-				</div>
-			}
-			else if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
-			{
-				<div class="errorDiv">
-					<ImportItem Rerender="@StateHasChanged" Index="@i"/>
-					@foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
-					{
-						<LibraryItem MediaRow="@mediaRow"/>
-					}
-					
-					@if (libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename))
-                    {
-                    	foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
-                        {
-                            <LibraryItem MediaRow="@mediaRow"/>
-                        }
-                    }
+					</div>
+					<div class="warnDiv">
+						@if (libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename))
+	                    {
+							foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
+                    		{
+                    			<LibraryItem MediaRow="@mediaRow"/>
+                    		}
+	                    }
+					</div>
 				</div>
 			}
 			else
 			{
-				<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+				bool hasRendered = false;
+				bool hasErrors = libFilesWithSameName.ContainsKey(importFiles[i].originalFilename);
+				bool hasWarnings = libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename);
+
+				if (!hasErrors && !hasWarnings)
+				{
+					<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+					continue;
+				}
+				
+				<div class="itemGroup">
+					<div class="errorDiv">
+						@if (hasErrors)
+						{
+							hasRendered = true;
+							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+
+							foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
+							{
+								<LibraryItem MediaRow="@mediaRow"/>
+							}
+						}
+					</div>
+					<div class="warnDiv">
+						@if (hasWarnings)
+						{
+							if (!hasRendered)
+							{
+								<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							}
+							
+							foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
+							{
+								<LibraryItem MediaRow="@mediaRow"/>
+							}
+						}
+					</div>
+				</div>
 			}
 		}
 	</div>
