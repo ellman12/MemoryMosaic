@@ -55,6 +55,11 @@ header > #search {
     left: 610px;
 }
 
+header > #widthBtn {
+    position: absolute;
+    left: 860px;
+}
+
 header > #yearWarnInputs {
     position: absolute;
     right: 80px;

@@ -46,15 +46,19 @@
 /*    opacity: 1;*/
 /*}*/
 
-.libraryItem > .shortPath {
+.libraryItem > .shortWidth {
     max-width: 180px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.libraryItem > .shortPath:hover {
+.libraryItem > .shortWidth:hover {
     max-width: initial;
+    width: auto;
+}
+
+.libraryItem > .fullWidth {
     width: auto;
 }
 

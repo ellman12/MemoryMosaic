@@ -29,6 +29,10 @@
         
         <input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 		
+		<button id="widthBtn" class="iconBtn" title="Switch width of paths to @(pathWidthClass == "shortWidth" ? "full" : "short")" @onclick="@(() => pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth")">
+			<span class="material-icons-outlined">@(pathWidthClass == "shortWidth" ? "width_wide" : "width_full")</span>
+		</button>
+		
 		<div id="yearWarnInputs">
 			<input id="yearCheck" type="checkbox" @bind="@yearCheckEnabled"/>
 			<label for="yearCheck">Year Check</label>
@@ -130,6 +134,8 @@
 
 	private static bool finishedLoading;
 
+	public static string pathWidthClass; 
+
 	///If Import should check the DT year of each item to see if it's outside of a range of valid values.
 	private static bool yearCheckEnabled = true;
 
@@ -159,6 +165,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		pathWidthClass = "shortWidth";
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
 		libFilesWithSameName.Clear();
