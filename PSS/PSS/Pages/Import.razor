@@ -223,7 +223,7 @@
 	private static void FindLibraryFilesWithSameOrSimilarName(string filenameNoExt)
 	{
 		C.Open();
-		using NpgsqlCommand cmd = new($"SELECT path, date_taken, thumbnail FROM media WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection);
+		using NpgsqlCommand cmd = new($"SELECT path, date_taken, thumbnail, date_deleted FROM media WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection);
 		cmd.ExecuteNonQuery();
 		using NpgsqlDataReader r = cmd.ExecuteReader();
 		if (!r.HasRows)
@@ -237,7 +237,7 @@
 		{
 			string path = r.GetString(0);
 			string thisFilename = Path.GetFileNameWithoutExtension(path);
-			C.MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.IsDBNull(2) ? null : r.GetString(2));
+			C.MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.IsDBNull(2) ? null : r.GetString(2), r.IsDBNull(3) ? null : r.GetDateTime(3));
 			if (filenameNoExt == thisFilename)
 			{
 				if (!libFilesWithSameName.ContainsKey(filenameNoExt))
