@@ -45,43 +45,81 @@
         </div>
 	</header>
 	
-	<div id="mainDiv" style="top: @(errorAmount > 0 || selectedItems.Count > 0 ? 60 : 0)px">
+	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
 			if (!String.IsNullOrWhiteSpace(searchText) && !searchResults.Contains(importFiles[i].uuid)) continue;
 			
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
-				<div class="errorDiv">
-					@do
-					{
-						<ImportItem Rerender="@StateHasChanged" Index="@i"/>
-						i++;
-					} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
-					@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
-					
-					@if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
-					{
-						foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
+				<div class="itemGroup">
+					<div class="errorDiv">
+						@do
 						{
-							<LibraryItem MediaRow="@mediaRow"/>
+							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							i++;
+						} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
+						@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
+						
+						@if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
+						{
+							foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
+							{
+								<LibraryItem MediaRow="@mediaRow"/>
+							}
 						}
-					}
-				</div>
-			}
-			else if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
-			{
-				<div class="errorDiv">
-					<ImportItem Rerender="@StateHasChanged" Index="@i"/>
-					@foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
-					{
-						<LibraryItem MediaRow="@mediaRow"/>
-					}
+					</div>
+					<div class="warnDiv">
+						@if (libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename))
+	                    {
+							foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
+                    		{
+                    			<LibraryItem MediaRow="@mediaRow"/>
+                    		}
+	                    }
+					</div>
 				</div>
 			}
 			else
 			{
-				<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+				bool hasRendered = false;
+				bool hasErrors = libFilesWithSameName.ContainsKey(importFiles[i].originalFilename);
+				bool hasWarnings = libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename);
+
+				if (!hasErrors && !hasWarnings)
+				{
+					<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+					continue;
+				}
+				
+				<div class="itemGroup">
+					<div class="errorDiv">
+						@if (hasErrors)
+						{
+							hasRendered = true;
+							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+
+							foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
+							{
+								<LibraryItem MediaRow="@mediaRow"/>
+							}
+						}
+					</div>
+					<div class="warnDiv">
+						@if (hasWarnings)
+						{
+							if (!hasRendered)
+							{
+								<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							}
+							
+							foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
+							{
+								<LibraryItem MediaRow="@mediaRow"/>
+							}
+						}
+					</div>
+				</div>
 			}
 		}
 	</div>
@@ -104,7 +142,7 @@
 	///List of data about each supported file in pss_import.
 	public static List<ImportFile> importFiles;
 
-	private static readonly LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName = new();
+	private static readonly LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName = new(), libFilesWithSimilarName = new();
 
 	///If the user does a search, store the results as the uuids of the items.
 	private static readonly HashList<Guid> searchResults = new();
@@ -124,6 +162,7 @@
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
 		libFilesWithSameName.Clear();
+		libFilesWithSimilarName.Clear();
 		searchResults.Clear();
 		selectedItems.Clear();
 		minYear = 2000;
@@ -147,23 +186,12 @@
 		errorAmount = 0;
 		List<ImportFile> errors = new(), good = new();
 		libFilesWithSameName.Clear();
+		libFilesWithSimilarName.Clear();
 
 		importFiles = importFiles.OrderBy(file => file.originalFilename).ToList();
 		for (int i = 0; i < importFiles.Count; i++)
 		{
-			/* List<C.MediaRow> result = FindLibraryFilesWithSameName(importFiles[i].originalFilename); //TODO alternative
-			// if (result?.Count > 0 && !libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
-				// libFilesWithSameName.Add(importFiles[i].originalFilename, result); */
-
-			if (!libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
-			{
-				List<C.MediaRow> result = FindLibraryFilesWithSameName(importFiles[i].originalFilename + importFiles[i].extension);
-				if (result?.Count > 0)
-				{
-					libFilesWithSameName.Add(importFiles[i].originalFilename, result);
-					errorAmount++;
-				}
-			}
+			FindLibraryFilesWithSameOrSimilarName(importFiles[i].originalFilename);
 
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
@@ -184,28 +212,42 @@
 
 		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename]?.Count).ToList();
 	}
-    
-	///Searches the database for items with the same filename and returns a List&lt;string&gt; of their absolute paths, or null if none.
-	///TODO: only select path, DT, and thumbnail. Add necessary constructor, etc.
-	private static List<C.MediaRow> FindLibraryFilesWithSameName(string filename)
+
+	private static void FindLibraryFilesWithSameOrSimilarName(string filenameNoExt)
 	{
-		List<C.MediaRow> result = new();
 		C.Open();
-		using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media WHERE path LIKE '%{filename}' ORDER BY date_taken DESC", C.connection);
+		using NpgsqlCommand cmd = new($"SELECT path, date_taken, thumbnail FROM media WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection);
 		cmd.ExecuteNonQuery();
 		using NpgsqlDataReader r = cmd.ExecuteReader();
-
-		// if (r.HasRows) return null; //TODO, if none found it should return null
+		if (!r.HasRows)
+		{
+			r.Close();
+			C.Close();
+			return;
+		}
 
 		while (r.Read())
 		{
 			string path = r.GetString(0);
-			if (Path.GetFileName(path) == filename)
-				result.Add(new C.MediaRow(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
+			string thisFilename = Path.GetFileNameWithoutExtension(path);
+			C.MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.IsDBNull(2) ? null : r.GetString(2));
+			if (filenameNoExt == thisFilename)
+			{
+				if (!libFilesWithSameName.ContainsKey(filenameNoExt))
+					libFilesWithSameName.Add(filenameNoExt, new List<C.MediaRow> {result});
+				else
+					libFilesWithSameName[filenameNoExt].Add(result);
+			}
+			else
+			{
+				if (!libFilesWithSimilarName.ContainsKey(filenameNoExt))
+					libFilesWithSimilarName.Add(filenameNoExt, new List<C.MediaRow> {result});
+				else
+					libFilesWithSimilarName[filenameNoExt].Add(result);
+			}
 		}
 		r.Close();
 		C.Close();
-		return result;
 	}
 
 	private static void SearchItems()
