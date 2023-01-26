@@ -151,10 +151,10 @@
 	private static readonly LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName = new(), libFilesWithSimilarName = new();
 
 	///If the user does a search, store the results as the uuids of the items.
-	private static readonly HashList<Guid> searchResults = new();
+	private static readonly HashSet<Guid> searchResults = new();
 
 	///Stores what items are selected by the user.
-	public static readonly HashList<Guid> selectedItems = new();
+	public static readonly HashSet<Guid> selectedItems = new();
 
 	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
 	public static int lastCheckedIndex = 0;
