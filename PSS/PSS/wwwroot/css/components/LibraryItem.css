@@ -67,3 +67,7 @@
     margin-right: 10px;
 }
 
+.libraryItem > .inTrash {
+    color: red;
+    margin-left: 10px;
+}
