@@ -14,7 +14,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts CtrlA="@SelectAll" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
+	<KeyboardShortcuts AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
 	<header>
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
