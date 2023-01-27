@@ -76,10 +76,11 @@ namespace PSS.Backend
             public readonly DateTime? dateDeleted;
             public string description;
 
-            public MediaRow(string p, DateTime? dt, string thumbnail, DateTime? dateDeleted)
+            public MediaRow(string p, DateTime? dt, Guid uuid, string thumbnail, DateTime? dateDeleted)
             {
                 path = p;
                 dateTaken = dt;
+                this.uuid = uuid;
                 this.thumbnail = thumbnail;
                 this.dateDeleted = dateDeleted;
             }
@@ -544,8 +545,15 @@ namespace PSS.Backend
         ///PERMANENTLY remove an item from the database and DELETES the file from server.
         public static void PermDeleteItem(Guid uuid)
         {
-            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-
+            try
+            {
+                FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
             try
             {
                 Open();
@@ -555,7 +563,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid AND deleted = TRUE";
+                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
