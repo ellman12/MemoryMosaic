@@ -80,6 +80,16 @@
     }
 	
 	<input type="datetime-local" title="Choose New Date Taken" @bind="@ImportFile.customDateTaken" @bind:event="oninput" style="display: @datePickerDisplay" step="1"/> @* step="1" shows the seconds part. *@
+	
+	@if (ImportFile.collections != null)
+	{
+		<div class="collectionsDisplay">
+			@foreach (C.Collection collection in ImportFile.collections)
+			{
+				<span title="@collection.id" @onclick="@(() => ImportFile.collections.RemoveWhere(c => c.id == collection.id))">@collection.name</span>
+			}
+		</div>
+	}
 </div>
 
 @code {

@@ -1,4 +1,4 @@
-﻿.importItem {
+.importItem {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -94,4 +94,13 @@
 .importItem > input[type="datetime-local"] {
     color: black;
     margin-left: 10px;
+    margin-right: 4px;
+}
+
+.importItem > .collectionsDisplay > span {
+    margin-left: 4px;
+}
+
+.importItem > .collectionsDisplay > span:hover {
+    cursor: pointer;
 }
