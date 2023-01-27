@@ -1,4 +1,6 @@
-﻿namespace PSS.Backend;
+﻿using System.Collections.Generic;
+
+namespace PSS.Backend;
 
 ///Represents an item that is pending importing in Import.razor.
 public class ImportFile
@@ -47,6 +49,9 @@ public class ImportFile
 
 	///The uuid of the item, which will be added to the database upon completion of importing.
 	public Guid uuid; //TODO: idk if this will be needed
+
+	///The album(s) or folder to add this item to.
+	public HashSet<int> collections;
 
 	///<summary>Constructs a new instance of an <see cref="ImportFile"/>.</summary>
 	///<param name="absPath">The absolute path to where this item is.</param>
