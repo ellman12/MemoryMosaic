@@ -76,10 +76,11 @@ namespace PSS.Backend
             public readonly DateTime? dateDeleted;
             public string description;
 
-            public MediaRow(string p, DateTime? dt, string thumbnail, DateTime? dateDeleted)
+            public MediaRow(string p, DateTime? dt, Guid uuid, string thumbnail, DateTime? dateDeleted)
             {
                 path = p;
                 dateTaken = dt;
+                this.uuid = uuid;
                 this.thumbnail = thumbnail;
                 this.dateDeleted = dateDeleted;
             }
