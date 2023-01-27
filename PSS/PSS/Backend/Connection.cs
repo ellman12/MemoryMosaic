@@ -650,7 +650,7 @@ namespace PSS.Backend
         }
         
         ///<summary>Change a List of items from either starred (true) or not starred.</summary>
-        public static void UpdateStarred(List<Guid> uuids, bool starred)
+        public static void UpdateStarred(HashSet<Guid> uuids, bool starred)
         {
             try
             {

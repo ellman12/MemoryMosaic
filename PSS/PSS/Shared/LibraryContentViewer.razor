@@ -251,7 +251,7 @@ else
 	private static Guid _selectedItem;
 
 	///Stores all items user has selected.
-	public List<Guid> SelectedItems { get; private set; }
+	public HashSet<Guid> SelectedItems { get; private set; }
 
 	///Used only for when viewing the contents of a collection.
 	[Parameter]
@@ -325,7 +325,7 @@ else
 		ctrlGInput = new CtrlGInput();
 		MediaList = new List<C.MediaRow>(150);
 		_selectedItem = Guid.Empty;
-		SelectedItems = new List<Guid>(150);
+		SelectedItems = new HashSet<Guid>(150);
 		oldestDT = newestDT = null;
 		AddContentBottom();
 		if (MediaList.Count > 0)

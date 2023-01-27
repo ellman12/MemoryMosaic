@@ -71,7 +71,7 @@
     public Guid SelectedItem { get; set; } = Guid.Empty;
     
     [Parameter]
-    public List<Guid> SelectedItems { get; set; } //Passed in from the page. Items selected by user.
+    public HashSet<Guid> SelectedItems { get; set; } //Passed in from the page. Items selected by user.
     
     [Parameter]
     public EventCallback<int> SelectedItemsCountChanged { get; set; } //Used for clearing SelectedItems. https://blazor-university.com/components/two-way-binding/
