@@ -51,7 +51,7 @@ public class ImportFile
 	public Guid uuid; //TODO: idk if this will be needed
 
 	///The album(s) or folder to add this item to.
-	public HashSet<int> collections;
+	public HashSet<C.Collection> collections;
 
 	///<summary>Constructs a new instance of an <see cref="ImportFile"/>.</summary>
 	///<param name="absPath">The absolute path to where this item is.</param>
