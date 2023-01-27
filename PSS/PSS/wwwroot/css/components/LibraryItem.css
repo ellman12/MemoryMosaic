@@ -28,24 +28,6 @@
     margin-right: 10px;
 }
 
-/*.libraryItem > .checkbox:hover {*/
-/*    cursor: pointer;*/
-/*}*/
-
-/*.libraryItem > .checked {*/
-/*    color: #009FFF;*/
-/*    opacity: 1;*/
-/*}*/
-
-/*.libraryItem:hover > .unchecked { !* Show checkbox on hover *!*/
-/*    opacity: 0.42;*/
-/*    transition: 0.15s;*/
-/*}*/
-
-/*.libraryItem > .unchecked:hover {*/
-/*    opacity: 1;*/
-/*}*/
-
 .libraryItem > .shortWidth {
     max-width: 180px;
     overflow: hidden;
