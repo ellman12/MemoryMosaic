@@ -555,7 +555,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid AND deleted = TRUE";
+                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
