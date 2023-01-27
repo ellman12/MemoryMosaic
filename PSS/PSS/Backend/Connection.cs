@@ -545,8 +545,15 @@ namespace PSS.Backend
         ///PERMANENTLY remove an item from the database and DELETES the file from server.
         public static void PermDeleteItem(Guid uuid)
         {
-            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-
+            try
+            {
+                FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
             try
             {
                 Open();
