@@ -62,7 +62,7 @@ header > #widthBtn {
 
 header > #yearWarnInputs {
     position: absolute;
-    right: 80px;
+    right: 135px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -77,10 +77,14 @@ header > #yearWarnInputs > input[type="text"] {
 
 header > #buttons {
     position: absolute;
-    right: 20px;
+    right: 15px;
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+header > #buttons > .iconBtn {
+    margin-left: 5px;
 }
 
 #mainDiv {
