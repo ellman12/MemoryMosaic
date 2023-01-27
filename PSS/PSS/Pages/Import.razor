@@ -1,5 +1,6 @@
 @page "/"
 @using Microsoft.VisualBasic.FileIO
+@using CS = PSS.Shared.CollectionSelector;
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -14,7 +15,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
+	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
 	<header>
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
@@ -45,9 +46,12 @@
 		</div>
 		
 		<div id="buttons" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
-        	<button class="iconBtn" @onclick="@DeleteSelected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-        </div>
+			<button class="iconBtn" @onclick="@(() => collectionSelectorVis = "visible")"><span class="material-icons-outlined">collections</span></button>
+			<button class="iconBtn" @onclick="@DeleteSelected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+		</div>
 	</header>
+	
+	<CollectionSelector OnCheckClicked="@UpdateCollections" @bind-CollectionsVis="@collectionSelectorVis" SelectedItems="@selectedItems"/>
 	
 	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
@@ -134,7 +138,9 @@
 
 	private static bool finishedLoading;
 
-	public static string pathWidthClass; 
+	public static string pathWidthClass;
+	
+	private static string collectionSelectorVis = "hidden";
 
 	///If Import should check the DT year of each item to see if it's outside of a range of valid values.
 	private static bool yearCheckEnabled = true;
@@ -318,6 +324,32 @@
 		{
 			file.dateTakenSource = ImportFile.DateTakenSource.Custom;
 			file.customDateTaken = null;
+		}
+	}
+
+	///Updates the collections field of each selected ImportItem.
+	private static void UpdateCollections()
+	{
+		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)))
+		{
+			file.collections ??= new HashSet<C.Collection>();
+
+			if (CS.checkedFolderIndex != -1)
+			{
+				file.collections.Clear();
+				file.collections.Add(CS.folders[CS.checkedFolderIndex]);
+			}
+			else
+			{
+				file.collections.RemoveWhere(folder => CS.folders.Contains(folder)); //TODO: there's probably a better/more efficient way to do this.
+				
+				for (int a = 0; a < CS.checkedAlbums.Count; a++)
+				{
+					//todo rem folder.
+					if (CS.checkedAlbums[a] == false) continue;
+					file.collections.Add(CS.albums[a]);
+				}
+			}
 		}
 	}
 
