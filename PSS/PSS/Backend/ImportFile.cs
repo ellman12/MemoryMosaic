@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace PSS.Backend;
 
@@ -75,5 +77,19 @@ public class ImportFile
 			dateTakenSource = DateTakenSource.Metadata;
 		else if (filenameDateTaken != null)
 			dateTakenSource = DateTakenSource.Filename;
+	}
+	
+	///Used in Import for saving the items to disk for later restoration. Returns a string with the ImportFile's values separated by tabs.
+	public string ToTabDelimitedString()
+	{
+		string result = "";
+		FieldInfo[] fields = typeof(ImportFile).GetFields();
+		for (int i = 0; i < fields.Length - 1; i++)
+			result += $"{fields[i].GetValue(this)}\t";
+		
+		if (collections?.Count > 0)
+			result += $"{String.Join(" ", collections.Select(c => c.id))}";
+
+		return result;
 	}
 }
