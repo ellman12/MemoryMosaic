@@ -99,7 +99,7 @@ public class ImportFile
 		extension = split[2];
 		shortPath = split[3];
 		absolutePath = split[4];
-		thumbnail = split[5];
+		thumbnail = split[5] == "" ? null : split[5];
 		if (!String.IsNullOrWhiteSpace(split[6])) metadataDateTaken = DateTime.Parse(split[6]);
 		if (!String.IsNullOrWhiteSpace(split[7])) filenameDateTaken = DateTime.Parse(split[7]);
 		if (!String.IsNullOrWhiteSpace(split[8])) customDateTaken = DateTime.Parse(split[8]);
