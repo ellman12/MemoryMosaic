@@ -30,10 +30,6 @@
         
         <input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 		
-		<button id="widthBtn" class="iconBtn" title="Switch width of paths to @(pathWidthClass == "shortWidth" ? "full" : "short")" @onclick="@(() => pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth")">
-			<span class="material-icons-outlined">@(pathWidthClass == "shortWidth" ? "width_wide" : "width_full")</span>
-		</button>
-		
 		<div id="yearWarnInputs">
 			<input id="yearCheck" type="checkbox" @bind="@yearCheckEnabled"/>
 			<label for="yearCheck">Year Check</label>
