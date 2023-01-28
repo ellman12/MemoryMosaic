@@ -53,6 +53,9 @@ public class ImportFile
 	///The album(s) or folder to add this item to.
 	public HashSet<C.Collection> collections;
 
+	///If this item will be marked with a star when added to the library.
+	public bool starred;
+
 	///<summary>Constructs a new instance of an <see cref="ImportFile"/>.</summary>
 	///<param name="absPath">The absolute path to where this item is.</param>
 	public ImportFile(string absPath)
