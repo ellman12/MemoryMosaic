@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using PSS.Shared;
 
 namespace PSS.Backend;
 
@@ -89,4 +90,32 @@ public class ImportFile
 
 		return result;
 	}
+
+	///Creates a new ImportFile from a string created with ToTabDelimitedString().
+	private ImportFile(IReadOnlyList<string> split)
+	{
+		originalFilename = split[0];
+		renamedFilename = split[1];
+		extension = split[2];
+		shortPath = split[3];
+		absolutePath = split[4];
+		thumbnail = split[5];
+		if (!String.IsNullOrWhiteSpace(split[6])) metadataDateTaken = DateTime.Parse(split[6]);
+		if (!String.IsNullOrWhiteSpace(split[7])) filenameDateTaken = DateTime.Parse(split[7]);
+		if (!String.IsNullOrWhiteSpace(split[8])) customDateTaken = DateTime.Parse(split[8]);
+		dateTakenSource = Enum.Parse<DateTakenSource>(split[9]);
+		uuid = Guid.Parse(split[10]);
+		starred = Boolean.Parse(split[11]);
+
+		string[] stringIDs = split[12].Split(' ');
+		IEnumerable<int> intIDs = stringIDs //Turn stringIDs into ints.
+			.Select(s => Int32.TryParse(s, out int n) ? n : (int?) null)
+			.Where(n => n.HasValue)
+			.Select(n => n.Value);
+		
+		collections = CollectionSelector.albums.Where(album => intIDs.Contains(album.id)).ToHashSet();
+		if (collections.Count == 0) collections = CollectionSelector.folders.Where(folder => intIDs.Contains(folder.id)).ToHashSet();
+	}
+
+	public static ImportFile ParseTabDelimitedString(string tabDelimitedString) => new(tabDelimitedString.Split('\t'));
 }
