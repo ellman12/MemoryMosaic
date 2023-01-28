@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace PSS.Backend;
 
@@ -50,11 +50,11 @@ public class ImportFile
 	///The uuid of the item, which will be added to the database upon completion of importing.
 	public Guid uuid; //TODO: idk if this will be needed
 
-	///The album(s) or folder to add this item to.
-	public HashSet<C.Collection> collections;
-
 	///If this item will be marked with a star when added to the library.
 	public bool starred;
+	
+	///The album(s) or folder to add this item to.
+	public HashSet<C.Collection> collections;
 
 	///<summary>Constructs a new instance of an <see cref="ImportFile"/>.</summary>
 	///<param name="absPath">The absolute path to where this item is.</param>
