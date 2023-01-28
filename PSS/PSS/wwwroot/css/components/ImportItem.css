@@ -104,3 +104,7 @@
 .importItem > .collectionsDisplay > span:hover {
     cursor: pointer;
 }
+
+.importItem > .star-icon {
+    color: yellow;
+}
