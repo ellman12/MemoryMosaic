@@ -29,6 +29,9 @@
 	public Action CtrlS { get; set; }
 
 	[Parameter]
+	public Action CtrlO { get; set; }
+
+	[Parameter]
 	public Action CtrlD { get; set; }
 
 	[Parameter]
@@ -77,6 +80,7 @@
 		if (Right != null) HotKeysContext.Add(ModKeys.None, Keys.Right, Right);
 		if (CtrlA != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.A, CtrlA);
 		if (CtrlS != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.S, CtrlS);
+		if (CtrlO != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.O, CtrlO);
 		if (CtrlD != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.D, CtrlD);
 		if (CtrlE != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.E, CtrlE);
 		if (CtrlG != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.G, CtrlG);
