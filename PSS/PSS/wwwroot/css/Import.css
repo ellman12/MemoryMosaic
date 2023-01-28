@@ -62,7 +62,7 @@ header > #widthBtn {
 
 header > #yearWarnInputs {
     position: absolute;
-    right: 135px;
+    right: 190px;
     display: flex;
     flex-direction: row;
     align-items: center;
