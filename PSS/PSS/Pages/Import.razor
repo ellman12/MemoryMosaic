@@ -1,6 +1,7 @@
 @page "/"
 @using Microsoft.VisualBasic.FileIO
 @using CS = PSS.Shared.CollectionSelector;
+@using System.Text
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -15,7 +16,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
+	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
 	<header>
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
@@ -184,7 +185,7 @@
 			ImportFile importFile = new(absPath);
 			importFiles.Add(importFile);
 		});
-		
+
 		OrganizeItems();
 		finishedLoading = true;
 		StateHasChanged();
@@ -360,4 +361,33 @@
 	}
 
 	private static async void FocusSearchInput() => await searchInput.FocusAsync();
+
+	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
+	private static void SaveChanges()
+	{
+		Console.WriteLine("saving...");
+		StringBuilder fileOutput = new();
+		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
+		
+		foreach (ImportFile file in importFiles)
+			fileOutput.AppendLine(file.ToTabDelimitedString());
+		
+		File.WriteAllText(filePath, fileOutput.ToString());
+	}
+
+	private void LoadItemsFromDisk()
+	{
+		Console.WriteLine("loading...");
+		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
+		string[] lines = File.ReadAllLines(filePath);
+
+		if (lines.Length == 0) return;
+		
+		importFiles.Clear();
+		StateHasChanged(); //IDK why but this is necessary otherwise the code below doesn't work.
+		foreach (string line in lines)
+			importFiles.Add(ImportFile.ParseTabDelimitedString(line));
+		OrganizeItems();
+		StateHasChanged();
+	}
 }
