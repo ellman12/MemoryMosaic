@@ -42,11 +42,6 @@ header > #statsDiv > #errorAmount {
     color: red;
 }
 
-header > #clearDTBtn {
-    position: absolute;
-    left: 470px;
-}
-
 header > #search {
     background-color: black;
     border: 1px solid white;
@@ -62,7 +57,7 @@ header > #statusMessage {
 
 header > #yearWarnInputs {
     position: absolute;
-    right: 190px;
+    right: 240px;
     display: flex;
     flex-direction: row;
     align-items: center;
