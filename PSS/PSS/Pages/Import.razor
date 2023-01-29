@@ -27,11 +27,9 @@
 			<span style="visibility: @(errorAmount > 0 ? "visible" : "hidden")" id="errorAmount">@errorAmount Filename Errors</span>
 		</div>
 		
-		<button id="clearDTBtn" class="textBtn" @onclick="@ClearDateTaken" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")"><span class="material-icons-outlined">dangerous</span><span>Clear DT</span></button>
-        
         <input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 		
-		<span id="savingLoadingStatus">@savingLoadingStatus</span>
+		<span id="statusMessage">@statusMessage</span>
 		
 		<div id="yearWarnInputs">
 			<input id="yearCheck" type="checkbox" @bind="@yearCheckEnabled"/>
@@ -45,8 +43,9 @@
 		</div>
 		
 		<div id="buttons" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
-			<button class="iconBtn" @onclick="@ToggleStars"><span class="material-icons-outlined">star</span></button>
+			<button class="iconBtn" @onclick="@ClearDateTaken" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")"><span class="material-icons-outlined">calendar_today</span></button>
 			<button class="iconBtn" @onclick="@(() => collectionSelectorVis = "visible")"><span class="material-icons-outlined">collections</span></button>
+			<button class="iconBtn" @onclick="@ToggleStars"><span class="material-icons-outlined">star</span></button>
 			<button class="iconBtn" @onclick="@DeleteSelected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		</div>
 	</header>
@@ -167,7 +166,7 @@
 
 	private static int errorAmount;
 
-	private static string searchText, savingLoadingStatus;
+	private static string searchText, statusMessage;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -181,7 +180,7 @@
 		minYear = 2000;
 		maxYear = DateTime.Today.Year;
 		errorAmount = 0;
-		savingLoadingStatus = "";
+		statusMessage = "";
 
 		await Parallel.ForEachAsync(allAbsPaths, async (absPath, _) =>
 		{
@@ -368,7 +367,7 @@
 	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
 	private void SaveChanges()
 	{
-		savingLoadingStatus = "Saving...";
+		statusMessage = "Saving...";
 		StateHasChanged();
 
 		StringBuilder fileOutput = new();
@@ -378,13 +377,13 @@
 			fileOutput.AppendLine(file.ToTabDelimitedString());
 		
 		File.WriteAllText(filePath, fileOutput.ToString());
-		savingLoadingStatus = "";
+		statusMessage = "";
 		StateHasChanged();
 	}
 
 	private void LoadItemsFromDisk()
 	{
-		savingLoadingStatus = "Loading...";
+		statusMessage = "Loading...";
 		StateHasChanged();
 
 		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
@@ -397,7 +396,7 @@
 		foreach (string line in lines)
 			importFiles.Add(ImportFile.ParseTabDelimitedString(line));
 		OrganizeItems();
-		savingLoadingStatus = "";
+		statusMessage = "";
 		StateHasChanged();
 	}
 }
