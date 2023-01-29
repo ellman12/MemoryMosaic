@@ -25,7 +25,7 @@
 				<span style="color: green;">C:&nbsp;@ImportFile.customDateTaken</span>
 			}
 		}
-		else if (ImportFile.metadataDateTaken == null && ImportFile.filenameDateTaken == null)
+		else if (ImportFile.metadataDateTaken == null && ImportFile.filenameDateTaken == null || ImportFile.dateTakenSource == DateTakenSource.None)
     	{
     		<span style="color: yellow">No Date Taken</span>
     	}
