@@ -55,7 +55,7 @@ header > #search {
     left: 610px;
 }
 
-header > #savingLoadingStatus {
+header > #statusMessage {
     position: absolute;
     left: 900px;
 }
