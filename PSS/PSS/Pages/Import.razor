@@ -31,6 +31,8 @@
         
         <input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 		
+		<span id="savingLoadingStatus">@savingLoadingStatus</span>
+		
 		<div id="yearWarnInputs">
 			<input id="yearCheck" type="checkbox" @bind="@yearCheckEnabled"/>
 			<label for="yearCheck">Year Check</label>
@@ -165,7 +167,7 @@
 
 	private static int errorAmount;
 
-	private static string searchText;
+	private static string searchText, savingLoadingStatus;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -179,6 +181,7 @@
 		minYear = 2000;
 		maxYear = DateTime.Today.Year;
 		errorAmount = 0;
+		savingLoadingStatus = "";
 
 		await Parallel.ForEachAsync(allAbsPaths, async (absPath, _) =>
 		{
@@ -363,9 +366,11 @@
 	private static async void FocusSearchInput() => await searchInput.FocusAsync();
 
 	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
-	private static void SaveChanges()
+	private void SaveChanges()
 	{
-		Console.WriteLine("saving...");
+		savingLoadingStatus = "Saving...";
+		StateHasChanged();
+
 		StringBuilder fileOutput = new();
 		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
 		
@@ -373,11 +378,15 @@
 			fileOutput.AppendLine(file.ToTabDelimitedString());
 		
 		File.WriteAllText(filePath, fileOutput.ToString());
+		savingLoadingStatus = "";
+		StateHasChanged();
 	}
 
 	private void LoadItemsFromDisk()
 	{
-		Console.WriteLine("loading...");
+		savingLoadingStatus = "Loading...";
+		StateHasChanged();
+
 		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
 		string[] lines = File.ReadAllLines(filePath);
 
@@ -388,6 +397,7 @@
 		foreach (string line in lines)
 			importFiles.Add(ImportFile.ParseTabDelimitedString(line));
 		OrganizeItems();
+		savingLoadingStatus = "";
 		StateHasChanged();
 	}
 }

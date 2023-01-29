@@ -55,6 +55,11 @@ header > #search {
     left: 610px;
 }
 
+header > #savingLoadingStatus {
+    position: absolute;
+    left: 900px;
+}
+
 header > #yearWarnInputs {
     position: absolute;
     right: 190px;
