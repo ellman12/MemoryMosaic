@@ -42,6 +42,11 @@ header > #statsDiv > #errorAmount {
     color: red;
 }
 
+header > #addBtn {
+    position: absolute;
+    left: 350px;
+}
+
 header > #search {
     background-color: black;
     border: 1px solid white;

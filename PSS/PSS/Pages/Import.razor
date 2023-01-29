@@ -27,7 +27,15 @@
 			<span style="visibility: @(errorAmount > 0 ? "visible" : "hidden")" id="errorAmount">@errorAmount Filename Errors</span>
 		</div>
 		
-        <input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
+		@{
+			string addBtnMsg;
+			if (selectedItems.Count == 0 || selectedItems.Count == importFiles.Count) addBtnMsg = "Add All";
+			else if (selectedItems.Count == 1) addBtnMsg = "Add 1 Item";
+			else addBtnMsg = $"Add {selectedItems.Count} Items";
+		}
+		<button id="addBtn" class="textBtn"><span class="material-icons-outlined">library_add</span><span>@addBtnMsg</span></button>
+		
+		<input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 		
 		<span id="statusMessage">@statusMessage</span>
 		
