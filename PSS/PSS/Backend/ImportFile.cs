@@ -86,7 +86,7 @@ public class ImportFile
 			result += $"{fields[i].GetValue(this)}\t";
 		
 		if (collections?.Count > 0)
-			result += $"{String.Join(" ", collections.Select(c => c.id))}";
+			result += $"{String.Join(' ', collections.Select(c => c.id))}";
 
 		return result;
 	}
