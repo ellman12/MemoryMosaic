@@ -229,7 +229,6 @@ namespace PSS.Backend
             }
         }
 
-        
         ///<summary>Give a collection a new name.</summary>
         ///<param name="newName">The new name for the collection.</param>
         ///<param name="id">The id of the collection to rename.</param>
@@ -391,6 +390,41 @@ namespace PSS.Backend
             finally
             {
                 Close();
+            }
+        }
+        
+        ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<param name="collectionID">The ID of the collection to add the item to.</param>
+        public static async Task AddToCollectionAsync(Guid uuid, int collectionID)
+        {
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+            bool isFolder = await IsFolderAsync(collectionID);
+            
+            try
+            {
+                await using NpgsqlCommand cmd = new("", localConn);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
+
+                if (isFolder)
+                {
+                    //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
+                    cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid; UPDATE media SET separate=true WHERE uuid=@uuid";
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                //Actually add the item to the collection and set the collection's last updated to now.
+                cmd.CommandText = "INSERT INTO collection_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                await localConn.CloseAsync();
             }
         }
 
