@@ -790,6 +790,38 @@ namespace PSS.Backend
 
             return isFolder;
         }
+        
+        ///Returns true if a Collection is a folder, false otherwise.
+        public static async Task<bool> IsFolderAsync(int collectionID)
+        {
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+            bool isFolder = false;
+            
+            try
+            {
+                await using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", localConn);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
+                await cmd.ExecuteNonQueryAsync();
+
+                await using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
+                {
+                    r.Read();
+                    isFolder = r.GetBoolean(0);
+                    await r.CloseAsync();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                await localConn.CloseAsync();
+            }
+
+            return isFolder;
+        }
 
         ///<summary>Generates a short path (DB path) given a Date Taken and filename. A DB path looks like this: 2022/5/filename.jpg.</summary>
         ///<param name="dateTaken">The date taken of the item.</param>
