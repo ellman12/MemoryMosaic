@@ -11,6 +11,14 @@ namespace PSS.Backend
         private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS";
         public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
 
+        ///Asynchronously creates and opens a new connection object for use in Async Connection.cs methods, and returns the new connection.
+        private static async Task<NpgsqlConnection> CreateLocalConnectionAsync()
+        {
+            NpgsqlConnection localConn = new(CONNECTION_STRING);
+            await localConn.OpenAsync();
+            return localConn;
+        }
+
         ///How items in CollectionsMain should be sorted.
         public enum CMSortMode
         {
@@ -158,8 +166,7 @@ namespace PSS.Backend
         ///<returns>Int saying how many rows were affected.</returns>
         public static async Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
         {
-            NpgsqlConnection localConn = new(CONNECTION_STRING);
-            await localConn.OpenAsync();
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
             int rowsAffected = 0;
             try
