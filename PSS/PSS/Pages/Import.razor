@@ -275,17 +275,8 @@
 	///Adds either all items or the selected items to your library.
 	private async void AddItems()
 	{
-		List<ImportFile> filesToAdd;
-		if (selectedItems.Count > 0)
-		{
-			filesToAdd = importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList();
-			importFiles.RemoveAll(file => selectedItems.Contains(file.uuid));
-			ClearChecks();
-		}
-		else
-		{
-			filesToAdd = importFiles;
-		}
+		List<ImportFile> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count 
+			? importFiles : importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList();
 		
 		await Parallel.ForEachAsync(filesToAdd, async (file, _) =>
 		{
@@ -307,8 +298,16 @@
 
 			if (file.collections != null)
 				foreach (C.Collection collection in file.collections)
-					C.AddToCollection(file.uuid, collection.id);
+					await C.AddToCollectionAsync(file.uuid, collection.id);
 		});
+
+		if (selectedItems.Count > 0)
+		{
+			importFiles.RemoveAll(file => selectedItems.Contains(file.uuid));
+			ClearChecks();
+		}
+		else
+			importFiles.Clear();
 		
 		OrganizeItems();
 		StateHasChanged();
