@@ -94,11 +94,14 @@ public class ImportFile
 	///Creates a new ImportFile from a string created with ToTabDelimitedString().
 	private ImportFile(IReadOnlyList<string> split)
 	{
+		if (!File.Exists(split[4]))
+			return;
+		
+		absolutePath = split[4];
 		originalFilename = split[0];
 		renamedFilename = split[1];
 		extension = split[2];
 		shortPath = split[3];
-		absolutePath = split[4];
 		thumbnail = split[5] == "" ? null : split[5];
 		if (!String.IsNullOrWhiteSpace(split[6])) metadataDateTaken = DateTime.Parse(split[6]);
 		if (!String.IsNullOrWhiteSpace(split[7])) filenameDateTaken = DateTime.Parse(split[7]);

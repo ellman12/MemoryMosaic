@@ -444,7 +444,11 @@
 		importFiles.Clear();
 		StateHasChanged(); //IDK why but this is necessary otherwise the code below doesn't work.
 		foreach (string line in lines)
-			importFiles.Add(ParseTabDelimitedString(line));
+		{
+			ImportFile newFile = ParseTabDelimitedString(line);
+			if (newFile.uuid != Guid.Empty)
+				importFiles.Add(newFile);
+		}
 		OrganizeItems();
 		statusMessage = "";
 		StateHasChanged();
