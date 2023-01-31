@@ -1,6 +1,7 @@
 @page "/"
 @using Microsoft.VisualBasic.FileIO
 @using CS = PSS.Shared.CollectionSelector;
+@using static ImportFile
 @using System.Text
 
 <title>Import - PSS</title>
@@ -27,7 +28,15 @@
 			<span style="visibility: @(errorAmount > 0 ? "visible" : "hidden")" id="errorAmount">@errorAmount Filename Errors</span>
 		</div>
 		
-        <input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
+		@if (errorAmount == 0) {
+			string addBtnMsg;
+			if (selectedItems.Count == 0 || selectedItems.Count == importFiles.Count) addBtnMsg = "Add All";
+			else if (selectedItems.Count == 1) addBtnMsg = "Add 1 Item";
+			else addBtnMsg = $"Add {selectedItems.Count} Items";
+			<button id="addBtn" class="textBtn" @onclick="@AddItems"><span class="material-icons-outlined">library_add</span><span>@addBtnMsg</span></button>
+		}
+		
+		<input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
 		
 		<span id="statusMessage">@statusMessage</span>
 		
@@ -263,6 +272,47 @@
 		C.Close();
 	}
 
+	///Adds either all items or the selected items to your library.
+	private async void AddItems()
+	{
+		List<ImportFile> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count 
+			? importFiles : importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList();
+		
+		await Parallel.ForEachAsync(filesToAdd, async (file, _) =>
+		{
+			DateTime? dtToUse = file.dateTakenSource switch
+			{
+				DateTakenSource.Metadata => file.metadataDateTaken,
+				DateTakenSource.Filename => file.filenameDateTaken,
+				DateTakenSource.Custom => file.customDateTaken,
+				DateTakenSource.None => null,
+				_ => throw new ArgumentOutOfRangeException()
+			};
+
+			await C.InsertMedia(file.shortPath, dtToUse, file.uuid, file.thumbnail, file.starred);
+
+			string destFolder = C.CreateFullDateFolderPath(dtToUse);
+			Directory.CreateDirectory(destFolder);
+			string destPath = C.CreateFullPath(dtToUse, file.originalFilename + file.extension);
+			File.Move(file.absolutePath, destPath);
+
+			if (file.collections != null)
+				foreach (C.Collection collection in file.collections)
+					await C.AddToCollectionAsync(file.uuid, collection.id);
+		});
+
+		if (selectedItems.Count > 0)
+		{
+			importFiles.RemoveAll(file => selectedItems.Contains(file.uuid));
+			ClearChecks();
+		}
+		else
+			importFiles.Clear();
+		
+		OrganizeItems();
+		StateHasChanged();
+	}
+
 	private static void SearchItems()
 	{
 		searchResults.Clear();
@@ -332,7 +382,7 @@
 	{
 		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
 		{
-			file.dateTakenSource = ImportFile.DateTakenSource.Custom;
+			file.dateTakenSource = DateTakenSource.Custom;
 			file.customDateTaken = null;
 		}
 	}

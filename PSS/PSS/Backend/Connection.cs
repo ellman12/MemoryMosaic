@@ -11,6 +11,14 @@ namespace PSS.Backend
         private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS";
         public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
 
+        ///Asynchronously creates and opens a new connection object for use in Async Connection.cs methods, and returns the new connection.
+        private static async Task<NpgsqlConnection> CreateLocalConnectionAsync()
+        {
+            NpgsqlConnection localConn = new(CONNECTION_STRING);
+            await localConn.OpenAsync();
+            return localConn;
+        }
+
         ///How items in CollectionsMain should be sorted.
         public enum CMSortMode
         {
@@ -158,13 +166,11 @@ namespace PSS.Backend
         ///<returns>Int saying how many rows were affected.</returns>
         public static async Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
         {
-            NpgsqlConnection localConn = new(CONNECTION_STRING);
-            await localConn.OpenAsync();
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
             int rowsAffected = 0;
             try
             {
-                Open();
                 await using NpgsqlCommand cmd = new("", localConn);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
@@ -222,7 +228,6 @@ namespace PSS.Backend
             }
         }
 
-        
         ///<summary>Give a collection a new name.</summary>
         ///<param name="newName">The new name for the collection.</param>
         ///<param name="id">The id of the collection to rename.</param>
@@ -384,6 +389,41 @@ namespace PSS.Backend
             finally
             {
                 Close();
+            }
+        }
+        
+        ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<param name="collectionID">The ID of the collection to add the item to.</param>
+        public static async Task AddToCollectionAsync(Guid uuid, int collectionID)
+        {
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+            bool isFolder = await IsFolderAsync(collectionID);
+            
+            try
+            {
+                await using NpgsqlCommand cmd = new("", localConn);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
+
+                if (isFolder)
+                {
+                    //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
+                    cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid; UPDATE media SET separate=true WHERE uuid=@uuid";
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                //Actually add the item to the collection and set the collection's last updated to now.
+                cmd.CommandText = "INSERT INTO collection_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                await localConn.CloseAsync();
             }
         }
 
@@ -779,6 +819,38 @@ namespace PSS.Backend
             finally
             {
                 Close();
+            }
+
+            return isFolder;
+        }
+        
+        ///Returns true if a Collection is a folder, false otherwise.
+        public static async Task<bool> IsFolderAsync(int collectionID)
+        {
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+            bool isFolder = false;
+            
+            try
+            {
+                await using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", localConn);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
+                await cmd.ExecuteNonQueryAsync();
+
+                await using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
+                {
+                    r.Read();
+                    isFolder = r.GetBoolean(0);
+                    await r.CloseAsync();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                await localConn.CloseAsync();
             }
 
             return isFolder;
