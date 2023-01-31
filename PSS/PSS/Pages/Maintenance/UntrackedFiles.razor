@@ -6,7 +6,7 @@
 
 <header>
     <button class="textBtn" @onclick="@MoveAll">
-        <span class="material-icons-outlined">drive_file_move</span><span>Move All to Upload</span>
+        <span class="material-icons-outlined">drive_file_move</span><span>Move All to import</span>
     </button>
 
     <button class="textBtn" @onclick="@DeleteAll">
@@ -47,7 +47,7 @@
 
                 <span title="@name" class="filenameSpan">@name</span>
 
-                <button class="iconBtn" title="Move This Item to Upload Folder" @onclick="@(() => MoveBtnClick(ii))">
+                <button class="iconBtn" title="Move This Item to Import Folder" @onclick="@(() => MoveBtnClick(ii))">
                     <span class="material-icons-outlined">drive_file_move</span>
                 </button>
 
@@ -66,19 +66,19 @@
 
     protected override void OnInitialized() => untrackedFiles = M.GetUntrackedLibFiles();
 
-    ///Move a single item to pss_upload.
+    ///Move a single item to pss_import.
     private static void MoveBtnClick(int index)
     {
         string path = untrackedFiles[index];
-        File.Move(path, Path.Combine(S.uploadFolderPath, Path.GetFileName(path)));
+        File.Move(path, Path.Combine(S.importFolderPath, Path.GetFileName(path)));
         untrackedFiles.RemoveAt(index);
     }
 
-    ///Move all untracked items from pss_library to pss_upload.
+    ///Move all untracked items from pss_library to pss_import.
     private static void MoveAll()
     {
         foreach (string path in untrackedFiles)
-            File.Move(path, Path.Combine(S.uploadFolderPath, Path.GetFileName(path)));
+            File.Move(path, Path.Combine(S.importFolderPath, Path.GetFileName(path)));
         untrackedFiles.Clear();
     }
 

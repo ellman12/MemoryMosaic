@@ -1,0 +1,107 @@
+* {
+    scrollbar-width: none !important;
+    --left-margin: 145px; /* For things with absolute positioning, how far to be away from left side of page */
+    user-select: none;
+}
+
+h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    margin-left: var(--left-margin);
+    height: 60px;
+    background-color: black;
+    border: 1px solid white;
+    width: available;
+    width: -moz-available;
+    z-index: 999;
+}
+
+header > .iconBtn {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+header > #statsDiv {
+    position: absolute;
+    left: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+header > #statsDiv > #errorAmount {
+    color: red;
+}
+
+header > #addBtn {
+    position: absolute;
+    left: 350px;
+}
+
+header > #search {
+    background-color: black;
+    border: 1px solid white;
+    position: absolute;
+    width: 210px;
+    left: 610px;
+}
+
+header > #statusMessage {
+    position: absolute;
+    left: 900px;
+}
+
+header > #yearWarnInputs {
+    position: absolute;
+    right: 240px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+header > #yearWarnInputs > input[type="text"] {
+    background-color: black;
+    border: 1px solid white;
+    width: 35px;
+    margin-left: 5px;
+}
+
+header > #buttons {
+    position: absolute;
+    right: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+header > #buttons > .iconBtn {
+    margin-left: 5px;
+}
+
+#mainDiv {
+    margin-left: var(--left-margin);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 60px;
+}
+
+#mainDiv > .itemGroup {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#mainDiv > .itemGroup > .errorDiv {
+}
+
+#mainDiv > .itemGroup > .warnDiv {
+}

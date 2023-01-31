@@ -1,5 +1,6 @@
 @*A blank page just for testing stuff*@
 @page "/test"
+@using System.Diagnostics
 
 <title>Test - PSS</title>
 @{
@@ -10,6 +11,12 @@
 
     private static void Yes()
     {
-        C.AddToCollection(new Guid("56ff78b0-ef4d-11ec-8ea0-0242ac120002"), 4);
+        ImportFile file = new("C:/Users/Elliott/Pictures/PSS/pss_import/2d9a134474979e5b9762209e207fd107f53e605c.mp4");
+        file.collections = new HashSet<Connection.Collection>();
+        file.collections.Add(new Connection.Collection(4, "", ""));
+        
+        string tabDelimitedString = file.ToTabDelimitedString();
+        var newFile = ImportFile.ParseTabDelimitedString(tabDelimitedString);
     }
+    
 }

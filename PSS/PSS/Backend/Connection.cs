@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using Microsoft.VisualBasic.FileIO;
 
 namespace PSS.Backend
@@ -7,7 +8,16 @@ namespace PSS.Backend
     ///Contains static methods for interacting with the PSS PostgreSQL database.
     public static class Connection
     {
-        public static readonly NpgsqlConnection connection = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
+        private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS";
+        public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
+
+        ///Asynchronously creates and opens a new connection object for use in Async Connection.cs methods, and returns the new connection.
+        private static async Task<NpgsqlConnection> CreateLocalConnectionAsync()
+        {
+            NpgsqlConnection localConn = new(CONNECTION_STRING);
+            await localConn.OpenAsync();
+            return localConn;
+        }
 
         ///How items in CollectionsMain should be sorted.
         public enum CMSortMode
@@ -71,7 +81,17 @@ namespace PSS.Backend
             public readonly bool separate;
             public readonly Guid uuid;
             public readonly string thumbnail;
+            public readonly DateTime? dateDeleted;
             public string description;
+
+            public MediaRow(string p, DateTime? dt, Guid uuid, string thumbnail, DateTime? dateDeleted)
+            {
+                path = p;
+                dateTaken = dt;
+                this.uuid = uuid;
+                this.thumbnail = thumbnail;
+                this.dateDeleted = dateDeleted;
+            }
 
             public MediaRow(string p, DateTime? dt, bool starred, Guid uuid, string thumbnail)
             {
@@ -124,37 +144,6 @@ namespace PSS.Backend
             }
         }
 
-        ///Represents an item that is being uploaded.
-        public class UploadFile
-        {
-            ///The original (or new if changed by user) filename of this item.
-            public string filename;
-
-            ///The file extension of the item.
-            public string extension;
-
-            ///The path relative to pss_upload of this item.
-            public string shortPath;
-
-            ///The absolute path to the file to upload.
-            public string fullPath;
-            
-            ///null for images, otherwise a base64 string for video files.
-            public string thumbnail;
-            
-            ///If this item is already in pss_library.
-            public bool alreadyInLib;
-            
-            ///The date and time this image or video was captured. null if this item doesnt have any.
-            public DateTime? dateTaken;
-            
-            ///Where the date taken data came from (Filename, Metadata, or None).
-            public D.DateTakenSrc dateTakenSrc;
-
-            ///The uuid of the item, which will be added to the database upon upload.
-            public Guid uuid;
-        }
-
         public static void Open()
         {
             if (connection.State == ConnectionState.Closed)
@@ -175,15 +164,13 @@ namespace PSS.Backend
         ///<param name="starred">Is this item starred or not?</param>
         ///<param name="separate">Is this item separate from main library (i.e., is it in a folder)?</param>
         ///<returns>Int saying how many rows were affected.</returns>
-        public static async System.Threading.Tasks.Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
+        public static async Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
         {
-            NpgsqlConnection localConn = new("Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS");
-            await localConn.OpenAsync();
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
             int rowsAffected = 0;
             try
             {
-                Open();
                 await using NpgsqlCommand cmd = new("", localConn);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
@@ -241,7 +228,6 @@ namespace PSS.Backend
             }
         }
 
-        
         ///<summary>Give a collection a new name.</summary>
         ///<param name="newName">The new name for the collection.</param>
         ///<param name="id">The id of the collection to rename.</param>
@@ -405,6 +391,41 @@ namespace PSS.Backend
                 Close();
             }
         }
+        
+        ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
+        ///<param name="uuid">The uuid of the item.</param>
+        ///<param name="collectionID">The ID of the collection to add the item to.</param>
+        public static async Task AddToCollectionAsync(Guid uuid, int collectionID)
+        {
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+            bool isFolder = await IsFolderAsync(collectionID);
+            
+            try
+            {
+                await using NpgsqlCommand cmd = new("", localConn);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
+
+                if (isFolder)
+                {
+                    //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
+                    cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid; UPDATE media SET separate=true WHERE uuid=@uuid";
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                //Actually add the item to the collection and set the collection's last updated to now.
+                cmd.CommandText = "INSERT INTO collection_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                await localConn.CloseAsync();
+            }
+        }
 
         ///<summary>Remove a single item from a collection.</summary>
         ///<param name="uuid">The uuid of the item to remove.</param>
@@ -564,8 +585,15 @@ namespace PSS.Backend
         ///PERMANENTLY remove an item from the database and DELETES the file from server.
         public static void PermDeleteItem(Guid uuid)
         {
-            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-
+            try
+            {
+                FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
             try
             {
                 Open();
@@ -575,7 +603,7 @@ namespace PSS.Backend
                 cmd.Parameters.AddWithValue("@uuid", uuid);
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid AND deleted = TRUE";
+                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid";
                 cmd.ExecuteNonQuery();
             }
             catch (NpgsqlException e)
@@ -662,7 +690,7 @@ namespace PSS.Backend
         }
         
         ///<summary>Change a List of items from either starred (true) or not starred.</summary>
-        public static void UpdateStarred(List<Guid> uuids, bool starred)
+        public static void UpdateStarred(HashSet<Guid> uuids, bool starred)
         {
             try
             {
@@ -791,6 +819,38 @@ namespace PSS.Backend
             finally
             {
                 Close();
+            }
+
+            return isFolder;
+        }
+        
+        ///Returns true if a Collection is a folder, false otherwise.
+        public static async Task<bool> IsFolderAsync(int collectionID)
+        {
+            NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+            bool isFolder = false;
+            
+            try
+            {
+                await using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", localConn);
+                cmd.Parameters.AddWithValue("@collectionID", collectionID);
+                await cmd.ExecuteNonQueryAsync();
+
+                await using NpgsqlDataReader r = cmd.ExecuteReader();
+                if (r.HasRows)
+                {
+                    r.Read();
+                    isFolder = r.GetBoolean(0);
+                    await r.CloseAsync();
+                }
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            }
+            finally
+            {
+                await localConn.CloseAsync();
             }
 
             return isFolder;
@@ -961,6 +1021,39 @@ namespace PSS.Backend
             {
                 Close();
             }
+        }
+        
+        ///<summary>Searches the entire media table for files with similar names to the filename provided.</summary>
+        ///<param name="filename">The filename to search for.</param>
+        ///<returns>A List&lt;MediaRow&gt; of rows found, null if none found.</returns>
+        ///<remarks>The way it searches the paths in the media table is a wildcard like this: %@filename%, so any filenames that are the exact same or similar are found.</remarks>
+        public static async Task<List<MediaRow>> FindFilesWithSimilarName(string filename)
+        {
+            NpgsqlConnection localConn = new(CONNECTION_STRING);
+            await localConn.OpenAsync();
+            
+            List<MediaRow> files = null;
+            try
+            {
+                Open();
+                await using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media WHERE path LIKE '%{filename}%'", localConn);
+                await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync();
+                if (r.HasRows)
+                {
+                    files = new List<MediaRow>();
+                    while (await r.ReadAsync()) files.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                await localConn.CloseAsync();
+            }
+
+            return files;
         }
     }
 }

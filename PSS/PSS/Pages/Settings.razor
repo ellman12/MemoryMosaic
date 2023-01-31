@@ -12,8 +12,8 @@
         </div>
 
         <div class="settings-pair">
-            <span>Where to upload items for applying</span>
-            <input type="text" class="settings-pair" @bind="@uploadFolderPath"/>
+            <span>Where to look for items to add to your library.</span>
+            <input type="text" class="settings-pair" @bind="@importFolderPath"/>
         </div>
 
         <div class="settings-pair">
@@ -63,7 +63,7 @@
         {
             <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
             <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@mediaMissingFiles.Count)</a></button>
-            <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Upload"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
+            <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Import"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
         }
     </div>
     
@@ -112,7 +112,7 @@
 @code {
     //Settings
     private static string serverIP = S.serverIP;
-    private static string uploadFolderPath = S.uploadFolderPath;
+    private static string importFolderPath = S.importFolderPath;
     private static string libraryRootPath = S.libFolderPath;
     private static bool showPrompts = S.showPrompts;
     private static bool displayNoDTInAV = S.displayNoDTInAV;
@@ -124,7 +124,7 @@
     private static bool maintenanceLoaded;
     private static List<string> untrackedPaths;
 
-    //Get all folders in pss_library and pss_upload
+    //Get all folders in pss_library and pss_import
     private static string[] folderPaths;
     private static readonly List<string> emptyFolders = new();
     
@@ -154,7 +154,7 @@
         mediaMissingFiles = new List<C.MediaRow>();
 
         //Empty folders
-        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadFolderPath, "*", SearchOption.AllDirectories)).ToArray();
+        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
         
@@ -183,7 +183,7 @@
     private static void ApplyBtnClicked()
     {
         S.serverIP = serverIP;
-        S.uploadFolderPath = uploadFolderPath;
+        S.importFolderPath = importFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
         S.displayNoDTInAV = displayNoDTInAV;
@@ -197,7 +197,7 @@
     private static void CancelBtnClicked()
     {
         serverIP = S.serverIP;
-        uploadFolderPath = S.uploadFolderPath;
+        importFolderPath = S.importFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;
         displayNoDTInAV = S.displayNoDTInAV;
@@ -229,7 +229,7 @@
 
         mediaMissingFiles = M.GetMediaMissingFiles();
 
-        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.uploadFolderPath, "*", SearchOption.AllDirectories)).ToArray();
+        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
     }

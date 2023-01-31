@@ -18,12 +18,12 @@ if (!pss_library.EndsWith("pss_library"))
 Console.WriteLine($"Your photos and videos will be stored in \"{pss_library}\"\n");
 Directory.CreateDirectory(pss_library);
 
-Console.WriteLine("Where should uploaded items be stored before being added to your library?");
-string pss_upload = Console.ReadLine()!;
-if (!pss_upload.EndsWith("pss_upload"))
-      pss_upload = Path.Combine(pss_upload, "pss_upload");
-Console.WriteLine($"Uploaded photos and videos will be (temporarily) stored in \"{pss_upload}\"\n");
-Directory.CreateDirectory(pss_upload);
+Console.WriteLine("Where should items be stored before being imported in to your library?");
+string pss_import = Console.ReadLine()!;
+if (!pss_import.EndsWith("pss_import"))
+      pss_import = Path.Combine(pss_import, "pss_import");
+Console.WriteLine($"Uploaded photos and videos will be (temporarily) stored in \"{pss_import}\"\n");
+Directory.CreateDirectory(pss_import);
 
 Console.WriteLine("Enter folder path to where temporary items should be stored:");
 string pss_tmp = Console.ReadLine()!;
@@ -48,7 +48,7 @@ string serverIP = Console.ReadLine()!;
 Console.ForegroundColor = ConsoleColor.Yellow;
 Console.WriteLine("\nSaving settings...");
 Settings.serverIP = serverIP;
-Settings.uploadFolderPath = pss_upload;
+Settings.importFolderPath = pss_import;
 Settings.libFolderPath = pss_library;
 Settings.backupFolderPath = pss_backup;
 Settings.tmpFolderPath = pss_tmp;
