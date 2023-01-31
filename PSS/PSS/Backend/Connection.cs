@@ -171,7 +171,6 @@ namespace PSS.Backend
             int rowsAffected = 0;
             try
             {
-                Open();
                 await using NpgsqlCommand cmd = new("", localConn);
                 cmd.Parameters.AddWithValue("@path", path);
                 cmd.Parameters.AddWithValue("@uuid", uuid);
