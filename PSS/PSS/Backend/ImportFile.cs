@@ -61,7 +61,7 @@ public class ImportFile
 	public ImportFile(string absPath)
 	{
 		absolutePath = absPath.Replace('\\', '/');
-		shortPath = absolutePath.Replace(S.importFolderPath, "");
+		shortPath = absolutePath.Substring(S.importFolderPath.Length + 1); //Ensures no '/' at start.
 		originalFilename = renamedFilename = Path.GetFileNameWithoutExtension(absolutePath);
 		extension = Path.GetExtension(absolutePath);
 		thumbnail = D.IsVideoExt(extension!) ? F.GenerateThumbnail(absolutePath) : null;
