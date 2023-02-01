@@ -18,7 +18,7 @@ public static class Connection
         await localConn.OpenAsync();
         return localConn;
     }
-        
+    
     public static void Open()
     {
         if (connection.State == ConnectionState.Closed)
@@ -30,6 +30,8 @@ public static class Connection
         if (connection.State == ConnectionState.Open)
             connection.Close();
     }
+
+    #region Media
 
     ///<summary>For inserting a photo or video into the media table (the main table). Will not insert duplicates.</summary>
     ///<param name="path">The short path that will be stored in media. Convention is to use '/' as the separator.</param>
@@ -52,7 +54,7 @@ public static class Connection
             cmd.Parameters.AddWithValue("@starred", starred);
             cmd.Parameters.AddWithValue("@separate", separate);
             if (dateTaken != null) cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
-                
+            
             if (String.IsNullOrWhiteSpace(thumbnail))
                 cmd.CommandText = dateTaken == null ? "INSERT INTO media (path, date_added, starred, separate, uuid) VALUES (@path, now(), @starred, @separate, @uuid)" : "INSERT INTO media (path, date_taken, date_added, starred, separate, uuid) VALUES (@path, @dateTaken, now(), @starred, @separate, @uuid)";
             else
@@ -75,7 +77,366 @@ public static class Connection
 
         return rowsAffected;
     }
+    
+    ///<summary>Update when an item was taken, update its short path, and move it to the new path on the server.</summary>
+    ///<param name="shortPath">The path to the item that is stored in the database</param>
+    ///<param name="newDateTaken">The new date taken for this item</param>
+    ///<returns>True if completed successfully, false otherwise. If it failed, it's probably because an item with the same filename and Date Taken already exists there.</returns>
+    public static bool UpdateDateTaken(string shortPath, DateTime? newDateTaken)
+    {
+        try
+        {
+            string filename = Path.GetFileName(shortPath);
+            string originalFullPath = Path.Combine(S.libFolderPath, shortPath);
+            
+            string newShortPath = CreateShortPath(newDateTaken, filename);
+            string newDTFolderPath = CreateFullDateFolderPath(newDateTaken);
+            string newFullPath = Path.Combine(newDTFolderPath, filename);
+            
+            //Move item to new path on server. This is how the user input is validated. If this fails, user needs to pick a new DT and/or filename.
+            Directory.CreateDirectory(newDTFolderPath); //Create in case it doesn't exist.
+            File.Move(originalFullPath, newFullPath);
+            D.UpdateDateTaken(newFullPath, newDateTaken);
 
+            Open();
+            using NpgsqlCommand cmd = new("", connection);
+            if (newDateTaken == null)
+            {
+                cmd.CommandText = "UPDATE media SET path = @newPath, date_taken = NULL WHERE path = @shortPath";
+            }
+            else
+            {
+                cmd.CommandText = "UPDATE media SET path = @newPath, date_taken = @newDateTaken WHERE path = @shortPath";
+                cmd.Parameters.AddWithValue("@newDateTaken", newDateTaken);
+            }
+
+            //Update date taken and short path in media.
+            cmd.Parameters.AddWithValue("@newPath", newShortPath);
+            cmd.Parameters.AddWithValue("@shortPath", shortPath);
+            cmd.ExecuteNonQuery();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    ///<summary>Gets an item's short path from its uuid.</summary>
+    ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
+    public static string GetPathFromUuid(Guid uuid)
+    {
+        string path = null;
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
+            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.ExecuteNonQuery();
+
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+            if (r.HasRows)
+            {
+                r.Read(); //There should only be 1 line to read.
+                path = r.GetString(0); //First and only column.
+                r.Close();
+            }
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+        }
+        finally
+        {
+            Close();
+        }
+        return path;
+    }
+    
+    ///<summary>Used in ViewItem for renaming the current item's file.</summary>
+    ///<param name="oldShortPath">The original short path of the item.</param>
+    ///<param name="newFilename">The new filename of the item.</param>
+    ///<param name="ext">The file extension.</param>
+    ///<param name="dateTaken">The date taken of the item.</param>
+    ///<returns>The new short path (DB path) of this item. null if DB error occurred, which means there is already a file with the same name in that location.</returns>
+    public static string RenameFile(string oldShortPath, string newFilename, string ext, DateTime? dateTaken)
+    {
+        try
+        {
+            string originalFullPath = Path.Combine(S.libFolderPath, oldShortPath);
+            string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
+            string newFullPath = Path.Combine(S.libFolderPath, newShortPath);
+            File.Move(originalFullPath, newFullPath);
+            
+            Open();
+            using NpgsqlCommand cmd = new("UPDATE media SET path = @newShortPath WHERE path = @oldShortPath", connection);
+            cmd.Parameters.AddWithValue("@newShortPath", newShortPath);
+            cmd.Parameters.AddWithValue("@oldShortPath", oldShortPath);
+            cmd.ExecuteNonQuery();
+            return newShortPath;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    ///<summary>Loads every row in the media table, even if has no DT, in a folder, in the trash, etc. Sorted by date_taken descending (NULL and newest DT first).</summary>
+    ///<returns>List&lt;MediaRow&gt; of EVERY row in the media table.</returns>
+    public static List<MediaRow> LoadEntireMediaTable()
+    {
+        List<MediaRow> media = new();
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media ORDER BY date_taken DESC", connection);
+            cmd.ExecuteNonQuery();
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+            while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
+            r.Close();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        finally
+        {
+            Close();
+        }
+        return media;
+    }
+
+    ///<summary>Loads every item in media that was taken on this month and day, sorted so newest items appear first.</summary>
+    ///<param name="monthName">The name of the month, automatically converted to a number by LoadMemories().</param>
+    ///<param name="day">The day of the month.</param>
+    ///<returns>List&lt;MediaRow&gt; of items taken on this month and day.</returns>
+    public static List<MediaRow> LoadMemories(string monthName, int day)
+    {
+        List<MediaRow> memories = new();
+        int month = DateTime.ParseExact(monthName, "MMMM", System.Globalization.CultureInfo.CurrentCulture).Month;
+
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new($"SELECT path, date_taken, starred, uuid, thumbnail FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{day} %' ORDER BY date_taken DESC", connection);
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+            while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        finally
+        {
+            Close();
+        }
+        return memories;
+    }
+    
+    /// <summary>Sets the description of an item.</summary>
+    /// <param name="uuid">The uuid of the item.</param>
+    /// <param name="newDescription">The new description of the item.</param>
+    public static void UpdateDescription(Guid uuid, string newDescription)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new(null, connection);
+            if (String.IsNullOrWhiteSpace(newDescription))
+            {
+                cmd.CommandText = "UPDATE media SET description = NULL WHERE uuid=@uuid";
+            }
+            else
+            {
+                cmd.CommandText = "UPDATE media SET description = @newDescription WHERE uuid=@uuid";
+                cmd.Parameters.AddWithValue("@newDescription", newDescription);
+            }
+            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    #region Trash
+
+    ///<summary>Mark an item in the media table as in the Trash.</summary>
+    ///<param name="uuid">The uuid of the item to move to Trash.</param>
+    public static void MoveToTrash(Guid uuid)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = now() WHERE uuid=@uuid", connection);
+            cmd.Parameters.AddWithValue("uuid", uuid);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    ///PERMANENTLY remove an item from the database and DELETES the file from server.
+    public static void PermDeleteItem(Guid uuid)
+    {
+        try
+        {
+            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        
+        try
+        {
+            Open();
+
+            //Copy item from media to trash
+            using NpgsqlCommand cmd = new("DELETE FROM media WHERE uuid=@uuid AND date_deleted IS NOT NULL", connection);
+            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid";
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+        }
+        finally
+        {
+            Close();
+        }
+    }
+    
+    ///PERMANENTLY removes all items in Trash from server and database.
+    public static void EmptyTrash()
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", connection);
+            cmd.ExecuteNonQuery();
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+
+            while (r.Read())
+            {
+                try { FileSystem.DeleteFile(Path.Combine(S.libFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
+                catch (IOException e) { Console.WriteLine(e); }
+            }
+
+            r.Close();
+            cmd.CommandText = "DELETE FROM media WHERE date_deleted IS NOT NULL";
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+        finally { Close(); }
+    }
+
+    ///Undoes a call to MoveToTrash(). Will restore collections it was in, as well as re-adding it to the media table.
+    public static void RestoreItem(Guid uuid)
+    {
+        try
+        {
+            Open();
+
+            using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE uuid = @uuid", connection);
+            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+        finally { Close(); }
+    }
+
+    ///Restores EVERY item in the Trash back into library.
+    public static void RestoreTrash()
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE date_deleted IS NOT NULL", connection);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+        finally { Close(); }
+    }
+    
+    #endregion
+
+    #region Starred
+    
+    ///<summary>Change a single item from either starred (true) or not starred.</summary>
+    public static void UpdateStarred(Guid uuid, bool starred)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE uuid=@uuid", connection);
+            cmd.Parameters.AddWithValue("@starred", starred);
+            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+        }
+        finally
+        {
+            Close();
+        }
+    }
+    
+    ///<summary>Change a List of items from either starred (true) or not starred.</summary>
+    public static void UpdateStarred(HashSet<Guid> uuids, bool starred)
+    {
+        try
+        {
+            Open();
+            foreach(Guid uuid in uuids)
+            {
+                using NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE uuid=@uuid", connection);
+                cmd.Parameters.AddWithValue("@starred", starred);
+                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.ExecuteNonQuery();
+            }
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+        }
+        finally
+        {
+            Close();
+        }
+    }
+    #endregion
+    
+    #endregion
+
+    #region Collections
+    
     ///<summary>Create a new Collection and add it to the `collections` table.</summary>
     ///<param name="name">The name for the new collection.</param>
     ///<param name="isFolder">True if this collection should be a folder. False by default.</param>
@@ -102,8 +463,7 @@ public static class Connection
             Close();
         }
     }
-
-    ///<summary>Give a collection a new name.</summary>
+    
     ///<param name="newName">The new name for the collection.</param>
     ///<param name="id">The id of the collection to rename.</param>
     public static void RenameCollection(string newName, int id)
@@ -126,28 +486,7 @@ public static class Connection
         }
     }
 
-    ///This has 3 different use cases: give a collection a cover if it doesn't have a cover, update an existing cover, or remove a collection cover (supply null as path).
-    ///Collections aren't required to have a cover.
-    public static void UpdateCollectionCover(string collectionName, string path)
-    {
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("UPDATE collections SET cover=@path WHERE name=@collectionName", connection);
-            cmd.Parameters.AddWithValue("@path", path);
-            cmd.Parameters.AddWithValue("@collectionName", collectionName);
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-    }
-
+    
     ///This has 3 different use cases: give a collection a cover if it doesn't have a cover, update an existing cover, or remove a collection cover (supply null as path).
     ///Collections aren't required to have a cover.
     public static void UpdateCollectionCover(int collectionID, string path)
@@ -211,12 +550,12 @@ public static class Connection
         try
         {
             Open();
-                
+            
             //Set all items to no longer being separate (only matters if this was a folder). If don't do this they won't appear in main library.
             NpgsqlCommand cmd = new("UPDATE media SET separate=false FROM collection_entries WHERE collection_id=@collectionID AND collection_entries.uuid=media.uuid", connection);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
             cmd.ExecuteNonQuery();
-                
+            
             //Removing the row for this collection in collections table automatically removes any rows in collection_entries referencing this collection.
             cmd = new NpgsqlCommand("DELETE FROM collections WHERE id=@collectionID", connection);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
@@ -238,7 +577,7 @@ public static class Connection
     public static void AddToCollection(Guid uuid, int collectionID)
     {
         bool isFolder = IsFolder(collectionID);
-            
+        
         try
         {
             Open();
@@ -266,7 +605,7 @@ public static class Connection
             Close();
         }
     }
-        
+    
     ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
     ///<param name="uuid">The uuid of the item.</param>
     ///<param name="collectionID">The ID of the collection to add the item to.</param>
@@ -274,7 +613,7 @@ public static class Connection
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
         bool isFolder = await IsFolderAsync(collectionID);
-            
+        
         try
         {
             await using NpgsqlCommand cmd = new("", localConn);
@@ -405,7 +744,7 @@ public static class Connection
         {
             Close();
         }
-            
+        
         return collections;
     }
 
@@ -435,239 +774,7 @@ public static class Connection
             Close();
         }
     }
-
-    ///<summary>Mark an item in the media table as in the Trash.</summary>
-    ///<param name="uuid">The uuid of the item to move to Trash.</param>
-    public static void MoveToTrash(Guid uuid)
-    {
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = now() WHERE uuid=@uuid", connection);
-            cmd.Parameters.AddWithValue("uuid", uuid);
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-    }
-
-    ///PERMANENTLY remove an item from the database and DELETES the file from server.
-    public static void PermDeleteItem(Guid uuid)
-    {
-        try
-        {
-            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-        }
-        catch (FileNotFoundException e)
-        {
-            Console.WriteLine(e.Message);
-        }
-            
-        try
-        {
-            Open();
-
-            //Copy item from media to trash
-            using NpgsqlCommand cmd = new("DELETE FROM media WHERE uuid=@uuid AND date_deleted IS NOT NULL", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid";
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-    }
-
-    ///PERMANENTLY removes all items in Trash from server and database.
-    public static void EmptyTrash()
-    {
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", connection);
-            cmd.ExecuteNonQuery();
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-
-            while (r.Read())
-            {
-                try { FileSystem.DeleteFile(Path.Combine(S.libFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
-                catch (IOException e) { Console.WriteLine(e); }
-            }
-
-            r.Close();
-            cmd.CommandText = "DELETE FROM media WHERE date_deleted IS NOT NULL";
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
-        finally { Close(); }
-    }
-
-    ///Undoes a call to MoveToTrash(). Will restore collections it was in, as well as re-adding it to the media table.
-    public static void RestoreItem(Guid uuid)
-    {
-        try
-        {
-            Open();
-
-            using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE uuid = @uuid", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
-        finally { Close(); }
-    }
-
-    ///Restores EVERY item in the Trash back into library.
-    public static void RestoreTrash()
-    {
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE date_deleted IS NOT NULL", connection);
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
-        finally { Close(); }
-    }
-
-    ///<summary>Change a single item from either starred (true) or not starred.</summary>
-    public static void UpdateStarred(Guid uuid, bool starred)
-    {
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE uuid=@uuid", connection);
-            cmd.Parameters.AddWithValue("@starred", starred);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-    }
-        
-    ///<summary>Change a List of items from either starred (true) or not starred.</summary>
-    public static void UpdateStarred(HashSet<Guid> uuids, bool starred)
-    {
-        try
-        {
-            Open();
-            foreach(Guid uuid in uuids)
-            {
-                using NpgsqlCommand cmd = new("UPDATE media SET starred=@starred WHERE uuid=@uuid", connection);
-                cmd.Parameters.AddWithValue("@starred", starred);
-                cmd.Parameters.AddWithValue("@uuid", uuid);
-                cmd.ExecuteNonQuery();
-            }
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-    }
-
-    ///<summary>Update when an item was taken, update its short path, and move it to the new path on the server.</summary>
-    ///<param name="shortPath">The path to the item that is stored in the database</param>
-    ///<param name="newDateTaken">The new date taken for this item</param>
-    ///<returns>True if completed successfully, false otherwise. If it failed, it's probably because an item with the same filename and Date Taken already exists there.</returns>
-    public static bool UpdateDateTaken(string shortPath, DateTime? newDateTaken)
-    {
-        try
-        {
-            string filename = Path.GetFileName(shortPath);
-            string originalFullPath = Path.Combine(S.libFolderPath, shortPath);
-                
-            string newShortPath = CreateShortPath(newDateTaken, filename);
-            string newDTFolderPath = CreateFullDateFolderPath(newDateTaken);
-            string newFullPath = Path.Combine(newDTFolderPath, filename);
-                
-            //Move item to new path on server. This is how the user input is validated. If this fails, user needs to pick a new DT and/or filename.
-            Directory.CreateDirectory(newDTFolderPath); //Create in case it doesn't exist.
-            File.Move(originalFullPath, newFullPath);
-            D.UpdateDateTaken(newFullPath, newDateTaken);
-
-            Open();
-            using NpgsqlCommand cmd = new("", connection);
-            if (newDateTaken == null)
-            {
-                cmd.CommandText = "UPDATE media SET path = @newPath, date_taken = NULL WHERE path = @shortPath";
-            }
-            else
-            {
-                cmd.CommandText = "UPDATE media SET path = @newPath, date_taken = @newDateTaken WHERE path = @shortPath";
-                cmd.Parameters.AddWithValue("@newDateTaken", newDateTaken);
-            }
-
-            //Update date taken and short path in media.
-            cmd.Parameters.AddWithValue("@newPath", newShortPath);
-            cmd.Parameters.AddWithValue("@shortPath", shortPath);
-            cmd.ExecuteNonQuery();
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            return false;
-        }
-        finally
-        {
-            Close();
-        }
-    }
-
-    ///<summary>Gets an item's short path from its uuid.</summary>
-    ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
-    public static string GetPathFromUuid(Guid uuid)
-    {
-        string path = null;
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
-            cmd.ExecuteNonQuery();
-
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-            if (r.HasRows)
-            {
-                r.Read(); //There should only be 1 line to read.
-                path = r.GetString(0); //First and only column.
-                r.Close();
-            }
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-        return path;
-    }
-
+    
     ///Returns true if a Collection is a folder, false otherwise.
     public static bool IsFolder(int collectionID)
     {
@@ -698,13 +805,13 @@ public static class Connection
 
         return isFolder;
     }
-        
+    
     ///Returns true if a Collection is a folder, false otherwise.
     public static async Task<bool> IsFolderAsync(int collectionID)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
         bool isFolder = false;
-            
+        
         try
         {
             await using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", localConn);
@@ -730,6 +837,10 @@ public static class Connection
 
         return isFolder;
     }
+    
+    #endregion
+
+    #region Utilities
 
     ///<summary>Generates a short path (DB path) given a Date Taken and filename. A DB path looks like this: 2022/5/filename.jpg.</summary>
     ///<param name="dateTaken">The date taken of the item.</param>
@@ -749,185 +860,5 @@ public static class Connection
     ///<returns>The full path to where the item would get moved to in the PSS library.</returns>
     public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename));
 
-    ///<summary>Used in ViewItem for renaming the current item's file.</summary>
-    ///<param name="oldShortPath">The original short path of the item.</param>
-    ///<param name="newFilename">The new filename of the item.</param>
-    ///<param name="ext">The file extension.</param>
-    ///<param name="dateTaken">The date taken of the item.</param>
-    ///<returns>The new short path (DB path) of this item. null if DB error occurred, which means there is already a file with the same name in that location.</returns>
-    public static string RenameFile(string oldShortPath, string newFilename, string ext, DateTime? dateTaken)
-    {
-        try
-        {
-            string originalFullPath = Path.Combine(S.libFolderPath, oldShortPath);
-            string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
-            string newFullPath = Path.Combine(S.libFolderPath, newShortPath);
-            File.Move(originalFullPath, newFullPath);
-                
-            Open();
-            using NpgsqlCommand cmd = new("UPDATE media SET path = @newShortPath WHERE path = @oldShortPath", connection);
-            cmd.Parameters.AddWithValue("@newShortPath", newShortPath);
-            cmd.Parameters.AddWithValue("@oldShortPath", oldShortPath);
-            cmd.ExecuteNonQuery();
-            return newShortPath;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            return null;
-        }
-        finally
-        {
-            Close();
-        }
-    }
-
-    ///<summary>Loads every row in the media table, even if has no DT, in a folder, in the trash, etc. Sorted by date_taken descending (NULL and newest DT first).</summary>
-    ///<returns>List&lt;MediaRow&gt; of EVERY row in the media table.</returns>
-    public static List<MediaRow> LoadEntireMediaTable()
-    {
-        List<MediaRow> media = new();
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media ORDER BY date_taken DESC", connection);
-            cmd.ExecuteNonQuery();
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
-            r.Close();
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-        return media;
-    }
-
-    ///<summary>Loads every item in media that was taken on this month and day, sorted so newest items appear first.</summary>
-    ///<param name="monthName">The name of the month, automatically converted to a number by LoadMemories().</param>
-    ///<param name="day">The day of the month.</param>
-    ///<returns>List&lt;MediaRow&gt; of items taken on this month and day.</returns>
-    public static List<MediaRow> LoadMemories(string monthName, int day)
-    {
-        List<MediaRow> memories = new();
-        int month = DateTime.ParseExact(monthName, "MMMM", System.Globalization.CultureInfo.CurrentCulture).Month;
-
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new($"SELECT path, date_taken, starred, uuid, thumbnail FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{day} %' ORDER BY date_taken DESC", connection);
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-        return memories;
-    }
-
-    ///<summary>Gets the description of an item.</summary>
-    ///<param name="uuid">The uuid of the item.</param>
-    ///<returns>The description of the item.</returns>
-    public static string GetDescription(Guid uuid)
-    {
-        string description = "";
-            
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("SELECT description FROM media WHERE uuid=@uuid LIMIT 1", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
-            cmd.ExecuteNonQuery();
-
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-            if (r.HasRows)
-            {
-                r.Read();
-                description = r.IsDBNull(0) ? "" : r.GetString(0);
-                r.Close();
-            }
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-        return description;
-    }
-
-    /// <summary>Sets the description of an item.</summary>
-    /// <param name="uuid">The uuid of the item.</param>
-    /// <param name="newDescription">The new description of the item.</param>
-    public static void UpdateDescription(Guid uuid, string newDescription)
-    {
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new(null, connection);
-            if (String.IsNullOrWhiteSpace(newDescription))
-            {
-                cmd.CommandText = "UPDATE media SET description = NULL WHERE uuid=@uuid";
-            }
-            else
-            {
-                cmd.CommandText = "UPDATE media SET description = @newDescription WHERE uuid=@uuid";
-                cmd.Parameters.AddWithValue("@newDescription", newDescription);
-            }
-            cmd.Parameters.AddWithValue("@uuid", uuid);
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e.Message);
-        }
-        finally
-        {
-            Close();
-        }
-    }
-        
-    ///<summary>Searches the entire media table for files with similar names to the filename provided.</summary>
-    ///<param name="filename">The filename to search for.</param>
-    ///<returns>A List&lt;MediaRow&gt; of rows found, null if none found.</returns>
-    ///<remarks>The way it searches the paths in the media table is a wildcard like this: %@filename%, so any filenames that are the exact same or similar are found.</remarks>
-    public static async Task<List<MediaRow>> FindFilesWithSimilarName(string filename)
-    {
-        NpgsqlConnection localConn = new(CONNECTION_STRING);
-        await localConn.OpenAsync();
-            
-        List<MediaRow> files = null;
-        try
-        {
-            Open();
-            await using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media WHERE path LIKE '%{filename}%'", localConn);
-            await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync();
-            if (r.HasRows)
-            {
-                files = new List<MediaRow>();
-                while (await r.ReadAsync()) files.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
-        finally
-        {
-            await localConn.CloseAsync();
-        }
-
-        return files;
-    }
+    #endregion
 }
