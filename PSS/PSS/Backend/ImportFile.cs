@@ -91,7 +91,7 @@ public class ImportFile
 		return result;
 	}
 
-	///Creates a new ImportFile from a string created with ToTabDelimitedString().
+	///Creates a new ImportFile from a string created with ToTabDelimitedString(). If the uuid field is Guid.Empty, an error occurred.
 	private ImportFile(IReadOnlyList<string> split)
 	{
 		if (!File.Exists(split[4]))

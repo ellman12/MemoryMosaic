@@ -427,19 +427,28 @@
 			fileOutput.AppendLine(file.ToTabDelimitedString());
 		
 		File.WriteAllText(filePath, fileOutput.ToString());
-		statusMessage = "";
+		statusMessage = $"{importFiles.Count} Items Saved to Disk";
 		StateHasChanged();
 	}
 
 	private void LoadItemsFromDisk()
 	{
-		statusMessage = "Loading...";
-		StateHasChanged();
-
 		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
+		if (!File.Exists(filePath))
+		{
+			statusMessage = "No Save File Found";
+			StateHasChanged();
+			return;
+		}
+		
 		string[] lines = File.ReadAllLines(filePath);
-
-		if (lines.Length == 0) return;
+		
+		if (lines.Length == 0)
+		{
+			statusMessage = "No Items Found to Load";
+			StateHasChanged();
+			return;
+		}
 		
 		importFiles.Clear();
 		StateHasChanged(); //IDK why but this is necessary otherwise the code below doesn't work.
