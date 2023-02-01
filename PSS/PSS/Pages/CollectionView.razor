@@ -32,10 +32,10 @@
         </div>
 
         <div id="moreOptionsDiv" style="visibility: @sortDivVis">
-            <button @onclick="@(() => ChangeOrder(C.CVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.CVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.CVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
-            <button @onclick="@(() => ChangeOrder(C.CVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == C.CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == C.CVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
+            <button @onclick="@(() => ChangeOrder(CVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
+            <button @onclick="@(() => ChangeOrder(CVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
+            <button @onclick="@(() => ChangeOrder(CVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
+            <button @onclick="@(() => ChangeOrder(CVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
             <button @onclick="@(() => C.ChangeCollectionType(statCollectionID, !isFolder))"><span class="material-icons-outlined">@(isFolder ? "perm_media" : "collections")</span><span>@(isFolder ? "Change to Album" : "Change to Folder")</span></button>
             <button @onclick="@DeleteCollectionBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(isFolder ? "Delete Folder" : "Delete Album")</span></button>
         </div>
@@ -46,7 +46,7 @@
     //Loads every item with NULL Date Taken first, then items with Date Taken.
     @* Date Added in this instance is date_added_to_collection. *@
     <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" CollectionID="@statCollectionID"
-        UseDateAdded="@(sortMode is C.CVSortMode.OldestAdded or C.CVSortMode.NewestAdded)" NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
+        UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
     <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
     <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
@@ -61,7 +61,7 @@
     private static int statCollectionID;
     private static bool isFolder;
     
-    private static C.CVSortMode sortMode;
+    private static CVSortMode sortMode;
     private static string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
     
     private static LibraryContentViewer libContentViewer = new();
@@ -92,7 +92,7 @@
     {
         selectedItemsCount = 0;
         statCollectionID = Int32.Parse(collectionID);
-        sortMode = C.CVSortMode.NewestDateTaken; //Default
+        sortMode = CVSortMode.NewestDateTaken; //Default
         collectionName = C.GetCollectionName(statCollectionID);
         _newCollectionName = collectionName;
         headerVis = collectionsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
@@ -102,19 +102,19 @@
     {
         switch (sortMode)
         {
-            case C.CVSortMode.OldestDateTaken:
+            case CVSortMode.OldestDateTaken:
                 orderBy = "date_taken ASC";
                 sortColumn = "date_taken";
                 break;
-            case C.CVSortMode.NewestDateTaken:
+            case CVSortMode.NewestDateTaken:
                 orderBy = "date_taken DESC";
                 sortColumn = "date_taken";
                 break;
-            case C.CVSortMode.OldestAdded:
+            case CVSortMode.OldestAdded:
                 orderBy = "date_added_to_collection ASC";
                 sortColumn = "date_added_to_collection";
                 break;
-            case C.CVSortMode.NewestAdded:
+            case CVSortMode.NewestAdded:
                 orderBy = "date_added_to_collection DESC";
                 sortColumn = "date_added_to_collection";
                 break;
@@ -132,7 +132,7 @@
         firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100) ORDER BY {orderBy}";
     }
     
-    private void ChangeOrder(C.CVSortMode newMode)
+    private void ChangeOrder(CVSortMode newMode)
     {
         sortMode = newMode;
         libContentViewer.oldestDT = libContentViewer.newestDT = null;

@@ -19,34 +19,6 @@ namespace PSS.Backend
             return localConn;
         }
 
-        ///How items in CollectionsMain should be sorted.
-        public enum CMSortMode
-        {
-            Title,
-            TitleReversed,
-            LastModified,
-            LastModifiedReversed
-        }
-        
-        ///How items in CollectionView should be sorted.
-        public enum CVSortMode
-        {
-            OldestDateTaken,
-            NewestDateTaken,
-            OldestAdded,
-            NewestAdded
-        }
-
-        
-        ///How items in Trash should be sorted.
-        public enum TrashSortMode
-        {
-            NewestDateDeleted, //Default
-            NewestDateTaken,
-            OldestDateDeleted,
-            OldestDateTaken
-        }
-
         //Represents a row from the Collections table.
         public record Collection
         {

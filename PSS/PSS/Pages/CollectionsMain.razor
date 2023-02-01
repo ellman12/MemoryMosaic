@@ -21,21 +21,21 @@
 
     <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
     <div id="sortDiv" style="visibility: @sortDivVis">
-        <button class="textBtn" @onclick="@(() => ChangeOrder(C.CMSortMode.Title))">
-            <span class="material-icons-outlined" style="@(mode == C.CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == C.CMSortMode.Title ? "#1a73e8" : "white")">Album Title</span>
+        <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.Title))">
+            <span class="material-icons-outlined" style="@(mode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(mode == CMSortMode.Title ? "#1a73e8" : "white")">Album Title</span>
         </button>
-        <button class="textBtn" @onclick="@(() => ChangeOrder(C.CMSortMode.TitleReversed))">
-            <span class="material-icons-outlined" style="@(mode == C.CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == C.CMSortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
+        <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.TitleReversed))">
+            <span class="material-icons-outlined" style="@(mode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(mode == CMSortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
         </button>
-        <button class="textBtn" @onclick="@(() => ChangeOrder(C.CMSortMode.LastModified))">
-            <span class="material-icons-outlined" style="@(mode == C.CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == C.CMSortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
+        <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.LastModified))">
+            <span class="material-icons-outlined" style="@(mode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(mode == CMSortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
         </button>
-        <button class="textBtn" @onclick="@(() => ChangeOrder(C.CMSortMode.LastModifiedReversed))">
-            <span class="material-icons-outlined" style="@(mode == C.CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == C.CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
+        <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.LastModifiedReversed))">
+            <span class="material-icons-outlined" style="@(mode == CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(mode == CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
         </button>
     </div>
 </header>
@@ -57,7 +57,7 @@
     
     private static string sortBtnText;
     private static string sortDivVis;
-    private static C.CMSortMode mode;
+    private static CMSortMode mode;
 
     private static bool showAlbums = true;
     private static bool showFolders = false;
@@ -66,7 +66,7 @@
     {
         GetCollectionsTable();
         
-        mode = C.CMSortMode.LastModified; //Default sort mode
+        mode = CMSortMode.LastModified; //Default sort mode
         
         SetSortBtnText();
         sortDivVis = "hidden";
@@ -78,15 +78,15 @@
     {
         sortBtnText = mode switch
         {
-            C.CMSortMode.Title => "Collection Title",
-            C.CMSortMode.TitleReversed => "Title Reversed",
-            C.CMSortMode.LastModified => "Last Modified",
-            C.CMSortMode.LastModifiedReversed => "Last Modified Reversed",
+            CMSortMode.Title => "Collection Title",
+            CMSortMode.TitleReversed => "Title Reversed",
+            CMSortMode.LastModified => "Last Modified",
+            CMSortMode.LastModifiedReversed => "Last Modified Reversed",
             _ => "Collection Title"
         };
     }
 
-    private static void ChangeOrder(C.CMSortMode newMode)
+    private static void ChangeOrder(CMSortMode newMode)
     {
         mode = newMode;
         GetCollectionsTable();

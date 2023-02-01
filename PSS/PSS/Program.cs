@@ -3,6 +3,7 @@ global using System;
 global using System.IO;
 global using Npgsql;
 global using PSS.Backend;
+global using PSS.Backend.Enums;
 global using C = PSS.Backend.Connection;
 global using D = DateTakenExtractor.DateTakenExtractor;
 global using F = PSS.Backend.Functions;
