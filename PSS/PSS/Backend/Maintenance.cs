@@ -33,9 +33,9 @@ namespace PSS.Backend
         }
 
         ///Returns a List&lt;MediaRow&gt; of all rows and columns from the media table that don't have existing files in pss_library.
-        public static List<C.MediaRow> GetMediaMissingFiles()
+        public static List<MediaRow> GetMediaMissingFiles()
         {
-            List<C.MediaRow> missingFiles = new();
+            List<MediaRow> missingFiles = new();
             try
             {
                 C.Open();
@@ -48,7 +48,7 @@ namespace PSS.Backend
                     string shortPath = r.GetString(0);
                     string fullPath = Path.Combine(S.libFolderPath, shortPath);
                     if (!File.Exists(fullPath))
-                        missingFiles.Add(new C.MediaRow(shortPath, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
+                        missingFiles.Add(new MediaRow(shortPath, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
                 }
                 r.Close();
             }
@@ -66,12 +66,12 @@ namespace PSS.Backend
 
         ///<summary>Delete these items from media table that are in the DB but don't exist as files.</summary>
         ///<param name="rows">List&lt;MediaRow&gt; retrieved with GetMediaMissingFiles()</param>
-        public static void RemoveMediaMissingFiles(List<C.MediaRow> rows)
+        public static void RemoveMediaMissingFiles(List<MediaRow> rows)
         {
             try
             {
                 C.Open();
-                foreach (C.MediaRow row in rows)
+                foreach (MediaRow row in rows)
                 {
                     using NpgsqlCommand cmd = new("DELETE FROM media WHERE path=@path", C.connection);
                     cmd.Parameters.AddWithValue("@path", row.path);

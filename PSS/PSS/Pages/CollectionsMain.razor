@@ -41,7 +41,7 @@
 </header>
 
 <div id="mainDiv">
-    @foreach (C.Collection collection in collections)
+    @foreach (Collection collection in collections)
     { 
         <div class="collection" onclick="location.href='/collection-view/@collection.id'"> @*Text and collection thumbnail*@
             <div class="thumbnail">
@@ -53,7 +53,7 @@
 </div>
 
 @code {
-    private static List<C.Collection> collections;
+    private static List<Collection> collections;
     
     private static string sortBtnText;
     private static string sortDivVis;
