@@ -39,20 +39,17 @@ public static class Connection
     ///<param name="uuid">The uuid of this item.</param>
     ///<param name="thumbnail">ONLY FOR VIDEOS. A base64 string for the video thumbnail. Use null or "" for pictures.</param>
     ///<param name="starred">Is this item starred or not?</param>
-    ///<param name="separate">Is this item separate from main library (i.e., is it in a folder)?</param>
     ///<returns>Int saying how many rows were affected.</returns>
-    public static async Task<int> InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false, bool separate = false)
+    public static async Task InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
-        int rowsAffected = 0;
         try
         {
             await using NpgsqlCommand cmd = new("", localConn);
             cmd.Parameters.AddWithValue("@path", path);
             cmd.Parameters.AddWithValue("@uuid", uuid);
             cmd.Parameters.AddWithValue("@starred", starred);
-            cmd.Parameters.AddWithValue("@separate", separate);
             if (dateTaken != null) cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
             
             if (String.IsNullOrWhiteSpace(thumbnail))
@@ -64,7 +61,7 @@ public static class Connection
             }
 
             cmd.CommandText += " ON CONFLICT(path) DO NOTHING";
-            rowsAffected = await cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)
         {
@@ -74,8 +71,6 @@ public static class Connection
         {
             await localConn.CloseAsync();
         }
-
-        return rowsAffected;
     }
     
     ///<summary>Update when an item was taken, update its short path, and move it to the new path on the server.</summary>
