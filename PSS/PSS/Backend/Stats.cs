@@ -80,9 +80,9 @@ namespace PSS.Backend
 
         ///<summary>Attempts to find the item with the oldest not-null date taken.</summary>
         ///<returns>The row with the oldest date taken, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
-        public static C.MediaRow FindItemWithOldestDateTaken()
+        public static MediaRow FindItemWithOldestDateTaken()
         {
-            C.MediaRow oldestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
+            MediaRow oldestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
             
             try
             {
@@ -94,7 +94,7 @@ namespace PSS.Backend
                 if (r.HasRows)
                 {
                     r.Read(); //There should only be 1 row to read.
-                    oldestItem = new C.MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
+                    oldestItem = new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
                     r.Close();
                 }
             }
@@ -112,9 +112,9 @@ namespace PSS.Backend
         
         ///<summary>Attempts to find the item with the newest not-null date taken.</summary>
         ///<returns>The row with the newest date taken, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
-        public static C.MediaRow FindItemWithNewestDateTaken()
+        public static MediaRow FindItemWithNewestDateTaken()
         {
-            C.MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
+            MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
             
             try
             {
@@ -126,7 +126,7 @@ namespace PSS.Backend
                 if (r.HasRows)
                 {
                     r.Read(); //There should only be 1 row to read.
-                    newestItem = new C.MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
+                    newestItem = new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
                     r.Close();
                 }
             }
@@ -144,9 +144,9 @@ namespace PSS.Backend
 
         ///<summary>Attempts to find the item with the oldest date added, which may or may not have a date taken.</summary>
         ///<returns>The row with the oldest date added, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
-        public static C.MediaRow FindItemWithOldestDateAdded()
+        public static MediaRow FindItemWithOldestDateAdded()
         {
-            C.MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
+            MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
             
             try
             {
@@ -158,7 +158,7 @@ namespace PSS.Backend
                 if (r.HasRows)
                 {
                     r.Read(); //There should only be 1 row to read.
-                    newestItem = new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
+                    newestItem = new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
                     r.Close();
                 }
             }
@@ -176,9 +176,9 @@ namespace PSS.Backend
         
         ///<summary>Attempts to find the item with the newest date added, which may or may not have a date taken.</summary>
         ///<returns>The row with the newest date added, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
-        public static C.MediaRow FindItemWithNewestDateAdded()
+        public static MediaRow FindItemWithNewestDateAdded()
         {
-            C.MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
+            MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
             
             try
             {
@@ -190,7 +190,7 @@ namespace PSS.Backend
                 if (r.HasRows)
                 {
                     r.Read(); //There should only be 1 row to read.
-                    newestItem = new C.MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
+                    newestItem = new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
                     r.Close();
                 }
             }

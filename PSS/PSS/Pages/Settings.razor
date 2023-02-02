@@ -129,7 +129,7 @@
     private static readonly List<string> emptyFolders = new();
     
     //Missing files
-    private static List<C.MediaRow> mediaMissingFiles = new();
+    private static List<MediaRow> mediaMissingFiles = new();
     
     //Stats
     private static bool statsLoaded;
@@ -137,7 +137,7 @@
     private static long totalUsableDriveSize; //How much space the drive pss_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
     private static long freeDriveSpace; //Bytes
     private static long librarySize; //Bytes
-    private static C.MediaRow oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
+    private static MediaRow oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
     public static DateTime whenWentOnline; //When did the server go online?
     
     //Debug
@@ -151,7 +151,7 @@
         untrackedPaths = new List<string>();
         
         //Items in database but not a file on server
-        mediaMissingFiles = new List<C.MediaRow>();
+        mediaMissingFiles = new List<MediaRow>();
 
         //Empty folders
         folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
@@ -165,7 +165,7 @@
         totalUsableDriveSize = 0;
         freeDriveSpace = 0;
         librarySize = 0;
-        oldestDTItem = newestDTItem = oldestDAItem = newestDAItem = new C.MediaRow(null, null, DateTime.Now, false, Guid.Empty);
+        oldestDTItem = newestDTItem = oldestDAItem = newestDAItem = new MediaRow(null, null, DateTime.Now, false, Guid.Empty);
     }
 
     ///Free up space on server by removing temporary files, empty folders, and emptying the trash.

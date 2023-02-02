@@ -79,7 +79,7 @@
 						
 						@if (libFilesWithSameName.ContainsKey(importFiles[i].originalFilename))
 						{
-							foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
+							foreach (MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
 							{
 								<LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/>
 							}
@@ -88,7 +88,7 @@
 					<div class="warnDiv">
 						@if (libFilesWithSimilarName.ContainsKey(importFiles[i].originalFilename))
 	                    {
-							foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
+							foreach (MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
                     		{
                     			<LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/>
                     		}
@@ -115,7 +115,7 @@
 							hasRendered = true;
 							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
 
-							foreach (C.MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
+							foreach (MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
 							{
 								<LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/>
 							}
@@ -129,7 +129,7 @@
 								<ImportItem Rerender="@StateHasChanged" Index="@i"/>
 							}
 							
-							foreach (C.MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
+							foreach (MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
 							{
 								<LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/>
 							}
@@ -162,7 +162,7 @@
 	///List of data about each supported file in pss_import.
 	public static List<ImportFile> importFiles;
 
-	private static readonly LazyDictionary<string, List<C.MediaRow>> libFilesWithSameName = new(), libFilesWithSimilarName = new();
+	private static readonly LazyDictionary<string, List<MediaRow>> libFilesWithSameName = new(), libFilesWithSimilarName = new();
 
 	///If the user does a search, store the results as the uuids of the items.
 	private static readonly HashSet<Guid> searchResults = new();
@@ -252,18 +252,18 @@
 		{
 			string path = r.GetString(0);
 			string thisFilename = Path.GetFileNameWithoutExtension(path);
-			C.MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetGuid(2), r.IsDBNull(3) ? null : r.GetString(3), r.IsDBNull(4) ? null : r.GetDateTime(4));
+			MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetGuid(2), r.IsDBNull(3) ? null : r.GetString(3), r.IsDBNull(4) ? null : r.GetDateTime(4));
 			if (filenameNoExt == thisFilename)
 			{
 				if (!libFilesWithSameName.ContainsKey(filenameNoExt))
-					libFilesWithSameName.Add(filenameNoExt, new List<C.MediaRow> {result});
+					libFilesWithSameName.Add(filenameNoExt, new List<MediaRow> {result});
 				else
 					libFilesWithSameName[filenameNoExt].Add(result);
 			}
 			else
 			{
 				if (!libFilesWithSimilarName.ContainsKey(filenameNoExt))
-					libFilesWithSimilarName.Add(filenameNoExt, new List<C.MediaRow> {result});
+					libFilesWithSimilarName.Add(filenameNoExt, new List<MediaRow> {result});
 				else
 					libFilesWithSimilarName[filenameNoExt].Add(result);
 			}
@@ -297,7 +297,7 @@
 			File.Move(file.absolutePath, destPath);
 
 			if (file.collections != null)
-				foreach (C.Collection collection in file.collections)
+				foreach (Collection collection in file.collections)
 					await C.AddToCollectionAsync(file.uuid, collection.id);
 		});
 
@@ -392,7 +392,7 @@
 	{
 		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)))
 		{
-			file.collections ??= new HashSet<C.Collection>();
+			file.collections ??= new HashSet<Collection>();
 
 			if (CS.checkedFolderIndex != -1)
 			{

@@ -12,8 +12,8 @@
     private static void Yes()
     {
         ImportFile file = new("C:/Users/Elliott/Pictures/PSS/pss_import/2d9a134474979e5b9762209e207fd107f53e605c.mp4");
-        file.collections = new HashSet<Connection.Collection>();
-        file.collections.Add(new Connection.Collection(4, "", ""));
+        file.collections = new HashSet<Collection>();
+        file.collections.Add(new Collection(4, "", ""));
         
         string tabDelimitedString = file.ToTabDelimitedString();
         var newFile = ImportFile.ParseTabDelimitedString(tabDelimitedString);

@@ -54,7 +54,7 @@ If it can't find any content, it shows an h1 saying no content.
 			<div id="collectionsInfo">
 				<span id="collectionsText">Collections Containing</span>
 				<div id="collectionsIn">
-					@foreach (C.Collection collection in collectionsIn)
+					@foreach (Collection collection in collectionsIn)
 					{
 						<a href="/collection-view/@collection.id">
 							<div class="collection">
@@ -223,7 +223,7 @@ else
 	private int previousDay;
 	
 	///Stores all content loaded.
-	public List<C.MediaRow> MediaList { get; private set; }
+	public List<MediaRow> MediaList { get; private set; }
 
 	///A single item for viewing.
 	public Guid SelectedItem
@@ -316,14 +316,14 @@ else
 	private static DateTime? newDateTaken;
 	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, downloadDivVis;
 	private static string itemDescription;
-	private static List<C.Collection> collectionsIn;
+	private static List<Collection> collectionsIn;
 }
 
 @functions{
 	protected override void OnInitialized()
 	{
 		ctrlGInput = new CtrlGInput();
-		MediaList = new List<C.MediaRow>(150);
+		MediaList = new List<MediaRow>(150);
 		_selectedItem = Guid.Empty;
 		SelectedItems = new HashSet<Guid>(150);
 		oldestDT = newestDT = null;
@@ -396,7 +396,7 @@ else
 			using NpgsqlDataReader r = cmd.ExecuteReader();
 			while (r.Read())
 			{
-				C.MediaRow newRow = new(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6));
+				MediaRow newRow = new(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6));
 				if (!MediaList.Contains(newRow))
 				{
 					if (bottom) MediaList.Add(newRow);
@@ -561,7 +561,7 @@ else
 		C.UpdateStarred(SelectedItems, starred);
 		starPromptVis = "hidden";
 
-		foreach (C.MediaRow item in MediaList)
+		foreach (MediaRow item in MediaList)
 			if (SelectedItems.Contains(item.uuid))
 				item.starred = starred;
 			

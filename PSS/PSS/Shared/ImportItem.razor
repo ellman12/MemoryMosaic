@@ -84,7 +84,7 @@
 	@if (ImportFile.collections != null)
 	{
 		<div class="collectionsDisplay">
-			@foreach (C.Collection collection in ImportFile.collections)
+			@foreach (Collection collection in ImportFile.collections)
 			{
 				<span title="@collection.id" @onclick="@(() => ImportFile.collections.RemoveWhere(c => c.id == collection.id))">@collection.name</span>
 			}

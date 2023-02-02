@@ -15,35 +15,35 @@
         </div>
     
         <div id="sortDiv" style="visibility: @sortDivVis">
-            <button @onclick="@(() => ChangeOrder(C.TrashSortMode.NewestDateDeleted))">
-                <span class="material-icons-outlined" style="@(sortMode == C.TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-                <span class="btnText" style="color: @(sortMode == C.TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")">Newest Date Deleted First</span>
+            <button @onclick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))">
+                <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
+                <span class="btnText" style="color: @(sortMode == TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")">Newest Date Deleted First</span>
             </button>
-            <button @onclick="@(() => ChangeOrder(C.TrashSortMode.NewestDateTaken))">
-                <span class="material-icons-outlined" style="@(sortMode == C.TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-                <span class="btnText" style="color: @(sortMode == C.TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span>
+            <button @onclick="@(() => ChangeOrder(TrashSortMode.NewestDateTaken))">
+                <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
+                <span class="btnText" style="color: @(sortMode == TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span>
             </button>
-            <button @onclick="@(() => ChangeOrder(C.TrashSortMode.OldestDateDeleted))">
-                <span class="material-icons-outlined" style="@(sortMode == C.TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-                <span class="btnText" style="color: @(sortMode == C.TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")">Oldest Date Deleted First</span>
+            <button @onclick="@(() => ChangeOrder(TrashSortMode.OldestDateDeleted))">
+                <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
+                <span class="btnText" style="color: @(sortMode == TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")">Oldest Date Deleted First</span>
             </button>
-            <button @onclick="@(() => ChangeOrder(C.TrashSortMode.OldestDateTaken))">
-                <span class="material-icons-outlined" style="@(sortMode == C.TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-                <span class="btnText" style="color: @(sortMode == C.TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span>
+            <button @onclick="@(() => ChangeOrder(TrashSortMode.OldestDateTaken))">
+                <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
+                <span class="btnText" style="color: @(sortMode == TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span>
             </button>
         </div>
     </header>
 
     UpdateQueries();
     @* Date Added in this case is actually Date Deleted. *@
-    <LibraryContentViewer @ref="@libContentViewer" UseDateAdded="@(sortMode is C.TrashSortMode.OldestDateDeleted or C.TrashSortMode.NewestDateDeleted)" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" SelectedItemsCountChanged="@(() => selectedItemsCount = libContentViewer.SelectedItems.Count)" NoItemsText="No Items in Trash"/>
+    <LibraryContentViewer @ref="@libContentViewer" UseDateAdded="@(sortMode is TrashSortMode.OldestDateDeleted or TrashSortMode.NewestDateDeleted)" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" SelectedItemsCountChanged="@(() => selectedItemsCount = libContentViewer.SelectedItems.Count)" NoItemsText="No Items in Trash"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteItems" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@restorePromptVis" YesBtnClick="@RestoreItems" NoBtnClick="@(() => { restorePromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
 }
 
 @code{
-    private static C.TrashSortMode sortMode;
+    private static TrashSortMode sortMode;
     private static LibraryContentViewer libContentViewer = new();
     private static int selectedItemsCount;
     private static string sortBtnText, choiceMsg, orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
@@ -52,7 +52,7 @@
     protected override void OnInitialized()
     {
         selectedItemsCount = 0;
-        sortMode = C.TrashSortMode.NewestDateDeleted; //Default sort mode
+        sortMode = TrashSortMode.NewestDateDeleted; //Default sort mode
         SetSortBtnText();
         delPromptVis = restorePromptVis = sortDivVis = "hidden";
     }
@@ -61,10 +61,10 @@
     {
         sortBtnText = sortMode switch
         {
-            C.TrashSortMode.NewestDateDeleted => "Newest Date Deleted",
-            C.TrashSortMode.NewestDateTaken => "Newest Date Taken",
-            C.TrashSortMode.OldestDateDeleted => "Oldest Date Deleted",
-            C.TrashSortMode.OldestDateTaken => "Oldest Date Taken",
+            TrashSortMode.NewestDateDeleted => "Newest Date Deleted",
+            TrashSortMode.NewestDateTaken => "Newest Date Taken",
+            TrashSortMode.OldestDateDeleted => "Oldest Date Deleted",
+            TrashSortMode.OldestDateTaken => "Oldest Date Taken",
             _ => "Newest Date Deleted"
         };
     }
@@ -73,22 +73,22 @@
     {
         switch (sortMode)
         {
-            case C.TrashSortMode.NewestDateTaken:
+            case TrashSortMode.NewestDateTaken:
                 orderBy = "date_taken DESC";
                 sortColumn = "date_taken";
                 break;
             
-            case C.TrashSortMode.OldestDateTaken:
+            case TrashSortMode.OldestDateTaken:
                 orderBy = "date_taken ASC";
                 sortColumn = "date_taken";
                 break;
                 
-            case C.TrashSortMode.NewestDateDeleted:
+            case TrashSortMode.NewestDateDeleted:
                 orderBy = "date_deleted DESC";
                 sortColumn = "date_deleted";
                 break;
                 
-            case C.TrashSortMode.OldestDateDeleted:
+            case TrashSortMode.OldestDateDeleted:
                 orderBy = "date_deleted ASC";
                 sortColumn = "date_deleted";
                 break;
@@ -103,7 +103,7 @@
         firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100) ORDER BY {orderBy}";
     }
     
-    private async void ChangeOrder(C.TrashSortMode newMode)
+    private async void ChangeOrder(TrashSortMode newMode)
     {
         sortMode = newMode;
         SetSortBtnText();
