@@ -50,17 +50,14 @@ public static class Connection
             cmd.Parameters.AddWithValue("@path", path);
             cmd.Parameters.AddWithValue("@uuid", uuid);
             cmd.Parameters.AddWithValue("@starred", starred);
-            if (dateTaken != null) cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+            if (dateTaken != null)
+                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
             
-            if (String.IsNullOrWhiteSpace(thumbnail))
-                cmd.CommandText = dateTaken == null ? "INSERT INTO media (path, date_added, starred, separate, uuid) VALUES (@path, now(), @starred, @separate, @uuid)" : "INSERT INTO media (path, date_taken, date_added, starred, separate, uuid) VALUES (@path, @dateTaken, now(), @starred, @separate, @uuid)";
-            else
-            {
+            if (!String.IsNullOrWhiteSpace(thumbnail))
                 cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
-                cmd.CommandText = dateTaken == null ? "INSERT INTO media (path, date_added, starred, separate, uuid, thumbnail) VALUES (@path, now(), @starred, @separate, @uuid, @thumbnail)" : "INSERT INTO media (path, date_taken, date_added, starred, separate, uuid, thumbnail) VALUES (@path, @dateTaken, now(), @starred, @separate, @uuid, @thumbnail)";
-            }
 
-            cmd.CommandText += " ON CONFLICT(path) DO NOTHING";
+            cmd.CommandText = $"INSERT INTO media (path, {(dateTaken == null ? "" : "date_taken,")} starred, uuid {(String.IsNullOrWhiteSpace(thumbnail) ? "" : ", thumbnail")}) VALUES (@path, {(dateTaken == null ? "" : "@dateTaken, ")} @starred, @uuid {(String.IsNullOrWhiteSpace(thumbnail) ? "" : ", @thumbnail")}) ON CONFLICT(path) DO NOTHING";
+
             await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)
