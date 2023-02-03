@@ -27,4 +27,8 @@ public static class Logger
 		Console.WriteLine($"{DateTime.Now} {value}");
 		ResetConsoleColor();
 	}
+
+	public static void LogException(Exception e, string methodName) => LogLine($"****\nException raised in {methodName}: {e.Message}\n****", LogLevel.Error);
+
+	public static void LogException(NpgsqlException e, string methodName) => LogLine($"****\nException raised in {methodName}: {e.ErrorCode} {e.Message}\n****", LogLevel.Error);
 }
