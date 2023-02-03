@@ -20,7 +20,7 @@ public static class Logger
 
 	private static void ResetConsoleColor() => Console.ResetColor();
 	
-	public static void WriteLine(object value, LogLevel itemImportance)
+	public static void LogLine(object value, LogLevel itemImportance)
 	{
 		if (itemImportance == LogLevel.None || itemImportance > logLevel) return;
 		SetConsoleColor(itemImportance);

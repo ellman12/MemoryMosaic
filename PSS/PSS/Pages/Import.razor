@@ -179,7 +179,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		Logger.WriteLine($"Begin Import {nameof(OnInitializedAsync)}", LogLevel.Info);
+		Logger.LogLine($"Begin Import {nameof(OnInitializedAsync)}", LogLevel.Info);
 		
 		pathWidthClass = "shortWidth";
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
@@ -203,13 +203,13 @@
 		finishedLoading = true;
 		StateHasChanged();
 		
-		Logger.WriteLine($"Finish Import {nameof(OnInitializedAsync)}", LogLevel.Info);
+		Logger.LogLine($"Finish Import {nameof(OnInitializedAsync)}", LogLevel.Info);
 	}
 
 	///Organizes the import items by putting the errors at the top of the page above the other files.
 	public static void OrganizeItems()
 	{
-		Logger.WriteLine($"Begin Import {nameof(OrganizeItems)}", LogLevel.Debug);
+		Logger.LogLine($"Begin Import {nameof(OrganizeItems)}", LogLevel.Debug);
 
 		errorAmount = 0;
 		List<ImportFile> errors = new(), good = new();
@@ -239,7 +239,7 @@
 		}
 
 		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename]?.Count).ToList();
-		Logger.WriteLine($"Finish Import {nameof(OrganizeItems)}", LogLevel.Debug);
+		Logger.LogLine($"Finish Import {nameof(OrganizeItems)}", LogLevel.Debug);
 	}
 
 	private static void FindLibraryFilesWithSameOrSimilarName(string filenameNoExt)
@@ -282,7 +282,7 @@
 	///Adds either all items or the selected items to your library.
 	private async void AddItems()
 	{
-		Logger.WriteLine($"Begin {nameof(AddItems)}", LogLevel.Info);
+		Logger.LogLine($"Begin {nameof(AddItems)}", LogLevel.Info);
 
 		List<ImportFile> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count 
 			? importFiles : importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList();
@@ -323,7 +323,7 @@
 		OrganizeItems();
 		StateHasChanged();
 		
-		Logger.WriteLine($"Finish {nameof(AddItems)}", LogLevel.Info);
+		Logger.LogLine($"Finish {nameof(AddItems)}", LogLevel.Info);
 	}
 
 	private static void SearchItems()
@@ -381,7 +381,7 @@
 	///Sends all selected files to the Recycle Bin.
 	private void DeleteSelected()
 	{
-		Logger.WriteLine($"Begin {nameof(DeleteSelected)}", LogLevel.Info);
+		Logger.LogLine($"Begin {nameof(DeleteSelected)}", LogLevel.Info);
 
 		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
 		{
@@ -392,7 +392,7 @@
 		OrganizeItems();
 		StateHasChanged();
 		
-		Logger.WriteLine($"Finish {nameof(DeleteSelected)}", LogLevel.Info);
+		Logger.LogLine($"Finish {nameof(DeleteSelected)}", LogLevel.Info);
 	}
 
 	private static void ClearDateTaken()
@@ -434,7 +434,7 @@
 	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
 	private void SaveChanges()
 	{
-		Logger.WriteLine($"Begin {nameof(SaveChanges)}", LogLevel.Info);
+		Logger.LogLine($"Begin {nameof(SaveChanges)}", LogLevel.Info);
 
 		statusMessage = "Saving...";
 		StateHasChanged();
@@ -449,12 +449,12 @@
 		statusMessage = $"{importFiles.Count} Items Saved to Disk";
 		StateHasChanged();
 		
-		Logger.WriteLine($"Finish {nameof(SaveChanges)}", LogLevel.Info);
+		Logger.LogLine($"Finish {nameof(SaveChanges)}", LogLevel.Info);
 	}
 
 	private void LoadItemsFromDisk()
 	{
-		Logger.WriteLine($"Begin {nameof(LoadItemsFromDisk)}", LogLevel.Info);
+		Logger.LogLine($"Begin {nameof(LoadItemsFromDisk)}", LogLevel.Info);
 		
 		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
 		if (!File.Exists(filePath))
@@ -485,6 +485,6 @@
 		statusMessage = "";
 		StateHasChanged();
 		
-		Logger.WriteLine($"Finish {nameof(LoadItemsFromDisk)}", LogLevel.Info);
+		Logger.LogLine($"Finish {nameof(LoadItemsFromDisk)}", LogLevel.Info);
 	}
 }
