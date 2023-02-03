@@ -289,7 +289,7 @@
 				_ => throw new ArgumentOutOfRangeException()
 			};
 
-			await C.InsertMedia(file.shortPath, dtToUse, file.uuid, file.thumbnail, file.starred);
+			await C.InsertMedia(C.CreateShortPath(dtToUse, file.renamedFilename + file.extension), dtToUse, file.uuid, file.thumbnail, file.starred);
 
 			string destFolder = C.CreateFullDateFolderPath(dtToUse);
 			Directory.CreateDirectory(destFolder);
