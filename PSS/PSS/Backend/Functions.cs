@@ -66,7 +66,9 @@ namespace PSS.Backend
             ffmpegProcess!.WaitForExit();
 
             byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
-            File.Delete(thumbnailFullPath);
+            
+            try { File.Delete(thumbnailFullPath); }
+            catch (Exception e) { Console.WriteLine(e.Message); }
             
             return Convert.ToBase64String(bytes);
         }
