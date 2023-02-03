@@ -290,12 +290,14 @@
 			};
 
 			await C.InsertMedia(C.CreateShortPath(dtToUse, file.renamedFilename + file.extension), dtToUse, file.uuid, file.thumbnail, file.starred);
-
+			
 			string destFolder = C.CreateFullDateFolderPath(dtToUse);
 			Directory.CreateDirectory(destFolder);
 			string destPath = C.CreateFullPath(dtToUse, file.originalFilename + file.extension);
 			File.Move(file.absolutePath, destPath);
-
+			
+			await Task.Run(() => D.UpdateDateTaken(destPath, dtToUse), _);
+			
 			if (file.collections != null)
 				foreach (Collection collection in file.collections)
 					await C.AddToCollectionAsync(file.uuid, collection.id);
