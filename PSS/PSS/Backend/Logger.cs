@@ -18,6 +18,8 @@ public static class Logger
 		};
 	}
 
+	private static string GetCallingMethodName() => new System.Diagnostics.StackTrace().GetFrame(2)!.GetMethod()!.Name; //If it's set to 1 it'd print LogLine.
+
 	private static void ResetConsoleColor() => Console.ResetColor();
 	
 	public static void LogLine(object value, LogLevel itemImportance)
@@ -28,7 +30,7 @@ public static class Logger
 		ResetConsoleColor();
 	}
 
-	public static void LogException(Exception e, string methodName) => LogLine($"****\nException raised in {methodName}: {e.Message}\n****", LogLevel.Error);
+	public static void LogException(Exception e) => LogLine($"****\nException raised in {GetCallingMethodName()}: {e.Message}\n****", LogLevel.Error);
 
-	public static void LogException(NpgsqlException e, string methodName) => LogLine($"****\nException raised in {methodName}: {e.ErrorCode} {e.Message}\n****", LogLevel.Error);
+	public static void LogException(NpgsqlException e) => LogLine($"****\nException raised in {GetCallingMethodName()}: {e.ErrorCode} {e.Message}\n****", LogLevel.Error);
 }
