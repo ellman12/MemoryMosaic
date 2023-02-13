@@ -179,6 +179,8 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		L.LogLine($"Begin Import {nameof(OnInitializedAsync)}", LogLevel.Info);
+		
 		pathWidthClass = "shortWidth";
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
@@ -200,11 +202,15 @@
 		OrganizeItems();
 		finishedLoading = true;
 		StateHasChanged();
+		
+		L.LogLine($"Finish Import {nameof(OnInitializedAsync)}", LogLevel.Info);
 	}
 
 	///Organizes the import items by putting the errors at the top of the page above the other files.
 	public static void OrganizeItems()
 	{
+		L.LogLine($"Begin Import {nameof(OrganizeItems)}", LogLevel.Debug);
+
 		errorAmount = 0;
 		List<ImportFile> errors = new(), good = new();
 		libFilesWithSameName.Clear();
@@ -233,6 +239,7 @@
 		}
 
 		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename]?.Count).ToList();
+		L.LogLine($"Finish Import {nameof(OrganizeItems)}", LogLevel.Debug);
 	}
 
 	private static void FindLibraryFilesWithSameOrSimilarName(string filenameNoExt)
@@ -275,6 +282,8 @@
 	///Adds either all items or the selected items to your library.
 	private async void AddItems()
 	{
+		L.LogLine($"Begin {nameof(AddItems)}", LogLevel.Info);
+
 		List<ImportFile> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count 
 			? importFiles : importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList();
 		
@@ -313,6 +322,8 @@
 		
 		OrganizeItems();
 		StateHasChanged();
+		
+		L.LogLine($"Finish {nameof(AddItems)}", LogLevel.Info);
 	}
 
 	private static void SearchItems()
@@ -370,6 +381,8 @@
 	///Sends all selected files to the Recycle Bin.
 	private void DeleteSelected()
 	{
+		L.LogLine($"Begin {nameof(DeleteSelected)}", LogLevel.Info);
+
 		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
 		{
 			FileSystem.DeleteFile(file.absolutePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
@@ -378,6 +391,8 @@
 		ClearChecks();
 		OrganizeItems();
 		StateHasChanged();
+		
+		L.LogLine($"Finish {nameof(DeleteSelected)}", LogLevel.Info);
 	}
 
 	private static void ClearDateTaken()
@@ -419,6 +434,8 @@
 	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
 	private void SaveChanges()
 	{
+		L.LogLine($"Begin {nameof(SaveChanges)}", LogLevel.Info);
+
 		statusMessage = "Saving...";
 		StateHasChanged();
 
@@ -431,10 +448,14 @@
 		File.WriteAllText(filePath, fileOutput.ToString());
 		statusMessage = $"{importFiles.Count} Items Saved to Disk";
 		StateHasChanged();
+		
+		L.LogLine($"Finish {nameof(SaveChanges)}", LogLevel.Info);
 	}
 
 	private void LoadItemsFromDisk()
 	{
+		L.LogLine($"Begin {nameof(LoadItemsFromDisk)}", LogLevel.Info);
+		
 		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
 		if (!File.Exists(filePath))
 		{
@@ -463,5 +484,7 @@
 		OrganizeItems();
 		statusMessage = "";
 		StateHasChanged();
+		
+		L.LogLine($"Finish {nameof(LoadItemsFromDisk)}", LogLevel.Info);
 	}
 }

@@ -8,6 +8,7 @@ global using PSS.Backend.Records;
 global using C = PSS.Backend.Connection;
 global using D = DateTakenExtractor.DateTakenExtractor;
 global using F = PSS.Backend.Functions;
+global using L = PSS.Backend.Logger;
 global using M = PSS.Backend.Maintenance;
 global using S = PSS.Settings;
 

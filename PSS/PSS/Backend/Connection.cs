@@ -61,7 +61,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -109,7 +109,7 @@ public static class Connection
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            L.LogException(e);
             return false;
         }
         finally
@@ -140,7 +140,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -173,7 +173,7 @@ public static class Connection
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            L.LogException(e);
             return null;
         }
         finally
@@ -198,7 +198,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -225,7 +225,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -257,7 +257,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -280,7 +280,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -297,7 +297,7 @@ public static class Connection
         }
         catch (FileNotFoundException e)
         {
-            Console.WriteLine(e.Message);
+            L.LogException(e);
         }
         
         try
@@ -314,7 +314,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -342,7 +342,7 @@ public static class Connection
             cmd.CommandText = "DELETE FROM media WHERE date_deleted IS NOT NULL";
             cmd.ExecuteNonQuery();
         }
-        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+        catch (NpgsqlException e) { L.LogException(e); }
         finally { Close(); }
     }
 
@@ -357,7 +357,7 @@ public static class Connection
             cmd.Parameters.AddWithValue("@uuid", uuid);
             cmd.ExecuteNonQuery();
         }
-        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+        catch (NpgsqlException e) { L.LogException(e); }
         finally { Close(); }
     }
 
@@ -370,7 +370,7 @@ public static class Connection
             using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE date_deleted IS NOT NULL", connection);
             cmd.ExecuteNonQuery();
         }
-        catch (NpgsqlException e) { Console.WriteLine(e.ErrorCode + " Message: " + e.Message); }
+        catch (NpgsqlException e) { L.LogException(e); }
         finally { Close(); }
     }
     
@@ -391,7 +391,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -415,7 +415,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -446,7 +446,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
             return false;
         }
         finally
@@ -469,7 +469,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -492,7 +492,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -524,7 +524,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -554,7 +554,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -589,7 +589,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -624,7 +624,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -653,7 +653,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -701,7 +701,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -729,7 +729,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -758,7 +758,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -787,7 +787,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
@@ -819,7 +819,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine(e.ErrorCode + " Message: " + e.Message);
+            L.LogException(e);
         }
         finally
         {
