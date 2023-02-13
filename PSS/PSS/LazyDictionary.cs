@@ -8,7 +8,7 @@ public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement> where 
 {
 	private readonly Dictionary<TKey, TElement> _internalDictionary;
 
-	public Func<TElement>? GetDefault { get; init; } = null;
+	public Func<TElement> GetDefault { get; init; } = null;
 	public bool AddMissingKeys { get; init; } = false;
 	public IEqualityComparer<TKey> Comparer => _internalDictionary.Comparer;
 

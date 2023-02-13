@@ -177,7 +177,7 @@
 
 	private static string searchText, statusMessage;
 
-	protected override async Task OnInitializedAsync()
+	protected override void OnInitialized()
 	{
 		L.LogLine($"Begin Import {nameof(OnInitializedAsync)}", LogLevel.Info);
 		
@@ -193,7 +193,7 @@
 		errorAmount = 0;
 		statusMessage = "";
 
-		await Parallel.ForEachAsync(allAbsPaths, async (absPath, _) =>
+		Parallel.ForEach(allAbsPaths, (absPath, _) =>
 		{
 			ImportFile importFile = new(absPath);
 			importFiles.Add(importFile);
