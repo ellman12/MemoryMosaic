@@ -1,41 +1,13 @@
-<style>
-    nav > a {
-        text-decoration: none;
-        background-color: black;
-        border: none;
-        border-radius: 4px;
-        display: flex;
-        flex: 1;
-        word-wrap: break-word;
-        align-items: center;
-        letter-spacing: .01785714em;
-        font-size: 1rem;
-        font-weight: 400;
-        width: 120px;
-        padding-left: 12px;
-        padding-bottom: 11px;
-        padding-top: 11px;
-    }
-    
-    nav > a:hover {
-        background-color: var(--hover-color);
-        cursor: pointer;
-    }
-    
-    a > span + span, a > svg + span {
-        padding-left: 11px;
-        text-decoration: none;
-    }
-</style>
+<link href="css/components/NavMenu.css" rel="stylesheet"/>
 
-<nav style="position: fixed; margin-right: 10px; margin-left: -10px; margin-top: 0;">
-    <a href="/"><span class="material-icons-outlined">home</span><span>Home</span></a>
-    <a href="collections"><span class="material-icons-outlined">&#xe411;</span><span>Collections</span></a>
-    <a href="import"><span class="material-icons-outlined">&#xe2c3;</span><span>Import</span></a>
-    <a href="starred"><span class="material-icons">star</span><span>Starred</span></a>
-    <a href="no-dt"><span class="material-icons-outlined">help_outline</span><span>No DT</span></a>
-    <a href="memories"><span class="material-icons-outlined">history</span><span>Memories</span></a>
-    <a href="search"><span class="material-icons-outlined">&#xe8b6;</span><span>Search</span></a>
-    <a href="trash"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Trash</span></a>
-    <a href="settings"><span class="material-icons-outlined">&#xe8b8;</span><span>Settings</span></a>
+<nav>
+	<NavLink class="navLink" href="/" Match="NavLinkMatch.All"><span class="material-icons-outlined">home</span><span>Home</span></NavLink>
+	<NavLink class="navLink" href="collections" Match="NavLinkMatch.All"><span class="material-icons-outlined">&#xe411;</span><span>Collections</span></NavLink>
+	<NavLink class="navLink" href="import" Match="NavLinkMatch.All"><span class="material-icons-outlined">&#xe2c3;</span><span>Import</span></NavLink>
+	<NavLink class="navLink" href="starred" Match="NavLinkMatch.All"><span class="material-icons">star</span><span>Starred</span></NavLink>
+	<NavLink class="navLink" href="no-dt" Match="NavLinkMatch.All"><span class="material-icons-outlined">help_outline</span><span>No DT</span></NavLink>
+	<NavLink class="navLink" href="memories" Match="NavLinkMatch.All"><span class="material-icons-outlined">history</span><span>Memories</span></NavLink>
+	<NavLink class="navLink" href="search" Match="NavLinkMatch.All"><span class="material-icons-outlined">&#xe8b6;</span><span>Search</span></NavLink>
+	<NavLink class="navLink" href="trash" Match="NavLinkMatch.All"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Trash</span></NavLink>
+	<NavLink class="navLink" href="settings" Match="NavLinkMatch.All"><span class="material-icons-outlined">&#xe8b8;</span><span>Settings</span></NavLink>
 </nav>
