@@ -12,6 +12,8 @@
     private bool _visible;
     private string _message;
 
+    //[BL0007] Component parameter 'PSS.Shared.ProgressPopUp.Visible' should be auto property
+    #pragma warning disable BL0007 
     [Parameter]
     public bool Visible
     {
@@ -33,6 +35,7 @@
             StateHasChanged();
         }
     }
+    #pragma warning restore BL0007
 
     [Parameter]
     public int Width { get; set; } = 320;

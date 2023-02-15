@@ -24,11 +24,11 @@
     }
     
     <div id="mainDiv">
-        @foreach (KeyValuePair<int, List<C.MediaRow>> group in grouped)
+        @foreach (KeyValuePair<int, List<MediaRow>> group in grouped)
         {
             <span>@group.Key</span>
             <div>
-                @foreach (C.MediaRow media in group.Value)
+                @foreach (MediaRow media in group.Value)
                 {
                     <div class="thumbnail">
                         @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
@@ -100,13 +100,13 @@
     }
 
     ///Stores the years, and a List of each item corresponding to that year.
-    private static Dictionary<int, List<C.MediaRow>> grouped;
+    private static Dictionary<int, List<MediaRow>> grouped;
 
     private static readonly List<string> months = new(new[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
     
     protected override void OnInitialized()
     {
-        grouped = new Dictionary<int, List<C.MediaRow>>();
+        grouped = new Dictionary<int, List<MediaRow>>();
         SelectedMonth = DateTime.Today.ToString("MMMM");
         SelectedDay = DateTime.Today.Day;
     }
@@ -116,10 +116,10 @@
         grouped.Clear();
         
         //Get all the items taken on this month and day and group them by their DT year.
-        foreach (C.MediaRow memory in C.LoadMemories(SelectedMonth, SelectedDay))
+        foreach (MediaRow memory in C.LoadMemories(SelectedMonth, SelectedDay))
         {
             if (!grouped.ContainsKey(memory.dateTaken!.Value.Year))
-                grouped.Add(memory.dateTaken!.Value.Year, new List<C.MediaRow> {memory});
+                grouped.Add(memory.dateTaken!.Value.Year, new List<MediaRow> {memory});
             else
                 grouped[memory.dateTaken!.Value.Year].Add(memory);
         }

@@ -11,7 +11,7 @@
 </header>
 
 <div id="mainDiv">
-    @foreach (C.MediaRow row in mediaMissingItems)
+    @foreach (MediaRow row in mediaMissingItems)
     {
         <div class="missingItem">
             <div class="thumbnail">
@@ -30,7 +30,7 @@
 </div>
 
 @code{
-    private static List<C.MediaRow> mediaMissingItems;
+    private static List<MediaRow> mediaMissingItems;
 
     protected override void OnInitialized() => mediaMissingItems = M.GetMediaMissingFiles();
 
