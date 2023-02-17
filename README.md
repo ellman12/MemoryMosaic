@@ -4,7 +4,7 @@
 ![image](https://user-images.githubusercontent.com/56001219/219803427-f8d839a4-5f92-42a2-a6b0-31dda7e21554.png)
 
 ## About
-### **The Ultimate Way to Store, Sort, and Organize a Lifetime of Photos and Videos.**
+### **The Ultimate Way to Store, Sort, and Organize a Lifetime of Photos and Videos!**
 Photos Storage Server (PSS or pss) is a free and open source replacement for Google Photos, powered by Blazor Server and PostgreSQL, intended to be used by a single person on a server hosted on the local network. The database manages your library of items, what albums you have, what is in your Trash, everything. The files themselves are stored on the local file system, while the database stores relative paths (also known as short paths or shortPaths) to where they are.<br>
 
 ## Features Not Found in Google Photos
