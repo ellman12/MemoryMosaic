@@ -123,13 +123,14 @@
         }
     
         string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={statCollectionID} AND date_deleted IS NULL AND separate={isFolder}";
-        topQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
-        bottomQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
+        topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
+        bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
     
-        //Loads every item with NULL Date Taken first, then items with Date Taken.
+        //Loads every item with NULL Date Taken first, then items with a Date Taken.
         firstQuery = "";
         if (S.displayNoDTInCV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
-        firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100) ORDER BY {orderBy}";
+        firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100)";
+        if (S.displayNoDTInCV) firstQuery += $" ORDER BY {orderBy}";
     }
     
     private void ChangeOrder(CVSortMode newMode)
