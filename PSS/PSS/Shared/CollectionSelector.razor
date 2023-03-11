@@ -88,6 +88,9 @@
     [Parameter]
     public Action OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
+    [Parameter]
+    public bool ClearChecksOnConfirm { get; set; } = true;
+
     protected override void OnInitialized()
     {
         CollectionCreator.CollectionCreated += RefreshData;
@@ -187,11 +190,14 @@
 
         await CloseBtnClick();
 
-        await ClearChecks();
-        SelectedItems.Clear();
-        await SelectedItemsCountChanged.InvokeAsync(0);
-        await CollectionsVisChanged.InvokeAsync("hidden");
-        await HeaderVisChanged.InvokeAsync("hidden");
+        if (ClearChecksOnConfirm)
+        {
+            await ClearChecks();
+            SelectedItems.Clear();
+            await SelectedItemsCountChanged.InvokeAsync(0);
+            await CollectionsVisChanged.InvokeAsync("hidden");
+            await HeaderVisChanged.InvokeAsync("hidden");
+        }
     }
 
     private void PreviousSelectionBtnClick(bool save)

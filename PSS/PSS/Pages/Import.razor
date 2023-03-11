@@ -59,7 +59,7 @@
 		</div>
 	</header>
 	
-	<CollectionSelector OnCheckClicked="@UpdateCollections" @bind-CollectionsVis="@collectionSelectorVis" SelectedItems="@selectedItems"/>
+	<CollectionSelector OnCheckClicked="@UpdateCollections" @bind-CollectionsVis="@collectionSelectorVis" SelectedItems="@selectedItems" ClearChecksOnConfirm="false"/>
 	
 	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
