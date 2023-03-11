@@ -32,6 +32,7 @@ namespace PSS
         public const string LIB_REQUEST_PATH = "/pss_library";
         public const string IMPORT_REQUEST_PATH = "/pss_import";
         public const string TMP_REQUEST_PATH = "/pss_tmp";
+        public const int POSTGRES_VERSION = 15;
 
         public static void WriteSettings() => File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
 

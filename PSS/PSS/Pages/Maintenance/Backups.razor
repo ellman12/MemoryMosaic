@@ -78,7 +78,7 @@
                 RedirectStandardError = false,
                 RedirectStandardInput = false,
                 RedirectStandardOutput = false,
-                WorkingDirectory = "C:/Program Files/PostgreSQL/14/bin/",
+                WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
                 FileName = "cmd.exe",
                 Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbBakPath}\"" //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
             }
@@ -118,7 +118,7 @@
             WindowStyle = ProcessWindowStyle.Hidden,
             WorkingDirectory = S.backupFolderPath,
             FileName = "cmd.exe",
-            Arguments = $"/C type \"{Path.Combine(S.libFolderPath, "PSS Backup.bak")}\" | \"C:/Program Files/PostgreSQL/14/bin/psql.exe\" \"host=localhost port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\""
+            Arguments = $"/C type \"{Path.Combine(S.libFolderPath, "PSS Backup.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\""
         };
         process.StartInfo = startInfo;
         process.Start();
