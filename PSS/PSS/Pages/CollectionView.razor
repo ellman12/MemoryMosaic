@@ -128,7 +128,7 @@
     
         //Loads every item with NULL Date Taken first, then items with Date Taken.
         firstQuery = "";
-        if (S.displayNoDTInAV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
+        if (S.displayNoDTInCV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
         firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100) ORDER BY {orderBy}";
     }
     

@@ -23,7 +23,7 @@ namespace PSS
         [JsonProperty] public static bool showPrompts;
 
         ///Should items without a Date Taken be shown in albums and folders?
-        [JsonProperty] public static bool displayNoDTInAV;
+        [JsonProperty] public static bool displayNoDTInCV;
 
         ///Controls the quality of video thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
         [JsonProperty] public static int thumbnailQuality;
@@ -53,7 +53,7 @@ namespace PSS
             libFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_library";
             backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_backup";
             tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/pss_tmp";
-            showPrompts = displayNoDTInAV = true;
+            showPrompts = displayNoDTInCV = true;
             thumbnailQuality = 7;
             File.WriteAllText(Environment.CurrentDirectory + "/pss_settings.json", JsonConvert.SerializeObject(new Settings()));
         }

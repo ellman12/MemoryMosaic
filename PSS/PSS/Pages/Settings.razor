@@ -37,7 +37,7 @@
         </div>
         
         <div class="settings-pair">
-            <input type="checkbox" class="settings-pair" @bind="@displayNoDTInAV"/>
+            <input type="checkbox" class="settings-pair" @bind="@displayNoDTInCV"/>
             <span style="display: inline">Display items with no date taken in albums/folders?</span>
         </div>
         
@@ -115,7 +115,7 @@
     private static string importFolderPath = S.importFolderPath;
     private static string libraryRootPath = S.libFolderPath;
     private static bool showPrompts = S.showPrompts;
-    private static bool displayNoDTInAV = S.displayNoDTInAV;
+    private static bool displayNoDTInCV = S.displayNoDTInCV;
     private static string backupFolderPath = S.backupFolderPath;
     private static string tmpFolderPath = S.tmpFolderPath;
     private static int thumbnailQuality = S.thumbnailQuality;
@@ -186,7 +186,7 @@
         S.importFolderPath = importFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
-        S.displayNoDTInAV = displayNoDTInAV;
+        S.displayNoDTInCV = displayNoDTInCV;
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
         S.thumbnailQuality = thumbnailQuality;
@@ -200,7 +200,7 @@
         importFolderPath = S.importFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;
-        displayNoDTInAV = S.displayNoDTInAV;
+        displayNoDTInCV = S.displayNoDTInCV;
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
         thumbnailQuality = S.thumbnailQuality;
