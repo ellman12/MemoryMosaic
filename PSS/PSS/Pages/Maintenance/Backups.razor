@@ -66,8 +66,12 @@
     ///Create a backup .zip file of library and database on server, and add the backup to the top of the page of  backups.
     private void CreateBackup()
     {
+        L.LogLine("Backup Started", LogLevel.Info);
+        
         string dbBakPath = Path.Combine(S.libFolderPath, "PSS Backup.bak");
         string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}.zip");
+        
+        L.LogLine("Starting psql process", LogLevel.Debug);
         
         //Backup entire database into a single file.
         using Process process = new Process
@@ -86,8 +90,12 @@
         process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
         process.WaitForExit();
         
+        L.LogLine("Psql process finished, creating .zip file.", LogLevel.Debug);
         ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.Fastest, false);
+        L.LogLine("Zip file created", LogLevel.Debug);
+        
         File.Delete(dbBakPath);
+        L.LogLine(".bak file deleted", LogLevel.Debug);
         
         backups.Insert(0, new ValueTuple<string, DateTime, long>
         {
@@ -95,21 +103,29 @@
             Item2 = DateTime.Parse(Path.GetFileName(zipFilePath).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
             Item3 = new FileInfo(zipFilePath).Length
         });
+        
+        L.LogLine("Backup Finished", LogLevel.Info);
     }
 
     ///<summary>Restore PSS to this backup.</summary>
     ///<param name="zipFullPath">The full path to the zip file to restore PSS to.</param>
     private static void RestoreBackup(string zipFullPath)
     {
-        //Clears the database.
+        L.LogLine("Restore started", LogLevel.Info);
+        L.LogLine("Begin clearing database", LogLevel.Debug);
+        
         C.Open();
         using NpgsqlCommand cmd = new NpgsqlCommand("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
         cmd.ExecuteNonQuery();
         C.Close();
         
+        L.LogLine("Database cleared, restoring pss_library", LogLevel.Debug);
+        
         //Restore pss_library.
         if (Directory.Exists(S.libFolderPath)) Directory.Delete(S.libFolderPath, true);
         ZipFile.ExtractToDirectory(zipFullPath, S.libFolderPath);
+        
+        L.LogLine("pss_library restored, restoring database", LogLevel.Debug);
         
         //Restore the database from the .bak file.
         Process process = new();
@@ -124,5 +140,7 @@
         process.Start();
         process.WaitForExit();
         File.Delete($"{S.libFolderPath}/PSS Backup.bak");
+        
+        L.LogLine("Database restored, restoration finished", LogLevel.Info);
     }
 }
