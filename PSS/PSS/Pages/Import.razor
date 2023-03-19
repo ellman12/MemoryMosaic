@@ -17,7 +17,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
+	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Del="DeleteSelected" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
 	<header>
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
