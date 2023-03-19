@@ -103,8 +103,6 @@
 	
 	[Parameter, EditorRequired] public ImportFile ImportFile { get; set; }
 	
-	[Parameter, EditorRequired] public Action Rerender { get; set; }
-
 	private string datePickerDisplay = "none";
 
 	protected override void OnInitialized() => ImportFile = Import.importFiles[Index];
@@ -129,7 +127,7 @@
 		{
 			Import.lastCheckedIndex = Index;
 		}
-		Rerender.Invoke();
+		Import.Rerender();
 		
 		//Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems.
 		void ToggleCheck(Guid uuid)
@@ -182,9 +180,7 @@
 			ImportFile.shortPath = newShortPath;
 			ImportFile.absolutePath = newAbsPath;
 			Import.OrganizeItems();
-			Rerender.Invoke();
 		}
-		Rerender.Invoke();
 	}
 
 	private void DtSourceChanged() => datePickerDisplay = ImportFile.dateTakenSource == DateTakenSource.Custom ? "inline" : "none";
