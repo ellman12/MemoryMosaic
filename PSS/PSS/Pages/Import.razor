@@ -17,7 +17,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
+	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Del="DeleteSelected" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
 	<header>
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
@@ -72,7 +72,7 @@
 					<div class="errorDiv">
 						@do
 						{
-							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 							i++;
 						} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 						@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
@@ -104,7 +104,7 @@
 
 				if (!hasErrors && !hasWarnings)
 				{
-					<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+					<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 					continue;
 				}
 				
@@ -113,7 +113,7 @@
 						@if (hasErrors)
 						{
 							hasRendered = true;
-							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 
 							foreach (MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
 							{
@@ -126,7 +126,7 @@
 						{
 							if (!hasRendered)
 							{
-								<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+								<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 							}
 							
 							foreach (MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
@@ -170,6 +170,9 @@
 	///Stores what items are selected by the user.
 	public static readonly HashSet<Guid> selectedItems = new();
 
+	///Used in ImportItem for rerendering this page.
+	public static Action Rerender;
+
 	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
 	public static int lastCheckedIndex = 0;
 
@@ -188,6 +191,7 @@
 		libFilesWithSimilarName.Clear();
 		searchResults.Clear();
 		selectedItems.Clear();
+		Rerender = StateHasChanged;
 		minYear = 2000;
 		maxYear = DateTime.Today.Year;
 		errorAmount = 0;
@@ -430,7 +434,7 @@
 	}
 
 	private static async void FocusSearchInput() => await searchInput.FocusAsync();
-
+	
 	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
 	private void SaveChanges()
 	{
