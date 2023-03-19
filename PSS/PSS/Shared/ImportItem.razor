@@ -106,8 +106,6 @@
 	[Parameter, EditorRequired] public ImportFile ImportFile { get; set; }
 	
 	private string datePickerDisplay = "none";
-
-	protected override void OnInitialized() => ImportFile = Import.importFiles[Index];
 }
 
 @functions {
