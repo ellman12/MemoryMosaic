@@ -72,7 +72,7 @@
 					<div class="errorDiv">
 						@do
 						{
-							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							<ImportItem Index="i" ImportFile="@importFiles[i]" Rerender="StateHasChanged"/>
 							i++;
 						} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 						@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
@@ -104,7 +104,7 @@
 
 				if (!hasErrors && !hasWarnings)
 				{
-					<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+					<ImportItem Index="i" ImportFile="@importFiles[i]" Rerender="StateHasChanged"/>
 					continue;
 				}
 				
@@ -113,7 +113,7 @@
 						@if (hasErrors)
 						{
 							hasRendered = true;
-							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							<ImportItem Index="i" ImportFile="@importFiles[i]" Rerender="StateHasChanged"/>
 
 							foreach (MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
 							{
@@ -126,7 +126,7 @@
 						{
 							if (!hasRendered)
 							{
-								<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+								<ImportItem Index="i" ImportFile="@importFiles[i]" Rerender="StateHasChanged"/>
 							}
 							
 							foreach (MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
