@@ -352,6 +352,12 @@ else
 	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.</remarks>
 	private int AddContent(string firstQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ref string divVis)
 	{
+		if (String.IsNullOrWhiteSpace(firstQuery) || String.IsNullOrWhiteSpace(notNullDTQuery))
+		{
+			divVis = "hidden";
+			return 0;
+		}
+
 		int amountAdded = 0;
 		
 		try
