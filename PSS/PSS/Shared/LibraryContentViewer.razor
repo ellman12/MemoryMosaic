@@ -323,32 +323,7 @@ else
 	protected override void OnInitialized()
 	{
 		ctrlGInput = new CtrlGInput();
-		MediaList = new List<MediaRow>(150);
-		_selectedItem = Guid.Empty;
-		SelectedItems = new HashSet<Guid>(150);
-		oldestDT = newestDT = null;
-		AddContentBottom();
-		if (MediaList.Count > 0)
-		{
-			if (UseDateAdded)
-			{
-				oldestDT = MediaList.Last().dateAdded;
-				newestDT = MediaList.First().dateAdded;
-			}
-			else
-			{
-				oldestDT = MediaList.Last().dateTaken;
-				newestDT = MediaList.First().dateTaken;				
-			}
-		}
-		moreContentBottomDivVis = "visible";
-		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
-		progressVisible = false;
-		
-		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = downloadDivVis = "hidden";
-		viewIndex = 0;
-
-		itemDescription = "";
+		Reset();
 	}
 	
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
@@ -377,6 +352,12 @@ else
 	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.</remarks>
 	private int AddContent(string firstQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ref string divVis)
 	{
+		if (String.IsNullOrWhiteSpace(firstQuery) || String.IsNullOrWhiteSpace(notNullDTQuery))
+		{
+			divVis = "hidden";
+			return 0;
+		}
+
 		int amountAdded = 0;
 		
 		try
@@ -600,6 +581,36 @@ else
 		StateHasChanged();
 		
 		Directory.Delete(zipFolderPath, true); //Not needed after it's zipped.
+	}
+
+	public void Reset()
+	{
+		MediaList = new List<MediaRow>(150);
+		_selectedItem = Guid.Empty;
+		SelectedItems = new HashSet<Guid>(150);
+		oldestDT = newestDT = null;
+		AddContentBottom();
+		if (MediaList.Count > 0)
+		{
+			if (UseDateAdded)
+			{
+				oldestDT = MediaList.Last().dateAdded;
+				newestDT = MediaList.First().dateAdded;
+			}
+			else
+			{
+				oldestDT = MediaList.Last().dateTaken;
+				newestDT = MediaList.First().dateTaken;				
+			}
+		}
+		moreContentBottomDivVis = "visible";
+		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
+		progressVisible = false;
+		
+		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = downloadDivVis = "hidden";
+		viewIndex = 0;
+
+		itemDescription = "";
 	}
 }
 
