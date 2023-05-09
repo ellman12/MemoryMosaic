@@ -66,7 +66,7 @@ namespace PSS.Backend
             byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
             
             try { File.Delete(thumbnailFullPath); }
-            catch (Exception e) { Console.WriteLine(e.Message); }
+            catch (Exception e) { L.LogException(e); }
             
             return Convert.ToBase64String(bytes);
         }
