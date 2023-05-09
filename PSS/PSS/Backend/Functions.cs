@@ -7,9 +7,9 @@ namespace PSS.Backend
     ///<summary>Static class of misc functions.</summary>
     public static class Functions
     {
-        public static readonly string[] SupportedImageExts = {".jpg", ".jpeg", ".png", ".gif"};
-        public static readonly string[] SupportedVideoExts = {".mp4", ".mkv", ".mov"};
-        public static readonly string[] SupportedExts = {".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov"};
+        public static readonly HashSet<string> SupportedImageExts = new() {".jpg", ".jpeg", ".png", ".gif"};
+        public static readonly HashSet<string> SupportedVideoExts = new() {".mp4", ".mkv", ".mov"};
+        public static readonly HashSet<string> SupportedExts = new() {".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov"};
 
         ///<summary>
         ///Take a byte long like 10900000000 and turn it into a more readable string like 10.9 GB.
