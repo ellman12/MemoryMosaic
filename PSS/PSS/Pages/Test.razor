@@ -11,12 +11,11 @@
 
     private static void Yes()
     {
-        ImportFile file = new("C:/Users/Elliott/Pictures/PSS/pss_import/2d9a134474979e5b9762209e207fd107f53e605c.mp4");
-        file.collections = new HashSet<Collection>();
-        file.collections.Add(new Collection(4, "", ""));
-        
-        string tabDelimitedString = file.ToTabDelimitedString();
-        var newFile = ImportFile.ParseTabDelimitedString(tabDelimitedString);
+        Console.WriteLine(F.GenerateThumbnail("C:/Users/Elliott/Pictures/PSS Dev/pss_library/2018/1/IMG_0632.JPG"));
+        Console.WriteLine();
+        Console.WriteLine();
+        Console.WriteLine();
+        Console.WriteLine(F.GenerateThumbnail("C:/Users/Elliott/Pictures/PSS/pss_library/2014/3/IMG_1729.mov"));
     }
     
 }
