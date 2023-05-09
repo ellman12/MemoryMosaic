@@ -48,17 +48,17 @@ namespace PSS.Backend
         ///</summary>
         public static void VisToggle(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
 
-        ///<summary>Given the absolute path to a video file, use ffmpeg to generate a compressed thumbnail of the first frame.</summary>
-        ///<param name="videoAbsPath">The absolute path to where the video file is.</param>
-        ///<returns>A base64 string representing the first frame of the video, but heavily compressed.</returns>
-        public static string GenerateThumbnail(string videoAbsPath)
+        ///<summary>Given the absolute path to a image/video file, use ffmpeg to generate a compressed thumbnail of the image or the first frame.</summary>
+        ///<param name="filePath">The absolute path to where the file is.</param>
+        ///<returns>A base64 string representing the thumbnail.</returns>
+        public static string GenerateThumbnail(string filePath)
         {
             string thumbnailFullPath = Path.Join(S.tmpFolderPath, Guid.NewGuid() + ".jpg");
             ProcessStartInfo ffmpegInfo = new()
             {
                 CreateNoWindow = true,
                 FileName = "ffmpeg",
-                Arguments = $"-i \"{videoAbsPath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\""
+                Arguments = $"-i \"{filePath}\" -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\""
             };
             Process ffmpegProcess = Process.Start(ffmpegInfo);
             ffmpegProcess!.WaitForExit();
