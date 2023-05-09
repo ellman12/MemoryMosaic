@@ -1,4 +1,4 @@
-﻿namespace PSS.Backend.Records;
+namespace PSS.Backend.Records;
 
 ///Represents a row in the media table.
 public record MediaRow
@@ -12,6 +12,7 @@ public record MediaRow
     public readonly string thumbnail;
     public readonly DateTime? dateDeleted;
     public string description;
+    public readonly bool video;
 
     public MediaRow(string p, DateTime? dt, Guid uuid, string thumbnail, DateTime? dateDeleted)
     {
@@ -58,6 +59,7 @@ public record MediaRow
         this.uuid = uuid;
         this.thumbnail = thumbnail;
         this.description = description;
+        video = D.IsVideoExt(Path.GetExtension(path));
     }
             
     public MediaRow(string p, DateTime? dt, DateTime da, bool starred, bool separate, Guid uuid, string thumbnail)
