@@ -37,7 +37,7 @@ public static class Connection
     ///<param name="path">The short path that will be stored in media. Convention is to use '/' as the separator.</param>
     ///<param name="dateTaken">When this item was taken.</param>
     ///<param name="uuid">The uuid of this item.</param>
-    ///<param name="thumbnail">ONLY FOR VIDEOS. A base64 string for the video thumbnail. Use null or "" for pictures.</param>
+    ///<param name="thumbnail">A base64 string representing the thumbnail.</param>
     ///<param name="starred">Is this item starred or not?</param>
     public static async Task InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false)
     {
@@ -49,13 +49,10 @@ public static class Connection
             cmd.Parameters.AddWithValue("@path", path);
             cmd.Parameters.AddWithValue("@uuid", uuid);
             cmd.Parameters.AddWithValue("@starred", starred);
-            if (dateTaken != null)
-                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
-            
-            if (!String.IsNullOrWhiteSpace(thumbnail))
-                cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
+            cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
+            if (dateTaken != null) cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
 
-            cmd.CommandText = $"INSERT INTO media (path, {(dateTaken == null ? "" : "date_taken,")} starred, uuid {(String.IsNullOrWhiteSpace(thumbnail) ? "" : ", thumbnail")}) VALUES (@path, {(dateTaken == null ? "" : "@dateTaken, ")} @starred, @uuid {(String.IsNullOrWhiteSpace(thumbnail) ? "" : ", @thumbnail")}) ON CONFLICT(path) DO NOTHING";
+            cmd.CommandText = $"INSERT INTO media (path, {(dateTaken == null ? "" : "date_taken,")} starred, uuid , thumbnail) VALUES (@path, {(dateTaken == null ? "" : "@dateTaken, ")} @starred, @uuid, @thumbnail) ON CONFLICT(path) DO NOTHING";
 
             await cmd.ExecuteNonQueryAsync();
         }
