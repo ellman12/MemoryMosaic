@@ -7,6 +7,10 @@ namespace PSS.Backend
     ///<summary>Static class of misc functions.</summary>
     public static class Functions
     {
+        public static readonly string[] SupportedImageExts = {".jpg", ".jpeg", ".png", ".gif"};
+        public static readonly string[] SupportedVideoExts = {".mp4", ".mkv", ".mov"};
+        public static readonly string[] SupportedExts = {".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov"};
+
         ///<summary>
         ///Take a byte long like 10900000000 and turn it into a more readable string like 10.9 GB.
         ///One thing to note is this uses things like kibibyte instead of the usual things like kilobyte because this is usually what's used for disk storage.
@@ -77,9 +81,8 @@ namespace PSS.Backend
         ///</summary>
         public static List<string> GetSupportedFiles(string rootPath)
         {
-            string[] validExts = {".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov"};
             string[] allPaths = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories);
-            return allPaths.Where(path => validExts.Contains(Path.GetExtension(path).ToLower())).ToList();
+            return allPaths.Where(path => SupportedExts.Contains(Path.GetExtension(path).ToLower())).ToList();
         }
     }
 }
