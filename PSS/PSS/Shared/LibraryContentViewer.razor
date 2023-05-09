@@ -21,7 +21,7 @@ If it can't find any content, it shows an h1 saying no content.
 	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 	    
-	    @if (CollectionID != -1 && MediaList[viewIndex].thumbnail == null)
+	    @if (CollectionID != -1 && !MediaList[viewIndex].video)
 	    {
 	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(CollectionID, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
 	    }
@@ -101,7 +101,7 @@ If it can't find any content, it shows an h1 saying no content.
 	    </div>
 	}
 
-	@if (MediaList[viewIndex].thumbnail == null)
+	@if (!MediaList[viewIndex].video)
 	{
 	    <div tabindex="0" id="itemDiv"><img src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
 	}
@@ -135,15 +135,11 @@ If it can't find any content, it shows an h1 saying no content.
 						<div class="thumbnail">
 							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							@if (MediaList[ii].thumbnail != null) //Video
+							@if (MediaList[viewIndex].video)
 							{
 								<span class="material-icons-outlined video-icon">play_circle_outline</span>
-								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 							}
-							else
-							{
-								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-							}
+							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						i++;
 					} while (i < MediaList.Count && MediaList[i].dateTaken == null);
@@ -162,15 +158,11 @@ If it can't find any content, it shows an h1 saying no content.
 						<div class="thumbnail">
 							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							@if (MediaList[ii].thumbnail != null) //Video
+							@if (MediaList[viewIndex].video)
 							{
 								<span class="material-icons-outlined video-icon">play_circle_outline</span>
-								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 							}
-							else
-							{
-								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-							}
+							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						if (i == MediaList.Count)
 							previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken.Value.Day;
@@ -201,7 +193,7 @@ If it can't find any content, it shows an h1 saying no content.
 @*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)
 {
-	if (MediaList[viewIndex].thumbnail == null)
+	if (!MediaList[viewIndex].video)
 	{
 		<KeyboardShortcuts Left="@ChangeItemLeft" Right="@ChangeItemRight" />
 	}
