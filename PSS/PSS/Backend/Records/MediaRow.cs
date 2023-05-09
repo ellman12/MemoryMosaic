@@ -72,4 +72,16 @@ public record MediaRow
         this.uuid = uuid;
         this.thumbnail = thumbnail;
     }
+    
+    public MediaRow(string p, DateTime? dt, DateTime da, bool starred, bool separate, Guid uuid, string thumbnail, string description)
+    {
+        path = p;
+        dateTaken = dt;
+        dateAdded = da;
+        this.starred = starred;
+        this.separate = separate;
+        this.uuid = uuid;
+        this.thumbnail = thumbnail;
+        this.description = description;
+    }
 }
