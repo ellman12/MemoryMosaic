@@ -43,7 +43,10 @@
 }
 
 #body > div > .settings-pair > input[type="text"] {
-    color: black;
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    border-radius: 4px;
     width: 100%;
 }
 
@@ -54,6 +57,9 @@
 }
 
 #body > #debugDiv > div > input[type="text"] {
-    color: black;
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    border-radius: 4px;
     width: 77%;
 }
