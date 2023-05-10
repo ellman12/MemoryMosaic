@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS public.media
     starred boolean NOT NULL DEFAULT false,
     separate boolean NOT NULL DEFAULT false, -- Is this item in a folder?
     uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
-    thumbnail text DEFAULT NULL, -- Base64 string representing video thumbnail.
-    date_deleted timestamp without time zone DEFAULT NULL, -- If this has a value, it's not in the Trash.
+    thumbnail text NOT NULL, -- Base64 string representing thumbnail.
+    date_deleted timestamp without time zone DEFAULT NULL, -- If this has a value, it's in the Trash.
     description text DEFAULT NULL,
     PRIMARY KEY (path, uuid),
     UNIQUE (path),

@@ -32,15 +32,11 @@
                 {
                     <div class="thumbnail">
                         @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                        @if (media.thumbnail != null) //Video
+                        @if (media.video)
                         {
                             <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                            <img src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                         }
-                        else
-                        {
-                            <img src="@S.LIB_REQUEST_PATH/@media.path" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                        }
+                        <img src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
                     </div>
                 }
             </div>
