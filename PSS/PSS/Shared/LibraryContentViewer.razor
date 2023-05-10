@@ -133,12 +133,9 @@ If it can't find any content, it shows an h1 saying no content.
 					{
 						int ii = i;
 						<div class="thumbnail">
-							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+							@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
+							@if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							@if (MediaList[viewIndex].video)
-							{
-								<span class="material-icons-outlined video-icon">play_circle_outline</span>
-							}
 							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						i++;
@@ -156,12 +153,9 @@ If it can't find any content, it shows an h1 saying no content.
 					{
 						int ii = i;
 						<div class="thumbnail">
-							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+							@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
+                            @if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							@if (MediaList[viewIndex].video)
-							{
-								<span class="material-icons-outlined video-icon">play_circle_outline</span>
-							}
 							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						if (i == MediaList.Count)
