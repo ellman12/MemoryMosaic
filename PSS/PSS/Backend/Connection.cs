@@ -11,8 +11,8 @@ public static class Connection
     private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS";
     public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
 
-    ///Asynchronously creates and opens a new connection object for use in Async Connection.cs methods, and returns the new connection.
-    private static async Task<NpgsqlConnection> CreateLocalConnectionAsync()
+    ///Asynchronously creates, opens, and returns a new connection object.
+    public static async Task<NpgsqlConnection> CreateLocalConnectionAsync()
     {
         NpgsqlConnection localConn = new(CONNECTION_STRING);
         await localConn.OpenAsync();
