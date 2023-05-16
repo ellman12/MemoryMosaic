@@ -236,22 +236,21 @@
     {
         thumbnailBtnVis = "hidden";
         thumbnailProgressVis = "visible";
-        NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
 
         List<MediaRow> allItems = C.LoadEntireMediaTable();
         amountToUpdate = allItems.Count;
-        
-        foreach (MediaRow row in allItems)
+
+        await Parallel.ForEachAsync(allItems, async (item, _) =>
         {
+            await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
             await using NpgsqlCommand cmd = new("UPDATE media SET thumbnail = @newThumbnail WHERE path = @path", localConn);
-            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, row.path)));
-            cmd.Parameters.AddWithValue("@path", row.path);
-            await cmd.ExecuteNonQueryAsync();
+            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, item.path)));
+            cmd.Parameters.AddWithValue("@path", item.path);
+            await cmd.ExecuteNonQueryAsync(_);
             amountUpdated++;
             await InvokeAsync(StateHasChanged);
-        }
+        });
         
-        await localConn.CloseAsync();
         thumbnailBtnVis = "visible";
         thumbnailProgressVis = "hidden";
     }
