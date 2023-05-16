@@ -41,9 +41,23 @@
             <span style="display: inline">Display items with no date taken in albums/folders?</span>
         </div>
         
-        <div class="settings-pair">
-            <span title="Lower the number, higher the quality.">Video Thumbnail Quality: @thumbnailQuality</span>
-            <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
+        <div id="thumbnail-settings">
+            <div id="thumbnail-slider">
+                <span title="Lower the number, higher the quality.">Video Thumbnail Quality: @thumbnailQuality</span>
+                <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
+            </div>
+            <div id="thumbnail-updating">
+                @if (thumbnailBtnVis == "visible")
+                {
+                    <button class="textBtn" @onclick="@UpdateThumbnails"><span class="material-icons-outlined">image</span><span>Recreate Thumbnails</span></button>
+                }
+                
+                @if (thumbnailProgressVis == "visible")
+                {
+                    <progress max="100" value="@((float)amountUpdated / amountToUpdate * 100)"></progress>
+                    <span>@amountUpdated Updated, @(amountToUpdate - amountUpdated) Remaining</span>
+                }
+            </div>
         </div>
 
         <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
@@ -119,6 +133,11 @@
     private static string backupFolderPath = S.backupFolderPath;
     private static string tmpFolderPath = S.tmpFolderPath;
     private static int thumbnailQuality = S.thumbnailQuality;
+
+    //Updating thumbnails
+    private static int amountToUpdate, amountUpdated;
+    private static string thumbnailBtnVis = "visible";
+    private static string thumbnailProgressVis = "hidden";
     
     //Maintenance
     private static bool maintenanceLoaded;
@@ -211,6 +230,30 @@
     {
         S.ResetSettings();
         CancelBtnClicked();
+    }
+
+    private async Task UpdateThumbnails()
+    {
+        thumbnailBtnVis = "hidden";
+        thumbnailProgressVis = "visible";
+        NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
+
+        List<MediaRow> allItems = C.LoadEntireMediaTable();
+        amountToUpdate = allItems.Count;
+        
+        foreach (MediaRow row in allItems)
+        {
+            await using NpgsqlCommand cmd = new("UPDATE media SET thumbnail = @newThumbnail WHERE path = @path", localConn);
+            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, row.path)));
+            cmd.Parameters.AddWithValue("@path", row.path);
+            await cmd.ExecuteNonQueryAsync();
+            amountUpdated++;
+            await InvokeAsync(StateHasChanged);
+        }
+        
+        await localConn.CloseAsync();
+        thumbnailBtnVis = "visible";
+        thumbnailProgressVis = "hidden";
     }
 
     //Delete all empty folders
