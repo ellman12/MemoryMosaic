@@ -62,8 +62,15 @@ namespace PSS.Backend
             {
                 CreateNoWindow = true,
                 FileName = "ffmpeg",
-                Arguments = $"-i \"{filePath}\" -loglevel quiet {(SupportedVideoExts.Contains(Path.GetExtension(filePath).ToLower()) ? "-vf \"select=eq(n\\,0)\"" : "")} -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\""
+                Arguments = $"-i \"{filePath}\" -loglevel quiet "
             };
+            
+            string ext = Path.GetExtension(filePath).ToLower();
+            if (ext == ".png")
+                ffmpegInfo.Arguments += $"-compression_level 100 \"{thumbnailFullPath}\""; //0-100 for quality. 100 is lowest.
+            else
+                ffmpegInfo.Arguments += $"{(SupportedVideoExts.Contains(ext) ? "-vf \"select=eq(n\\,0)\"" : "")} -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\"";
+
             Process ffmpegProcess = Process.Start(ffmpegInfo);
             ffmpegProcess!.WaitForExit();
 
