@@ -45,9 +45,9 @@
 }
 
 @code{
-    private static int maxDay, _selectedDay;
-    private static string _selectedMonth;
-    private static string SelectedMonth
+    private int maxDay, _selectedDay;
+    private string _selectedMonth;
+    private string SelectedMonth
     {
         get => _selectedMonth;
         set
@@ -68,7 +68,7 @@
         }
     }
 
-    private static int SelectedDay
+    private int SelectedDay
     {
         get => _selectedDay;
         set
@@ -96,7 +96,7 @@
     }
 
     ///Stores the years, and a List of each item corresponding to that year.
-    private static Dictionary<int, List<MediaRow>> grouped;
+    private Dictionary<int, List<MediaRow>> grouped;
 
     private static readonly List<string> months = new(new[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
     
@@ -107,7 +107,7 @@
         SelectedDay = DateTime.Today.Day;
     }
 
-    private static void LoadMemories()
+    private void LoadMemories()
     {
         grouped.Clear();
         

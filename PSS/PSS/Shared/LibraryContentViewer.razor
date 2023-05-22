@@ -179,7 +179,7 @@ If it can't find any content, it shows an h1 saying no content.
 <ProgressPopUp Height="200" Width="200" Message="Preparing Zip..." Visible="@progressVisible"/>
 <div id="downloadDivBackground" style="visibility: @downloadDivVis">
 	<div id="downloadDiv">
-		<a href="@S.TMP_REQUEST_PATH/@ZipFilename" download="@ZipFilename">Click to Download</a>
+		<a href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">Click to Download</a>
 		<button class="iconBtn"><span class="material-icons-outlined" @onclick="@(() => downloadDivVis = "hidden")">check</span></button>
 	</div>
 </div>
@@ -204,14 +204,13 @@ else
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code{
-	CtrlGInput ctrlGInput;
+	private CtrlGInput ctrlGInput;
 
 	private int previousDay;
 	
 	///Stores all content loaded.
 	public List<MediaRow> MediaList { get; private set; }
 
-	///A single item for viewing.
 	public Guid SelectedItem
 	{
 		get => _selectedItem;
@@ -233,8 +232,7 @@ else
 			StateHasChanged();
 		}
 	}
-
-	private static Guid _selectedItem;
+	private Guid _selectedItem;
 
 	///Stores all items user has selected.
 	public HashSet<Guid> SelectedItems { get; private set; }
@@ -244,7 +242,7 @@ else
 	public int CollectionID { get; set; } = -1;
 
 	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
-	private static int lastCheckedIndex;
+	private int lastCheckedIndex;
 
 	///Used to control the visibility of the header element, if there is one. 
 	[Parameter]
@@ -263,7 +261,7 @@ else
 	public EventCallback<int> SelectedItemsCountChanged { get; set; }
 	
 	[Parameter]
-	public bool UseDateAdded { get; set; } = false;
+	public bool UseDateAdded { get; set; }
 
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
 	[Parameter]
@@ -279,9 +277,8 @@ else
 	
 	[Parameter, EditorRequired]
 	public string NoItemsText { get; set; }
-	
-	///The name of the .zip file of downloaded items.
-	public string ZipFilename { get; private set; }
+
+	private string zipFilename;
 
 	private bool progressVisible;
 	
@@ -289,7 +286,7 @@ else
 	public DateTime? oldestDT, newestDT;
 
 	//Controls the visibility of the divs that add more content.
-	private static string moreContentTopDivVis, moreContentBottomDivVis;
+	private string moreContentTopDivVis, moreContentBottomDivVis;
 	
 	//TwoChoiceInput's
 	private string delPromptVis;
@@ -299,10 +296,10 @@ else
 	///The index of the item user is currently viewing.
 	public int viewIndex;
 
-	private static DateTime? newDateTaken;
-	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, downloadDivVis;
-	private static string itemDescription;
-	private static List<Collection> collectionsIn;
+	private DateTime? newDateTaken;
+	private string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, downloadDivVis;
+	private string itemDescription;
+	private List<Collection> collectionsIn;
 }
 
 @functions{
@@ -558,8 +555,8 @@ else
 
 		await ClearChecks();
 		
-		ZipFilename = $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
-		string zipFilePath = Path.Combine(S.tmpFolderPath, ZipFilename);
+		zipFilename = $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
+		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
 		System.IO.Compression.ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath);
 		
 		progressVisible = false;
