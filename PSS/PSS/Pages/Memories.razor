@@ -17,36 +17,42 @@
 </header>
 
 @{
-    if (grouped.Count == 0)
+    if (MediaList.Count == 0)
     {
         <h1>No items were taken on this day</h1>
         return;
     }
     
     <div id="mainDiv">
-        @foreach (KeyValuePair<int, List<MediaRow>> group in grouped)
+        @for (int i = 0; i < MediaList.Count; i++)
         {
-            <span>@group.Key</span>
-            <div>
-                @foreach (MediaRow media in group.Value)
-                {
-                    <div class="thumbnail">
-                        @if (media.starred) {<span class="material-icons-outlined star-icon">star</span>}
-                        @if (media.video)
-                        {
-                            <span class="material-icons-outlined video-icon">play_circle_outline</span>
-                        }
-                        <img src="data:image/jpg;base64,@media.thumbnail" alt="@S.LIB_REQUEST_PATH/@media.path" loading="lazy"/>
-                    </div>
+            if (MediaList[i].dateTaken?.Year != previousYear)
+            {
+                previousYear = MediaList[i].dateTaken!.Value.Year;
+                <span>@MediaList[i].dateTaken?.Year</span>
+                <div>
+                @{
+                    do
+                    {
+                        <div class="thumbnail">
+                            @if (MediaList[i].starred) { <span class="material-icons-outlined star-icon">star</span> }
+                            @if (MediaList[i].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
+                            <img src="data:image/jpg;base64,@MediaList[i].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[i].path" loading="lazy"/>
+                        </div>
+                        i++;
+                    } while (i < MediaList.Count && MediaList[i].dateTaken?.Year == previousYear);
+                    i--;
                 }
-            </div>
+                </div>
+            }
         }
     </div>
 }
 
 @code{
-    private int maxDay, _selectedDay;
+    private int maxDay, _selectedDay, previousYear;
     private string _selectedMonth;
+
     private string SelectedMonth
     {
         get => _selectedMonth;
@@ -95,29 +101,21 @@
         }
     }
 
-    ///Stores the years, and a List of each item corresponding to that year.
-    private Dictionary<int, List<MediaRow>> grouped;
+    private List<MediaRow> MediaList;
 
     private static readonly List<string> months = new(new[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
-    
+
     protected override void OnInitialized()
     {
-        grouped = new Dictionary<int, List<MediaRow>>();
         SelectedMonth = DateTime.Today.ToString("MMMM");
         SelectedDay = DateTime.Today.Day;
+        LoadMemories();
     }
 
     private void LoadMemories()
     {
-        grouped.Clear();
-        
-        //Get all the items taken on this month and day and group them by their DT year.
-        foreach (MediaRow memory in C.LoadMemories(SelectedMonth, SelectedDay))
-        {
-            if (!grouped.ContainsKey(memory.dateTaken!.Value.Year))
-                grouped.Add(memory.dateTaken!.Value.Year, new List<MediaRow> {memory});
-            else
-                grouped[memory.dateTaken!.Value.Year].Add(memory);
-        }
+        MediaList = C.LoadMemories(SelectedMonth, SelectedDay).OrderByDescending(m => m.dateTaken).ToList();
+        previousYear = 0;
     }
+
 }
