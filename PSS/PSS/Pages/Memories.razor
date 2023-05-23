@@ -156,13 +156,12 @@
 			<KeyboardShortcuts Left="@ChangeItemLeft" Right="@ChangeItemRight" />
 		}
 
-		<KeyboardShortcuts AltLeft="@(() => SelectedItem = Guid.Empty)" CtrlLeft="@ChangeItemLeft" CtrlRight="@ChangeItemRight" 
-			CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
-			Esc="@(() => SelectedItem = Guid.Empty)" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
+		<KeyboardShortcuts AltLeft="@(() => SelectedItem = Guid.Empty)" CtrlLeft="@ChangeItemLeft" CtrlRight="@ChangeItemRight"
+			CtrlE="@(() => F.VisToggle(ref editDateDivVis))" Esc="@(() => SelectedItem = Guid.Empty)"
+			I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
 	}
 	
 	<ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
-
 }
 
 @code {
