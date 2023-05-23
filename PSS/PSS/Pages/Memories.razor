@@ -28,9 +28,9 @@
     @* Display a single item in full screen, and allow moving left/right in the List. *@
 	<div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
 		<div id="buttons">
-		    <button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
-		 @*    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button> *@
-			@* <button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button> *@
+			<button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
+			<button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+			<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 		</div>
 
 		<div id="infoDiv" style="visibility: @infoVis">
@@ -165,7 +165,6 @@
 }
 
 @code {
-
 	private static readonly List<string> months = new(new[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
 
 	private int maxDay, _selectedDay, previousYear;
@@ -254,7 +253,6 @@
 }
 
 @functions {
-	
 	protected override void OnInitialized()
     {
         SelectedMonth = DateTime.Today.ToString("MMMM");
@@ -273,11 +271,29 @@
         MediaList = C.LoadMemories(SelectedMonth, SelectedDay).OrderByDescending(m => m.dateTaken).ToList();
         previousYear = 0;
     }
-
 }
 
 @* Functions only for viewing a single item. *@
 @functions{
+	private void DeleteBtnClick()
+	{
+		if (SelectedItem != Guid.Empty)
+		{
+			SelectedItem = MediaList.Count > 0 ? MediaList[viewIndex].uuid : Guid.Empty;
+			C.MoveToTrash(SelectedItem);
+			MediaList.RemoveAt(viewIndex);
+		}
+	}
+
+	private void StarBtnClick()
+	{
+		if (SelectedItem != Guid.Empty)
+		{
+			C.UpdateStarred(SelectedItem, !MediaList[viewIndex].starred);
+			MediaList[viewIndex].starred = !MediaList[viewIndex].starred;
+			StateHasChanged();
+		}
+	}
 	
 	private void UpdateDateTaken()
 	{
@@ -331,5 +347,4 @@
 		viewIndex++;
 		SelectedItem = MediaList[viewIndex].uuid;
 	}
-
 }
