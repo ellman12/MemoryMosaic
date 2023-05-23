@@ -122,31 +122,47 @@
 		}
 	</div>
     
-    <div id="mainDiv">
-        @for (int i = 0; i < MediaList.Count; i++)
-        {
-            if (MediaList[i].dateTaken?.Year != previousYear)
-            {
-                previousYear = MediaList[i].dateTaken!.Value.Year;
-                <span>@MediaList[i].dateTaken?.Year</span>
-                <div>
-                @{
-                    do
-                    {
-	                    int ii = i;
-                        <div class="thumbnail" @onclick="@(() => { viewIndex = ii; SelectedItem = MediaList[ii].uuid; })">
-                            @if (MediaList[i].starred) { <span class="material-icons-outlined star-icon">star</span> }
-                            @if (MediaList[i].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
-                            <img src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-                        </div>
-                        i++;
-                    } while (i < MediaList.Count && MediaList[i].dateTaken?.Year == previousYear);
-                    i--;
-                }
-                </div>
-            }
-        }
-    </div>
+	<div id="mainDiv">
+		@for (int i = 0; i < MediaList.Count; i++)
+		{
+			if (MediaList[i].dateTaken?.Year != previousYear)
+			{
+				previousYear = MediaList[i].dateTaken!.Value.Year;
+				<span>@MediaList[i].dateTaken?.Year</span>
+				<div>
+					@{
+						do
+						{
+							int ii = i;
+							<div class="thumbnail" @onclick="@(() => { viewIndex = ii; SelectedItem = MediaList[ii].uuid; })">
+								@if (MediaList[i].starred) { <span class="material-icons-outlined star-icon">star</span> }
+								@if (MediaList[i].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
+								<img src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							</div>
+							i++;
+						} while (i < MediaList.Count && MediaList[i].dateTaken?.Year == previousYear);
+						i--;
+					}
+				</div>
+			}
+		}
+	</div>
+	
+	@*Hotkeys exclusive to viewing a single item.*@
+	if (SelectedItem != Guid.Empty)
+	{
+		if (!MediaList[viewIndex].video)
+		{
+			<KeyboardShortcuts Left="@ChangeItemLeft" Right="@ChangeItemRight" />
+		}
+
+		<KeyboardShortcuts AltLeft="@(() => SelectedItem = Guid.Empty)" CtrlLeft="@ChangeItemLeft" CtrlRight="@ChangeItemRight" 
+			CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
+			Esc="@(() => SelectedItem = Guid.Empty)" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
+	}
+	
+	<ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
+
 }
 
 @code {
