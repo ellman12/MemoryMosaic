@@ -22,7 +22,12 @@
             <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(4, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
         </div>
         
-        <div class="collections">
+        <div id="collectionsSearch">
+            <input type="text" @bind="@searchText" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchCollections(); })" @onfocusout="@SearchCollections" placeholder="Search Collections"/>
+            <button class="iconBtn" @onclick="@(() => searchText = "")"><span class="material-icons-outlined">clear</span></button>
+        </div>
+        
+        <div id="collections">
             <span>Albums</span>
             <div class="collectionsList">
                 @for (int i = 0; i < albums.Count; i++)
@@ -63,6 +68,8 @@
     public static List<bool> checkedAlbums;
     private static List<bool> checkedFolders;
     public static int checkedFolderIndex; //Which index in folders is checked (can only have 1 checked (true)).
+
+    private string searchText;
 
     [Parameter]
     public Guid SelectedItem { get; set; } = Guid.Empty;
@@ -275,5 +282,10 @@
             
             return -1;
         }
+    }
+
+    private void SearchCollections()
+    {
+        
     }
 }
