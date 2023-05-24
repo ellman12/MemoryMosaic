@@ -15,7 +15,9 @@
         }
     </select>
 
-    <input title="" type="number" @bind="@SelectedDay" @bind:event="oninput"/>
+	<input title="" type="number" @bind="@SelectedDay" @bind:event="oninput"/>
+	
+	<button id="randomBtn" class="iconBtn" @onclick="PickRandomDate" title="Pick Random Date"><span class="material-icons-outlined">shuffle</span></button>
 </header>
 
 @{
@@ -181,7 +183,7 @@
 				"April" or "June" or "September" or "November" => 30,
 				"February" => 29,
 				_ => 31
-				};
+			};
 
 			//If switching from a month with more days than the new month, don't create invalid input like Feb 30, etc.
 			if (_selectedDay > maxDay) _selectedDay = maxDay;
@@ -346,5 +348,11 @@
 		if (viewIndex == MediaList.Count - 1) return;
 		viewIndex++;
 		SelectedItem = MediaList[viewIndex].uuid;
+	}
+
+	private void PickRandomDate()
+	{
+		SelectedMonth = months[Random.Shared.Next(months.Count)];
+		SelectedDay = Random.Shared.Next(32);
 	}
 }
