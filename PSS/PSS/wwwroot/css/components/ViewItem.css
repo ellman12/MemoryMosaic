@@ -232,3 +232,8 @@
     max-width: 100%;
     max-height: 100%;
 }
+
+#itemDiv > video:focus {
+    border: none;
+    outline: none;
+}
