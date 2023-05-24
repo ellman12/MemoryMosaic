@@ -78,6 +78,7 @@ h1 {
     position: absolute;
     right: 8px;
     top: 10px;
+    pointer-events: none;
 }
 
 #mainDiv > div > .thumbnail > img {
