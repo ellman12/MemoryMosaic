@@ -61,6 +61,7 @@ h1 {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    margin-bottom: 12px;
 }
 
 #mainDiv > div > .thumbnail > .star-icon {
@@ -84,6 +85,10 @@ h1 {
 
 #mainDiv > div > .thumbnail {
     position: relative; /* https://stackoverflow.com/a/12365963 */
+}
+
+#mainDiv > div > .thumbnail:hover {
+    cursor: pointer;
 }
 
 #mainDiv > div > .thumbnail > img {

@@ -217,9 +217,9 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new($"SELECT path, date_taken, starred, uuid, thumbnail FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{dd}%' ORDER BY date_taken DESC", connection);
+            using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{dd}%' ORDER BY date_taken DESC", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
+            while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6)));
         }
         catch (NpgsqlException e)
         {
