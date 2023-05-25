@@ -123,6 +123,18 @@
         checkedFolderIndex = -1; //-1 = a folder isn't picked
 
         await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
+
+        int newestAlbumIndex = albums.FindIndex(a => a.name == CollectionCreator.NewCollectionName);
+        int newestFolderIndex = folders.FindIndex(f => f.name == CollectionCreator.NewCollectionName);
+        if (newestAlbumIndex != -1)
+        {
+            checkedAlbums[newestAlbumIndex] = true;
+        }
+        else if (newestFolderIndex != -1)
+        {
+            checkedFolderIndex = newestFolderIndex;
+            checkedFolders[newestFolderIndex] = true;
+        }
     }
 
     //Closing the div for selecting album(s) to add selected items to.
