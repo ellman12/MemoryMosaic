@@ -2,7 +2,7 @@
     position: fixed;
     width: 140%;
     height: 100%;
-    background-color: rgba(211, 211, 211, 0.1);
+    background-color: rgba(211, 211, 211, 0.4);
     margin-left: -80px;
     z-index: 999999;
 }
@@ -14,7 +14,7 @@
     transform: translate(-50%, -50%);
     background-color: black;
     width: 490px;
-    height: 620px;
+    height: 800px;
     z-index: 999999;
     border: 1px solid white;
 }
@@ -54,27 +54,49 @@
     flex-direction: row;
     align-items: center;
     position: absolute;
-    top: 110px;
-    left: 6px;
+    top: 100px;
     height: 70px;
     width: 450px;
+    left: 2px;
 }
 
 #collectionGroups > button {
     margin-right: 10px;
 }
 
-.collections {
+#collectionsSearch {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    height: 60px;
+    top: 153px;
+    left: 8px;
+}
+
+#collectionsSearch > input[type="text"] {
+    background-color: black;
+    border: 1px solid white;
+    outline: none;
+    font-size: 16px;
+    border-radius: 4px;
+    width: 224px;
+}
+
+#collectionsSearch > .iconBtn {
+    margin-left: 6px;
+}
+
+#collections {
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 190px;
+    top: 210px;
     left: 6px;
     width: 97.5%;
     height: 100%;
 }
 
-.collections > span {
+#collections > span {
     margin-bottom: 8px;
 }
 
@@ -82,7 +104,7 @@
     margin-bottom: 12px;
     border: 1px solid white;
     padding-right: 2px;
-    height: 175px;
+    height: 255px;
     overflow-y: scroll;
 }
 
@@ -100,8 +122,8 @@
 
 .collectionsList > .collection > .coverDiv {
     display: flex;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
 }
 
 .collectionsList > .collection > img {
