@@ -14,6 +14,8 @@
         <div id="collectionRenameDiv">
             <input type="text" placeholder="Enter new collection name" @bind="@NewCollectionName" @bind:event="oninput" autocomplete="off">
             
+            <span title="@(collection.readOnly ? "Readonly" : "")" class="material-icons-outlined">@(collection.readOnly ? "lock" : "")</span>
+            
             <button class="iconBtn" @onclick="@CancelBtnClick" style="visibility: @buttonsVis">
                 <span class="material-icons-outlined">close</span>
             </button>
