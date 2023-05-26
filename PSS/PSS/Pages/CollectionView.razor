@@ -54,7 +54,7 @@
 
     //Loads every item with NULL Date Taken first, then items with Date Taken.
     @* Date Added in this instance is date_added_to_collection. *@
-    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" CollectionID="@collection.id"
+    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" Collection="@collection"
         UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" NoItemsText="@(collection.folder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
     <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>

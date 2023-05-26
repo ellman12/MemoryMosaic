@@ -21,9 +21,9 @@ If it can't find any content, it shows an h1 saying no content.
 	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 	    
-	    @if (CollectionID != -1 && !MediaList[viewIndex].video)
+	    @if (Collection is {readOnly: false } && !MediaList[viewIndex].video)
 	    {
-	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(CollectionID, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
+	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(Collection.id, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
 	    }
 	</div>
 
@@ -49,7 +49,7 @@ If it can't find any content, it shows an h1 saying no content.
 			<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
 		</div>
 
-		@if (collectionsIn != null && collectionsIn.Count > 0)
+		@if (collectionsIn?.Count > 0)
 		{
 			<div id="collectionsInfo">
 				<span id="collectionsText">Collections Containing</span>
@@ -239,7 +239,7 @@ else
 
 	///Used only for when viewing the contents of a collection.
 	[Parameter]
-	public int CollectionID { get; set; } = -1;
+	public Collection Collection { get; set; }
 
 	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
 	private int lastCheckedIndex;
