@@ -522,6 +522,26 @@ public static class Connection
         }
     }
 
+    ///Toggles a Collection's readonly field in the collections table.
+    public static async Task ToggleReadonlyAsync(Collection collection)
+    {
+        NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+        
+        try
+        {
+            await using NpgsqlCommand cmd = new($"UPDATE collections SET readonly = {!collection.readOnly} WHERE id = {collection.id}", localConn);
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (NpgsqlException e)
+        {
+            L.LogException(e);
+        }
+        finally
+        {
+            await localConn.CloseAsync();
+        }
+    }
+
     ///<summary>Given an collection id, attempt to return its name.</summary>
     ///<param name="id">The id of the collection.</param>
     ///<returns>Collection name.</returns>
