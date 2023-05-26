@@ -498,6 +498,30 @@ public static class Connection
         }
     }
 
+    ///<summary>Given the integer id of a collection represented as a string, return a new <see cref="Collection"/> with the extra details about a Collection, like name, last updated, folder, etc.</summary>
+    /// <param name="collectionID"></param>
+    public static async Task<Collection> GetCollectionDetailsAsync(string collectionID)
+    {
+        NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+        
+        try
+        {
+            await using NpgsqlCommand cmd = new($"SELECT name, last_updated, folder, readonly FROM collections WHERE id = {collectionID}", localConn);
+            await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
+            await r.ReadAsync();
+            return new Collection(Int32.Parse(collectionID), r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetBoolean(3));
+        }
+        catch (NpgsqlException e)
+        {
+            L.LogException(e);
+            return null;
+        }
+        finally
+        {
+            await localConn.CloseAsync();
+        }
+    }
+
     ///<summary>Given an collection id, attempt to return its name.</summary>
     ///<param name="id">The id of the collection.</param>
     ///<returns>Collection name.</returns>
