@@ -1,11 +1,12 @@
-@page "/collection-view/{collectionID}"
+@page "/collection-view/{CollectionID}"
 @inject NavigationManager navigationManager
 
-<title>@collectionName - PSS</title>
+@if (collection == null) { return; }
+
+<title>@collection.name - PSS</title>
 <link href="css/CollectionView.css" rel="stylesheet">
 
 @{
-    isFolder = C.IsFolder(statCollectionID);
     <header>
         <button class="iconBtn" @onclick="@libContentViewer.ClearChecks" style="visibility: @headerVis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
         <span style="visibility: @headerVis" id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
@@ -45,40 +46,38 @@
 
     //Loads every item with NULL Date Taken first, then items with Date Taken.
     @* Date Added in this instance is date_added_to_collection. *@
-    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" CollectionID="@statCollectionID"
-        UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
+    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" CollectionID="@collection.id"
+        UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" NoItemsText="@(collection.folder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
     <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
     <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
     
-    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Collection")} \"{collectionName}\"?")
-        YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(statCollectionID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Collection")} \"{collection.name}\"?")
+        YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
 }
 
 @code{
     [Parameter]
-    public string collectionID { get; set; }
-    private int statCollectionID;
-    private bool isFolder;
+    public string CollectionID { get; set; }
+
+    private Collection collection;
     
     private CVSortMode sortMode;
     private string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
     
     private LibraryContentViewer libContentViewer = new();
     private int selectedItemsCount;
-    private string headerVis, collectionsVis, delPromptVis, buttonsVis, sortDivVis;
-    private string collectionName, _newCollectionName;
-    
+    private string headerVis, collectionsVis, delPromptVis, buttonsVis, sortDivVis, _newCollectionName;
     private string NewCollectionName
     {
         get => _newCollectionName;
         set
         {
-            if (value == collectionName) //Same so don't need to reapply
+            if (value == collection.name) //Same so don't need to reapply
             {
                 buttonsVis = "hidden";
             }
-            else if (value != collectionName)
+            else if (value != collection.name)
             {
                 _newCollectionName = value;
                 buttonsVis = "visible";
@@ -88,13 +87,11 @@
 }
 
 @functions{
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        selectedItemsCount = 0;
-        statCollectionID = Int32.Parse(collectionID);
-        sortMode = CVSortMode.NewestDateTaken; //Default
-        collectionName = C.GetCollectionName(statCollectionID);
-        _newCollectionName = collectionName;
+        collection = await C.GetCollectionDetailsAsync(CollectionID);
+        sortMode = CVSortMode.NewestDateTaken;
+        _newCollectionName = collection.name;
         headerVis = collectionsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
 
@@ -122,7 +119,7 @@
                 throw new ArgumentOutOfRangeException();
         }
     
-        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={statCollectionID} AND date_deleted IS NULL AND separate={isFolder}";
+        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={collection.id} AND date_deleted IS NULL AND separate={collection.folder}";
         topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
         bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
     
@@ -147,7 +144,7 @@
     //Remove selected from the collection
     private async void RemoveBtnClick()
     {
-        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, statCollectionID);
+        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, collection.id);
         headerVis = "hidden";
         await libContentViewer.SelectedItemsCountChanged.InvokeAsync(0);
         await libContentViewer.HeaderVisChanged.InvokeAsync("hidden");
@@ -172,21 +169,21 @@
     private void DeleteCollection()
     {
         navigationManager.NavigateTo("/collections");
-        C.DeleteCollection(statCollectionID);
+        C.DeleteCollection(collection.id);
     }
     
     //Functions for collection stuff
     private void CancelBtnClick()
     {
         buttonsVis = "hidden";
-        _newCollectionName = collectionName; //Reset to OG
+        NewCollectionName = collection.name; //Reset to OG
     }
 
     private void ConfirmBtnClick()
     {
         buttonsVis = "hidden";
         if (NewCollectionName != "")
-            C.RenameCollection(NewCollectionName, statCollectionID);
+            C.RenameCollection(NewCollectionName, collection.id);
         else
             NewCollectionName = "Please enter a name";
     }
