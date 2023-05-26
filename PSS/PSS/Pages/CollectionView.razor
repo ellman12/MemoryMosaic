@@ -58,18 +58,18 @@
 @code{
     [Parameter]
     public string collectionID { get; set; }
-    private static int statCollectionID;
-    private static bool isFolder;
+    private int statCollectionID;
+    private bool isFolder;
     
-    private static CVSortMode sortMode;
-    private static string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
+    private CVSortMode sortMode;
+    private string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
     
-    private static LibraryContentViewer libContentViewer = new();
-    private static int selectedItemsCount;
-    private static string headerVis, collectionsVis, delPromptVis, buttonsVis, sortDivVis;
-    private static string collectionName, _newCollectionName;
+    private LibraryContentViewer libContentViewer = new();
+    private int selectedItemsCount;
+    private string headerVis, collectionsVis, delPromptVis, buttonsVis, sortDivVis;
+    private string collectionName, _newCollectionName;
     
-    private static string NewCollectionName
+    private string NewCollectionName
     {
         get => _newCollectionName;
         set
@@ -98,7 +98,7 @@
         headerVis = collectionsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
 
-    private static void UpdateQueries()
+    private void UpdateQueries()
     {
         switch (sortMode)
         {
@@ -176,13 +176,13 @@
     }
     
     //Functions for collection stuff
-    private static void CancelBtnClick()
+    private void CancelBtnClick()
     {
         buttonsVis = "hidden";
         _newCollectionName = collectionName; //Reset to OG
     }
 
-    private static void ConfirmBtnClick()
+    private void ConfirmBtnClick()
     {
         buttonsVis = "hidden";
         if (NewCollectionName != "")
