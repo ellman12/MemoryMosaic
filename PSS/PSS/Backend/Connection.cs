@@ -706,9 +706,10 @@ public static class Connection
     ///<summary>Load all the albums and/or folders in the collections table.</summary>
     ///<param name="showAlbums">Should albums be selected?</param>
     ///<param name="showFolders">Should folders be selected?</param>
+    ///<param name="showReadonly">Should readonly collections be selected?</param>
     ///<param name="mode">How should the data be sorted?</param>
     ///<returns>A List&lt;Collection&gt; of all the albums and/or folders.</returns>
-    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, CMSortMode mode = CMSortMode.Title)
+    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, bool showReadonly, CMSortMode mode = CMSortMode.Title)
     {
         List<Collection> collections = new();
 
@@ -731,6 +732,8 @@ public static class Connection
             where = "WHERE folder = true";
         else
             where = "WHERE folder = true and folder = false";
+        
+        if (!String.IsNullOrEmpty(where) && !showReadonly) where += " AND readonly = false";
 
         try
         {
