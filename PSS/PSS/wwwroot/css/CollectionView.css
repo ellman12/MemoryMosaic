@@ -85,6 +85,10 @@ header > #collectionRenameDiv {
     width: 50%;
 }
 
+#collectionRenameDiv > .material-icons-outlined {
+    margin-left: 20px;
+}
+
 #collectionRenameDiv > input[type="text"]:hover {
     border-bottom: 2px solid #dadce0;
     transition: all .3s cubic-bezier(.4,0,.2,1);

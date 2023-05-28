@@ -498,6 +498,50 @@ public static class Connection
         }
     }
 
+    ///<summary>Given the integer id of a collection represented as a string, return a new <see cref="Collection"/> with the extra details about a Collection, like name, last updated, folder, etc.</summary>
+    /// <param name="collectionID"></param>
+    public static async Task<Collection> GetCollectionDetailsAsync(string collectionID)
+    {
+        NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+        
+        try
+        {
+            await using NpgsqlCommand cmd = new($"SELECT name, last_updated, folder, readonly FROM collections WHERE id = {collectionID}", localConn);
+            await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
+            await r.ReadAsync();
+            return new Collection(Int32.Parse(collectionID), r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetBoolean(3));
+        }
+        catch (NpgsqlException e)
+        {
+            L.LogException(e);
+            return null;
+        }
+        finally
+        {
+            await localConn.CloseAsync();
+        }
+    }
+
+    ///Toggles a Collection's readonly field in the collections table.
+    public static async Task ToggleReadonlyAsync(Collection collection)
+    {
+        NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+        
+        try
+        {
+            await using NpgsqlCommand cmd = new($"UPDATE collections SET readonly = {!collection.readOnly} WHERE id = {collection.id}", localConn);
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (NpgsqlException e)
+        {
+            L.LogException(e);
+        }
+        finally
+        {
+            await localConn.CloseAsync();
+        }
+    }
+
     ///<summary>Given an collection id, attempt to return its name.</summary>
     ///<param name="id">The id of the collection.</param>
     ///<returns>Collection name.</returns>
@@ -662,9 +706,10 @@ public static class Connection
     ///<summary>Load all the albums and/or folders in the collections table.</summary>
     ///<param name="showAlbums">Should albums be selected?</param>
     ///<param name="showFolders">Should folders be selected?</param>
+    ///<param name="showReadonly">Should readonly collections be selected?</param>
     ///<param name="mode">How should the data be sorted?</param>
     ///<returns>A List&lt;Collection&gt; of all the albums and/or folders.</returns>
-    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, CMSortMode mode = CMSortMode.Title)
+    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, bool showReadonly, CMSortMode mode = CMSortMode.Title)
     {
         List<Collection> collections = new();
 
@@ -687,6 +732,8 @@ public static class Connection
             where = "WHERE folder = true";
         else
             where = "WHERE folder = true and folder = false";
+        
+        if (!String.IsNullOrEmpty(where) && !showReadonly) where += " AND readonly = false";
 
         try
         {

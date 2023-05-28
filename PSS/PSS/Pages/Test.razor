@@ -9,13 +9,10 @@
 
 @code{
 
-    private static void Yes()
+    private static async void Yes()
     {
-        Console.WriteLine(F.GenerateThumbnail("C:/Users/Elliott/Pictures/PSS Dev/pss_library/2018/1/IMG_0632.JPG"));
-        Console.WriteLine();
-        Console.WriteLine();
-        Console.WriteLine();
-        Console.WriteLine(F.GenerateThumbnail("C:/Users/Elliott/Pictures/PSS/pss_library/2014/3/IMG_1729.mov"));
+        Collection c = await C.GetCollectionDetailsAsync("1");
+        Console.WriteLine(c.name);
     }
     
 }

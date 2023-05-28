@@ -21,13 +21,12 @@ ALTER TABLE public.media OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.collections
 (
-    id serial NOT NULL,
-    name text NOT NULL,
-    cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL, -- References short path in media. If the cover is deleted from media, remove cover from any collections.
+    id serial NOT NULL PRIMARY KEY,
+    name text NOT NULL UNIQUE,
+    cover text DEFAULT NULL REFERENCES media(path) ON DELETE SET NULL,
     last_updated timestamp without time zone NOT NULL, -- The last time this item was renamed, added to/removed from, etc.
     folder boolean NOT NULL DEFAULT false, -- If this is a folder and thus its contents should remain separate from rest of library.
-    PRIMARY KEY (id),
-    UNIQUE (name)
+    readonly boolean NOT NULL DEFAULT false -- If this Collection has been marked as readonly, it cannot: be renamed, have items added/removed, change if it's a folder or not, appear in CollectionSelector, or be deleted.
 ) TABLESPACE pg_default;
 ALTER TABLE public.collections OWNER to postgres;
 

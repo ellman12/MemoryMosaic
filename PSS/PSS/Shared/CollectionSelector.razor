@@ -105,8 +105,8 @@
     protected override void OnInitialized()
     {
         CollectionCreator.CollectionCreated += RefreshData;
-        albums = C.GetCollectionsTable(true, false);
-        folders = C.GetCollectionsTable(false, true);
+        albums = C.GetCollectionsTable(true, false, false);
+        folders = C.GetCollectionsTable(false, true, false);
         checkedAlbums = (from album in albums select new bool()).ToList();
         checkedFolders = (from folder in folders select new bool()).ToList();
         checkedFolderIndex = -1; //-1 = a folder isn't picked
@@ -116,8 +116,8 @@
 
     private async void RefreshData(object sender, EventArgs e)
     {
-        albums = C.GetCollectionsTable(true, false);
-        folders = C.GetCollectionsTable(false, true);
+        albums = C.GetCollectionsTable(true, false, false);
+        folders = C.GetCollectionsTable(false, true, false);
         checkedAlbums = (from album in albums select new bool()).ToList();
         checkedFolders = (from folder in folders select new bool()).ToList();
         checkedFolderIndex = -1; //-1 = a folder isn't picked
