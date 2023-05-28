@@ -83,6 +83,18 @@ header > #buttons {
     align-items: center;
 }
 
+header > #buttons > select {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    outline: none;
+    margin-right: 10px;
+}
+
+header > #buttons > select:focus {
+    outline: 2px solid dodgerblue;
+}
+
 header > #buttons > .iconBtn {
     margin-left: 5px;
 }
