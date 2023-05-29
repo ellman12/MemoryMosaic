@@ -55,3 +55,13 @@ function openSelect(index) {
 function closeSelect(index) {
     document.getElementById('select ' + index).style.display = 'none';
 }
+
+function openDtPicker(index)
+{
+    document.getElementById('dtPicker ' + index).style.display = 'inline';
+}
+
+function closeDtPicker(index)
+{
+    document.getElementById('dtPicker ' + index).style.display = 'none';
+}
