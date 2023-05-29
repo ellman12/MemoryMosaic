@@ -72,7 +72,7 @@
     <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
     <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
     
-    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Collection")} \"{collection.name}\"?")
+    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Album")} \"{collection.name}\"?")
         YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
 }
 
