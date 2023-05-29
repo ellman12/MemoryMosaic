@@ -19,12 +19,6 @@
 	[Parameter, EditorRequired]
 	public Action StartDateChanged { get; set; }
 	
-	public DateTime NewStartDate { get; private set; }
-	private string ctrlGVis;
-
-	protected override void OnInitialized()
-	{
-		NewStartDate = DateTime.Today;
-		ctrlGVis = "hidden";
-	}
+	public DateTime NewStartDate { get; private set; } = DateTime.Today;
+	private string ctrlGVis = "hidden";
 }
