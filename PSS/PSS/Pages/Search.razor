@@ -27,17 +27,10 @@
 }
 
 @code {
-    private static LibraryContentViewer lcv = new();
-    private static int selectedItemsCount;
-    private static ElementReference searchInput;
-    private static string headerVis, collectionsVis, searchText, query;
-
-    protected override void OnInitialized()
-    {
-        selectedItemsCount = 0;
-        headerVis = collectionsVis = "hidden";
-        searchText = "";
-    }
+    private LibraryContentViewer lcv = new();
+    private int selectedItemsCount;
+    private ElementReference searchInput;
+    private string headerVis = "hidden", collectionsVis = "hidden", searchText = "", query;
 
     private void SearchMedia()
     {
@@ -46,5 +39,5 @@
         StateHasChanged();
     }
     
-    private static async void FocusSearchInput() => await searchInput.FocusAsync();
+    private async void FocusSearchInput() => await searchInput.FocusAsync();
 }
