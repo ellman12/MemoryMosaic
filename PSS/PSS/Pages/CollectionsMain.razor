@@ -9,13 +9,13 @@
     <CollectionCreator @ref="@collectionCreator" Collections="@collections"/>
     
     <div id="checkboxes">
-        <div>
+        <div @onclick="@(() => { showAlbums = !showAlbums; GetCollectionsTable(); })">
             <input type="checkbox" @bind="@showAlbums">
-            <span @onclick="@(() => { showAlbums = !showAlbums; GetCollectionsTable(); })">Show Albums</span>
+            <span>Show Albums</span>
         </div>
-        <div>
+        <div @onclick="@(() => { showFolders = !showFolders; GetCollectionsTable(); })">
             <input type="checkbox" @bind="@showFolders">
-            <span @onclick="@(() => { showFolders = !showFolders; GetCollectionsTable(); })">Show Folders</span>
+            <span>Show Folders</span>
         </div>
     </div>
 
