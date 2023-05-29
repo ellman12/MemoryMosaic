@@ -29,11 +29,11 @@
 </div>
 
 @code{
-    private static List<MediaRow> mediaMissingItems;
+    private List<MediaRow> mediaMissingItems;
 
     protected override void OnInitialized() => mediaMissingItems = M.GetMediaMissingFiles();
 
-    private static void DeleteMissingPaths()
+    private void DeleteMissingPaths()
     {
         M.RemoveMediaMissingFiles(mediaMissingItems);
         mediaMissingItems.Clear();
