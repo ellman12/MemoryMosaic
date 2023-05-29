@@ -3,6 +3,7 @@
 @using CS = PSS.Shared.CollectionSelector;
 @using static ImportFile
 @using System.Text
+@inject IJSRuntime JSRuntime
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -52,7 +53,7 @@
 		</div>
 		
 		<div id="buttons" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
-			<select @bind="@newDTSource" @bind:after="@(() => Console.WriteLine(newDTSource))">
+			<select @bind="@newDTSource">
 				@{
 					bool canDisplayMetadata = importFiles.All(file => !selectedItems.Contains(file.uuid) || file.metadataDateTaken != null);
 					if (canDisplayMetadata) { <option>Metadata</option> }
@@ -65,6 +66,7 @@
 				}
 			</select>
 			
+			<button class="iconBtn" @onclick="@UpdateDateTakenSources" title="Apply"><span class="material-icons-outlined">save</span></button>
 			<button class="iconBtn" @onclick="@ToggleStars"><span class="material-icons-outlined">star</span></button>
 			<button class="iconBtn" @onclick="@DeleteSelected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		</div>
@@ -494,5 +496,20 @@
 		StateHasChanged();
 		
 		L.LogLine($"Finish {nameof(LoadItemsFromDisk)}", LogLevel.Info);
+	}
+
+	private async void UpdateDateTakenSources()
+	{
+		for (int i = 0; i < importFiles.Count; i++)
+		{
+			if (!selectedItems.Contains(importFiles[i].uuid)) continue;
+
+			importFiles[i].dateTakenSource = newDTSource;
+			if (newDTSource == DateTakenSource.Custom)
+			{
+				try { await JSRuntime.InvokeAsync<int>("openDtPicker", i); }
+				catch (JSException) {}
+  			}
+		}
 	}
 }

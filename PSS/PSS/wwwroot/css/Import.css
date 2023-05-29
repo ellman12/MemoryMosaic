@@ -62,7 +62,7 @@ header > #statusMessage {
 
 header > #yearWarnInputs {
     position: absolute;
-    right: 240px;
+    right: 300px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -88,7 +88,7 @@ header > #buttons > select {
     border: 1px solid white;
     border-radius: 4px;
     outline: none;
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 header > #buttons > select:focus {
