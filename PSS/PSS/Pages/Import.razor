@@ -3,6 +3,7 @@
 @using CS = PSS.Shared.CollectionSelector;
 @using static ImportFile
 @using System.Text
+@inject IJSRuntime JSRuntime
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -52,8 +53,20 @@
 		</div>
 		
 		<div id="buttons" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
-			<button class="iconBtn" @onclick="@ClearDateTaken" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")"><span class="material-icons-outlined">calendar_today</span></button>
-			<button class="iconBtn" @onclick="@(() => collectionSelectorVis = "visible")"><span class="material-icons-outlined">collections</span></button>
+			<select @bind="@newDTSource">
+				@{
+					bool canDisplayMetadata = importFiles.All(file => !selectedItems.Contains(file.uuid) || file.metadataDateTaken != null);
+					if (canDisplayMetadata) { <option>Metadata</option> }
+
+					bool canDisplayFilename = importFiles.All(file => !selectedItems.Contains(file.uuid) || file.filenameDateTaken != null);
+					if (canDisplayFilename) { <option>Filename</option> }
+
+					<option>None</option>
+					<option>Custom</option>
+				}
+			</select>
+			
+			<button class="iconBtn" @onclick="@UpdateDateTakenSources" title="Apply"><span class="material-icons-outlined">save</span></button>
 			<button class="iconBtn" @onclick="@ToggleStars"><span class="material-icons-outlined">star</span></button>
 			<button class="iconBtn" @onclick="@DeleteSelected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		</div>
@@ -179,6 +192,8 @@
 	private static int errorAmount;
 
 	private static string searchText, statusMessage;
+
+	private DateTakenSource newDTSource = DateTakenSource.None;
 
 	protected override void OnInitialized()
 	{
@@ -399,15 +414,6 @@
 		L.LogLine($"Finish {nameof(DeleteSelected)}", LogLevel.Info);
 	}
 
-	private static void ClearDateTaken()
-	{
-		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
-		{
-			file.dateTakenSource = DateTakenSource.Custom;
-			file.customDateTaken = null;
-		}
-	}
-
 	///Updates the collections field of each selected ImportItem.
 	private static void UpdateCollections()
 	{
@@ -490,5 +496,20 @@
 		StateHasChanged();
 		
 		L.LogLine($"Finish {nameof(LoadItemsFromDisk)}", LogLevel.Info);
+	}
+
+	private async void UpdateDateTakenSources()
+	{
+		for (int i = 0; i < importFiles.Count; i++)
+		{
+			if (!selectedItems.Contains(importFiles[i].uuid)) continue;
+
+			importFiles[i].dateTakenSource = newDTSource;
+			if (newDTSource == DateTakenSource.Custom)
+			{
+				try { await JSRuntime.InvokeAsync<int>("openDtPicker", i); }
+				catch (JSException) {}
+  			}
+		}
 	}
 }

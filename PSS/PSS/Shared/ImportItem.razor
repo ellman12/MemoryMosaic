@@ -80,7 +80,7 @@
 		<span class="yearWarn">F Year is greater than the max year.</span>
 	}
 
-	<input type="datetime-local" title="Choose New Date Taken" @bind="@ImportFile.customDateTaken" @bind:event="oninput" style="display: @datePickerDisplay" step="1"/> @* step="1" shows the seconds part. *@
+	<input type="datetime-local" title="Choose New Date Taken" @bind="@ImportFile.customDateTaken" @bind:event="oninput" style="display: none" id="dtPicker @Index" step="1"/> @* step="1" shows the seconds part. *@
 
 	@if (ImportFile.collections != null)
 	{
@@ -104,8 +104,6 @@
 	
 	///The ImportFile for this ImportItem.
 	[Parameter, EditorRequired] public ImportFile ImportFile { get; set; }
-	
-	private string datePickerDisplay = "none";
 }
 
 @functions {
@@ -183,5 +181,15 @@
 		}
 	}
 
-	private void DtSourceChanged() => datePickerDisplay = ImportFile.dateTakenSource == DateTakenSource.Custom ? "inline" : "none";
+	private async void DtSourceChanged()
+	{
+		try
+		{
+			if (ImportFile.dateTakenSource == DateTakenSource.Custom)
+				await JSRuntime.InvokeAsync<int>("openDtPicker", Index);
+			else
+				await JSRuntime.InvokeAsync<int>("closeDtPicker", Index);
+		}
+		catch (JSException) {}
+	}
 }
