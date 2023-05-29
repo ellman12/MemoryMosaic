@@ -7,12 +7,12 @@
         <div id="header">
             <span>Add to</span>
             <div id="buttons">
-                <button class="iconBtn" @onclick="CloseBtnClick"><span class="material-icons-outlined">close</span></button>
-                <button class="iconBtn" @onclick="ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+                <button class="iconBtn" @onclick="@CloseBtnClick"><span class="material-icons-outlined">close</span></button>
+                <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
             </div>
         </div>
         
-        <div id="collectionCreatorDiv"><CollectionCreator Collections="@(albums.Concat(folders).ToList())"/></div>
+        <div id="collectionCreatorDiv"><CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())"/></div>
 
         <div id="collectionGroups">
             <button class="iconBtn" @onclick="@(() => PreviousSelectionBtnClick(false))" title="Restore the last selection of collections."><span class="material-icons-outlined">history</span></button>
@@ -75,6 +75,8 @@
 
     private string searchText;
 
+    private CollectionCreator collectionCreator;
+
     [Parameter]
     public Guid SelectedItem { get; set; } = Guid.Empty;
     
@@ -104,7 +106,6 @@
 
     protected override void OnInitialized()
     {
-        CollectionCreator.CollectionCreated += RefreshData;
         albums = C.GetCollectionsTable(true, false, false);
         folders = C.GetCollectionsTable(false, true, false);
         checkedAlbums = (from album in albums select new bool()).ToList();
@@ -112,6 +113,11 @@
         checkedFolderIndex = -1; //-1 = a folder isn't picked
         CollectionsVis = "hidden";
         HeaderVis = "hidden";
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender) collectionCreator.CollectionCreated += RefreshData;
     }
 
     private async void RefreshData(object sender, EventArgs e)
@@ -124,14 +130,14 @@
 
         await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
 
-        int newestAlbumIndex = albums.FindIndex(a => a.name == CollectionCreator.NewCollectionName);
+        int newestAlbumIndex = albums.FindIndex(a => a.name == collectionCreator.NewCollectionName);
         if (newestAlbumIndex != -1)
         {
             checkedAlbums[newestAlbumIndex] = true;
         }
         else
         {
-            int newestFolderIndex = folders.FindIndex(f => f.name == CollectionCreator.NewCollectionName);
+            int newestFolderIndex = folders.FindIndex(f => f.name == collectionCreator.NewCollectionName);
             if (newestFolderIndex == -1) return;
             checkedFolderIndex = newestFolderIndex;
             checkedFolders[newestFolderIndex] = true;

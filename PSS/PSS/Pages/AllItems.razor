@@ -25,13 +25,7 @@
 }
 
 @code {
-    private static LibraryContentViewer libContentViewer = new();
-    private static int selectedItemsCount;
-    private static string headerVis, collectionsVis;
-
-    protected override void OnInitialized()
-    {
-        selectedItemsCount = 0;
-        headerVis = collectionsVis = "hidden";
-    }
+    private LibraryContentViewer libContentViewer = new();
+    private int selectedItemsCount;
+    private string headerVis = "hidden", collectionsVis = "hidden";
 }

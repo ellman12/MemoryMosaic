@@ -62,12 +62,12 @@
 }
 
 @code {
-    private static List<string> untrackedFiles;
+    private List<string> untrackedFiles;
 
     protected override void OnInitialized() => untrackedFiles = M.GetUntrackedLibFiles();
 
     ///Move a single item to pss_import.
-    private static void MoveBtnClick(int index)
+    private void MoveBtnClick(int index)
     {
         string path = untrackedFiles[index];
         File.Move(path, Path.Combine(S.importFolderPath, Path.GetFileName(path)));
@@ -75,7 +75,7 @@
     }
 
     ///Move all untracked items from pss_library to pss_import.
-    private static void MoveAll()
+    private void MoveAll()
     {
         foreach (string path in untrackedFiles)
             File.Move(path, Path.Combine(S.importFolderPath, Path.GetFileName(path)));
@@ -83,14 +83,14 @@
     }
 
     ///Delete this untracked item.
-    private static void DeleteBtnClick(int index)
+    private void DeleteBtnClick(int index)
     {
         FileSystem.DeleteFile(untrackedFiles[index], UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         untrackedFiles.RemoveAt(index);
     }
 
     ///Delete all untracked items in pss_library.
-    private static void DeleteAll()
+    private void DeleteAll()
     {
         foreach (string path in untrackedFiles)
             FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
