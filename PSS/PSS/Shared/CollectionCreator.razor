@@ -2,9 +2,9 @@
 <link href="/css/components/CollectionCreator.css" rel="stylesheet">
 
 <div id="collectionCreator">
-    <button class="textBtn" @onclick="NewCollectionBtnClick"><span class="material-icons-outlined">@newCollectionBtnIcon</span><span class="btnText">@newCollectionBtnText</span></button>
+    <button class="textBtn" @onclick="@NewCollectionBtnClick"><span class="material-icons-outlined">@newCollectionBtnIcon</span><span class="btnText">@newCollectionBtnText</span></button>
     <input type="text" placeholder="@("Enter new " + (folderChecked ? "folder" : "album") + " name")" @bind="@NewCollectionName" style="display: @collectionInputDisplay"/>
-    <button class="iconBtn" @onclick="ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span></button>
+    <button class="iconBtn" @onclick="@ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span></button>
 
     <div style="display: @confirmBtnDisplay">
         <input style="margin-left: 12px" type="checkbox" @bind="@folderChecked">
@@ -16,23 +16,14 @@
     [Parameter, EditorRequired]
     public List<Collection> Collections { get; set; }
 
-    public static event EventHandler CollectionCreated;
+    public event EventHandler CollectionCreated;
         
-    private static string newCollectionBtnIcon;
-    private static string collectionInputDisplay;
-    private static string confirmBtnDisplay;
-    private static string newCollectionBtnText;
-    public static string NewCollectionName { get; private set; }
-    private static bool folderChecked;
-    
-    protected override void OnInitialized()
-    {
-        newCollectionBtnIcon = "library_add";
-        newCollectionBtnText = "New Collection";
-        collectionInputDisplay = "none";
-        folderChecked = false;
-        confirmBtnDisplay = "none";
-    }
+    private string newCollectionBtnIcon = "library_add";
+    private string collectionInputDisplay = "none";
+    private string confirmBtnDisplay = "none";
+    private string newCollectionBtnText = "New Collection";
+    public string NewCollectionName { get; private set; }
+    private bool folderChecked;
     
     private void NewCollectionBtnClick()
     {
