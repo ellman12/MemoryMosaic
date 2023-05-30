@@ -52,7 +52,7 @@
                 {
                     Item1 = zipFile,
                     Item2 = DateTime.Parse(Path.GetFileName(zipFile).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
-                    Item3 = new FileInfo(zipFile).Length
+                    Item3 = F.GetFolderSize(backupFolder)
                 });
             }
             catch (FormatException){}
@@ -112,7 +112,7 @@
         {
             Item1 = backupFolder,
             Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("PSS Backup", null).Replace(';', ':')),
-            Item3 = new FileInfo(backupFolder).Length
+            Item3 = F.GetFolderSize(backupFolder)
         });
 
         L.LogLine("Backup Finished", LogLevel.Info);
