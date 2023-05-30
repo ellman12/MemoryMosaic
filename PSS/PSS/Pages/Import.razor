@@ -197,7 +197,7 @@
 
 	protected override void OnInitialized()
 	{
-		L.LogLine($"Begin Import {nameof(OnInitializedAsync)}", LogLevel.Info);
+		L.LogLine($"Begin Import {nameof(OnInitialized)}", LogLevel.Info);
 		
 		pathWidthClass = "shortWidth";
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
@@ -222,7 +222,7 @@
 		finishedLoading = true;
 		StateHasChanged();
 		
-		L.LogLine($"Finish Import {nameof(OnInitializedAsync)}", LogLevel.Info);
+		L.LogLine($"Finish Import {nameof(OnInitialized)}", LogLevel.Info);
 	}
 
 	///Organizes the import items by putting the errors at the top of the page above the other files.
