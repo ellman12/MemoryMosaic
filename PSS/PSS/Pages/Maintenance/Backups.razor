@@ -8,7 +8,7 @@
 
 @{
     <header>
-        <button class="textBtn" @onclick="@(async () => { popUpMsg = "Creating Backup. Do not navigate away from this page."; popUpVis = true; await Task.Run(CreateBackup); popUpVis = false; })"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
+        <button class="textBtn" @onclick="@(async () => { popUpMsg = "Creating Backup. Do not navigate away from this page."; popUpVis = true; StateHasChanged(); await Task.Run(CreateBackup); popUpVis = false; })"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
         <button class="textBtn" @onclick="@(() => { Directory.Delete(S.backupFolderPath, true); Directory.CreateDirectory(S.backupFolderPath); backups.Clear(); })"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete All Backups</span></button>
         <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
     </header>
@@ -25,7 +25,7 @@
             <div class="backup">
                 <span>@backup.Item2</span>
                 <span>@F.FormatBytes(backup.Item3)</span>
-                <button class="iconBtn" @onclick="@(() => { popUpMsg = "Restoring Backup. Do not navigate away from this page."; popUpVis = true; RestoreBackup(backup.Item1); popUpVis = false; })" title="Restore This Backup"><span class="material-icons">restore</span></button>
+                <button class="iconBtn" @onclick="@(async () => { popUpMsg = "Restoring Backup. Do not navigate away from this page."; popUpVis = true; StateHasChanged(); await Task.Run(() => RestoreBackup(backup.Item1)); popUpVis = false; })" title="Restore This Backup"><span class="material-icons">restore</span></button>
                 <button class="iconBtn" @onclick="@(() => { backups.RemoveAll(b => b.Item1 == backup.Item1); Directory.Delete(backup.Item1, true); })" title="Delete This Backup"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             </div>
         }
