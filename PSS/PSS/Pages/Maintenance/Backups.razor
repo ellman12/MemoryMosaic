@@ -63,47 +63,58 @@
 }
 
 @functions{
-    ///Create a backup .zip file of library and database on server, and add the backup to the top of the page of  backups.
+    ///Copies the contents of pss_library to a backup folder, and dumps the contents of the database to a .bak file in that folder.
     private void CreateBackup()
     {
         L.LogLine("Backup Started", LogLevel.Info);
+
+        string backupFolder = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
+        string dbDumpPath = Path.Combine(backupFolder, "Database.bak");
         
-        string dbBakPath = Path.Combine(S.libFolderPath, "PSS Backup.bak");
-        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}.zip");
+        L.LogLine("Begin copying pss_library", LogLevel.Debug);
+
+        Directory.CreateDirectory(backupFolder);
+        Parallel.ForEach(C.LoadEntireMediaTable(), row =>
+        {
+            string srcFilePath = Path.Join(S.libFolderPath, row.path);
+            string destFilePath = Path.Join(backupFolder, row.path);
+
+            string dtFolderFull = Path.Combine(backupFolder, Path.GetDirectoryName(row.path)!);
+            if (!Directory.Exists(dtFolderFull))
+                Directory.CreateDirectory(dtFolderFull);
+            
+            File.Copy(srcFilePath, destFilePath);
+        });
+        L.LogLine("Finish copying pss_library", LogLevel.Debug);
         
+        //Dump database contents to a .bak file.
         L.LogLine("Starting psql process", LogLevel.Debug);
-        
-        //Backup entire database into a single file.
         using Process process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
                 RedirectStandardError = false,
                 RedirectStandardInput = false,
                 RedirectStandardOutput = false,
                 WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
                 FileName = "cmd.exe",
-                Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbBakPath}\"" //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+                Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbDumpPath}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
             }
         };
-        process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+        process.Start();
         process.WaitForExit();
         
-        L.LogLine("Psql process finished, creating .zip file.", LogLevel.Debug);
-        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.Fastest, false);
-        L.LogLine("Zip file created", LogLevel.Debug);
-        
-        File.Delete(dbBakPath);
-        L.LogLine(".bak file deleted", LogLevel.Debug);
+        L.LogLine("Psql process finished", LogLevel.Debug);
         
         backups.Insert(0, new ValueTuple<string, DateTime, long>
         {
-            Item1 = zipFilePath,
-            Item2 = DateTime.Parse(Path.GetFileName(zipFilePath).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
-            Item3 = new FileInfo(zipFilePath).Length
+            Item1 = backupFolder,
+            Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("PSS Backup", null).Replace(';', ':')),
+            Item3 = new FileInfo(backupFolder).Length
         });
-        
+
         L.LogLine("Backup Finished", LogLevel.Info);
     }
 
