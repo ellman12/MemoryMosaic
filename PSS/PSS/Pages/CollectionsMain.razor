@@ -17,6 +17,10 @@
             <input type="checkbox" @bind="@showFolders">
             <span>Show Folders</span>
         </div>
+        <div @onclick="@(() => { showReadonly = !showReadonly; GetCollectionsTable(); })">
+            <input type="checkbox" @bind="@showReadonly">
+            <span>Show Readonly</span>
+        </div>
     </div>
 
     <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
@@ -59,7 +63,7 @@
     
     private string sortBtnText, sortDivVis = "hidden";
     private CMSortMode mode = CMSortMode.LastModified;
-    private bool showAlbums = true, showFolders;
+    private bool showAlbums = true, showFolders, showReadonly = true;
 
     protected override void OnInitialized()
     {
@@ -74,8 +78,8 @@
 
     private void GetCollectionsTable()
     {
-        collections = C.GetCollectionsTable(showAlbums, showFolders, true, mode);
-        // StateHasChanged();
+        collections = C.GetCollectionsTable(showAlbums, showFolders, showReadonly, mode);
+        StateHasChanged();
     }
 
     private void SetSortBtnText()
