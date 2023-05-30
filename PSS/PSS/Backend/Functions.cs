@@ -91,5 +91,11 @@ namespace PSS.Backend
             string[] allPaths = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories);
             return allPaths.Where(path => SupportedExts.Contains(Path.GetExtension(path).ToLower())).ToList();
         }
+        
+        ///<summary>Returns the size of a folder in bytes.</summary>
+        public static long GetFolderSize(string path)
+        {
+            return new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+        }
     }
 }
