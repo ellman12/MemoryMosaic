@@ -108,16 +108,12 @@ header > #sortDiv > button {
     margin: 0;
     padding: 0;
     display: flex;
+    justify-content: center;
+    overflow: hidden;
     width: 200px;
     height: 200px;
     background-color: #212121;
     border-radius: 4px;
-}
-
-.thumbnail > img {
-    object-fit: cover;
-    width: 200px;
-    height: 200px;
 }
 
 #mainDiv > .collection > .collectionName {
