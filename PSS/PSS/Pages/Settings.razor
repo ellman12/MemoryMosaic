@@ -12,7 +12,7 @@
         </div>
 
         <div class="settings-pair">
-            <span>Where to look for items to add to your library.</span>
+            <span>Where to look for items to add to your library</span>
             <input type="text" class="settings-pair" @bind="@importFolderPath"/>
         </div>
 
@@ -37,13 +37,27 @@
         </div>
         
         <div class="settings-pair">
-            <input type="checkbox" class="settings-pair" @bind="@displayNoDTInAV"/>
+            <input type="checkbox" class="settings-pair" @bind="@displayNoDTInCV"/>
             <span style="display: inline">Display items with no date taken in albums/folders?</span>
         </div>
         
-        <div class="settings-pair">
-            <span title="Lower the number, higher the quality.">Video Thumbnail Quality: @thumbnailQuality</span>
-            <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
+        <div id="thumbnail-settings">
+            <div id="thumbnail-slider">
+                <span title="Lower the number, higher the quality.">Video Thumbnail Quality: @thumbnailQuality</span>
+                <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
+            </div>
+            <div id="thumbnail-updating">
+                @if (thumbnailBtnVis == "visible")
+                {
+                    <button class="textBtn" @onclick="@UpdateThumbnails"><span class="material-icons-outlined">image</span><span>Recreate Thumbnails</span></button>
+                }
+                
+                @if (thumbnailProgressVis == "visible")
+                {
+                    <progress max="100" value="@((float)amountUpdated / amountToUpdate * 100)"></progress>
+                    <span>@amountUpdated Updated, @(amountToUpdate - amountUpdated) Remaining</span>
+                }
+            </div>
         </div>
 
         <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
@@ -81,19 +95,19 @@
             <span>Library Size: @F.FormatBytes(librarySize)</span>
             if (oldestDTItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" href="@($"/view/{oldestDTItem.uuid}")">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@oldestDTItem.path">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
             }
             if (newestDTItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" href="@($"/view/{newestDTItem.uuid}")">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a></span>
+                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@newestDTItem.path">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a></span>
             }
             if (oldestDAItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" href="@($"/view/{oldestDAItem.uuid}")">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a></span>
+                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@oldestDAItem.path">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a></span>
             }
             if (newestDAItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" href="@($"/view/{newestDAItem.uuid}")">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a></span>
+                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a></span>
             }
             <span>Server went online at @whenWentOnline</span>
             <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>
@@ -115,10 +129,15 @@
     private static string importFolderPath = S.importFolderPath;
     private static string libraryRootPath = S.libFolderPath;
     private static bool showPrompts = S.showPrompts;
-    private static bool displayNoDTInAV = S.displayNoDTInAV;
+    private static bool displayNoDTInCV = S.displayNoDTInCV;
     private static string backupFolderPath = S.backupFolderPath;
     private static string tmpFolderPath = S.tmpFolderPath;
     private static int thumbnailQuality = S.thumbnailQuality;
+
+    //Updating thumbnails
+    private static int amountToUpdate, amountUpdated;
+    private static string thumbnailBtnVis = "visible";
+    private static string thumbnailProgressVis = "hidden";
     
     //Maintenance
     private static bool maintenanceLoaded;
@@ -186,7 +205,7 @@
         S.importFolderPath = importFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
-        S.displayNoDTInAV = displayNoDTInAV;
+        S.displayNoDTInCV = displayNoDTInCV;
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
         S.thumbnailQuality = thumbnailQuality;
@@ -200,7 +219,7 @@
         importFolderPath = S.importFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;
-        displayNoDTInAV = S.displayNoDTInAV;
+        displayNoDTInCV = S.displayNoDTInCV;
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
         thumbnailQuality = S.thumbnailQuality;
@@ -211,6 +230,30 @@
     {
         S.ResetSettings();
         CancelBtnClicked();
+    }
+
+    private async Task UpdateThumbnails()
+    {
+        amountUpdated = amountToUpdate = 0;
+        thumbnailBtnVis = "hidden";
+        thumbnailProgressVis = "visible";
+
+        List<MediaRow> allItems = C.LoadEntireMediaTable();
+        amountToUpdate = allItems.Count;
+
+        await Parallel.ForEachAsync(allItems, async (item, _) =>
+        {
+            await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
+            await using NpgsqlCommand cmd = new("UPDATE media SET thumbnail = @newThumbnail WHERE path = @path", localConn);
+            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, item.path)));
+            cmd.Parameters.AddWithValue("@path", item.path);
+            await cmd.ExecuteNonQueryAsync(_);
+            amountUpdated++;
+            await InvokeAsync(StateHasChanged);
+        });
+        
+        thumbnailBtnVis = "visible";
+        thumbnailProgressVis = "hidden";
     }
 
     //Delete all empty folders

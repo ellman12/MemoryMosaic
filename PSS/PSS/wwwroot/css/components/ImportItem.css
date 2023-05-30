@@ -17,27 +17,38 @@
     margin-right: 10px;
 }
 
-.importItem > .checkbox {
+.importItem > .checkBtn {
+    border: none;
+    outline: none;
+    background: none;
+}
+
+.importItem > .checkBtn > .checkbox {
     opacity: 0;
     margin-left: 4px;
     margin-right: 10px;
 }
 
-.importItem > .checkbox:hover {
+.importItem > .checkBtn > .checkbox:hover {
     cursor: pointer;
 }
 
-.importItem > .checked {
+.importItem > .checkBtn > .checked {
+    color: #009FFF;
+    opacity: 0.9;
+}
+
+.importItem > .checkBtn > .checked:hover {
     color: #009FFF;
     opacity: 1;
 }
 
-.importItem:hover > .unchecked { /* Show checkbox on hover */
+.importItem:hover > .checkBtn > .unchecked { /* Show checkbox on hover */
     opacity: 0.42;
     transition: 0.15s;
 }
 
-.importItem > .unchecked:hover {
+.importItem > .checkBtn > .unchecked:hover {
     opacity: 1;
 }
 

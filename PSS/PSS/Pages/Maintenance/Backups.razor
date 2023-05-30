@@ -1,13 +1,14 @@
 @page "/maintenance/backups"
 @using System.Diagnostics
-@using System.IO.Compression
+@using Microsoft.VisualBasic.FileIO
+@using SearchOption = System.IO.SearchOption
 
 <title>Backups — Maintenance - PSS</title>
 <link href="css/maintenance/Backups.css" rel="stylesheet">
 
 @{
     <header>
-        <button class="textBtn" @onclick="@(async () => { popUpMsg = "Creating Backup. Do not navigate away from this page."; popUpVis = true; await Task.Run(CreateBackup); popUpVis = false; })"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
+        <button class="textBtn" @onclick="@(async () => { popUpMsg = "Creating Backup. Do not navigate away from this page."; popUpVis = true; StateHasChanged(); await Task.Run(CreateBackup); popUpVis = false; })"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
         <button class="textBtn" @onclick="@(() => { Directory.Delete(S.backupFolderPath, true); Directory.CreateDirectory(S.backupFolderPath); backups.Clear(); })"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete All Backups</span></button>
         <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
     </header>
@@ -24,8 +25,8 @@
             <div class="backup">
                 <span>@backup.Item2</span>
                 <span>@F.FormatBytes(backup.Item3)</span>
-                <button class="iconBtn" @onclick="@(async () => { popUpMsg = "Restoring Backup. Do not navigate away from this page."; popUpVis = true; await Task.Run(() => RestoreBackup(backup.Item1)); popUpVis = false; })" title="Restore This Backup File"><span class="material-icons">restore</span></button>
-                <button class="iconBtn" @onclick="@(() => File.Delete(backup.Item1))" title="Delete This Backup File"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+                <button class="iconBtn" @onclick="@(async () => { popUpMsg = "Restoring Backup. Do not navigate away from this page."; popUpVis = true; StateHasChanged(); await Task.Run(() => RestoreBackup(backup.Item1)); popUpVis = false; })" title="Restore This Backup"><span class="material-icons">restore</span></button>
+                <button class="iconBtn" @onclick="@(() => { backups.RemoveAll(b => b.Item1 == backup.Item1); Directory.Delete(backup.Item1, true); })" title="Delete This Backup"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             </div>
         }
     </div>
@@ -43,16 +44,16 @@
     protected override void OnInitialized()
     {
         backups = new List<(string, DateTime, long)>();
-
-        foreach (string zipFile in Directory.GetFiles(S.backupFolderPath, "*.zip", SearchOption.AllDirectories))
+        
+        foreach (string backupFolder in Directory.GetDirectories(S.backupFolderPath, "PSS Backup*", SearchOption.TopDirectoryOnly))
         {
             try
             {
                 backups.Add(new ValueTuple<string, DateTime, long>
                 {
-                    Item1 = zipFile,
-                    Item2 = DateTime.Parse(Path.GetFileName(zipFile).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
-                    Item3 = new FileInfo(zipFile).Length
+                    Item1 = backupFolder,
+                    Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
+                    Item3 = F.GetFolderSize(backupFolder)
                 });
             }
             catch (FormatException){}
@@ -63,53 +64,73 @@
 }
 
 @functions{
-    ///Create a backup .zip file of library and database on server, and add the backup to the top of the page of  backups.
+    ///Copies the contents of pss_library to a backup folder, and dumps the contents of the database to a .bak file in that folder.
     private void CreateBackup()
     {
-        string dbBakPath = Path.Combine(S.libFolderPath, "PSS Backup.bak");
-        string zipFilePath = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}.zip");
+        L.LogLine("Backup Started", LogLevel.Info);
+
+        string backupFolder = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
+        string dbDumpPath = Path.Combine(backupFolder, "Database.bak");
         
-        //Backup entire database into a single file.
+        L.LogLine("Begin copying pss_library", LogLevel.Debug);
+
+        Directory.CreateDirectory(backupFolder);
+        Parallel.ForEach(C.LoadEntireMediaTable(), row =>
+        {
+            string srcFilePath = Path.Join(S.libFolderPath, row.path);
+            string destFilePath = Path.Join(backupFolder, row.path);
+
+            string dtFolderFull = Path.Combine(backupFolder, Path.GetDirectoryName(row.path)!);
+            if (!Directory.Exists(dtFolderFull))
+                Directory.CreateDirectory(dtFolderFull);
+            
+            File.Copy(srcFilePath, destFilePath);
+        });
+        L.LogLine("Finish copying pss_library", LogLevel.Debug);
+        
+        //Dump database contents to a .bak file.
+        L.LogLine("Starting psql process", LogLevel.Debug);
         using Process process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
                 RedirectStandardError = false,
                 RedirectStandardInput = false,
                 RedirectStandardOutput = false,
-                WorkingDirectory = "C:/Program Files/PostgreSQL/14/bin/",
+                WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
                 FileName = "cmd.exe",
-                Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbBakPath}\"" //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+                Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbDumpPath}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
             }
         };
-        process.Start(); //How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+        process.Start();
         process.WaitForExit();
         
-        ZipFile.CreateFromDirectory(S.libFolderPath, zipFilePath, CompressionLevel.Fastest, false);
-        File.Delete(dbBakPath);
+        L.LogLine("Psql process finished", LogLevel.Debug);
         
         backups.Insert(0, new ValueTuple<string, DateTime, long>
         {
-            Item1 = zipFilePath,
-            Item2 = DateTime.Parse(Path.GetFileName(zipFilePath).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
-            Item3 = new FileInfo(zipFilePath).Length
+            Item1 = backupFolder,
+            Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("PSS Backup", null).Replace(';', ':')),
+            Item3 = F.GetFolderSize(backupFolder)
         });
+
+        L.LogLine("Backup Finished", LogLevel.Info);
     }
 
-    ///<summary>Restore PSS to this backup.</summary>
-    ///<param name="zipFullPath">The full path to the zip file to restore PSS to.</param>
-    private static void RestoreBackup(string zipFullPath)
+    ///Restore PSS to this backup.
+    private static void RestoreBackup(string backupFullPath)
     {
-        //Clears the database.
+        L.LogLine("Restore started", LogLevel.Info);
+        L.LogLine("Begin clearing database", LogLevel.Debug);
+        
         C.Open();
-        using NpgsqlCommand cmd = new NpgsqlCommand("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
+        using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
         cmd.ExecuteNonQuery();
         C.Close();
         
-        //Restore pss_library.
-        if (Directory.Exists(S.libFolderPath)) Directory.Delete(S.libFolderPath, true);
-        ZipFile.ExtractToDirectory(zipFullPath, S.libFolderPath);
+        L.LogLine("Database cleared, restoring database", LogLevel.Debug);
         
         //Restore the database from the .bak file.
         Process process = new();
@@ -118,11 +139,19 @@
             WindowStyle = ProcessWindowStyle.Hidden,
             WorkingDirectory = S.backupFolderPath,
             FileName = "cmd.exe",
-            Arguments = $"/C type \"{Path.Combine(S.libFolderPath, "PSS Backup.bak")}\" | \"C:/Program Files/PostgreSQL/14/bin/psql.exe\" \"host=localhost port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\""
+            Arguments = $"/C type \"{Path.Combine(backupFullPath, "Database.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\""
         };
         process.StartInfo = startInfo;
         process.Start();
         process.WaitForExit();
-        File.Delete($"{S.libFolderPath}/PSS Backup.bak");
+        
+        L.LogLine("Database restored, clearing pss_library", LogLevel.Debug);
+        if (Directory.Exists(S.libFolderPath)) Directory.Delete(S.libFolderPath, true);
+        
+        L.LogLine("pss_library cleared, restoring pss_library", LogLevel.Debug);
+        FileSystem.CopyDirectory(backupFullPath, S.libFolderPath);
+        File.Delete(Path.Combine(S.libFolderPath, "Database.bak"));
+
+        L.LogLine("pss_library restored, restoration finished", LogLevel.Info);
     }
 }

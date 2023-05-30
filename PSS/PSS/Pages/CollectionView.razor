@@ -1,22 +1,32 @@
-@page "/collection-view/{collectionID}"
+@page "/collection-view/{CollectionID}"
 @inject NavigationManager navigationManager
 
-<title>@collectionName - PSS</title>
+@if (collection == null) { return; }
+
+<title>@collection.name - PSS</title>
 <link href="css/CollectionView.css" rel="stylesheet">
 
 @{
-    isFolder = C.IsFolder(statCollectionID);
     <header>
         <button class="iconBtn" @onclick="@libContentViewer.ClearChecks" style="visibility: @headerVis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
         <span style="visibility: @headerVis" id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
 
         <div id="collectionRenameDiv">
-            <input type="text" placeholder="Enter new collection name" @bind="@NewCollectionName" @bind:event="oninput" autocomplete="off">
-            
+            @if (collection.readOnly)
+            {
+                <input disabled type="text" placeholder="Enter new collection name" @bind="@NewCollectionName" @bind:event="oninput" autocomplete="off"/>
+            }
+            else
+            {
+                <input type="text" placeholder="Enter new collection name" @bind="@NewCollectionName" @bind:event="oninput" autocomplete="off"/>
+            }
+
+            <span title="@(collection.readOnly ? "Readonly" : "")" class="material-icons-outlined">@(collection.readOnly ? "lock" : "")</span>
+
             <button class="iconBtn" @onclick="@CancelBtnClick" style="visibility: @buttonsVis">
                 <span class="material-icons-outlined">close</span>
             </button>
-    
+
             <button class="iconBtn" @onclick="@ConfirmBtnClick" style="visibility: @buttonsVis">
                 <span class="material-icons-outlined">check</span>
             </button>
@@ -26,7 +36,12 @@
             <button class="iconBtn" style="visibility: @headerVis"><span class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected">file_download</span></button>
             <button class="iconBtn" style="visibility: @headerVis" @onclick="@(() => collectionsVis = "visible")" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
             <button class="iconBtn" style="visibility: @headerVis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref libContentViewer.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
-            <button class="iconBtn" style="visibility: @headerVis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+            
+            @if (!collection.readOnly)
+            {
+                <button class="iconBtn" style="visibility: @headerVis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+            }
+    
             <button class="iconBtn" style="visibility: @headerVis" @onclick="@libContentViewer.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             <button class="iconBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
         </div>
@@ -36,8 +51,14 @@
             <button @onclick="@(() => ChangeOrder(CVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(CVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
             <button @onclick="@(() => ChangeOrder(CVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
-            <button @onclick="@(() => C.ChangeCollectionType(statCollectionID, !isFolder))"><span class="material-icons-outlined">@(isFolder ? "perm_media" : "collections")</span><span>@(isFolder ? "Change to Album" : "Change to Folder")</span></button>
-            <button @onclick="@DeleteCollectionBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(isFolder ? "Delete Folder" : "Delete Album")</span></button>
+            
+            <button @onclick="@ToggleReadonly"><span class="material-icons-outlined">@(collection.readOnly ? "lock_open" : "lock")</span><span>@(collection.readOnly ? "Remove" : "Make") Readonly</span></button>
+            
+            @if (!collection.readOnly)
+            {
+                <button @onclick="@(() => C.ChangeCollectionType(collection.id, !collection.folder))"><span class="material-icons-outlined">@(collection.folder ? "perm_media" : "collections")</span><span>@(collection.folder ? "Change to Album" : "Change to Folder")</span></button>
+                <button @onclick="@DeleteCollectionBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(collection.folder ? "Delete Folder" : "Delete Album")</span></button>
+            }
         </div>
     </header>
     
@@ -45,40 +66,38 @@
 
     //Loads every item with NULL Date Taken first, then items with Date Taken.
     @* Date Added in this instance is date_added_to_collection. *@
-    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" CollectionID="@statCollectionID"
-        UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" NoItemsText="@(isFolder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
+    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" Collection="@collection"
+        UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" NoItemsText="@(collection.folder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
     <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
     <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
     
-    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(isFolder ? "Folder" : "Collection")} \"{collectionName}\"?")
-        YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(statCollectionID); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
+    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Album")} \"{collection.name}\"?")
+        YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
 }
 
 @code{
     [Parameter]
-    public string collectionID { get; set; }
-    private static int statCollectionID;
-    private static bool isFolder;
+    public string CollectionID { get; set; }
+
+    private Collection collection;
     
-    private static CVSortMode sortMode;
-    private static string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
+    private CVSortMode sortMode;
+    private string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
     
-    private static LibraryContentViewer libContentViewer = new();
-    private static int selectedItemsCount;
-    private static string headerVis, collectionsVis, delPromptVis, buttonsVis, sortDivVis;
-    private static string collectionName, _newCollectionName;
-    
-    private static string NewCollectionName
+    private LibraryContentViewer libContentViewer = new();
+    private int selectedItemsCount;
+    private string headerVis, collectionsVis, delPromptVis, buttonsVis, sortDivVis, _newCollectionName;
+    private string NewCollectionName
     {
         get => _newCollectionName;
         set
         {
-            if (value == collectionName) //Same so don't need to reapply
+            if (value == collection.name) //Same so don't need to reapply
             {
                 buttonsVis = "hidden";
             }
-            else if (value != collectionName)
+            else if (value != collection.name)
             {
                 _newCollectionName = value;
                 buttonsVis = "visible";
@@ -88,17 +107,15 @@
 }
 
 @functions{
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        selectedItemsCount = 0;
-        statCollectionID = Int32.Parse(collectionID);
-        sortMode = CVSortMode.NewestDateTaken; //Default
-        collectionName = C.GetCollectionName(statCollectionID);
-        _newCollectionName = collectionName;
+        collection = await C.GetCollectionDetailsAsync(CollectionID);
+        sortMode = CVSortMode.NewestDateTaken;
+        _newCollectionName = collection.name;
         headerVis = collectionsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
 
-    private static void UpdateQueries()
+    private void UpdateQueries()
     {
         switch (sortMode)
         {
@@ -122,14 +139,15 @@
                 throw new ArgumentOutOfRangeException();
         }
     
-        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={statCollectionID} AND date_deleted IS NULL AND separate={isFolder}";
-        topQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
-        bottomQuery = $"{shared} AND date_taken IS NOT NULL AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
+        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={collection.id} AND date_deleted IS NULL AND separate={collection.folder}";
+        topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
+        bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
     
-        //Loads every item with NULL Date Taken first, then items with Date Taken.
+        //Loads every item with NULL Date Taken first, then items with a Date Taken.
         firstQuery = "";
-        if (S.displayNoDTInAV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
-        firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100) ORDER BY {orderBy}";
+        if (S.displayNoDTInCV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ";
+        firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100)";
+        if (S.displayNoDTInCV) firstQuery += $" ORDER BY {orderBy}";
     }
     
     private void ChangeOrder(CVSortMode newMode)
@@ -143,10 +161,16 @@
         StateHasChanged();
     }
 
+    private async Task ToggleReadonly()
+    {
+        await C.ToggleReadonlyAsync(collection);
+        collection.readOnly = !collection.readOnly;
+    }
+
     //Remove selected from the collection
     private async void RemoveBtnClick()
     {
-        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, statCollectionID);
+        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, collection.id);
         headerVis = "hidden";
         await libContentViewer.SelectedItemsCountChanged.InvokeAsync(0);
         await libContentViewer.HeaderVisChanged.InvokeAsync("hidden");
@@ -171,21 +195,21 @@
     private void DeleteCollection()
     {
         navigationManager.NavigateTo("/collections");
-        C.DeleteCollection(statCollectionID);
+        C.DeleteCollection(collection.id);
     }
     
     //Functions for collection stuff
-    private static void CancelBtnClick()
+    private void CancelBtnClick()
     {
         buttonsVis = "hidden";
-        _newCollectionName = collectionName; //Reset to OG
+        NewCollectionName = collection.name; //Reset to OG
     }
 
-    private static void ConfirmBtnClick()
+    private void ConfirmBtnClick()
     {
         buttonsVis = "hidden";
         if (NewCollectionName != "")
-            C.RenameCollection(NewCollectionName, statCollectionID);
+            C.RenameCollection(NewCollectionName, collection.id);
         else
             NewCollectionName = "Please enter a name";
     }

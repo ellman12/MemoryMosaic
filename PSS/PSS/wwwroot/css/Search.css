@@ -1,0 +1,9 @@
+﻿header > #search {
+    background-color: black;
+    border: 1px solid white;
+    width: 210px;
+    position: absolute;
+    left: 45%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+}

@@ -3,6 +3,7 @@
 @using CS = PSS.Shared.CollectionSelector;
 @using static ImportFile
 @using System.Text
+@inject IJSRuntime JSRuntime
 
 <title>Import - PSS</title>
 <link href="css/Import.css" rel="stylesheet">
@@ -17,7 +18,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
+	<KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionSelectorVis); StateHasChanged(); })" AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Del="DeleteSelected" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
 	<header>
 		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
@@ -52,14 +53,26 @@
 		</div>
 		
 		<div id="buttons" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
-			<button class="iconBtn" @onclick="@ClearDateTaken" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")"><span class="material-icons-outlined">calendar_today</span></button>
-			<button class="iconBtn" @onclick="@(() => collectionSelectorVis = "visible")"><span class="material-icons-outlined">collections</span></button>
+			<select @bind="@newDTSource">
+				@{
+					bool canDisplayMetadata = importFiles.All(file => !selectedItems.Contains(file.uuid) || file.metadataDateTaken != null);
+					if (canDisplayMetadata) { <option>Metadata</option> }
+
+					bool canDisplayFilename = importFiles.All(file => !selectedItems.Contains(file.uuid) || file.filenameDateTaken != null);
+					if (canDisplayFilename) { <option>Filename</option> }
+
+					<option>None</option>
+					<option>Custom</option>
+				}
+			</select>
+			
+			<button class="iconBtn" @onclick="@UpdateDateTakenSources" title="Apply"><span class="material-icons-outlined">save</span></button>
 			<button class="iconBtn" @onclick="@ToggleStars"><span class="material-icons-outlined">star</span></button>
 			<button class="iconBtn" @onclick="@DeleteSelected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		</div>
 	</header>
 	
-	<CollectionSelector OnCheckClicked="@UpdateCollections" @bind-CollectionsVis="@collectionSelectorVis" SelectedItems="@selectedItems"/>
+	<CollectionSelector OnCheckClicked="@UpdateCollections" @bind-CollectionsVis="@collectionSelectorVis" SelectedItems="@selectedItems" ClearChecksOnConfirm="false"/>
 	
 	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
@@ -72,7 +85,7 @@
 					<div class="errorDiv">
 						@do
 						{
-							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 							i++;
 						} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 						@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
@@ -104,7 +117,7 @@
 
 				if (!hasErrors && !hasWarnings)
 				{
-					<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+					<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 					continue;
 				}
 				
@@ -113,7 +126,7 @@
 						@if (hasErrors)
 						{
 							hasRendered = true;
-							<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+							<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 
 							foreach (MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename])
 							{
@@ -126,7 +139,7 @@
 						{
 							if (!hasRendered)
 							{
-								<ImportItem Rerender="@StateHasChanged" Index="@i"/>
+								<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 							}
 							
 							foreach (MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
@@ -170,6 +183,9 @@
 	///Stores what items are selected by the user.
 	public static readonly HashSet<Guid> selectedItems = new();
 
+	///Used in ImportItem for rerendering this page.
+	public static Action Rerender;
+
 	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
 	public static int lastCheckedIndex = 0;
 
@@ -177,9 +193,11 @@
 
 	private static string searchText, statusMessage;
 
+	private DateTakenSource newDTSource = DateTakenSource.None;
+
 	protected override void OnInitialized()
 	{
-		L.LogLine($"Begin Import {nameof(OnInitializedAsync)}", LogLevel.Info);
+		L.LogLine($"Begin Import {nameof(OnInitialized)}", LogLevel.Info);
 		
 		pathWidthClass = "shortWidth";
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
@@ -188,6 +206,7 @@
 		libFilesWithSimilarName.Clear();
 		searchResults.Clear();
 		selectedItems.Clear();
+		Rerender = StateHasChanged;
 		minYear = 2000;
 		maxYear = DateTime.Today.Year;
 		errorAmount = 0;
@@ -203,7 +222,7 @@
 		finishedLoading = true;
 		StateHasChanged();
 		
-		L.LogLine($"Finish Import {nameof(OnInitializedAsync)}", LogLevel.Info);
+		L.LogLine($"Finish Import {nameof(OnInitialized)}", LogLevel.Info);
 	}
 
 	///Organizes the import items by putting the errors at the top of the page above the other files.
@@ -395,15 +414,6 @@
 		L.LogLine($"Finish {nameof(DeleteSelected)}", LogLevel.Info);
 	}
 
-	private static void ClearDateTaken()
-	{
-		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList())
-		{
-			file.dateTakenSource = DateTakenSource.Custom;
-			file.customDateTaken = null;
-		}
-	}
-
 	///Updates the collections field of each selected ImportItem.
 	private static void UpdateCollections()
 	{
@@ -430,7 +440,7 @@
 	}
 
 	private static async void FocusSearchInput() => await searchInput.FocusAsync();
-
+	
 	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
 	private void SaveChanges()
 	{
@@ -486,5 +496,20 @@
 		StateHasChanged();
 		
 		L.LogLine($"Finish {nameof(LoadItemsFromDisk)}", LogLevel.Info);
+	}
+
+	private async void UpdateDateTakenSources()
+	{
+		for (int i = 0; i < importFiles.Count; i++)
+		{
+			if (!selectedItems.Contains(importFiles[i].uuid)) continue;
+
+			importFiles[i].dateTakenSource = newDTSource;
+			if (newDTSource == DateTakenSource.Custom)
+			{
+				try { await JSRuntime.InvokeAsync<int>("openDtPicker", i); }
+				catch (JSException) {}
+  			}
+		}
 	}
 }

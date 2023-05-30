@@ -82,7 +82,11 @@ header > #collectionRenameDiv {
     border: 2px solid black;
     outline: none;
     font-size: 20px;
-    width: 50%;
+    width: 600px;
+}
+
+#collectionRenameDiv > .material-icons-outlined {
+    margin-left: 20px;
 }
 
 #collectionRenameDiv > input[type="text"]:hover {

@@ -14,27 +14,26 @@
     @foreach (MediaRow row in mediaMissingItems)
     {
         <div class="missingItem">
-            <div class="thumbnail">
-                @if (row.thumbnail != null){<img src="data:image/jpg;base64,@row.thumbnail" alt="">}
-            </div>
+            <div class="thumbnail"><img src="data:image/jpg;base64,@row.thumbnail" alt=""></div>
             <div class="info">
                 <span>@row.path</span>
                 <span>DT: @row.dateTaken</span>
                 <span>DA: @row.dateAdded</span>
                 <span>Star: @row.starred</span>
-                <span>Separate: @row.separate</span>
                 <span>@row.uuid</span>
+                <span>Separate: @row.separate</span>
+                <span>Description: @row.description</span>
             </div>
         </div>
     }
 </div>
 
 @code{
-    private static List<MediaRow> mediaMissingItems;
+    private List<MediaRow> mediaMissingItems;
 
     protected override void OnInitialized() => mediaMissingItems = M.GetMediaMissingFiles();
 
-    private static void DeleteMissingPaths()
+    private void DeleteMissingPaths()
     {
         M.RemoveMediaMissingFiles(mediaMissingItems);
         mediaMissingItems.Clear();

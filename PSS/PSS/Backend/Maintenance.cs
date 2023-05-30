@@ -39,7 +39,7 @@ namespace PSS.Backend
             try
             {
                 C.Open();
-                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media", C.connection);
+                using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail, description FROM media", C.connection);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
 
@@ -48,13 +48,13 @@ namespace PSS.Backend
                     string shortPath = r.GetString(0);
                     string fullPath = Path.Combine(S.libFolderPath, shortPath);
                     if (!File.Exists(fullPath))
-                        missingFiles.Add(new MediaRow(shortPath, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
+                        missingFiles.Add(new MediaRow(shortPath, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.GetString(6), r.IsDBNull(7) ? null : r.GetString(7)));
                 }
                 r.Close();
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                L.LogException(e);
             }
             finally
             {
@@ -80,7 +80,7 @@ namespace PSS.Backend
             }
             catch (NpgsqlException e)
             {
-                Console.WriteLine("An unknown error occurred. Error code: " + e.ErrorCode + " Message: " + e.Message);
+                L.LogException(e);
             }
             finally
             {

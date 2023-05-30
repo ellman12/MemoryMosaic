@@ -11,8 +11,8 @@ public static class Connection
     private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS";
     public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
 
-    ///Asynchronously creates and opens a new connection object for use in Async Connection.cs methods, and returns the new connection.
-    private static async Task<NpgsqlConnection> CreateLocalConnectionAsync()
+    ///Asynchronously creates, opens, and returns a new connection object.
+    public static async Task<NpgsqlConnection> CreateLocalConnectionAsync()
     {
         NpgsqlConnection localConn = new(CONNECTION_STRING);
         await localConn.OpenAsync();
@@ -37,7 +37,7 @@ public static class Connection
     ///<param name="path">The short path that will be stored in media. Convention is to use '/' as the separator.</param>
     ///<param name="dateTaken">When this item was taken.</param>
     ///<param name="uuid">The uuid of this item.</param>
-    ///<param name="thumbnail">ONLY FOR VIDEOS. A base64 string for the video thumbnail. Use null or "" for pictures.</param>
+    ///<param name="thumbnail">A base64 string representing the thumbnail.</param>
     ///<param name="starred">Is this item starred or not?</param>
     public static async Task InsertMedia(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false)
     {
@@ -49,13 +49,10 @@ public static class Connection
             cmd.Parameters.AddWithValue("@path", path);
             cmd.Parameters.AddWithValue("@uuid", uuid);
             cmd.Parameters.AddWithValue("@starred", starred);
-            if (dateTaken != null)
-                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
-            
-            if (!String.IsNullOrWhiteSpace(thumbnail))
-                cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
+            cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
+            if (dateTaken != null) cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
 
-            cmd.CommandText = $"INSERT INTO media (path, {(dateTaken == null ? "" : "date_taken,")} starred, uuid {(String.IsNullOrWhiteSpace(thumbnail) ? "" : ", thumbnail")}) VALUES (@path, {(dateTaken == null ? "" : "@dateTaken, ")} @starred, @uuid {(String.IsNullOrWhiteSpace(thumbnail) ? "" : ", @thumbnail")}) ON CONFLICT(path) DO NOTHING";
+            cmd.CommandText = $"INSERT INTO media (path, {(dateTaken == null ? "" : "date_taken,")} starred, uuid , thumbnail) VALUES (@path, {(dateTaken == null ? "" : "@dateTaken, ")} @starred, @uuid, @thumbnail) ON CONFLICT(path) DO NOTHING";
 
             await cmd.ExecuteNonQueryAsync();
         }
@@ -215,13 +212,14 @@ public static class Connection
     {
         List<MediaRow> memories = new();
         int month = DateTime.ParseExact(monthName, "MMMM", System.Globalization.CultureInfo.CurrentCulture).Month;
+        string dd = day < 10 ? $"0{day}" : day.ToString();
 
         try
         {
             Open();
-            using NpgsqlCommand cmd = new($"SELECT path, date_taken, starred, uuid, thumbnail FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{day} %' ORDER BY date_taken DESC", connection);
+            using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{dd}%' ORDER BY date_taken DESC", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetGuid(3), r.IsDBNull(4) ? null : r.GetString(4)));
+            while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6)));
         }
         catch (NpgsqlException e)
         {
@@ -500,6 +498,50 @@ public static class Connection
         }
     }
 
+    ///<summary>Given the integer id of a collection represented as a string, return a new <see cref="Collection"/> with the extra details about a Collection, like name, last updated, folder, etc.</summary>
+    /// <param name="collectionID"></param>
+    public static async Task<Collection> GetCollectionDetailsAsync(string collectionID)
+    {
+        NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+        
+        try
+        {
+            await using NpgsqlCommand cmd = new($"SELECT name, last_updated, folder, readonly FROM collections WHERE id = {collectionID}", localConn);
+            await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
+            await r.ReadAsync();
+            return new Collection(Int32.Parse(collectionID), r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetBoolean(3));
+        }
+        catch (NpgsqlException e)
+        {
+            L.LogException(e);
+            return null;
+        }
+        finally
+        {
+            await localConn.CloseAsync();
+        }
+    }
+
+    ///Toggles a Collection's readonly field in the collections table.
+    public static async Task ToggleReadonlyAsync(Collection collection)
+    {
+        NpgsqlConnection localConn = await CreateLocalConnectionAsync();
+        
+        try
+        {
+            await using NpgsqlCommand cmd = new($"UPDATE collections SET readonly = {!collection.readOnly} WHERE id = {collection.id}", localConn);
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (NpgsqlException e)
+        {
+            L.LogException(e);
+        }
+        finally
+        {
+            await localConn.CloseAsync();
+        }
+    }
+
     ///<summary>Given an collection id, attempt to return its name.</summary>
     ///<param name="id">The id of the collection.</param>
     ///<returns>Collection name.</returns>
@@ -664,9 +706,10 @@ public static class Connection
     ///<summary>Load all the albums and/or folders in the collections table.</summary>
     ///<param name="showAlbums">Should albums be selected?</param>
     ///<param name="showFolders">Should folders be selected?</param>
+    ///<param name="showReadonly">Should readonly collections be selected?</param>
     ///<param name="mode">How should the data be sorted?</param>
     ///<returns>A List&lt;Collection&gt; of all the albums and/or folders.</returns>
-    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, CMSortMode mode = CMSortMode.Title)
+    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, bool showReadonly, CMSortMode mode = CMSortMode.Title)
     {
         List<Collection> collections = new();
 
@@ -689,6 +732,8 @@ public static class Connection
             where = "WHERE folder = true";
         else
             where = "WHERE folder = true and folder = false";
+        
+        if (!String.IsNullOrEmpty(where) && !showReadonly) where += " AND readonly = false";
 
         try
         {

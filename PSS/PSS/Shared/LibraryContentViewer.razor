@@ -21,9 +21,9 @@ If it can't find any content, it shows an h1 saying no content.
 	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 	    
-	    @if (CollectionID != -1 && MediaList[viewIndex].thumbnail == null)
+	    @if (Collection is {readOnly: false } && !MediaList[viewIndex].video)
 	    {
-	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(CollectionID, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
+	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(Collection.id, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
 	    }
 	</div>
 
@@ -49,7 +49,7 @@ If it can't find any content, it shows an h1 saying no content.
 			<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
 		</div>
 
-		@if (collectionsIn != null && collectionsIn.Count > 0)
+		@if (collectionsIn?.Count > 0)
 		{
 			<div id="collectionsInfo">
 				<span id="collectionsText">Collections Containing</span>
@@ -101,7 +101,7 @@ If it can't find any content, it shows an h1 saying no content.
 	    </div>
 	}
 
-	@if (MediaList[viewIndex].thumbnail == null)
+	@if (!MediaList[viewIndex].video)
 	{
 	    <div tabindex="0" id="itemDiv"><img src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
 	}
@@ -133,17 +133,10 @@ If it can't find any content, it shows an h1 saying no content.
 					{
 						int ii = i;
 						<div class="thumbnail">
-							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+							@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
+							@if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							@if (MediaList[ii].thumbnail != null) //Video
-							{
-								<span class="material-icons-outlined video-icon">play_circle_outline</span>
-								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-							}
-							else
-							{
-								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-							}
+							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						i++;
 					} while (i < MediaList.Count && MediaList[i].dateTaken == null);
@@ -160,17 +153,10 @@ If it can't find any content, it shows an h1 saying no content.
 					{
 						int ii = i;
 						<div class="thumbnail">
-							@if (MediaList[ii].starred) {<span class="material-icons-outlined star-icon">star</span>}
+							@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
+                            @if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							@if (MediaList[ii].thumbnail != null) //Video
-							{
-								<span class="material-icons-outlined video-icon">play_circle_outline</span>
-								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-							}
-							else
-							{
-								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="@S.LIB_REQUEST_PATH/@MediaList[ii].path" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
-							}
+							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						if (i == MediaList.Count)
 							previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken.Value.Day;
@@ -193,7 +179,7 @@ If it can't find any content, it shows an h1 saying no content.
 <ProgressPopUp Height="200" Width="200" Message="Preparing Zip..." Visible="@progressVisible"/>
 <div id="downloadDivBackground" style="visibility: @downloadDivVis">
 	<div id="downloadDiv">
-		<a href="@S.TMP_REQUEST_PATH/@ZipFilename" download="@ZipFilename">Click to Download</a>
+		<a href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">Click to Download</a>
 		<button class="iconBtn"><span class="material-icons-outlined" @onclick="@(() => downloadDivVis = "hidden")">check</span></button>
 	</div>
 </div>
@@ -201,7 +187,7 @@ If it can't find any content, it shows an h1 saying no content.
 @*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)
 {
-	if (MediaList[viewIndex].thumbnail == null)
+	if (!MediaList[viewIndex].video)
 	{
 		<KeyboardShortcuts Left="@ChangeItemLeft" Right="@ChangeItemRight" />
 	}
@@ -218,14 +204,13 @@ else
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code{
-	CtrlGInput ctrlGInput;
+	private CtrlGInput ctrlGInput;
 
 	private int previousDay;
 	
 	///Stores all content loaded.
 	public List<MediaRow> MediaList { get; private set; }
 
-	///A single item for viewing.
 	public Guid SelectedItem
 	{
 		get => _selectedItem;
@@ -247,18 +232,17 @@ else
 			StateHasChanged();
 		}
 	}
-
-	private static Guid _selectedItem;
+	private Guid _selectedItem;
 
 	///Stores all items user has selected.
 	public HashSet<Guid> SelectedItems { get; private set; }
 
 	///Used only for when viewing the contents of a collection.
 	[Parameter]
-	public int CollectionID { get; set; } = -1;
+	public Collection Collection { get; set; }
 
 	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
-	private static int lastCheckedIndex;
+	private int lastCheckedIndex;
 
 	///Used to control the visibility of the header element, if there is one. 
 	[Parameter]
@@ -277,7 +261,7 @@ else
 	public EventCallback<int> SelectedItemsCountChanged { get; set; }
 	
 	[Parameter]
-	public bool UseDateAdded { get; set; } = false;
+	public bool UseDateAdded { get; set; }
 
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
 	[Parameter]
@@ -293,9 +277,8 @@ else
 	
 	[Parameter, EditorRequired]
 	public string NoItemsText { get; set; }
-	
-	///The name of the .zip file of downloaded items.
-	public string ZipFilename { get; private set; }
+
+	private string zipFilename;
 
 	private bool progressVisible;
 	
@@ -303,7 +286,7 @@ else
 	public DateTime? oldestDT, newestDT;
 
 	//Controls the visibility of the divs that add more content.
-	private static string moreContentTopDivVis, moreContentBottomDivVis;
+	private string moreContentTopDivVis, moreContentBottomDivVis;
 	
 	//TwoChoiceInput's
 	private string delPromptVis;
@@ -313,42 +296,17 @@ else
 	///The index of the item user is currently viewing.
 	public int viewIndex;
 
-	private static DateTime? newDateTaken;
-	private static string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, downloadDivVis;
-	private static string itemDescription;
-	private static List<Collection> collectionsIn;
+	private DateTime? newDateTaken;
+	private string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, downloadDivVis;
+	private string itemDescription;
+	private List<Collection> collectionsIn;
 }
 
 @functions{
 	protected override void OnInitialized()
 	{
 		ctrlGInput = new CtrlGInput();
-		MediaList = new List<MediaRow>(150);
-		_selectedItem = Guid.Empty;
-		SelectedItems = new HashSet<Guid>(150);
-		oldestDT = newestDT = null;
-		AddContentBottom();
-		if (MediaList.Count > 0)
-		{
-			if (UseDateAdded)
-			{
-				oldestDT = MediaList.Last().dateAdded;
-				newestDT = MediaList.First().dateAdded;
-			}
-			else
-			{
-				oldestDT = MediaList.Last().dateTaken;
-				newestDT = MediaList.First().dateTaken;				
-			}
-		}
-		moreContentBottomDivVis = "visible";
-		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
-		progressVisible = false;
-		
-		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = downloadDivVis = "hidden";
-		viewIndex = 0;
-
-		itemDescription = "";
+		Reset();
 	}
 	
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
@@ -377,6 +335,12 @@ else
 	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.</remarks>
 	private int AddContent(string firstQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ref string divVis)
 	{
+		if (String.IsNullOrWhiteSpace(firstQuery) || String.IsNullOrWhiteSpace(notNullDTQuery))
+		{
+			divVis = "hidden";
+			return 0;
+		}
+
 		int amountAdded = 0;
 		
 		try
@@ -396,7 +360,7 @@ else
 			using NpgsqlDataReader r = cmd.ExecuteReader();
 			while (r.Read())
 			{
-				MediaRow newRow = new(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.IsDBNull(5) ? null : r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6));
+				MediaRow newRow = new(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6));
 				if (!MediaList.Contains(newRow))
 				{
 					if (bottom) MediaList.Add(newRow);
@@ -591,8 +555,8 @@ else
 
 		await ClearChecks();
 		
-		ZipFilename = $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
-		string zipFilePath = Path.Combine(S.tmpFolderPath, ZipFilename);
+		zipFilename = $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
+		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
 		System.IO.Compression.ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath);
 		
 		progressVisible = false;
@@ -600,6 +564,36 @@ else
 		StateHasChanged();
 		
 		Directory.Delete(zipFolderPath, true); //Not needed after it's zipped.
+	}
+
+	public void Reset()
+	{
+		MediaList = new List<MediaRow>(150);
+		_selectedItem = Guid.Empty;
+		SelectedItems = new HashSet<Guid>(150);
+		oldestDT = newestDT = null;
+		AddContentBottom();
+		if (MediaList.Count > 0)
+		{
+			if (UseDateAdded)
+			{
+				oldestDT = MediaList.Last().dateAdded;
+				newestDT = MediaList.First().dateAdded;
+			}
+			else
+			{
+				oldestDT = MediaList.Last().dateTaken;
+				newestDT = MediaList.First().dateTaken;				
+			}
+		}
+		moreContentBottomDivVis = "visible";
+		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
+		progressVisible = false;
+		
+		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = downloadDivVis = "hidden";
+		viewIndex = 0;
+
+		itemDescription = "";
 	}
 }
 

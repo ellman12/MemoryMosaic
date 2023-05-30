@@ -6,16 +6,20 @@
 
 <header>
     <span id="collectionsText">Collections</span>
-    <CollectionCreator Collections="@collections"/>
+    <CollectionCreator @ref="@collectionCreator" Collections="@collections"/>
     
     <div id="checkboxes">
-        <div>
+        <div @onclick="@(() => { showAlbums = !showAlbums; GetCollectionsTable(); })">
             <input type="checkbox" @bind="@showAlbums">
-            <span @onclick="@(() => { showAlbums = !showAlbums; GetCollectionsTable(); })">Show Albums</span>
+            <span>Show Albums</span>
         </div>
-        <div>
+        <div @onclick="@(() => { showFolders = !showFolders; GetCollectionsTable(); })">
             <input type="checkbox" @bind="@showFolders">
-            <span @onclick="@(() => { showFolders = !showFolders; GetCollectionsTable(); })">Show Folders</span>
+            <span>Show Folders</span>
+        </div>
+        <div @onclick="@(() => { showReadonly = !showReadonly; GetCollectionsTable(); })">
+            <input type="checkbox" @bind="@showReadonly">
+            <span>Show Readonly</span>
         </div>
     </div>
 
@@ -43,38 +47,42 @@
 <div id="mainDiv">
     @foreach (Collection collection in collections)
     { 
-        <div class="collection" onclick="location.href='/collection-view/@collection.id'"> @*Text and collection thumbnail*@
+        <a class="collection" href="/collection-view/@collection.id"> @*Text and collection thumbnail*@
             <div class="thumbnail">
                 @if (collection.cover != ""){<img src="@S.LIB_REQUEST_PATH/@collection.cover" alt=""/>}
             </div>
             <span class="collectionName">@collection.name</span>
-        </div>
+        </a>
     }
 </div>
 
 @code {
-    private static List<Collection> collections;
-    
-    private static string sortBtnText;
-    private static string sortDivVis;
-    private static CMSortMode mode;
+    private List<Collection> collections;
 
-    private static bool showAlbums = true;
-    private static bool showFolders = false;
+    private CollectionCreator collectionCreator;
+    
+    private string sortBtnText, sortDivVis = "hidden";
+    private CMSortMode mode = CMSortMode.LastModified;
+    private bool showAlbums = true, showFolders, showReadonly = true;
 
     protected override void OnInitialized()
     {
         GetCollectionsTable();
-        
-        mode = CMSortMode.LastModified; //Default sort mode
-        
         SetSortBtnText();
-        sortDivVis = "hidden";
     }
 
-    private static void GetCollectionsTable() => collections = C.GetCollectionsTable(showAlbums, showFolders, mode);
+    protected override void OnAfterRender(bool firstRender)
+    {
+        collectionCreator.CollectionCreated += (_, _) => GetCollectionsTable();
+    }
 
-    private static void SetSortBtnText()
+    private void GetCollectionsTable()
+    {
+        collections = C.GetCollectionsTable(showAlbums, showFolders, showReadonly, mode);
+        StateHasChanged();
+    }
+
+    private void SetSortBtnText()
     {
         sortBtnText = mode switch
         {
@@ -86,7 +94,7 @@
         };
     }
 
-    private static void ChangeOrder(CMSortMode newMode)
+    private void ChangeOrder(CMSortMode newMode)
     {
         mode = newMode;
         GetCollectionsTable();

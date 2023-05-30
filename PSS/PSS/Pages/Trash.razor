@@ -10,8 +10,8 @@
         <span id="selectedAmtText" style="visibility: @(selectedItemsCount == 0 ? "hidden" : "visible")">@selectedItemsCount selected</span>
         <div>
             <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
-            <button class="textBtn" @onclick="RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
-            <button class="textBtn" @onclick="DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
+            <button class="textBtn" @onclick="@RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
+            <button class="textBtn" @onclick="@DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
     
         <div id="sortDiv" style="visibility: @sortDivVis">
@@ -42,22 +42,16 @@
     <TwoChoiceInput @bind-TwoChoiceVis="@restorePromptVis" YesBtnClick="@RestoreItems" NoBtnClick="@(() => { restorePromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
 }
 
-@code{
-    private static TrashSortMode sortMode;
-    private static LibraryContentViewer libContentViewer = new();
-    private static int selectedItemsCount;
-    private static string sortBtnText, choiceMsg, orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
-    private static string delPromptVis, restorePromptVis, sortDivVis;
+@code {
+    private TrashSortMode sortMode = TrashSortMode.NewestDateDeleted;
+    private LibraryContentViewer libContentViewer = new();
+    private int selectedItemsCount;
+    private string sortBtnText, choiceMsg, orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
+    private string delPromptVis = "hidden", restorePromptVis = "hidden", sortDivVis = "hidden";
 
-    protected override void OnInitialized()
-    {
-        selectedItemsCount = 0;
-        sortMode = TrashSortMode.NewestDateDeleted; //Default sort mode
-        SetSortBtnText();
-        delPromptVis = restorePromptVis = sortDivVis = "hidden";
-    }
+    protected override void OnInitialized() => SetSortBtnText();
 
-    private static void SetSortBtnText()
+    private void SetSortBtnText()
     {
         sortBtnText = sortMode switch
         {
@@ -69,7 +63,7 @@
         };
     }
 
-    private static void UpdateQueries()
+    private void UpdateQueries()
     {
         switch (sortMode)
         {

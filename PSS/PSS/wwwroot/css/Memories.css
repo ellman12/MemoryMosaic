@@ -30,6 +30,10 @@ header > select, header > input[type="number"] {
     border: none;
 }
 
+header > #randomBtn {
+    margin-left: 5px;
+}
+
 input[type='number'] {
     width: 40px;
 }
@@ -61,6 +65,7 @@ h1 {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    margin-bottom: 12px;
 }
 
 #mainDiv > div > .thumbnail > .star-icon {
@@ -73,6 +78,7 @@ h1 {
     position: absolute;
     right: 8px;
     top: 10px;
+    pointer-events: none;
 }
 
 #mainDiv > div > .thumbnail > img {
@@ -84,6 +90,10 @@ h1 {
 
 #mainDiv > div > .thumbnail {
     position: relative; /* https://stackoverflow.com/a/12365963 */
+}
+
+#mainDiv > div > .thumbnail:hover {
+    cursor: pointer;
 }
 
 #mainDiv > div > .thumbnail > img {
