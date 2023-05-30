@@ -43,15 +43,15 @@
     protected override void OnInitialized()
     {
         backups = new List<(string, DateTime, long)>();
-
-        foreach (string zipFile in Directory.GetFiles(S.backupFolderPath, "*.zip", SearchOption.AllDirectories))
+        
+        foreach (string backupFolder in Directory.GetDirectories(S.backupFolderPath, "PSS Backup*", SearchOption.TopDirectoryOnly))
         {
             try
             {
                 backups.Add(new ValueTuple<string, DateTime, long>
                 {
-                    Item1 = zipFile,
-                    Item2 = DateTime.Parse(Path.GetFileName(zipFile).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
+                    Item1 = backupFolder,
+                    Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
                     Item3 = F.GetFolderSize(backupFolder)
                 });
             }
