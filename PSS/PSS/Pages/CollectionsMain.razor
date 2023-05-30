@@ -47,12 +47,12 @@
 <div id="mainDiv">
     @foreach (Collection collection in collections)
     { 
-        <div class="collection" onclick="location.href='/collection-view/@collection.id'"> @*Text and collection thumbnail*@
+        <a class="collection" href="/collection-view/@collection.id"> @*Text and collection thumbnail*@
             <div class="thumbnail">
                 @if (collection.cover != ""){<img src="@S.LIB_REQUEST_PATH/@collection.cover" alt=""/>}
             </div>
             <span class="collectionName">@collection.name</span>
-        </div>
+        </a>
     }
 </div>
 
