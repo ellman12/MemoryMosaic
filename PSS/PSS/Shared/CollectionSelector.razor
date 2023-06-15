@@ -32,7 +32,7 @@
             <div class="collectionsList">
                 @for (int i = 0; i < albums.Count; i++)
                 {
-                    if (!String.IsNullOrWhiteSpace(searchText) && !albums[i].name.Contains(searchText)) continue;
+                    if (!String.IsNullOrWhiteSpace(searchText) && albums[i].name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
                     
                     int ii = i;
                     <div class="collection" @onclick="@(() => { checkedAlbums[ii] = !checkedAlbums[ii]; ClearFolderChecks(); checkedFolderIndex = -1; })">
@@ -49,7 +49,7 @@
             <div class="collectionsList">
                 @for (int i = 0; i < folders.Count; i++)
                 {
-                    if (!String.IsNullOrWhiteSpace(searchText) && !folders[i].name.Contains(searchText)) continue;
+                    if (!String.IsNullOrWhiteSpace(searchText) && folders[i].name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
 
                     int ii = i;
                     <div class="collection" @onclick="@(() => { checkedFolderIndex = ii; ClearAlbumChecks(); ClearFolderChecks(); checkedFolders[ii] = true; })">
