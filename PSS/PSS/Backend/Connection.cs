@@ -717,8 +717,8 @@ public static class Connection
         {
             CMSortMode.Title => "name ASC",
             CMSortMode.TitleReversed => "name DESC",
-            CMSortMode.LastModified => "last_updated ASC",
-            CMSortMode.LastModifiedReversed => "last_updated DESC",
+            CMSortMode.LastModified => "last_updated DESC",
+            CMSortMode.LastModifiedReversed => "last_updated ASC",
             _ => "name ASC"
         };
 
