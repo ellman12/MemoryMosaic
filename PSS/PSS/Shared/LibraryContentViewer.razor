@@ -492,7 +492,7 @@ else
 		}
 		else
 		{
-			foreach (Guid item in SelectedItems) //https://stackoverflow.com/a/604843
+			foreach (Guid item in SelectedItems)
 			{
 				C.MoveToTrash(item);
 				MediaList.RemoveAll(u => u.uuid == item);
