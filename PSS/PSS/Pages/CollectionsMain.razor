@@ -27,11 +27,11 @@
     <div id="sortDiv" style="visibility: @sortDivVis">
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.Title))">
             <span class="material-icons-outlined" style="@(mode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == CMSortMode.Title ? "#1a73e8" : "white")">Album Title</span>
+            <span style="color: @(mode == CMSortMode.Title ? "#1a73e8" : "white")">Collection Title</span>
         </button>
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.TitleReversed))">
             <span class="material-icons-outlined" style="@(mode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == CMSortMode.TitleReversed ? "#1a73e8" : "white")">Album Title Reversed</span>
+            <span style="color: @(mode == CMSortMode.TitleReversed ? "#1a73e8" : "white")">Collection Title Reversed</span>
         </button>
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.LastModified))">
             <span class="material-icons-outlined" style="@(mode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
@@ -62,8 +62,8 @@
     private CollectionCreator collectionCreator;
     
     private string sortBtnText, sortDivVis = "hidden";
-    private CMSortMode mode = CMSortMode.LastModified;
-    private bool showAlbums = true, showFolders, showReadonly = true;
+    private static CMSortMode mode = CMSortMode.LastModified;
+    private static bool showAlbums = true, showFolders, showReadonly = true;
 
     protected override void OnInitialized()
     {
