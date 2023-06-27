@@ -16,7 +16,7 @@ namespace PSS
         ///Where to backup library and database (pss_backup).
         [JsonProperty] public static string backupFolderPath;
         
-        ///Where the temporary folder (pss_tmp) is on the server. This is used for things like temporarily storing video thumbnail files when converting them to base64, etc.
+        ///Where the temporary folder (pss_tmp) is on the server. This is used for things like temporarily storing thumbnail files when converting them to base64, etc.
         [JsonProperty] public static string tmpFolderPath;
         
         ///Should prompts be shown when doing things like deleting items and albums, etc.?
@@ -25,7 +25,7 @@ namespace PSS
         ///Should items without a Date Taken be shown in albums and folders?
         [JsonProperty] public static bool displayNoDTInCV;
 
-        ///Controls the quality of video thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
+        ///Controls the quality of thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
         [JsonProperty] public static int thumbnailQuality;
         
         ///Acts as a kind of shortcut to where the library, import, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
