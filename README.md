@@ -22,7 +22,7 @@ Photos Storage Server (PSS or pss) is a free and open source replacement for Goo
    2. Add exiftool.exe to your system's `PATH` or move it to a folder already in the `PATH`, like `C:/Windows`.
 2. Install [ffmpeg](https://www.ffmpeg.org/) and add it to your `PATH`.
 3. Download the source code of PSS from the latest release, unzip it, and place it wherever.
-4. On the server, install .NET 7 and PostgreSQL (with all the default settings and whatnot). Then, `cd` into `Photos-Storage-Server/PSS/PSS-Init`, and run `dotnet run` and follow the steps and prompts. That should initialize the server automatically. Once PSS is initialized, you can `cd` into `Photos-Storage-Server/PSS/PSS-Init` and use `dotnet run` to run PSS.<br>
+4. On the server, install .NET 7 and PostgreSQL (with all the default settings and whatnot). Then, `cd` into `Photos-Storage-Server/PSS/PSS-Init`, and run `dotnet run` and follow the steps and prompts. That should initialize the server automatically. Once PSS is initialized, you can `cd` into `Photos-Storage-Server/PSS/PSS` and use `dotnet run` to run PSS.<br>
 
 ## Getting Started
 To learn more about PSS and how it works and how to use it, check out the [Wiki](https://github.com/ellman12/Photos-Storage-Server/wiki).
