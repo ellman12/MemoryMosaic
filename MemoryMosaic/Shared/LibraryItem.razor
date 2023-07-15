@@ -1,0 +1,27 @@
+﻿@using MemoryMosaic.Pages
+<link href="css/components/LibraryItem.css" rel="stylesheet">
+
+<div class="libraryItem">
+	<span class="material-icons-outlined checkbox unchecked">check_circle</span>
+	<img src="data:image/jpg;base64,@MediaRow.thumbnail" onclick="window.open('pss_library/@MediaRow.path', '_blank').focus();" alt="" loading="lazy"/>
+	<span class="shortPath @(Import.pathWidthClass == "shortWidth" ? "shortWidth" : "fullWidth")">@("Library/" + MediaRow.path)</span>
+	<span class="dateTaken">@(MediaRow.dateTaken == null ? "No Date Taken" : MediaRow.dateTaken)</span>
+	<span class="inTrash">@(MediaRow.dateDeleted != null ? "In Trash" : "")</span>
+	<span class="iconBtn deleteBtn" @onclick="DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></span>
+</div>
+
+@code{
+
+	[Parameter, EditorRequired] public MediaRow MediaRow { get; set; }
+
+	[Parameter, EditorRequired] public Action Rerender { get; set; }
+
+	private void DeleteBtnClick()
+	{
+		if (MediaRow.dateDeleted == null)
+			C.MoveToTrash(MediaRow.uuid);
+		C.PermDeleteItem(MediaRow.uuid);
+		Import.OrganizeItems();
+		Rerender.Invoke();
+	}
+}
