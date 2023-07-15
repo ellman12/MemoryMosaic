@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryMosaic", "MemoryMosaic\MemoryMosaic.csproj", "{622F7209-CF20-4A79-BEF1-2E2183D9F398}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Initialization", "Initialization\Initialization.csproj", "{5E38150A-38EC-4490-A478-CBDFAB732424}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Initialization", "Initialization\Initialization.csproj", "{78176CF0-6021-4DD4-B250-36B44166CCC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{622F7209-CF20-4A79-BEF1-2E2183D9F398}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{622F7209-CF20-4A79-BEF1-2E2183D9F398}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{622F7209-CF20-4A79-BEF1-2E2183D9F398}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E38150A-38EC-4490-A478-CBDFAB732424}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E38150A-38EC-4490-A478-CBDFAB732424}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E38150A-38EC-4490-A478-CBDFAB732424}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E38150A-38EC-4490-A478-CBDFAB732424}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78176CF0-6021-4DD4-B250-36B44166CCC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78176CF0-6021-4DD4-B250-36B44166CCC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78176CF0-6021-4DD4-B250-36B44166CCC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78176CF0-6021-4DD4-B250-36B44166CCC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
