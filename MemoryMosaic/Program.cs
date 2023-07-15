@@ -15,28 +15,27 @@ global using S = MemoryMosaic.Settings;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace MemoryMosaic
+namespace MemoryMosaic;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            //Populate config with default values if file doesn't exist. If exists, read in values.
-            if (File.Exists(Environment.CurrentDirectory + "/pss_settings.json") && File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json") != "")
-                Settings.ReadSettings();
-            else
-                Settings.ResetSettings();
+        //Populate config with default values if file doesn't exist. If exists, read in values.
+        if (File.Exists(Environment.CurrentDirectory + "/pss_settings.json") && File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json") != "")
+            Settings.ReadSettings();
+        else
+            Settings.ResetSettings();
 
-            Pages.Settings.whenWentOnline = DateTime.Now;
+        Pages.Settings.whenWentOnline = DateTime.Now;
 
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        CreateHostBuilder(args).Build().Run();
     }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 }
