@@ -67,7 +67,7 @@
 							<a href="/collection-view/@collection.id">
 								<div class="collection">
 									<div class="coverDiv">
-										<img class="cover" src="@S.LIB_REQUEST_PATH/@collection.cover" alt="">
+										<img class="cover" src="mm_library/@collection.cover" alt="">
 									</div>
 									<span title="@collection.name">@collection.name</span>
 								</div>
@@ -109,11 +109,11 @@
 
 		@if (!MediaList[viewIndex].video)
 		{
-		    <div tabindex="0" id="itemDiv"><img src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
+		    <div tabindex="0" id="itemDiv"><img src="mm_library/@MediaList[viewIndex].path" alt=""/></div>
 		}
 		else
 		{
-		    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine(S.LIB_REQUEST_PATH, MediaList[viewIndex].path!))" loop autofocus controls autoplay></video></div>
+		    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine("mm_library", MediaList[viewIndex].path!))" loop autofocus controls autoplay></video></div>
 		}
 
 		@if (MediaList.Count - 1 > viewIndex)
@@ -139,7 +139,7 @@
 							<div class="thumbnail" @onclick="@(() => { viewIndex = ii; SelectedItem = MediaList[ii].uuid; })">
 								@if (MediaList[i].starred) { <span class="material-icons-outlined star-icon">star</span> }
 								@if (MediaList[i].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
-								<img src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+								<img src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
 							</div>
 							i++;
 						} while (i < MediaList.Count && MediaList[i].dateTaken?.Year == previousYear);

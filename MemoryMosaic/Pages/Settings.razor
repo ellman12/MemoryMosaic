@@ -95,19 +95,19 @@
             <span>Library Size: @F.FormatBytes(librarySize)</span>
             if (oldestDTItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@oldestDTItem.path">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+                <span><a target="_blank" href="mm_library/@oldestDTItem.path">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
             }
             if (newestDTItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@newestDTItem.path">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a></span>
+                <span><a target="_blank" href="mm_library/@newestDTItem.path">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a></span>
             }
             if (oldestDAItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@oldestDAItem.path">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a></span>
+                <span><a target="_blank" href="mm_library/@oldestDAItem.path">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a></span>
             }
             if (newestDAItem.uuid != Guid.Empty)
             {
-                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a></span>
+                <span><a target="_blank" href="mm_library/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a></span>
             }
             <span>Server went online at @whenWentOnline</span>
             <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>

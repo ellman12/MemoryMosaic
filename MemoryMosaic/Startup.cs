@@ -44,24 +44,25 @@ public class Startup
         app.UseHttpsRedirection();
 
         //https://stackoverflow.com/questions/38406571/static-files-outside-the-wwwroot-for-netcore-app
+        //Allows MM to display photos and videos outside wwwroot.
         app.UseStaticFiles();
-        app.UseStaticFiles(new StaticFileOptions()
+        app.UseStaticFiles(new StaticFileOptions
         {
             ServeUnknownFileTypes = true,
             FileProvider = new PhysicalFileProvider(Settings.libFolderPath),
-            RequestPath = new PathString(Settings.LIB_REQUEST_PATH)
+            RequestPath = new PathString("/mm_library")
         });
-        app.UseStaticFiles(new StaticFileOptions()
+        app.UseStaticFiles(new StaticFileOptions
         {
             ServeUnknownFileTypes = true,
             FileProvider = new PhysicalFileProvider(Settings.importFolderPath),
-            RequestPath = new PathString(Settings.IMPORT_REQUEST_PATH)
+            RequestPath = new PathString("/mm_import")
         });
-        app.UseStaticFiles(new StaticFileOptions()
+        app.UseStaticFiles(new StaticFileOptions
         {
             ServeUnknownFileTypes = true,
             FileProvider = new PhysicalFileProvider(Settings.tmpFolderPath),
-            RequestPath = new PathString(Settings.TMP_REQUEST_PATH)
+            RequestPath = new PathString("/mm_tmp")
         });
 
         app.UseRouting();

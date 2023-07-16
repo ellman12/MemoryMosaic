@@ -59,7 +59,7 @@ If it can't find any content, it shows an h1 saying no content.
 						<a href="/collection-view/@collection.id">
 							<div class="collection">
 								<div class="coverDiv">
-									<img class="cover" src="@S.LIB_REQUEST_PATH/@collection.cover" alt="">
+									<img class="cover" src="mm_library/@collection.cover" alt="">
 								</div>
 								<span title="@collection.name">@collection.name</span>
 							</div>
@@ -103,11 +103,11 @@ If it can't find any content, it shows an h1 saying no content.
 
 	@if (!MediaList[viewIndex].video)
 	{
-	    <div tabindex="0" id="itemDiv"><img src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
+	    <div tabindex="0" id="itemDiv"><img src="mm_library/@MediaList[viewIndex].path" alt=""/></div>
 	}
 	else
 	{
-	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine(S.LIB_REQUEST_PATH, MediaList[viewIndex].path!))" loop autofocus controls autoplay></video></div>
+	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine("mm_library", MediaList[viewIndex].path!))" loop autofocus controls autoplay></video></div>
 	}
 
 	@* Last item in the List so far so try adding more. If no more content can be added, don't show next button. *@
@@ -136,7 +136,7 @@ If it can't find any content, it shows an h1 saying no content.
 							@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
 							@if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						i++;
 					} while (i < MediaList.Count && MediaList[i].dateTaken == null);
@@ -156,7 +156,7 @@ If it can't find any content, it shows an h1 saying no content.
 							@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
                             @if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						if (i == MediaList.Count)
 							previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken.Value.Day;
@@ -179,7 +179,7 @@ If it can't find any content, it shows an h1 saying no content.
 <ProgressPopUp Height="200" Width="200" Message="Preparing Zip..." Visible="@progressVisible"/>
 <div id="downloadDivBackground" style="visibility: @downloadDivVis">
 	<div id="downloadDiv">
-		<a href="@S.TMP_REQUEST_PATH/@zipFilename" download="@zipFilename">Click to Download</a>
+		<a href="mm_tmp/@zipFilename" download="@zipFilename">Click to Download</a>
 		<button class="iconBtn"><span class="material-icons-outlined" @onclick="@(() => downloadDivVis = "hidden")">check</span></button>
 	</div>
 </div>

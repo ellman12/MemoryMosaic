@@ -28,10 +28,6 @@ public class Settings
     ///Controls the quality of thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
     [JsonProperty] public static int thumbnailQuality;
         
-    ///Acts as a kind of shortcut to where the library, import, and tmp folders are on the server. Normally, static files like images and videos cannot be displayed if they are outside of wwwroot, but by using the stuff in Startup.cs, you can.
-    public const string LIB_REQUEST_PATH = "/mm_library";
-    public const string IMPORT_REQUEST_PATH = "/mm_import";
-    public const string TMP_REQUEST_PATH = "/mm_tmp";
     public const int POSTGRES_VERSION = 15;
 
     public static readonly string SettingsPath = Path.Combine(Environment.CurrentDirectory, "mm_settings.json");
