@@ -39,9 +39,6 @@ if (!mm_backup.EndsWith("mm_backup"))
 Console.WriteLine($"Your photos and videos will be backed up to \"{mm_backup}\"\n");
 Directory.CreateDirectory(mm_backup);
 
-Console.WriteLine("Enter the username of the server where MM will be running:");
-string serverUsername = Console.ReadLine()!;
-
 Console.WriteLine("\nEnter ip of the server:");
 string serverIP = Console.ReadLine()!;
 
