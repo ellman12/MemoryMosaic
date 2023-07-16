@@ -1,6 +1,6 @@
 @page "/maintenance/untracked-files"
 
-<title>Untracked Files — Maintenance - PSS</title>
+<title>Untracked Files — Maintenance - MM</title>
 <link href="css/maintenance/UntrackedFiles.css" rel="stylesheet">
 
 <header>
@@ -65,7 +65,7 @@
 
     protected override void OnInitialized() => untrackedFiles = M.GetUntrackedLibFiles();
 
-    ///Move a single item to pss_import.
+    ///Move a single item to mm_import.
     private void MoveBtnClick(int index)
     {
         string path = untrackedFiles[index];
@@ -73,7 +73,7 @@
         untrackedFiles.RemoveAt(index);
     }
 
-    ///Move all untracked items from pss_library to pss_import.
+    ///Move all untracked items from mm_library to mm_import.
     private void MoveAll()
     {
         foreach (string path in untrackedFiles)
@@ -88,7 +88,7 @@
         untrackedFiles.RemoveAt(index);
     }
 
-    ///Delete all untracked items in pss_library.
+    ///Delete all untracked items in mm_library.
     private void DeleteAll()
     {
         foreach (string path in untrackedFiles)

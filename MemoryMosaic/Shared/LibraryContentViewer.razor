@@ -1,5 +1,5 @@
 @*
-Component used in Index, Starred, CollectionView, No Date Taken, and Trash for displaying items in the PSS library in small chunks at a time, as well as other shared behavior like showing prompts when deleting items, etc.
+Component used in Index, Starred, CollectionView, No Date Taken, and Trash for displaying items in the MM library in small chunks at a time, as well as other shared behavior like showing prompts when deleting items, etc.
 More content is added when mouse enters the top or bottom of the screen, as long as there is more content with date taken before/after the content already loaded.
 The default amount of items loaded at a time is 50.
 If it can't find any content, it shows an h1 saying no content.
@@ -555,7 +555,7 @@ else
 
 		await ClearChecks();
 		
-		zipFilename = $"PSS Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
+		zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
 		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
 		System.IO.Compression.ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath);
 		

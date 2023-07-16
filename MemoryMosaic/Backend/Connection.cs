@@ -2,10 +2,10 @@ using System.Data;
 
 namespace MemoryMosaic.Backend;
 
-///Contains static methods for interacting with the PSS PostgreSQL database.
+///Contains static methods for interacting with the MM PostgreSQL database.
 public static class Connection
 {
-    private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=PSS";
+    private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=MemoryMosaic";
     public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
 
     ///Asynchronously creates, opens, and returns a new connection object.
@@ -882,15 +882,15 @@ public static class Connection
     ///<remarks>If date taken is null, the returned path's format is 'Unknown/filename.jpg'. If date taken is not null, the returned path's format is like 2022/5/filename.jpg.</remarks>
     public static string CreateShortPath(DateTime? dateTaken, string filename) => dateTaken == null ? $"Unknown/{filename}" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}/{filename}";
 
-    ///<summary>Create the full folder path to where an item with this date taken would get moved to in the PSS library.</summary>
+    ///<summary>Create the full folder path to where an item with this date taken would get moved to in the MM library.</summary>
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<returns>The full date folder path.</returns>
     public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(Settings.libFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
 
-    ///<summary>Given a Date Taken and a filename, create the full path to where the item would get moved to in the PSS library.</summary>
+    ///<summary>Given a Date Taken and a filename, create the full path to where the item would get moved to in the MM library.</summary>
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<param name="filename">The filename and extension of the item.</param>
-    ///<returns>The full path to where the item would get moved to in the PSS library.</returns>
+    ///<returns>The full path to where the item would get moved to in the MM library.</returns>
     public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(Settings.libFolderPath, CreateShortPath(dateTaken, filename));
 
     #endregion

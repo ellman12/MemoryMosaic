@@ -1,6 +1,6 @@
 @page "/maintenance/backups"
 
-<title>Backups — Maintenance - PSS</title>
+<title>Backups — Maintenance - MemoryMosaic</title>
 <link href="css/maintenance/Backups.css" rel="stylesheet">
 
 @{
@@ -12,7 +12,7 @@
 
     if (backups.Count == 0)
     {
-        <h1>No PSS Backups</h1>
+        <h1>No MemoryMosaic Backups</h1>
         return;
     }
 
@@ -42,14 +42,14 @@
     {
         backups = new List<(string, DateTime, long)>();
         
-        foreach (string backupFolder in Directory.GetDirectories(S.backupFolderPath, "PSS Backup*", SearchOption.TopDirectoryOnly))
+        foreach (string backupFolder in Directory.GetDirectories(S.backupFolderPath, "MM Backup*", SearchOption.TopDirectoryOnly))
         {
             try
             {
                 backups.Add(new ValueTuple<string, DateTime, long>
                 {
                     Item1 = backupFolder,
-                    Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("PSS Backup", null).Replace(".zip", null).Replace(';', ':')),
+                    Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("MM Backup", null).Replace(".zip", null).Replace(';', ':')),
                     Item3 = F.GetFolderSize(backupFolder)
                 });
             }
@@ -61,15 +61,15 @@
 }
 
 @functions{
-    ///Copies the contents of pss_library to a backup folder, and dumps the contents of the database to a .bak file in that folder.
+    ///Copies the contents of mm_library to a backup folder, and dumps the contents of the database to a .bak file in that folder.
     private void CreateBackup()
     {
         L.LogLine("Backup Started", LogLevel.Info);
 
-        string backupFolder = Path.Combine(S.backupFolderPath, $"PSS Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
+        string backupFolder = Path.Combine(S.backupFolderPath, $"MM Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
         string dbDumpPath = Path.Combine(backupFolder, "Database.bak");
         
-        L.LogLine("Begin copying pss_library", LogLevel.Debug);
+        L.LogLine("Begin copying mm_library", LogLevel.Debug);
 
         Directory.CreateDirectory(backupFolder);
         Parallel.ForEach(C.LoadEntireMediaTable(), row =>
@@ -83,7 +83,7 @@
             
             File.Copy(srcFilePath, destFilePath);
         });
-        L.LogLine("Finish copying pss_library", LogLevel.Debug);
+        L.LogLine("Finish copying mm_library", LogLevel.Debug);
         
         //Dump database contents to a .bak file.
         L.LogLine("Starting psql process", LogLevel.Debug);
@@ -98,7 +98,7 @@
                 RedirectStandardOutput = false,
                 WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
                 FileName = "cmd.exe",
-                Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\" > \"{dbDumpPath}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+                Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\" > \"{dbDumpPath}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
             }
         };
         process.Start();
@@ -109,14 +109,14 @@
         backups.Insert(0, new ValueTuple<string, DateTime, long>
         {
             Item1 = backupFolder,
-            Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("PSS Backup", null).Replace(';', ':')),
+            Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("MM Backup", null).Replace(';', ':')),
             Item3 = F.GetFolderSize(backupFolder)
         });
 
         L.LogLine("Backup Finished", LogLevel.Info);
     }
 
-    ///Restore PSS to this backup.
+    ///Restore MM to this backup.
     private static void RestoreBackup(string backupFullPath)
     {
         L.LogLine("Restore started", LogLevel.Info);
@@ -136,19 +136,19 @@
             WindowStyle = ProcessWindowStyle.Hidden,
             WorkingDirectory = S.backupFolderPath,
             FileName = "cmd.exe",
-            Arguments = $"/C type \"{Path.Combine(backupFullPath, "Database.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=PSS user=postgres password=Ph0t0s_Server\""
+            Arguments = $"/C type \"{Path.Combine(backupFullPath, "Database.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\""
         };
         process.StartInfo = startInfo;
         process.Start();
         process.WaitForExit();
         
-        L.LogLine("Database restored, clearing pss_library", LogLevel.Debug);
+        L.LogLine("Database restored, clearing mm_library", LogLevel.Debug);
         if (Directory.Exists(S.libFolderPath)) Directory.Delete(S.libFolderPath, true);
         
-        L.LogLine("pss_library cleared, restoring pss_library", LogLevel.Debug);
+        L.LogLine("mm_library cleared, restoring mm_library", LogLevel.Debug);
         FileSystem.CopyDirectory(backupFullPath, S.libFolderPath);
         File.Delete(Path.Combine(S.libFolderPath, "Database.bak"));
 
-        L.LogLine("pss_library restored, restoration finished", LogLevel.Info);
+        L.LogLine("mm_library restored, restoration finished", LogLevel.Info);
     }
 }

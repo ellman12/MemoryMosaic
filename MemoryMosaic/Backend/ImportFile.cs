@@ -15,7 +15,7 @@ public class ImportFile
 	///The file extension of the item.
 	public readonly string extension;
 
-	///The path relative to pss_import of this item, which does NOT contain 'pss_import' at the front.
+	///The path relative to mm_import of this item, which does NOT contain 'mm_import' at the front.
 	public string shortPath;
 
 	///The absolute path to the file to import.

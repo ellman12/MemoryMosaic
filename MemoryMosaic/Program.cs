@@ -29,7 +29,7 @@ public class Program
     public static void Main(string[] args)
     {
         //Populate config with default values if file doesn't exist. If exists, read in values.
-        if (File.Exists(Environment.CurrentDirectory + "/pss_settings.json") && File.ReadAllText(Environment.CurrentDirectory + "/pss_settings.json") != "")
+        if (File.Exists(Environment.CurrentDirectory + "/mm_settings.json") && File.ReadAllText(Environment.CurrentDirectory + "/mm_settings.json") != "")
             Settings.ReadSettings();
         else
             Settings.ResetSettings();

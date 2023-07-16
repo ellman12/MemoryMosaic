@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\PSS.js" />
+    <None Include="wwwroot\MM.js" />
   </ItemGroup>
 
 </Project>

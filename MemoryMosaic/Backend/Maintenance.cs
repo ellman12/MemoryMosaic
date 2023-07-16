@@ -11,10 +11,10 @@ public static class Maintenance
     ///<returns>True if empty, false otherwise.</returns>
     public static bool IsFolderEmpty(string path) => Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
 
-    ///Search pss_library and if an item is not in the media table, add it to the List of full paths that is returned. 
+    ///Search mm_library and if an item is not in the media table, add it to the List of full paths that is returned. 
     public static List<string> GetUntrackedLibFiles()
     {
-        List<string> untrackedPaths = new(); //Tracks items in pss_library but not in database
+        List<string> untrackedPaths = new(); //Tracks items in mm_library but not in database
         HashSet<string> mediaPaths = Connection.LoadEntireMediaTable().Select(media => media.path).ToHashSet();
 
         foreach (string fullPath in Directory.GetFiles(Settings.libFolderPath, "*", SearchOption.AllDirectories))
@@ -28,7 +28,7 @@ public static class Maintenance
         return untrackedPaths;
     }
 
-    ///Returns a List&lt;MediaRow&gt; of all rows and columns from the media table that don't have existing files in pss_library.
+    ///Returns a List&lt;MediaRow&gt; of all rows and columns from the media table that don't have existing files in mm_library.
     public static List<MediaRow> GetMediaMissingFiles()
     {
         List<MediaRow> missingFiles = new();
