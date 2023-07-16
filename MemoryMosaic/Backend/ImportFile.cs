@@ -36,15 +36,6 @@ public class ImportFile
 	///The new date and time (or null) that the user chose in Import.
 	public DateTime? customDateTaken;
 
-	///Where the Date Taken data for an item came from.
-	public enum DateTakenSource
-	{
-		Metadata,
-		Filename,
-		None,
-		Custom
-	}
-
 	///Where the dateTaken for this item is coming from.
 	public DateTakenSource dateTakenSource;
 
