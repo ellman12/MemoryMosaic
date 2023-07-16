@@ -1,5 +1,3 @@
-using MemoryMosaic.Backend.Records;
-
 namespace MemoryMosaic.Backend;
 
 ///Static functions for getting statistical data about the library.

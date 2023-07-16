@@ -1,7 +1,5 @@
 @page "/import"
-@using Microsoft.VisualBasic.FileIO
 @using CS = MemoryMosaic.Shared.CollectionSelector;
-@using static ImportFile
 @using System.Text
 @inject IJSRuntime JSRuntime
 
@@ -499,7 +497,7 @@
 		StateHasChanged(); //IDK why but this is necessary otherwise the code below doesn't work.
 		foreach (string line in lines)
 		{
-			ImportFile newFile = ParseTabDelimitedString(line);
+			ImportFile newFile = ImportFile.ParseTabDelimitedString(line);
 			if (newFile.uuid != Guid.Empty)
 				importFiles.Add(newFile);
 		}

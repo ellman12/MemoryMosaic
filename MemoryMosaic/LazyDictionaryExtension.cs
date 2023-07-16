@@ -1,8 +1,5 @@
 ﻿namespace MemoryMosaic;
 
-using System.Collections.Generic;
-using System.Linq;
-
 public static class LazyDictionaryExtension
 {
 	public static LazyDictionary<TKey, TElement> ToLazyDictionary<TKey, TElement>(

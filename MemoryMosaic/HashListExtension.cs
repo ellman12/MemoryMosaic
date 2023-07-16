@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace MemoryMosaic;
+﻿namespace MemoryMosaic;
 
 public static class HashListExtension
 {

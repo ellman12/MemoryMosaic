@@ -1,5 +1,3 @@
-using MemoryMosaic.Backend.Enums;
-
 namespace MemoryMosaic.Backend;
 
 ///<summary>Used for printing messages of variable importance to the terminal.</summary>
@@ -23,7 +21,7 @@ public static class Logger
 	private static string GetCallingMethodName() => new System.Diagnostics.StackTrace().GetFrame(2)!.GetMethod()!.Name; //If it's set to 1 it'd print LogLine.
 
 	private static void ResetConsoleColor() => Console.ResetColor();
-	
+
 	public static void LogLine(object value, LogLevel itemImportance)
 	{
 		if (itemImportance == LogLevel.None || itemImportance > logLevel) return;
