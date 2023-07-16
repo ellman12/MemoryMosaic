@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using MemoryMosaic;
 
-const string psqlPath = "C:/Program Files/PostgreSQL/14/bin/psql.exe";
+string psqlPath = $"C:/Program Files/PostgreSQL/{Settings.POSTGRES_VERSION}/bin/psql.exe";
 
 ConsoleColor ogColor = Console.ForegroundColor;
 Console.WriteLine("-------------------------------MemoryMosaic Initialization-------------------------------");
