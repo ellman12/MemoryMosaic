@@ -34,12 +34,14 @@ public class Settings
     public const string TMP_REQUEST_PATH = "/mm_tmp";
     public const int POSTGRES_VERSION = 15;
 
-    public static void WriteSettings() => File.WriteAllText(Environment.CurrentDirectory + "/mm_settings.json", JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
+    public static readonly string SettingsPath = Path.Combine(Environment.CurrentDirectory, "mm_settings.json");
+
+    public static void WriteSettings() => File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
 
     public static void ReadSettings()
     {
-        new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(Environment.CurrentDirectory + "/mm_settings.json").Build();
-        JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.CurrentDirectory + "/mm_settings.json"));
+        new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(SettingsPath).Build();
+        JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SettingsPath));
         importFolderPath = importFolderPath.Replace('\\', '/');
         libFolderPath = libFolderPath.Replace('\\', '/');
         backupFolderPath = backupFolderPath.Replace('\\', '/');
@@ -56,6 +58,6 @@ public class Settings
         tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/mm_tmp";
         showPrompts = displayNoDTInCV = true;
         thumbnailQuality = 7;
-        File.WriteAllText(Environment.CurrentDirectory + "/mm_settings.json", JsonConvert.SerializeObject(new Settings()));
+        File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new Settings()));
     }
 }
