@@ -6,21 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Server\**" />
-    <Content Remove="Server\**" />
-    <EmbeddedResource Remove="Server\**" />
-    <None Remove="Server\**" />
+    <Compile Remove="Server\**"/>
+    <Content Remove="Server\**"/>
+    <EmbeddedResource Remove="Server\**"/>
+    <None Remove="Server\**"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DateTakenExtractor" Version="1.1.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Npgsql" Version="6.0.2" />
-    <PackageReference Include="Toolbelt.Blazor.HotKeys" Version="12.0.1" />
+    <PackageReference Include="DateTakenExtractor" Version="1.1.4"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+    <PackageReference Include="Npgsql" Version="6.0.2"/>
+    <PackageReference Include="Toolbelt.Blazor.HotKeys" Version="12.0.1"/>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\MM.js" />
+    <None Include="wwwroot\MM.js"/>
   </ItemGroup>
 
 </Project>

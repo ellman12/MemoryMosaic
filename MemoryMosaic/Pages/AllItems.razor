@@ -21,7 +21,7 @@
         FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE date_deleted IS NULL ORDER BY date_taken DESC LIMIT 100"/>
     
     <CollectionSelector SelectedItem="@libContentViewer.SelectedItem" SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
-    <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })" />
+    <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
 }
 
 @code {
