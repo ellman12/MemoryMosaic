@@ -1,0 +1,59 @@
+﻿@*Reusable component that allows user to choose between two options (Yes/No by default).
+    Required Parameters:
+    1. String Message: What to say to user
+    2. Method to run when 'Yes' pressed https://stackoverflow.com/a/56831924
+    3. Method to run when 'No' pressed
+    4. String TwoChoiceVis. Either 'hidden' (default) or 'visible'.
+    
+    Optional Parameters:
+    1. String YesBtnText: 'Yes' by default
+    2. String NoBtnText: 'No' by default
+    3. String PositioningStyle. Styling used for positioning this thing. Defaults to center of screen, but can be changed to like absolute position and top right corner of screen.
+    4. String YesBtnIcon. The Google Icons icon for the Yes button. Default is "check".
+    5. String NoBtnIcon. The Google Icons icon for the No button. Default is "close".
+*@
+@using MemoryMosaic.Backend
+<link href="css/components/TwoChoiceInput.css" rel="stylesheet">
+
+<div id="inputBackground" style="visibility: @TwoChoiceVis">
+    <div id="inputDiv" style="@PositioningStyle">
+        <span id="message">@Message</span>
+        <div id="buttons">
+            <button class="textBtn" @onclick="@(() => NoBtnClick.Invoke())"><span class="material-icons-outlined">@NoBtnIcon</span><span>@NoBtnText</span></button>
+            <button class="textBtn" @onclick="@(() => YesBtnClick.Invoke())"><span class="material-icons-outlined">@YesBtnIcon</span><span>@YesBtnText</span></button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Message { get; set; } //https://stackoverflow.com/a/62142640
+
+    [Parameter, EditorRequired]
+    public Action NoBtnClick { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Action YesBtnClick { get; set; }
+
+    [Parameter]
+    public string TwoChoiceVis { get; set; }
+    
+    [Parameter]
+    public EventCallback<string> TwoChoiceVisChanged { get; set; } //Changing the passed in TwoChoiceVis.
+
+    //Optional parameters ↓
+    [Parameter]
+    public string YesBtnText { get; set; } = "Yes";
+
+    [Parameter]
+    public string NoBtnText { get; set; } = "No";
+    
+    [Parameter]
+    public string PositioningStyle { get; set; } = "position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);";
+    
+    [Parameter]
+    public string YesBtnIcon { get; set; } = "check";
+    
+    [Parameter]
+    public string NoBtnIcon { get; set; } = "close";
+}

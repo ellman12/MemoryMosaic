@@ -1,0 +1,358 @@
+@page "/memories"
+
+<link rel="stylesheet" href="css/components/ViewItem.css">
+<link rel="stylesheet" href="css/Memories.css">
+
+<title>Memories - MM</title>
+
+<header>
+    <span>Memories From</span>
+
+    <select name="months" id="months" autocomplete="on" @bind="@SelectedMonth">
+        @foreach (string month in months)
+        {
+            <option value="@month">@month</option>
+        }
+    </select>
+
+	<input title="" type="number" @bind="@SelectedDay" @bind:event="oninput"/>
+	
+	<button id="randomBtn" class="iconBtn" @onclick="PickRandomDate" title="Pick Random Date"><span class="material-icons-outlined">shuffle</span></button>
+</header>
+
+@{
+    if (MediaList.Count == 0)
+    {
+        <h1>No items were taken on this day</h1>
+        return;
+    }
+    
+    @* Display a single item in full screen, and allow moving left/right in the List. *@
+	<div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
+		<div id="buttons">
+			<button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
+			<button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+			<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
+		</div>
+
+		<div id="infoDiv" style="visibility: @infoVis">
+			<div id="itemInfo">
+				<div class="dataDiv" title="Date Taken">
+					<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
+					<span>@(MediaList[viewIndex].dateTaken == null ? "No Date Taken" : MediaList[viewIndex].dateTaken?.ToString("ddd, MMM d, yyyy h:mm:ss tt"))</span>
+					<button class="iconBtn" @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+				</div>
+
+				<div class="dataDiv" title="Date Added">
+					<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
+					<span>@MediaList[viewIndex].dateAdded.ToString("ddd, MMM d, yyyy h:mm:ss tt")</span>
+				</div>
+
+				<div class="dataDiv">
+					<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
+					<span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].path)</span>
+					<button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+				</div>
+
+				<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
+			</div>
+
+			@if (collectionsIn != null && collectionsIn.Count > 0)
+			{
+				<div id="collectionsInfo">
+					<span id="collectionsText">Collections Containing</span>
+					<div id="collectionsIn">
+						@foreach (Collection collection in collectionsIn)
+						{
+							<a href="/collection-view/@collection.id">
+								<div class="collection">
+									<div class="coverDiv">
+										<img class="cover" src="@S.LIB_REQUEST_PATH/@collection.cover" alt="">
+									</div>
+									<span title="@collection.name">@collection.name</span>
+								</div>
+							</a>
+						}
+					</div>
+				</div>
+			}
+		</div>
+
+		<div class="inputBox" style="visibility: @editDateDivVis">
+		    <span>Enter new date taken:</span>
+		    <input title="" type="datetime-local" @bind="@newDateTaken" step="1"/>
+		    <span class="errorSpan" style="visibility: @dtErrorVis">Error Changing Date Taken</span>
+		    <div>
+		        <button class="iconBtn" @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
+		        <button class="iconBtn" @onclick="@UpdateDateTaken"><span class="material-icons-outlined">check</span></button>
+		    </div>
+		</div>
+
+		<div class="inputBox" style="visibility: @editFilenameDivVis">
+		    <span>Enter new filename:</span>
+		    <input title="" type="text" @bind="@newFilename" required/>
+		    <span class="errorSpan" style="visibility: @filenameErrorVis">A file with the same Date Taken and/or name already exists.</span>
+		    <div>
+		        <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = filenameErrorVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
+		        <button class="iconBtn" @onclick="@RenameFile"><span class="material-icons-outlined">check</span></button>
+		    </div>
+		</div>
+
+		<button class="iconBtn" id="backBtn" @onclick="@(() => SelectedItem = Guid.Empty)"><span class="material-icons-outlined">keyboard_backspace</span></button>
+
+		@if (viewIndex > 0)
+		{
+		    <div @onclick="@ChangeItemLeft" class="sideBtn" id="leftBtn">
+		        <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"></path></svg>
+		    </div>
+		}
+
+		@if (!MediaList[viewIndex].video)
+		{
+		    <div tabindex="0" id="itemDiv"><img src="@S.LIB_REQUEST_PATH/@MediaList[viewIndex].path" alt=""/></div>
+		}
+		else
+		{
+		    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine(S.LIB_REQUEST_PATH, MediaList[viewIndex].path!))" loop autofocus controls autoplay></video></div>
+		}
+
+		@if (MediaList.Count - 1 > viewIndex)
+		{
+		    <div @onclick="@ChangeItemRight" class="sideBtn" id="rightBtn">
+		        <svg width="36px" height="36px" viewBox="0 0 24 24"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path></svg>
+		    </div>
+		}
+	</div>
+    
+	<div id="mainDiv">
+		@for (int i = 0; i < MediaList.Count; i++)
+		{
+			if (MediaList[i].dateTaken?.Year != previousYear)
+			{
+				previousYear = MediaList[i].dateTaken!.Value.Year;
+				<span>@MediaList[i].dateTaken?.Year</span>
+				<div>
+					@{
+						do
+						{
+							int ii = i;
+							<div class="thumbnail" @onclick="@(() => { viewIndex = ii; SelectedItem = MediaList[ii].uuid; })">
+								@if (MediaList[i].starred) { <span class="material-icons-outlined star-icon">star</span> }
+								@if (MediaList[i].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
+								<img src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="@S.LIB_REQUEST_PATH/@MediaList[ii].path" loading="lazy"/>
+							</div>
+							i++;
+						} while (i < MediaList.Count && MediaList[i].dateTaken?.Year == previousYear);
+						i--;
+					}
+				</div>
+			}
+		}
+	</div>
+	
+	@*Hotkeys exclusive to viewing a single item.*@
+	if (SelectedItem != Guid.Empty)
+	{
+		if (!MediaList[viewIndex].video)
+		{
+			<KeyboardShortcuts Left="@ChangeItemLeft" Right="@ChangeItemRight" />
+		}
+
+		<KeyboardShortcuts AltLeft="@(() => SelectedItem = Guid.Empty)" CtrlLeft="@ChangeItemLeft" CtrlRight="@ChangeItemRight"
+			CtrlE="@(() => F.VisToggle(ref editDateDivVis))" Esc="@(() => SelectedItem = Guid.Empty)"
+			I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
+	}
+	
+	<ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
+}
+
+@code {
+	private static readonly List<string> months = new(new[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
+
+	private int maxDay, _selectedDay, previousYear;
+	private string _selectedMonth;
+	private string SelectedMonth
+	{
+		get => _selectedMonth;
+		set
+		{
+			_selectedMonth = value;
+
+			maxDay = value switch
+			{
+				"April" or "June" or "September" or "November" => 30,
+				"February" => 29,
+				_ => 31
+			};
+
+			//If switching from a month with more days than the new month, don't create invalid input like Feb 30, etc.
+			if (_selectedDay > maxDay) _selectedDay = maxDay;
+
+			LoadMemories();
+		}
+	}
+
+	private int SelectedDay
+	{
+		get => _selectedDay;
+		set
+		{
+			if (value > maxDay)
+			{
+				_selectedDay = 1;
+				int newIndex = months.IndexOf(SelectedMonth);
+				if (newIndex > 12) newIndex = 0;
+				else newIndex++;
+				SelectedMonth = months[newIndex];
+			}
+			else if (value < 1)
+			{
+				int newIndex = months.IndexOf(SelectedMonth);
+				if (newIndex < 0) newIndex = 11;
+				else newIndex--;
+				SelectedMonth = months[newIndex];
+				_selectedDay = maxDay;
+			}
+			else _selectedDay = value;
+
+			LoadMemories();
+		}
+	}
+
+	private List<MediaRow> MediaList;
+
+	//Stuff for viewing a single item.
+	///The index of the item user is currently viewing.
+	private int viewIndex;
+
+	private DateTime? newDateTaken;
+	private string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis;
+	private string itemDescription;
+	private List<Collection> collectionsIn;
+	
+	private Guid SelectedItem
+	{
+		get => _selectedItem;
+		set
+		{
+			_selectedItem = value;
+			if (value == Guid.Empty)
+			{
+				newFilename = "";
+				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = "hidden";
+			}
+			else
+			{
+				newDateTaken = MediaList[viewIndex].dateTaken;
+				newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
+				collectionsIn = C.GetCollectionsContaining(SelectedItem);
+				itemDescription = MediaList[viewIndex].description;
+			}
+			StateHasChanged();
+		}
+	}
+	private Guid _selectedItem;
+}
+
+@functions {
+	protected override void OnInitialized()
+    {
+        SelectedMonth = DateTime.Today.ToString("MMMM");
+        SelectedDay = DateTime.Today.Day;
+		
+		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
+		viewIndex = 0;
+
+		itemDescription = "";
+		
+        LoadMemories();
+    }
+
+    private void LoadMemories()
+    {
+        MediaList = C.LoadMemories(SelectedMonth, SelectedDay).OrderByDescending(m => m.dateTaken).ToList();
+        previousYear = 0;
+    }
+}
+
+@* Functions only for viewing a single item. *@
+@functions{
+	private void DeleteBtnClick()
+	{
+		if (SelectedItem != Guid.Empty)
+		{
+			SelectedItem = MediaList.Count > 0 ? MediaList[viewIndex].uuid : Guid.Empty;
+			C.MoveToTrash(SelectedItem);
+			MediaList.RemoveAt(viewIndex);
+		}
+	}
+
+	private void StarBtnClick()
+	{
+		if (SelectedItem != Guid.Empty)
+		{
+			C.UpdateStarred(SelectedItem, !MediaList[viewIndex].starred);
+			MediaList[viewIndex].starred = !MediaList[viewIndex].starred;
+			StateHasChanged();
+		}
+	}
+	
+	private void UpdateDateTaken()
+	{
+		if (C.UpdateDateTaken(MediaList[viewIndex].path, newDateTaken))
+		{
+			editDateDivVis = "hidden";
+			MediaList[viewIndex].dateTaken = newDateTaken;
+		}
+		else
+		{
+			dtErrorVis = "visible";
+		}
+	}
+	
+	///Called when description textarea's focus is lost. Updates the item's description, if it's been updated.
+	private void UpdateDescription()
+	{
+		if (MediaList[viewIndex].description != itemDescription)
+		{
+			MediaList[viewIndex].description = itemDescription;
+			C.UpdateDescription(_selectedItem, itemDescription);
+		}
+	}
+
+	private void RenameFile()
+	{
+		GC.Collect(); //Those damn videos always stirring up trouble.
+		GC.WaitForPendingFinalizers();
+		string result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
+		if (result == null)
+		{
+			filenameErrorVis = "visible";
+		}
+		else
+		{
+			editFilenameDivVis = "hidden";
+			MediaList[viewIndex].path = result;
+		}
+	}
+
+	private void ChangeItemLeft()
+	{
+		if (viewIndex == 0) return;
+		viewIndex--; 
+		SelectedItem = MediaList[viewIndex].uuid;
+	}
+
+	private void ChangeItemRight()
+	{
+		if (viewIndex == MediaList.Count - 1) return;
+		viewIndex++;
+		SelectedItem = MediaList[viewIndex].uuid;
+	}
+
+	private void PickRandomDate()
+	{
+		SelectedMonth = months[Random.Shared.Next(months.Count)];
+		SelectedDay = Random.Shared.Next(32);
+	}
+}

@@ -1,0 +1,317 @@
+@page "/settings"
+
+<title>Settings - MM</title>
+<link href="css/Settings.css" rel="stylesheet"/>
+
+<div id="body">
+    <div>
+        <span class="header">Settings</span>
+        <div class="settings-pair">
+            <span>Server IP Address</span>
+            <input type="text" class="settings-pair" @bind="@serverIP"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Where to look for items to add to your library</span>
+            <input type="text" class="settings-pair" @bind="@importFolderPath"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Root path to library folder</span>
+            <input type="text" class="settings-pair" @bind="@libraryRootPath"/>
+        </div>
+
+        <div class="settings-pair">
+            <span>Where to backup library and database</span>
+            <input type="text" class="settings-pair" @bind="@backupFolderPath"/>
+        </div>
+        
+        <div class="settings-pair">
+            <span>Where to store temporary items</span>
+            <input type="text" class="settings-pair" @bind="@tmpFolderPath"/>
+        </div>
+        
+        <div class="settings-pair">
+            <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
+            <span style="display: inline">Show Prompts?</span>
+        </div>
+        
+        <div class="settings-pair">
+            <input type="checkbox" class="settings-pair" @bind="@displayNoDTInCV"/>
+            <span style="display: inline">Display items with no date taken in albums/folders?</span>
+        </div>
+        
+        <div id="thumbnail-settings">
+            <div id="thumbnail-slider">
+                <span title="Lower the number, higher the quality.">Thumbnail Quality: @thumbnailQuality</span>
+                <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
+            </div>
+            <div id="thumbnail-updating">
+                @if (thumbnailBtnVis == "visible")
+                {
+                    <button class="textBtn" @onclick="@UpdateThumbnails"><span class="material-icons-outlined">image</span><span>Recreate Thumbnails</span></button>
+                }
+                
+                @if (thumbnailProgressVis == "visible")
+                {
+                    <progress max="100" value="@((float)amountUpdated / amountToUpdate * 100)"></progress>
+                    <span>@amountUpdated Updated, @(amountToUpdate - amountUpdated) Remaining</span>
+                }
+            </div>
+        </div>
+
+        <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
+        <button class="textBtn" @onclick="@CancelBtnClicked"><span class="material-icons-outlined">close</span><span>Cancel</span></button>
+        <button class="textBtn" @onclick="@ResetBtnClicked"><span class="material-icons-outlined">restart_alt</span><span>Reset</span></button>
+    </div>
+
+    <div>
+        <span class="header">Maintenance</span>
+        <button class="textBtn" title="Create and Restore Backups of MM"><span class="material-icons-outlined">restore</span><a href="maintenance/backups">Backups</a></button>
+        <button class="textBtn" @onclick="@(() => System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0"))"><span class="material-icons-outlined">restart_alt</span><span>Restart Server</span></button>
+        <button class="textBtn" @onclick="@(() => { Directory.Delete(S.tmpFolderPath, true); Directory.CreateDirectory(S.tmpFolderPath); })"><span class="material-icons-outlined">folder_delete</span><span>Clear mm_tmp</span></button>
+        <button title="Clear mm_tmp and Empty Trash" class="textBtn" @onclick="@FreeUpSpace"><span class="material-icons-outlined">folder_delete</span><span>Free Up Space</span></button>
+        @if (!maintenanceLoaded)
+        {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
+        @if (maintenanceLoaded)
+        {
+            <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
+            <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@mediaMissingFiles.Count)</a></button>
+            <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Import"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
+        }
+    </div>
+    
+    <div id="statsDiv">
+        <span class="header">Stats</span>
+        @if (!statsLoaded) {<button class="textBtn" @onclick="@GetStats" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>}
+        @if (statsLoaded)
+        {
+            <span>@($"{mediaRowCount} {(mediaRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
+            <span>@($"{trashRowCount} {(trashRowCount == 1 ? "Item In Trash" : "Items In Trash")}")</span>
+            <span>@($"{collectionsCount} {(collectionsCount == 1 ? "Collection" : "Collections")}")</span>
+            <span style="margin-top: 14px;">Library Drive Total Size (Usable): @F.FormatBytes(totalUsableDriveSize)</span>
+            <span>Library Drive Free Space: @F.FormatBytes(freeDriveSpace)</span>
+            <progress style="margin-bottom: 14px" max="100" value="@((float)freeDriveSpace / totalUsableDriveSize * 100)"></progress>
+            <span>Library Size: @F.FormatBytes(librarySize)</span>
+            if (oldestDTItem.uuid != Guid.Empty)
+            {
+                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@oldestDTItem.path">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+            }
+            if (newestDTItem.uuid != Guid.Empty)
+            {
+                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@newestDTItem.path">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a></span>
+            }
+            if (oldestDAItem.uuid != Guid.Empty)
+            {
+                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@oldestDAItem.path">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a></span>
+            }
+            if (newestDAItem.uuid != Guid.Empty)
+            {
+                <span><a target="_blank" href="@S.LIB_REQUEST_PATH/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a></span>
+            }
+            <span>Server went online at @whenWentOnline</span>
+            <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>
+        }
+    </div>
+
+    <div id="debugDiv">
+        <span class="header">Debug</span>
+        <div>
+            <input type="text" placeholder="Enter a query" @bind="@debugQuery"/>
+            <button class="textBtn" style="margin-left: 10px" @onclick="@RunQuery"><span class="material-icons-outlined">play_arrow</span><span>Run Query</span></button>
+        </div>
+    </div>
+</div>
+
+@code {
+    //Settings
+    private static string serverIP = S.serverIP;
+    private static string importFolderPath = S.importFolderPath;
+    private static string libraryRootPath = S.libFolderPath;
+    private static bool showPrompts = S.showPrompts;
+    private static bool displayNoDTInCV = S.displayNoDTInCV;
+    private static string backupFolderPath = S.backupFolderPath;
+    private static string tmpFolderPath = S.tmpFolderPath;
+    private static int thumbnailQuality = S.thumbnailQuality;
+
+    //Updating thumbnails
+    private static int amountToUpdate, amountUpdated;
+    private static string thumbnailBtnVis = "visible";
+    private static string thumbnailProgressVis = "hidden";
+    
+    //Maintenance
+    private static bool maintenanceLoaded;
+    private static List<string> untrackedPaths;
+
+    //Get all folders in mm_library and mm_import
+    private static string[] folderPaths;
+    private static readonly List<string> emptyFolders = new();
+    
+    //Missing files
+    private static List<MediaRow> mediaMissingFiles = new();
+    
+    //Stats
+    private static bool statsLoaded;
+    private static long mediaRowCount, trashRowCount, collectionsCount;
+    private static long totalUsableDriveSize; //How much space the drive mm_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
+    private static long freeDriveSpace; //Bytes
+    private static long librarySize; //Bytes
+    private static MediaRow oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
+    public static DateTime whenWentOnline; //When did the server go online?
+    
+    //Debug
+    private static string debugQuery;
+
+    protected override void OnInitialized()
+    {
+        maintenanceLoaded = false;
+        
+        //Items in lib folder but not DB.
+        untrackedPaths = new List<string>();
+        
+        //Items in database but not a file on server
+        mediaMissingFiles = new List<MediaRow>();
+
+        //Empty folders
+        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
+        foreach (string path in folderPaths)
+            if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
+        
+        //Stats
+        statsLoaded = false;
+        mediaRowCount = trashRowCount = 0;
+        collectionsCount = 0;
+        totalUsableDriveSize = 0;
+        freeDriveSpace = 0;
+        librarySize = 0;
+        oldestDTItem = newestDTItem = oldestDAItem = newestDAItem = new MediaRow(null, null, DateTime.Now, false, Guid.Empty);
+    }
+
+    ///Free up space on server by removing temporary files, empty folders, and emptying the trash.
+    private static void FreeUpSpace()
+    {
+        //Clear mm_tmp.
+        Directory.Delete(S.tmpFolderPath, true);
+        Directory.CreateDirectory(S.tmpFolderPath);
+        
+        EmptyFoldersBtnClick();
+        C.EmptyTrash();
+    }
+
+    ///Update settings.
+    private static void ApplyBtnClicked()
+    {
+        S.serverIP = serverIP;
+        S.importFolderPath = importFolderPath;
+        S.libFolderPath = libraryRootPath;
+        S.showPrompts = showPrompts;
+        S.displayNoDTInCV = displayNoDTInCV;
+        S.backupFolderPath = backupFolderPath;
+        S.tmpFolderPath = tmpFolderPath;
+        S.thumbnailQuality = thumbnailQuality;
+        S.WriteSettings();
+    }
+
+    ///Cancel modification of settings.
+    private static void CancelBtnClicked()
+    {
+        serverIP = S.serverIP;
+        importFolderPath = S.importFolderPath;
+        libraryRootPath = S.libFolderPath;
+        showPrompts = S.showPrompts;
+        displayNoDTInCV = S.displayNoDTInCV;
+        backupFolderPath = S.backupFolderPath;
+        tmpFolderPath = S.tmpFolderPath;
+        thumbnailQuality = S.thumbnailQuality;
+    }
+
+    ///Reset settings to default values.
+    private static void ResetBtnClicked()
+    {
+        S.ResetSettings();
+        CancelBtnClicked();
+    }
+
+    private async Task UpdateThumbnails()
+    {
+        amountUpdated = amountToUpdate = 0;
+        thumbnailBtnVis = "hidden";
+        thumbnailProgressVis = "visible";
+
+        List<MediaRow> allItems = C.LoadEntireMediaTable();
+        amountToUpdate = allItems.Count;
+
+        await Parallel.ForEachAsync(allItems, async (item, _) =>
+        {
+            await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
+            await using NpgsqlCommand cmd = new("UPDATE media SET thumbnail = @newThumbnail WHERE path = @path", localConn);
+            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, item.path)));
+            cmd.Parameters.AddWithValue("@path", item.path);
+            await cmd.ExecuteNonQueryAsync(_);
+            amountUpdated++;
+            await InvokeAsync(StateHasChanged);
+        });
+        
+        thumbnailBtnVis = "visible";
+        thumbnailProgressVis = "hidden";
+    }
+
+    //Delete all empty folders
+    private static void EmptyFoldersBtnClick()
+    {
+        emptyFolders.Reverse(); //Start at deepest folder and work up (to avoid dir not found errors).
+        foreach (string path in emptyFolders) Directory.Delete(path);
+        emptyFolders.Clear();
+    }
+
+    private static void RunMaintenanceCheck()
+    {
+        maintenanceLoaded = true;
+        untrackedPaths = M.GetUntrackedLibFiles();
+
+        mediaMissingFiles = M.GetMediaMissingFiles();
+
+        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
+        foreach (string path in folderPaths)
+            if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
+    }
+
+    ///Get various statistics about the server and the library.
+    private static void GetStats()
+    {
+        statsLoaded = true;
+        mediaRowCount = Stats.GetNumItemsInLibrary();
+        trashRowCount = Stats.GetNumItemsInTrash();
+        collectionsCount = Stats.CountCollections();
+        
+        DriveInfo driveInfo = new(S.libFolderPath);
+        totalUsableDriveSize = driveInfo.TotalSize;
+        freeDriveSpace = driveInfo.TotalFreeSpace;
+        
+        librarySize = new DirectoryInfo(S.libFolderPath).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+
+        oldestDTItem = Stats.FindItemWithOldestDateTaken();
+        newestDTItem = Stats.FindItemWithNewestDateTaken();
+        oldestDAItem = Stats.FindItemWithOldestDateAdded();
+        newestDAItem = Stats.FindItemWithNewestDateAdded();
+    }
+
+    ///Only for debugging/testing purposes.
+    private static void RunQuery()
+    {
+        try
+        {
+            C.Open();
+            NpgsqlCommand cmd = new(debugQuery, C.connection);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine("Error in RunQuery. " + e.Message);
+        }
+        finally
+        {
+            C.Close();
+        }
+    }
+}
