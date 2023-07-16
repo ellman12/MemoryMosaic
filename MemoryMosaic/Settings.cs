@@ -48,10 +48,10 @@ public class Settings
     public static void ResetSettings()
     {
         serverIP = "localhost"; 
-        importFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/mm_import";
-        libFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/mm_library";
-        backupFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/mm_backup";
-        tmpFolderPath = @"C:/Users/Elliott/Documents/GitHub/Photos-Storage-Server/PSS/PSS/wwwroot/mm_tmp";
+        importFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_import";
+        libFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_library";
+        backupFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_backup";
+        tmpFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_tmp";
         showPrompts = displayNoDTInCV = true;
         thumbnailQuality = 7;
         File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new Settings()));
