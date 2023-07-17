@@ -16,16 +16,14 @@ public static class Logger
 		};
 	}
 
-	private static string GetCallingMethodName() => new System.Diagnostics.StackTrace().GetFrame(2)!.GetMethod()!.Name; //If it's set to 1 it'd print LogLine.
-
-	private static void ResetConsoleColor() => Console.ResetColor();
+	private static string GetCallingMethodName() => new StackTrace().GetFrame(2)!.GetMethod()!.Name; //If it's set to 1 it'd print LogLine.
 
 	public static void LogLine(object value, LogLevel itemImportance)
 	{
 		if (itemImportance == LogLevel.None || itemImportance > S.logLevel) return;
 		SetConsoleColor(itemImportance);
 		Console.WriteLine($"{DateTime.Now} {value}");
-		ResetConsoleColor();
+		Console.ResetColor();
 	}
 
 	public static void LogException(Exception e) => LogLine($"****\nException raised in {GetCallingMethodName()}: {e.Message}\n****", LogLevel.Error);
