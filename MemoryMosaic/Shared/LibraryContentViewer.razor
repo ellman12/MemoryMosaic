@@ -164,7 +164,7 @@ If it can't find any content, it shows an h1 saying no content.
 							previousDay = UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day;
 						i++;
 					} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == MediaList[i].dateTaken!.Value.Day);
-					@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
+					@{ i--; }
 				</div>
 			</div>
 		}
