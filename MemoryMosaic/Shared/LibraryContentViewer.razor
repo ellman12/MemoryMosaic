@@ -144,10 +144,10 @@ If it can't find any content, it shows an h1 saying no content.
 				</div>
 			</div>
 		}
-		else if (MediaList[i].dateTaken != null && MediaList[i].dateTaken!.Value.Day != previousDay)
+		else if (MediaList[i].dateTaken != null && MediaList[i].dateTaken.Value.Day != previousDay)
 		{
 			<div class="spanAndRow">
-				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("ddd, MMM d, yyyy") : MediaList[i].dateTaken!.Value.ToString("ddd, MMM d, yyyy"))</span>
+				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("ddd, MMM d, yyyy") : MediaList[i].dateTaken.Value.ToString("ddd, MMM d, yyyy"))</span>
 				<div class="row">
 					@do
 					{
@@ -159,11 +159,11 @@ If it can't find any content, it shows an h1 saying no content.
 							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
 						</div>
 						if (i == MediaList.Count)
-							previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken.Value.Day;
+							previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken!.Value.Day;
 						else
 							previousDay = UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day;
 						i++;
-					} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == (UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken!.Value.Day));
+					} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == (UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day));
 					@{ i--; }
 				</div>
 			</div>
