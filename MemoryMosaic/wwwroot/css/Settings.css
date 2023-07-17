@@ -61,13 +61,34 @@
     margin-right: 4px;
 }
 
+#body > div > .dropdown-setting {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 12px;
+    margin-bottom: 14px;
+}
+
+#body > div > .dropdown-setting > span {
+    margin-right: 6px;
+}
+
+#body > div > .dropdown-setting > select {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+}
+
 #body > div > #thumbnail-settings {
-    margin-bottom: 8px;
+    margin-top: 12px;
+    margin-bottom: 14px;
 }
 
 #body > div > #thumbnail-settings > #thumbnail-slider {
     display: flex;
     flex-direction: column;
+    margin-right: 8px;
+    margin-bottom: 4px;
 }
 
 #body > div > #thumbnail-settings > #thumbnail-slider > input[type="range"] {

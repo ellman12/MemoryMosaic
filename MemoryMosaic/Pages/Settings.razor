@@ -41,6 +41,29 @@
             <label for="show-no-dt-in-collections">Show items with no DT in collections?</label>
         </div>
         
+        @{
+            string color = logLevel switch
+            {
+                LogLevel.None => "White",
+                LogLevel.Debug => "Green",
+                LogLevel.Info => "Cyan",
+                LogLevel.Warn => "Yellow",
+                LogLevel.Error => "Red",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        
+            <div class="dropdown-setting">
+                <span>Log Level</span>
+                <select style="color: @color" @bind="@logLevel">
+                    <option>None</option>
+                    <option style="color: green">Debug</option>
+                    <option style="color: cyan">Info</option>
+                    <option style="color: yellow">Warn</option>
+                    <option style="color: red">Error</option>
+                </select>
+            </div>
+        }
+
         <div id="thumbnail-settings">
             <div id="thumbnail-slider">
                 <span title="Lower the number, higher the quality.">Thumbnail Quality: @thumbnailQuality</span>
@@ -133,6 +156,7 @@
     private static string backupFolderPath = S.backupFolderPath;
     private static string tmpFolderPath = S.tmpFolderPath;
     private static int thumbnailQuality = S.thumbnailQuality;
+    private static LogLevel logLevel = S.logLevel;
 
     //Updating thumbnails
     private static int amountToUpdate, amountUpdated;
@@ -209,6 +233,7 @@
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
         S.thumbnailQuality = thumbnailQuality;
+        S.logLevel = logLevel;
         S.WriteSettings();
     }
 
@@ -223,6 +248,7 @@
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
         thumbnailQuality = S.thumbnailQuality;
+        logLevel = S.logLevel;
     }
 
     ///Reset settings to default values.
