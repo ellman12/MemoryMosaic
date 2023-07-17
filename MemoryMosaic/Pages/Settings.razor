@@ -6,41 +6,64 @@
 <div id="body">
     <div>
         <span class="header">Settings</span>
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Server IP Address</span>
-            <input type="text" class="settings-pair" @bind="@serverIP"/>
+            <input type="text" @bind="@serverIP"/>
         </div>
 
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Where to look for items to add to your library</span>
-            <input type="text" class="settings-pair" @bind="@importFolderPath"/>
+            <input type="text" @bind="@importFolderPath"/>
         </div>
 
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Root path to library folder</span>
-            <input type="text" class="settings-pair" @bind="@libraryRootPath"/>
+            <input type="text" @bind="@libraryRootPath"/>
         </div>
 
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Where to backup library and database</span>
-            <input type="text" class="settings-pair" @bind="@backupFolderPath"/>
+            <input type="text" @bind="@backupFolderPath"/>
         </div>
         
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Where to store temporary items</span>
-            <input type="text" class="settings-pair" @bind="@tmpFolderPath"/>
+            <input type="text" @bind="@tmpFolderPath"/>
         </div>
         
-        <div class="settings-pair">
-            <input type="checkbox" class="settings-pair" @bind="@showPrompts"/>
-            <span style="display: inline">Show Prompts?</span>
+        <div class="toggle-setting">
+            <input type="checkbox" id="show-prompts" @bind="@showPrompts"/>
+            <label for="show-prompts">Show Prompts?</label>
         </div>
         
-        <div class="settings-pair">
-            <input type="checkbox" class="settings-pair" @bind="@displayNoDTInCV"/>
-            <span style="display: inline">Display items with no date taken in albums/folders?</span>
+        <div class="toggle-setting">
+            <input type="checkbox" id="show-no-dt-in-collections" @bind="@displayNoDTInCV"/>
+            <label for="show-no-dt-in-collections">Show items with no DT in collections?</label>
         </div>
         
+        @{
+            string color = logLevel switch
+            {
+                LogLevel.None => "White",
+                LogLevel.Debug => "Green",
+                LogLevel.Info => "Cyan",
+                LogLevel.Warn => "Yellow",
+                LogLevel.Error => "Red",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        
+            <div class="dropdown-setting">
+                <span>Log Level</span>
+                <select style="color: @color" @bind="@logLevel">
+                    <option>None</option>
+                    <option style="color: green">Debug</option>
+                    <option style="color: cyan">Info</option>
+                    <option style="color: yellow">Warn</option>
+                    <option style="color: red">Error</option>
+                </select>
+            </div>
+        }
+
         <div id="thumbnail-settings">
             <div id="thumbnail-slider">
                 <span title="Lower the number, higher the quality.">Thumbnail Quality: @thumbnailQuality</span>
@@ -133,6 +156,7 @@
     private static string backupFolderPath = S.backupFolderPath;
     private static string tmpFolderPath = S.tmpFolderPath;
     private static int thumbnailQuality = S.thumbnailQuality;
+    private static LogLevel logLevel = S.logLevel;
 
     //Updating thumbnails
     private static int amountToUpdate, amountUpdated;
@@ -209,6 +233,7 @@
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
         S.thumbnailQuality = thumbnailQuality;
+        S.logLevel = logLevel;
         S.WriteSettings();
     }
 
@@ -223,6 +248,7 @@
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
         thumbnailQuality = S.thumbnailQuality;
+        logLevel = S.logLevel;
     }
 
     ///Reset settings to default values.

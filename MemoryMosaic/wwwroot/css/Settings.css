@@ -31,18 +31,18 @@
     margin-bottom: 15px;
 }
 
-#body > div > .settings-pair {
+#body > div > .text-setting {
     margin-top: 4px;
     margin-bottom: 10px;
 }
 
-#body > div > .settings-pair > span, #statsDiv > span {
+#body > div > .text-setting > span, #statsDiv > span {
     display: block;
     margin-bottom: 7px;
     padding: 0;
 }
 
-#body > div > .settings-pair > input[type="text"] {
+#body > div > .text-setting > input[type="text"] {
     background-color: black;
     color: white;
     border: 1px solid white;
@@ -50,13 +50,45 @@
     width: 100%;
 }
 
+#body > div > .toggle-setting {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 7px;
+}
+
+#body > div > .toggle-setting > input[type="checkbox"] {
+    margin-right: 4px;
+}
+
+#body > div > .dropdown-setting {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 12px;
+    margin-bottom: 14px;
+}
+
+#body > div > .dropdown-setting > span {
+    margin-right: 6px;
+}
+
+#body > div > .dropdown-setting > select {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+}
+
 #body > div > #thumbnail-settings {
-    margin-bottom: 8px;
+    margin-top: 12px;
+    margin-bottom: 14px;
 }
 
 #body > div > #thumbnail-settings > #thumbnail-slider {
     display: flex;
     flex-direction: column;
+    margin-right: 8px;
+    margin-bottom: 4px;
 }
 
 #body > div > #thumbnail-settings > #thumbnail-slider > input[type="range"] {

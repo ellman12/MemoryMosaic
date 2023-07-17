@@ -27,6 +27,9 @@ public class Settings
 
     ///Controls the quality of thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
     [JsonProperty] public static int thumbnailQuality;
+
+    ///Controls what items are printed out by the Logger.
+    [JsonProperty] public static LogLevel logLevel;
         
     public const int POSTGRES_VERSION = 15;
 
@@ -54,6 +57,7 @@ public class Settings
         tmpFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_tmp";
         showPrompts = displayNoDTInCV = true;
         thumbnailQuality = 7;
+        logLevel = LogLevel.Error;
         File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new Settings()));
     }
 }
