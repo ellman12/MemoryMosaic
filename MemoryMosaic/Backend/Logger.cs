@@ -7,11 +7,11 @@ public static class Logger
 	{
 		Console.ForegroundColor = itemImportance switch
 		{
-			LogLevel.Info => ConsoleColor.Cyan,
-			LogLevel.Debug => ConsoleColor.Green,
-			LogLevel.Warning => ConsoleColor.Yellow,
-			LogLevel.Error => ConsoleColor.Red,
 			LogLevel.None => throw new ArgumentException(),
+			LogLevel.Debug => ConsoleColor.Green,
+			LogLevel.Info => ConsoleColor.Cyan,
+			LogLevel.Warn => ConsoleColor.Yellow,
+			LogLevel.Error => ConsoleColor.Red,
 			_ => throw new ArgumentException()
 		};
 	}
