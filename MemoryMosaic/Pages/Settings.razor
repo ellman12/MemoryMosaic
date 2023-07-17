@@ -6,39 +6,39 @@
 <div id="body">
     <div>
         <span class="header">Settings</span>
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Server IP Address</span>
             <input type="text" @bind="@serverIP"/>
         </div>
 
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Where to look for items to add to your library</span>
             <input type="text" @bind="@importFolderPath"/>
         </div>
 
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Root path to library folder</span>
             <input type="text" @bind="@libraryRootPath"/>
         </div>
 
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Where to backup library and database</span>
             <input type="text" @bind="@backupFolderPath"/>
         </div>
         
-        <div class="settings-pair">
+        <div class="text-setting">
             <span>Where to store temporary items</span>
             <input type="text" @bind="@tmpFolderPath"/>
         </div>
         
-        <div class="settings-pair">
-            <input type="checkbox" @bind="@showPrompts"/>
-            <span style="display: inline">Show Prompts?</span>
+        <div class="toggle-setting">
+            <input type="checkbox" id="show-prompts" @bind="@showPrompts"/>
+            <label for="show-prompts">Show Prompts?</label>
         </div>
         
-        <div class="settings-pair">
-            <input type="checkbox" @bind="@displayNoDTInCV"/>
-            <span style="display: inline">Display items with no date taken in albums/folders?</span>
+        <div class="toggle-setting">
+            <input type="checkbox" id="show-no-dt-in-collections" @bind="@displayNoDTInCV"/>
+            <label for="show-no-dt-in-collections">Show items with no DT in collections?</label>
         </div>
         
         <div id="thumbnail-settings">

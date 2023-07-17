@@ -31,23 +31,34 @@
     margin-bottom: 15px;
 }
 
-#body > div > .settings-pair {
+#body > div > .text-setting {
     margin-top: 4px;
     margin-bottom: 10px;
 }
 
-#body > div > .settings-pair > span, #statsDiv > span {
+#body > div > .text-setting > span, #statsDiv > span {
     display: block;
     margin-bottom: 7px;
     padding: 0;
 }
 
-#body > div > .settings-pair > input[type="text"] {
+#body > div > .text-setting > input[type="text"] {
     background-color: black;
     color: white;
     border: 1px solid white;
     border-radius: 4px;
     width: 100%;
+}
+
+#body > div > .toggle-setting {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 7px;
+}
+
+#body > div > .toggle-setting > input[type="checkbox"] {
+    margin-right: 4px;
 }
 
 #body > div > #thumbnail-settings {
