@@ -7,7 +7,8 @@ public record Collection
 	public readonly string name;
 	public readonly string cover;
 	public readonly DateTime dateUpdated;
-	public bool folder, readOnly;
+	public readonly bool folder;
+	public bool readOnly;
 
 	public Collection(int id, string name, string cover)
 	{
