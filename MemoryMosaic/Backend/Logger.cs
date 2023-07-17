@@ -3,8 +3,6 @@ namespace MemoryMosaic.Backend;
 ///<summary>Used for printing messages of variable importance to the terminal.</summary>
 public static class Logger
 {
-	public static LogLevel logLevel = LogLevel.Error;
-
 	private static void SetConsoleColor(LogLevel itemImportance)
 	{
 		Console.ForegroundColor = itemImportance switch
@@ -24,7 +22,7 @@ public static class Logger
 
 	public static void LogLine(object value, LogLevel itemImportance)
 	{
-		if (itemImportance == LogLevel.None || itemImportance > logLevel) return;
+		if (itemImportance == LogLevel.None || itemImportance > S.logLevel) return;
 		SetConsoleColor(itemImportance);
 		Console.WriteLine($"{DateTime.Now} {value}");
 		ResetConsoleColor();
