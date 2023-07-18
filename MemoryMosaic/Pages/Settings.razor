@@ -106,7 +106,7 @@
     
     <div id="statsDiv">
         <span class="header">Stats</span>
-        @if (!statsLoaded) {<button class="textBtn" @onclick="@GetStats" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>}
+        @if (!statsLoaded) {<button class="textBtn" @onclick="@GetStatsAsync" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>}
         @if (statsLoaded)
         {
             <span>@($"{mediaRowCount} {(mediaRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
@@ -116,19 +116,19 @@
             <span>Library Drive Free Space: @F.FormatBytes(freeDriveSpace)</span>
             <progress style="margin-bottom: 14px" max="100" value="@((float)freeDriveSpace / totalUsableDriveSize * 100)"></progress>
             <span>Library Size: @F.FormatBytes(librarySize)</span>
-            if (oldestDTItem.uuid != Guid.Empty)
+            if (oldestDTItem != null)
             {
                 <span><a target="_blank" href="mm_library/@oldestDTItem.path">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a></span> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
             }
-            if (newestDTItem.uuid != Guid.Empty)
+            if (newestDTItem != null)
             {
                 <span><a target="_blank" href="mm_library/@newestDTItem.path">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a></span>
             }
-            if (oldestDAItem.uuid != Guid.Empty)
+            if (oldestDAItem != null)
             {
                 <span><a target="_blank" href="mm_library/@oldestDAItem.path">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a></span>
             }
-            if (newestDAItem.uuid != Guid.Empty)
+            if (newestDAItem != null)
             {
                 <span><a target="_blank" href="mm_library/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a></span>
             }
@@ -180,7 +180,7 @@
     private static long totalUsableDriveSize; //How much space the drive mm_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
     private static long freeDriveSpace; //Bytes
     private static long librarySize; //Bytes
-    private static MediaRow oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
+    private static MediaRow? oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
     public static DateTime whenWentOnline; //When did the server go online?
     
     //Debug
@@ -208,7 +208,6 @@
         totalUsableDriveSize = 0;
         freeDriveSpace = 0;
         librarySize = 0;
-        oldestDTItem = newestDTItem = oldestDAItem = newestDAItem = new MediaRow(null, null, DateTime.Now, false, Guid.Empty);
     }
 
     ///Free up space on server by removing temporary files, empty folders, and emptying the trash.
@@ -303,7 +302,7 @@
     }
 
     ///Get various statistics about the server and the library.
-    private static void GetStats()
+    private static async Task GetStatsAsync()
     {
         statsLoaded = true;
         mediaRowCount = Stats.GetNumItemsInLibrary();
@@ -316,10 +315,10 @@
         
         librarySize = new DirectoryInfo(S.libFolderPath).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
 
-        oldestDTItem = Stats.FindItemWithOldestDateTaken();
-        newestDTItem = Stats.FindItemWithNewestDateTaken();
-        oldestDAItem = Stats.FindItemWithOldestDateAdded();
-        newestDAItem = Stats.FindItemWithNewestDateAdded();
+        oldestDTItem = await Stats.FindItemWithOldestDateTakenAsync();
+        newestDTItem = await Stats.FindItemWithNewestDateTakenAsync();
+        oldestDAItem = await Stats.FindItemWithOldestDateAddedAsync();
+        newestDAItem = await Stats.FindItemWithNewestDateAddedAsync();
     }
 
     ///Only for debugging/testing purposes.

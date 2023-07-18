@@ -78,131 +78,33 @@ public static class Stats
         }
     }
 
-    ///<summary>Attempts to find the item with the oldest not-null date taken.</summary>
-    ///<returns>The row with the oldest date taken, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
-    public static MediaRow FindItemWithOldestDateTaken()
+    private static async Task<MediaRow?> FindItemAsync(string query)
     {
-        MediaRow oldestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
-            
-        try
-        {
-            Connection.Open();
-            NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media WHERE date_taken IS NOT NULL ORDER BY date_taken ASC", Connection.connection);
-            cmd.ExecuteNonQuery();
-            NpgsqlDataReader r = cmd.ExecuteReader();
-
-            if (r.HasRows)
-            {
-                r.Read(); //There should only be 1 row to read.
-                oldestItem = new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
-                r.Close();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("FindItemWithOldestDateTaken error. " + e.Message);
-        }
-        finally
-        {
-            Connection.Close();
-        }
-
-        return oldestItem;
-    }
+        MediaRow? item = null;
         
-    ///<summary>Attempts to find the item with the newest not-null date taken.</summary>
-    ///<returns>The row with the newest date taken, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
-    public static MediaRow FindItemWithNewestDateTaken()
-    {
-        MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
-            
         try
         {
-            Connection.Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media WHERE date_taken IS NOT NULL ORDER BY date_taken DESC", Connection.connection);
-            cmd.ExecuteNonQuery();
-            using NpgsqlDataReader r = cmd.ExecuteReader();
+            await using NpgsqlConnection conn = await C.CreateLocalConnectionAsync();
+            NpgsqlCommand cmd = new(query, conn);
+            NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 
             if (r.HasRows)
             {
-                r.Read(); //There should only be 1 row to read.
-                newestItem = new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
-                r.Close();
+                await r.ReadAsync();
+                item = new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.GetString(4));
+                await r.CloseAsync();
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine("FindItemWithNewestDateTaken error. " + e.Message);
-        }
-        finally
-        {
-            Connection.Close();
+            L.LogException(e);
         }
 
-        return newestItem;
+        return item;
     }
 
-    ///<summary>Attempts to find the item with the oldest date added, which may or may not have a date taken.</summary>
-    ///<returns>The row with the oldest date added, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
-    public static MediaRow FindItemWithOldestDateAdded()
-    {
-        MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
-            
-        try
-        {
-            Connection.Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY date_added ASC", Connection.connection);
-            cmd.ExecuteNonQuery();
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-
-            if (r.HasRows)
-            {
-                r.Read(); //There should only be 1 row to read.
-                newestItem = new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
-                r.Close();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("FindItemWithOldestDateAdded error. " + e.Message);
-        }
-        finally
-        {
-            Connection.Close();
-        }
-
-        return newestItem;
-    }
-        
-    ///<summary>Attempts to find the item with the newest date added, which may or may not have a date taken.</summary>
-    ///<returns>The row with the newest date added, otherwise a MediaRow with Guid.Empty, and null path/DT.</returns>
-    public static MediaRow FindItemWithNewestDateAdded()
-    {
-        MediaRow newestItem = new(null, null, DateTime.MinValue, false, Guid.Empty);
-            
-        try
-        {
-            Connection.Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid FROM media ORDER BY date_added DESC", Connection.connection);
-            cmd.ExecuteNonQuery();
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-
-            if (r.HasRows)
-            {
-                r.Read(); //There should only be 1 row to read.
-                newestItem = new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4));
-                r.Close();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("FindItemWithNewestDateAdded error. " + e.Message);
-        }
-        finally
-        {
-            Connection.Close();
-        }
-
-        return newestItem;
-    }
+    public static async Task<MediaRow?> FindItemWithOldestDateTakenAsync() => await FindItemAsync("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL ORDER BY date_taken ASC");
+    public static async Task<MediaRow?> FindItemWithNewestDateTakenAsync() => await FindItemAsync("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL ORDER BY date_taken DESC");
+    public static async Task<MediaRow?> FindItemWithOldestDateAddedAsync() => await FindItemAsync("SELECT path, date_taken, date_added, uuid, thumbnail FROM media ORDER BY date_added ASC");
+    public static async Task<MediaRow?> FindItemWithNewestDateAddedAsync() => await FindItemAsync("SELECT path, date_taken, date_added, uuid, thumbnail FROM media ORDER BY date_added DESC");
 }

@@ -2,6 +2,7 @@
 global using Npgsql;
 global using System;
 global using System.IO;
+global using System.Data;
 global using System.Linq;
 global using System.Diagnostics;
 global using System.Collections;
