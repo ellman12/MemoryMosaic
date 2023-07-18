@@ -131,8 +131,7 @@
 		{
 			if (Import.selectedItems.Contains(uuid))
 				Import.selectedItems.Remove(uuid);
-			else if (!Import.selectedItems.Contains(uuid))
-				Import.selectedItems.Add(uuid);
+			else Import.selectedItems.Add(uuid);
 		}
 	
 		//Add items from start to end into selectedItems. Used for Shift Click.
@@ -140,8 +139,7 @@
 		{
 			for (int i = startIndex; i <= endIndex; i++)
 			{
-				if (!Import.selectedItems.Contains(Import.importFiles[i].uuid))
-					Import.selectedItems.Add(Import.importFiles[i].uuid);
+				Import.selectedItems.Add(Import.importFiles[i].uuid);
 			}
 		}
 	}
