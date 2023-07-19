@@ -15,11 +15,11 @@ public static class Maintenance
     public static List<string> GetUntrackedLibFiles()
     {
         List<string> untrackedPaths = new(); //Tracks items in mm_library but not in database
-        HashSet<string> mediaPaths = Connection.LoadEntireMediaTable().Select(media => media.path).ToHashSet();
+        HashSet<string> mediaPaths = C.LoadEntireMediaTable().Select(media => media.path).ToHashSet();
 
-        foreach (string fullPath in Directory.GetFiles(Settings.libFolderPath, "*", SearchOption.AllDirectories))
+        foreach (string fullPath in Directory.GetFiles(S.libFolderPath, "*", SearchOption.AllDirectories))
         {
-            string shortPath = fullPath.Replace(Settings.libFolderPath, null).Replace('\\', '/');
+            string shortPath = fullPath.Replace(S.libFolderPath, null).Replace('\\', '/');
             if (shortPath.StartsWith('/')) shortPath = shortPath[1..]; //Database short paths don't ever start with '/'.
                 
             if (!mediaPaths.Contains(shortPath))
@@ -34,15 +34,15 @@ public static class Maintenance
         List<MediaRow> missingFiles = new();
         try
         {
-            Connection.Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail, description FROM media", Connection.connection);
+            C.Open();
+            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail, description FROM media", C.connection);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
             while (r.Read())
             {
                 string shortPath = r.GetString(0);
-                string fullPath = Path.Combine(Settings.libFolderPath, shortPath);
+                string fullPath = Path.Combine(S.libFolderPath, shortPath);
                 if (!File.Exists(fullPath))
                     missingFiles.Add(new MediaRow(shortPath, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.GetString(6), r.IsDBNull(7) ? null : r.GetString(7)));
             }
@@ -50,11 +50,11 @@ public static class Maintenance
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
-            Connection.Close();
+            C.Close();
         }
 
         return missingFiles;
@@ -66,21 +66,21 @@ public static class Maintenance
     {
         try
         {
-            Connection.Open();
+            C.Open();
             foreach (MediaRow row in rows)
             {
-                using NpgsqlCommand cmd = new("DELETE FROM media WHERE path=@path", Connection.connection);
+                using NpgsqlCommand cmd = new("DELETE FROM media WHERE path=@path", C.connection);
                 cmd.Parameters.AddWithValue("@path", row.path);
                 cmd.ExecuteNonQuery();
             }
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
-            Connection.Close();
+            C.Close();
         }
     }
 }

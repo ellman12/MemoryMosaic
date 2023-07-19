@@ -53,7 +53,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -70,7 +70,7 @@ public static class Connection
         try
         {
             string filename = Path.GetFileName(shortPath);
-            string originalFullPath = Path.Combine(Settings.libFolderPath, shortPath);
+            string originalFullPath = Path.Combine(S.libFolderPath, shortPath);
             
             string newShortPath = CreateShortPath(newDateTaken, filename);
             string newDTFolderPath = CreateFullDateFolderPath(newDateTaken);
@@ -101,7 +101,7 @@ public static class Connection
         }
         catch (Exception e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
             return false;
         }
         finally
@@ -132,7 +132,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -151,9 +151,9 @@ public static class Connection
     {
         try
         {
-            string originalFullPath = Path.Combine(Settings.libFolderPath, oldShortPath);
+            string originalFullPath = Path.Combine(S.libFolderPath, oldShortPath);
             string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
-            string newFullPath = Path.Combine(Settings.libFolderPath, newShortPath);
+            string newFullPath = Path.Combine(S.libFolderPath, newShortPath);
             File.Move(originalFullPath, newFullPath);
             
             Open();
@@ -165,7 +165,7 @@ public static class Connection
         }
         catch (Exception e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
             return null;
         }
         finally
@@ -190,7 +190,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -218,7 +218,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -250,7 +250,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -273,7 +273,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -286,11 +286,11 @@ public static class Connection
     {
         try
         {
-            FileSystem.DeleteFile(Path.Combine(Settings.libFolderPath, GetPathFromUuid(uuid) ?? throw new InvalidOperationException()), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid) ?? throw new InvalidOperationException()), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         }
         catch (FileNotFoundException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         
         try
@@ -307,7 +307,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -327,7 +327,7 @@ public static class Connection
 
             while (r.Read())
             {
-                try { FileSystem.DeleteFile(Path.Combine(Settings.libFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
+                try { FileSystem.DeleteFile(Path.Combine(S.libFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
                 catch (IOException e) { L.LogException(e); }
             }
 
@@ -335,7 +335,7 @@ public static class Connection
             cmd.CommandText = "DELETE FROM media WHERE date_deleted IS NOT NULL";
             cmd.ExecuteNonQuery();
         }
-        catch (NpgsqlException e) { Logger.LogException(e); }
+        catch (NpgsqlException e) { L.LogException(e); }
         finally { Close(); }
     }
 
@@ -350,7 +350,7 @@ public static class Connection
             cmd.Parameters.AddWithValue("@uuid", uuid);
             cmd.ExecuteNonQuery();
         }
-        catch (NpgsqlException e) { Logger.LogException(e); }
+        catch (NpgsqlException e) { L.LogException(e); }
         finally { Close(); }
     }
 
@@ -363,7 +363,7 @@ public static class Connection
             using NpgsqlCommand cmd = new("UPDATE media SET date_deleted = NULL WHERE date_deleted IS NOT NULL", connection);
             cmd.ExecuteNonQuery();
         }
-        catch (NpgsqlException e) { Logger.LogException(e); }
+        catch (NpgsqlException e) { L.LogException(e); }
         finally { Close(); }
     }
     
@@ -384,7 +384,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -408,7 +408,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -439,7 +439,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
             return false;
         }
         finally
@@ -462,7 +462,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -485,7 +485,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -508,7 +508,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
             return null;
         }
         finally
@@ -529,7 +529,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -561,7 +561,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -591,7 +591,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -626,7 +626,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -661,7 +661,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -690,7 +690,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -741,7 +741,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -769,7 +769,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -798,7 +798,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -827,7 +827,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -859,7 +859,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Logger.LogException(e);
+            L.LogException(e);
         }
         finally
         {
@@ -883,13 +883,13 @@ public static class Connection
     ///<summary>Create the full folder path to where an item with this date taken would get moved to in the MM library.</summary>
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<returns>The full date folder path.</returns>
-    public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(Settings.libFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
+    public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(S.libFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
 
     ///<summary>Given a Date Taken and a filename, create the full path to where the item would get moved to in the MM library.</summary>
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<param name="filename">The filename and extension of the item.</param>
     ///<returns>The full path to where the item would get moved to in the MM library.</returns>
-    public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(Settings.libFolderPath, CreateShortPath(dateTaken, filename));
+    public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename));
 
     #endregion
 }

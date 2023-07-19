@@ -50,10 +50,10 @@ public class ImportFile
 	public ImportFile(string absPath)
 	{
 		absolutePath = absPath.Replace('\\', '/');
-		shortPath = absolutePath.Substring(Settings.importFolderPath.Length + 1); //Ensures no '/' at start.
+		shortPath = absolutePath.Substring(S.importFolderPath.Length + 1); //Ensures no '/' at start.
 		originalFilename = renamedFilename = Path.GetFileNameWithoutExtension(absolutePath);
 		extension = Path.GetExtension(absolutePath);
-		thumbnail = Functions.GenerateThumbnail(absolutePath);
+		thumbnail = F.GenerateThumbnail(absolutePath);
 		D.GetDateTakenFromBoth(absolutePath, out metadataDateTaken, out filenameDateTaken);
 		uuid = Guid.NewGuid();
 

@@ -10,8 +10,8 @@ public static class Stats
         long rows = 0;
         try
         {
-            Connection.Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NULL", Connection.connection);
+            C.Open();
+            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NULL", C.connection);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) rows++;
@@ -24,7 +24,7 @@ public static class Stats
         }
         finally
         {
-            Connection.Close();
+            C.Close();
         }
     }
 
@@ -35,8 +35,8 @@ public static class Stats
         long rows = 0;
         try
         {
-            Connection.Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", Connection.connection);
+            C.Open();
+            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", C.connection);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) rows++;
@@ -49,7 +49,7 @@ public static class Stats
         }
         finally
         {
-            Connection.Close();
+            C.Close();
         }
     }
 
@@ -60,8 +60,8 @@ public static class Stats
         long rows = 0;
         try
         {
-            Connection.Open();
-            using NpgsqlCommand cmd = new("SELECT id FROM collections", Connection.connection);
+            C.Open();
+            using NpgsqlCommand cmd = new("SELECT id FROM collections", C.connection);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) rows++;
@@ -74,7 +74,7 @@ public static class Stats
         }
         finally
         {
-            Connection.Close();
+            C.Close();
         }
     }
 

@@ -31,9 +31,9 @@ public class Program
     {
         //Populate config with default values if file doesn't exist. If exists, read in values.
         if (File.Exists(S.SettingsPath) && File.ReadAllText(S.SettingsPath) != "")
-            Settings.ReadSettings();
+            S.ReadSettings();
         else
-            Settings.ResetSettings();
+            S.ResetSettings();
 
         Pages.Settings.whenWentOnline = DateTime.Now;
 
