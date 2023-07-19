@@ -112,10 +112,18 @@
             <span>@($"{mediaRowCount} {(mediaRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
             <span>@($"{trashRowCount} {(trashRowCount == 1 ? "Item In Trash" : "Items In Trash")}")</span>
             <span>@($"{collectionsCount} {(collectionsCount == 1 ? "Collection" : "Collections")}")</span>
-            <span style="margin-top: 14px;">Library Drive Total Size (Usable): @F.FormatBytes(totalUsableDriveSize)</span>
+            
+            <span style="margin-top: 14px">Library Drive Total Size (Usable): @F.FormatBytes(totalUsableDriveSize)</span>
             <span>Library Drive Free Space: @F.FormatBytes(freeDriveSpace)</span>
-            <progress style="margin-bottom: 14px" max="100" value="@((float)freeDriveSpace / totalUsableDriveSize * 100)"></progress>
-            <span>Library Size: @F.FormatBytes(librarySize)</span>
+            <div id="drivePercentage">
+                @{
+                    double value = Double.Round((double) freeDriveSpace / totalUsableDriveSize * 100, 2);
+                    <progress max="100" value="@value"></progress>
+                    <span>@value% Available</span>
+                }
+            </div>
+            <span style="margin-bottom: 14px">Library Size: @F.FormatBytes(librarySize)</span>
+            
             if (oldestDTItem != null)
             {
                 <a target="_blank" href="mm_library/@oldestDTItem.path">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
@@ -130,7 +138,7 @@
             }
             if (newestDAItem != null)
             {
-                <a target="_blank" href="mm_library/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a>
+                <a style="margin-bottom: 14px" target="_blank" href="mm_library/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a>
             }
             <span>Server went online at @whenWentOnline</span>
             <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>

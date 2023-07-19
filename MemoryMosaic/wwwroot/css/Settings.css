@@ -42,6 +42,17 @@
     padding: 0;
 }
 
+#statsDiv > #drivePercentage {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 7px;
+}
+
+#statsDiv > #drivePercentage > progress {
+    margin-right: 10px;
+}
+
 #statsDiv > a {
     color: #0080ff;
     text-decoration: underline;
