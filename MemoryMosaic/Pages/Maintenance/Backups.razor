@@ -33,15 +33,13 @@
 
 @code{
     private bool popUpVis;
-    private string popUpMsg;
+    private string popUpMsg = null!;
 
     ///Stores each backup's full path, date and time it was made, and its size in bytes.
-    private List<(string, DateTime, long)> backups;
+    private List<(string, DateTime, long)> backups = new();
 
     protected override void OnInitialized()
     {
-        backups = new List<(string, DateTime, long)>();
-        
         foreach (string backupFolder in Directory.GetDirectories(S.backupFolderPath, "MM Backup*", SearchOption.TopDirectoryOnly))
         {
             try

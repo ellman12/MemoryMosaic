@@ -29,7 +29,7 @@
 </div>
 
 @code{
-    private List<MediaRow> mediaMissingItems;
+    private List<MediaRow> mediaMissingItems = null!;
 
     protected override void OnInitialized() => mediaMissingItems = M.GetMediaMissingFiles();
 
