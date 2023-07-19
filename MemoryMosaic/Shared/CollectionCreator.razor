@@ -14,15 +14,15 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<Collection> Collections { get; set; }
+    public List<Collection> Collections { get; set; } = null!;
 
-    public event EventHandler CollectionCreated;
+    public event EventHandler? CollectionCreated;
         
     private string newCollectionBtnIcon = "library_add";
     private string collectionInputDisplay = "none";
     private string confirmBtnDisplay = "none";
     private string newCollectionBtnText = "New Collection";
-    public string NewCollectionName { get; private set; }
+    public string NewCollectionName { get; private set; } = "";
     private bool folderChecked;
     
     private void NewCollectionBtnClick()

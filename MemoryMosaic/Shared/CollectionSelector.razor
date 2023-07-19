@@ -67,61 +67,50 @@
 </div>
 
 @code {
-    public static List<Collection> albums;
-    public static List<Collection> folders;
+    public static List<Collection> albums = C.GetCollectionsTable(true, false, false);
+    public static List<Collection> folders = C.GetCollectionsTable(false, true, false);
     
-    public static List<bool> checkedAlbums;
-    private static List<bool> checkedFolders;
-    public static int checkedFolderIndex; //Which index in folders is checked (can only have 1 checked (true)).
+    public static List<bool> checkedAlbums = (from album in albums select new bool()).ToList();
+    private static List<bool> checkedFolders = (from folder in folders select new bool()).ToList();
+    public static int checkedFolderIndex = -1; //Which index in folders is checked (can only have 1 checked (true)).
 
-    private string searchText;
+    private string? searchText;
 
-    private CollectionCreator collectionCreator;
+    private CollectionCreator collectionCreator = null!;
 
     [Parameter]
     public Guid SelectedItem { get; set; } = Guid.Empty;
     
     [Parameter]
-    public HashSet<Guid> SelectedItems { get; set; } //Passed in from the page. Items selected by user.
+    public HashSet<Guid>? SelectedItems { get; set; } //Passed in from the page. Items selected by user.
     
     [Parameter]
     public EventCallback<int> SelectedItemsCountChanged { get; set; } //Used for clearing SelectedItems. https://blazor-university.com/components/two-way-binding/
     
     [Parameter]
-    public string HeaderVis { get; set; } //Passed in from the calling page. Visibility of the header that displays selected items count, misc buttons, etc.
+    public string? HeaderVis { get; set; } = "hidden"; //Passed in from the calling page. Visibility of the header that displays selected items count, misc buttons, etc.
     
     [Parameter]
     public EventCallback<string> HeaderVisChanged { get; set; } //Changing the passed in headerVis.
-    
+
     [Parameter]
-    public string CollectionsVis { get; set; } //Visibility of the selector
+    public string CollectionsVis { get; set; } = "hidden";
     
     [Parameter]
     public EventCallback<string> CollectionsVisChanged { get; set; }
 
     [Parameter]
-    public Action OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
+    public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
     [Parameter]
     public bool ClearChecksOnConfirm { get; set; } = true;
-
-    protected override void OnInitialized()
-    {
-        albums = C.GetCollectionsTable(true, false, false);
-        folders = C.GetCollectionsTable(false, true, false);
-        checkedAlbums = (from album in albums select new bool()).ToList();
-        checkedFolders = (from folder in folders select new bool()).ToList();
-        checkedFolderIndex = -1; //-1 = a folder isn't picked
-        CollectionsVis = "hidden";
-        HeaderVis = "hidden";
-    }
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender) collectionCreator.CollectionCreated += RefreshData;
     }
 
-    private async void RefreshData(object sender, EventArgs e)
+    private async void RefreshData(object? sender, EventArgs e)
     {
         albums = C.GetCollectionsTable(true, false, false);
         folders = C.GetCollectionsTable(false, true, false);
@@ -156,7 +145,7 @@
     
     private async Task ClearChecks()
     {
-        foreach (Guid item in SelectedItems)
+        foreach (Guid item in SelectedItems!)
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         SelectedItems.Clear();
         CollectionsVis = "hidden";
@@ -193,7 +182,7 @@
                 }
                 else
                 {
-                    foreach (Guid item in SelectedItems)
+                    foreach (Guid item in SelectedItems!)
                         await C.AddToCollectionAsync(item, folders[checkedFolderIndex].id);
                 }
             }
@@ -209,7 +198,7 @@
                     }
                     else
                     {
-                        foreach (Guid item in SelectedItems)
+                        foreach (Guid item in SelectedItems!)
                             await C.AddToCollectionAsync(item, albums[c].id);
                     }
                 }
@@ -224,7 +213,7 @@
         if (ClearChecksOnConfirm)
         {
             await ClearChecks();
-            SelectedItems.Clear();
+            SelectedItems?.Clear();
             await SelectedItemsCountChanged.InvokeAsync(0);
             await CollectionsVisChanged.InvokeAsync("hidden");
             await HeaderVisChanged.InvokeAsync("hidden");
