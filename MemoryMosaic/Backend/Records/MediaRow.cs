@@ -32,7 +32,7 @@ public record MediaRow
         this.thumbnail = thumbnail;
     }
 
-    public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail, string description)
+    public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail, string? description)
     {
         path = p;
         dateTaken = dt;
@@ -55,7 +55,7 @@ public record MediaRow
         this.thumbnail = thumbnail;
     }
     
-    public MediaRow(string p, DateTime? dt, DateTime da, bool starred, bool separate, Guid uuid, string thumbnail, string description)
+    public MediaRow(string p, DateTime? dt, DateTime da, bool starred, bool separate, Guid uuid, string thumbnail, string? description)
     {
         path = p;
         dateTaken = dt;
