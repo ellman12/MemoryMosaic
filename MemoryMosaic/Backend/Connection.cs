@@ -1,5 +1,3 @@
-using System.Data;
-
 namespace MemoryMosaic.Backend;
 
 ///Contains static methods for interacting with the MM PostgreSQL database.
@@ -114,9 +112,9 @@ public static class Connection
 
     ///<summary>Gets an item's short path from its uuid.</summary>
     ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
-    public static string GetPathFromUuid(Guid uuid)
+    public static string? GetPathFromUuid(Guid uuid)
     {
-        string path = null;
+        string? path = null;
         try
         {
             Open();
@@ -149,7 +147,7 @@ public static class Connection
     ///<param name="ext">The file extension.</param>
     ///<param name="dateTaken">The date taken of the item.</param>
     ///<returns>The new short path (DB path) of this item. null if DB error occurred, which means there is already a file with the same name in that location.</returns>
-    public static string RenameFile(string oldShortPath, string newFilename, string ext, DateTime? dateTaken)
+    public static string? RenameFile(string oldShortPath, string newFilename, string ext, DateTime? dateTaken)
     {
         try
         {
@@ -187,7 +185,7 @@ public static class Connection
             using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media ORDER BY date_taken DESC", connection);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.IsDBNull(6) ? null : r.GetString(6)));
+            while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.GetString(6)));
             r.Close();
         }
         catch (NpgsqlException e)
@@ -232,7 +230,7 @@ public static class Connection
     /// <summary>Sets the description of an item.</summary>
     /// <param name="uuid">The uuid of the item.</param>
     /// <param name="newDescription">The new description of the item.</param>
-    public static void UpdateDescription(Guid uuid, string newDescription)
+    public static void UpdateDescription(Guid uuid, string? newDescription)
     {
         try
         {
@@ -288,7 +286,7 @@ public static class Connection
     {
         try
         {
-            FileSystem.DeleteFile(Path.Combine(Settings.libFolderPath, GetPathFromUuid(uuid)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            FileSystem.DeleteFile(Path.Combine(Settings.libFolderPath, GetPathFromUuid(uuid) ?? throw new InvalidOperationException()), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         }
         catch (FileNotFoundException e)
         {
@@ -330,7 +328,7 @@ public static class Connection
             while (r.Read())
             {
                 try { FileSystem.DeleteFile(Path.Combine(Settings.libFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
-                catch (IOException e) { Console.WriteLine(e); }
+                catch (IOException e) { L.LogException(e); }
             }
 
             r.Close();
@@ -497,7 +495,7 @@ public static class Connection
 
     ///<summary>Given the integer id of a collection represented as a string, return a new <see cref="Collection"/> with the extra details about a Collection, like name, last updated, folder, etc.</summary>
     /// <param name="collectionID"></param>
-    public static async Task<Collection> GetCollectionDetailsAsync(string collectionID)
+    public static async Task<Collection?> GetCollectionDetailsAsync(string collectionID)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
         
@@ -542,9 +540,9 @@ public static class Connection
     ///<summary>Given an collection id, attempt to return its name.</summary>
     ///<param name="id">The id of the collection.</param>
     ///<returns>Collection name.</returns>
-    public static string GetCollectionName(int id)
+    public static string? GetCollectionName(int id)
     {
-        string returnVal = "";
+        string? returnVal = null;
         try
         {
             Open();

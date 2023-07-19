@@ -5,9 +5,11 @@ public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement> where 
 {
 	private readonly Dictionary<TKey, TElement> _internalDictionary;
 
+	#nullable disable
 	public Func<TElement> GetDefault { get; init; } = null;
 	public bool AddMissingKeys { get; init; } = false;
 	public IEqualityComparer<TKey> Comparer => _internalDictionary.Comparer;
+	#nullable restore
 
 	public LazyDictionary() => _internalDictionary = new();
 	public LazyDictionary(int capacity) => _internalDictionary = new(capacity);

@@ -1,4 +1,4 @@
-﻿@page "/trash"
+@page "/trash"
 @inject IJSRuntime JSRuntime
 
 <title>Trash - MemoryMosaic</title>
@@ -46,7 +46,7 @@
     private TrashSortMode sortMode = TrashSortMode.NewestDateDeleted;
     private LibraryContentViewer libContentViewer = new();
     private int selectedItemsCount;
-    private string sortBtnText, choiceMsg, orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
+    private string sortBtnText = null!, choiceMsg = null!, orderBy = null!, sortColumn = null!, topQuery = null!, bottomQuery = null!, firstQuery = null!;
     private string delPromptVis = "hidden", restorePromptVis = "hidden", sortDivVis = "hidden";
 
     protected override void OnInitialized() => SetSortBtnText();

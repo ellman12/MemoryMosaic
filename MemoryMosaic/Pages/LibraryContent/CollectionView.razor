@@ -78,22 +78,22 @@
 
 @code{
     [Parameter]
-    public string CollectionID { get; set; }
+    public string CollectionID { get; set; } = null!;
 
-    private Collection collection;
+    private Collection? collection;
     
     private CVSortMode sortMode;
-    private string orderBy, sortColumn, topQuery, bottomQuery, firstQuery;
+    private string orderBy = null!, sortColumn = null!, topQuery = null!, bottomQuery = null!, firstQuery = null!;
     
     private LibraryContentViewer libContentViewer = new();
     private int selectedItemsCount;
-    private string headerVis, collectionsVis, delPromptVis, buttonsVis, sortDivVis, _newCollectionName;
+    private string headerVis = null!, collectionsVis = null!, delPromptVis = null!, buttonsVis = null!, sortDivVis = null!, _newCollectionName = null!;
     private string NewCollectionName
     {
         get => _newCollectionName;
         set
         {
-            if (value == collection.name) //Same so don't need to reapply
+            if (value == collection!.name) //Same so don't need to reapply
             {
                 buttonsVis = "hidden";
             }
@@ -109,7 +109,7 @@
 @functions{
     protected override async Task OnInitializedAsync()
     {
-        collection = await C.GetCollectionDetailsAsync(CollectionID);
+        collection = await C.GetCollectionDetailsAsync(CollectionID) ?? throw new InvalidOperationException();
         sortMode = CVSortMode.NewestDateTaken;
         _newCollectionName = collection.name;
         headerVis = collectionsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
@@ -139,7 +139,7 @@
                 throw new ArgumentOutOfRangeException();
         }
     
-        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={collection.id} AND date_deleted IS NULL AND separate={collection.folder}";
+        string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={collection!.id} AND date_deleted IS NULL AND separate={collection.folder}";
         topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
         bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100";
     
@@ -163,14 +163,14 @@
 
     private async Task ToggleReadonly()
     {
-        await C.ToggleReadonlyAsync(collection);
+        await C.ToggleReadonlyAsync(collection ?? throw new InvalidOperationException());
         collection.readOnly = !collection.readOnly;
     }
 
     //Remove selected from the collection
     private async void RemoveBtnClick()
     {
-        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, collection.id);
+        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, collection!.id);
         headerVis = "hidden";
         await libContentViewer.SelectedItemsCountChanged.InvokeAsync(0);
         await libContentViewer.HeaderVisChanged.InvokeAsync("hidden");
@@ -195,21 +195,21 @@
     private void DeleteCollection()
     {
         navigationManager.NavigateTo("/collections");
-        C.DeleteCollection(collection.id);
+        C.DeleteCollection(collection!.id);
     }
     
     //Functions for collection stuff
     private void CancelBtnClick()
     {
         buttonsVis = "hidden";
-        NewCollectionName = collection.name; //Reset to OG
+        NewCollectionName = collection!.name; //Reset to OG
     }
 
     private void ConfirmBtnClick()
     {
         buttonsVis = "hidden";
         if (NewCollectionName != "")
-            C.RenameCollection(NewCollectionName, collection.id);
+            C.RenameCollection(NewCollectionName, collection!.id);
         else
             NewCollectionName = "Please enter a name";
     }

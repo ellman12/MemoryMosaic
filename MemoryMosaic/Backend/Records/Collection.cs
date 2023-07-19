@@ -5,7 +5,7 @@ public record Collection
 {
 	public readonly int id;
 	public readonly string name;
-	public readonly string cover;
+	public readonly string? cover;
 	public readonly DateTime dateUpdated;
 	public readonly bool folder;
 	public bool readOnly;
@@ -31,15 +31,6 @@ public record Collection
 		this.name = name;
 		this.dateUpdated = dateUpdated;
 		this.folder = folder;
-		this.readOnly = readOnly;
-	}
-
-	public Collection(int id, string name, string cover, DateTime dateUpdated, bool readOnly)
-	{
-		this.id = id;
-		this.name = name;
-		this.cover = cover;
-		this.dateUpdated = dateUpdated;
 		this.readOnly = readOnly;
 	}
 }

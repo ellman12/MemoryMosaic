@@ -10,7 +10,7 @@
 	if (!finishedLoading)
 		return;
 	
-	if (allAbsPaths is null || allAbsPaths.Count is 0)
+	if (allAbsPaths.Count is 0)
 	{
 		<h1>No supported files found in mm_import.</h1>
 		return;
@@ -159,9 +159,9 @@
 
 	private bool finishedLoading, addingItems;
 
-	private string popUpMsg;
+	private string? popUpMsg;
 
-	public static string pathWidthClass;
+	public static string pathWidthClass = "shortWidth";
 	
 	private static string collectionSelectorVis = "hidden";
 
@@ -169,13 +169,13 @@
 	private static bool yearCheckEnabled = true;
 
 	///Show a warning if any items have a DT year less than or greater than these values.
-	public static int minYear, maxYear;
+	public static int minYear = 2000, maxYear = DateTime.Today.Year;
 
 	///Stores the absolute path of every supported file in mm_import.
-	private static List<string> allAbsPaths;
+	private static List<string> allAbsPaths = null!;
 
 	///List of data about each supported file in mm_import.
-	public static List<ImportFile> importFiles;
+	public static List<ImportFile> importFiles = null!;
 
 	private static readonly LazyDictionary<string, List<MediaRow>> libFilesWithSameName = new(), libFilesWithSimilarName = new();
 
@@ -186,14 +186,14 @@
 	public static readonly HashSet<Guid> selectedItems = new();
 
 	///Used in ImportItem for rerendering this page.
-	public static Action Rerender;
+	public static Action Rerender = null!;
 
 	///When a user checks a checkbox, what is the last one they clicked? Used for shift clicking.
 	public static int lastCheckedIndex = 0;
 
 	private static int errorAmount;
 
-	private static string searchText, statusMessage;
+	private static string searchText = "", statusMessage = "";
 
 	private DateTakenSource newDTSource = DateTakenSource.None;
 
@@ -201,7 +201,6 @@
 	{
 		L.LogLine($"Begin Import {nameof(OnInitialized)}", LogLevel.Info);
 		
-		pathWidthClass = "shortWidth";
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
 		libFilesWithSameName.Clear();
@@ -209,10 +208,6 @@
 		searchResults.Clear();
 		selectedItems.Clear();
 		Rerender = StateHasChanged;
-		minYear = 2000;
-		maxYear = DateTime.Today.Year;
-		errorAmount = 0;
-		statusMessage = "";
 
 		Parallel.ForEach(allAbsPaths, (absPath, _) =>
 		{
@@ -259,7 +254,7 @@
 			}
 		}
 
-		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename]?.Count).ToList();
+		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename].Count).ToList();
 		L.LogLine($"Finish Import {nameof(OrganizeItems)}", LogLevel.Debug);
 	}
 
@@ -280,7 +275,7 @@
 		{
 			string path = r.GetString(0);
 			string thisFilename = Path.GetFileNameWithoutExtension(path);
-			MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetGuid(2), r.IsDBNull(3) ? null : r.GetString(3), r.IsDBNull(4) ? null : r.GetDateTime(4));
+			MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetGuid(2), r.GetString(3), r.IsDBNull(4) ? null : r.GetDateTime(4));
 			if (filenameNoExt == thisFilename)
 			{
 				if (!libFilesWithSameName.ContainsKey(filenameNoExt))

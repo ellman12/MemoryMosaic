@@ -67,8 +67,8 @@ public static class Functions
         else
             ffmpegInfo.Arguments += $"{(SupportedVideoExts.Contains(ext) ? "-vf \"select=eq(n\\,0)\"" : "")} -vf scale=320:-2 -q:v {Settings.thumbnailQuality} \"{thumbnailFullPath}\"";
 
-        Process ffmpegProcess = Process.Start(ffmpegInfo);
-        ffmpegProcess!.WaitForExit();
+        Process ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
+        ffmpegProcess.WaitForExit();
 
         byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
             

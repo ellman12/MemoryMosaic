@@ -5,19 +5,19 @@ namespace MemoryMosaic;
 
 public class Settings
 {
-    [JsonProperty] public static string serverIP;
+    [JsonProperty] public static string serverIP = null!;
         
     ///The full path to the mm_import folder on the server. This is where items live before being added to the library.
-    [JsonProperty] public static string importFolderPath;
+    [JsonProperty] public static string importFolderPath = null!;
 
     ///The full path to the library folder (mm_library) on the server.
-    [JsonProperty] public static string libFolderPath;
+    [JsonProperty] public static string libFolderPath = null!;
 
     ///Where to backup library and database (mm_backup).
-    [JsonProperty] public static string backupFolderPath;
+    [JsonProperty] public static string backupFolderPath = null!;
         
     ///Where the temporary folder (mm_tmp) is on the server. This is used for things like temporarily storing thumbnail files when converting them to base64, etc.
-    [JsonProperty] public static string tmpFolderPath;
+    [JsonProperty] public static string tmpFolderPath = null!;
         
     ///Should prompts be shown when doing things like deleting items and albums, etc.?
     [JsonProperty] public static bool showPrompts;

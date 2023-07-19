@@ -12,9 +12,9 @@
 
 @code{
 
-	[Parameter, EditorRequired] public MediaRow MediaRow { get; set; }
+	[Parameter, EditorRequired] public MediaRow MediaRow { get; set; } = null!;
 
-	[Parameter, EditorRequired] public Action Rerender { get; set; }
+	[Parameter, EditorRequired] public Action Rerender { get; set; } = null!;
 
 	private void DeleteBtnClick()
 	{
