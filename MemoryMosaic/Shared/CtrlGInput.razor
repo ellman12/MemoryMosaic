@@ -17,7 +17,7 @@
 
 @code{
 	[Parameter, EditorRequired]
-	public Action StartDateChanged { get; set; }
+	public Action StartDateChanged { get; set; } = null!;
 	
 	public DateTime NewStartDate { get; private set; } = DateTime.Today;
 	private string ctrlGVis = "hidden";

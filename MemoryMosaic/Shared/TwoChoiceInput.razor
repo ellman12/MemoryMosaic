@@ -27,16 +27,16 @@
 
 @code {
     [Parameter, EditorRequired]
-    public string Message { get; set; } //https://stackoverflow.com/a/62142640
+    public string Message { get; set; } = null!;
 
     [Parameter, EditorRequired]
-    public Action NoBtnClick { get; set; }
+    public Action NoBtnClick { get; set; } = null!;
     
     [Parameter, EditorRequired]
-    public Action YesBtnClick { get; set; }
+    public Action YesBtnClick { get; set; } = null!;
 
     [Parameter]
-    public string TwoChoiceVis { get; set; }
+    public string TwoChoiceVis { get; set; } = null!;
     
     [Parameter]
     public EventCallback<string> TwoChoiceVisChanged { get; set; } //Changing the passed in TwoChoiceVis.

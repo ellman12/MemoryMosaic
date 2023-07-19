@@ -100,9 +100,9 @@
 @code {
 	///The index of ImportFile in Import.importFiles.
 	[Parameter, EditorRequired] public int Index { get; set; }
-	
+
 	///The ImportFile for this ImportItem.
-	[Parameter, EditorRequired] public ImportFile ImportFile { get; set; }
+	[Parameter, EditorRequired] public ImportFile ImportFile { get; set; } = null!;
 }
 
 @functions {

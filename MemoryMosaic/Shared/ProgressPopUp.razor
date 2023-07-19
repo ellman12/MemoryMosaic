@@ -10,10 +10,9 @@
 @code{
 
     private bool _visible;
-    private string _message;
+    private string _message = null!;
 
-    //[BL0007] Component parameter 'PSS.Shared.ProgressPopUp.Visible' should be auto property
-    #pragma warning disable BL0007 
+    #pragma warning disable BL0007
     [Parameter]
     public bool Visible
     {
