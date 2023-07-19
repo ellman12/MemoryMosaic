@@ -57,7 +57,7 @@
 				<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
 			</div>
 
-			@if (collectionsIn != null && collectionsIn.Count > 0)
+			@if (collectionsIn.Count > 0)
 			{
 				<div id="collectionsInfo">
 					<span id="collectionsText">Collections Containing</span>
@@ -113,7 +113,7 @@
 		}
 		else
 		{
-		    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine("mm_library", MediaList[viewIndex].path!))" loop autofocus controls autoplay></video></div>
+		    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine("mm_library", MediaList[viewIndex].path))" loop autofocus controls autoplay></video></div>
 		}
 
 		@if (MediaList.Count - 1 > viewIndex)
@@ -170,7 +170,7 @@
 	private static readonly List<string> months = new(new[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
 
 	private int maxDay, _selectedDay, previousYear;
-	private string _selectedMonth;
+	private string _selectedMonth = null!;
 	private string SelectedMonth
 	{
 		get => _selectedMonth;
@@ -219,16 +219,16 @@
 		}
 	}
 
-	private List<MediaRow> MediaList;
+	private List<MediaRow> MediaList = null!;
 
 	//Stuff for viewing a single item.
 	///The index of the item user is currently viewing.
 	private int viewIndex;
 
 	private DateTime? newDateTaken;
-	private string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis;
-	private string itemDescription;
-	private List<Collection> collectionsIn;
+	private string newFilename = "hidden", editFilenameDivVis = "hidden", filenameErrorVis = "hidden", editDateDivVis = "hidden", dtErrorVis = "hidden", infoVis = "hidden";
+	private string? itemDescription;
+	private List<Collection> collectionsIn = null!;
 	
 	private Guid SelectedItem
 	{
@@ -259,11 +259,6 @@
     {
         SelectedMonth = DateTime.Today.ToString("MMMM");
         SelectedDay = DateTime.Today.Day;
-		
-		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = "hidden";
-		viewIndex = 0;
-
-		itemDescription = "";
 		
         LoadMemories();
     }
@@ -324,7 +319,7 @@
 	{
 		GC.Collect(); //Those damn videos always stirring up trouble.
 		GC.WaitForPendingFinalizers();
-		string result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
+		string? result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
 		if (result == null)
 		{
 			filenameErrorVis = "visible";
