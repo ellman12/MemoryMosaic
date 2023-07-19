@@ -36,10 +36,16 @@
     margin-bottom: 10px;
 }
 
-#body > div > .text-setting > span, #statsDiv > span {
+#body > div > .text-setting > span, #statsDiv > span, #statsDiv > a {
     display: block;
     margin-bottom: 7px;
     padding: 0;
+}
+
+#statsDiv > a {
+    color: #0080ff;
+    text-decoration: underline;
+    text-underline: cadetblue;
 }
 
 #body > div > .text-setting > input[type="text"] {
