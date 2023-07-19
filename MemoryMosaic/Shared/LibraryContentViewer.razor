@@ -107,7 +107,7 @@ If it can't find any content, it shows an h1 saying no content.
 	}
 	else
 	{
-	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine("mm_library", MediaList[viewIndex].path!))" loop autofocus controls autoplay></video></div>
+	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine("mm_library", MediaList[viewIndex].path))" loop autofocus controls autoplay></video></div>
 	}
 
 	@* Last item in the List so far so try adding more. If no more content can be added, don't show next button. *@
@@ -144,27 +144,30 @@ If it can't find any content, it shows an h1 saying no content.
 				</div>
 			</div>
 		}
-		else if (MediaList[i].dateTaken != null && MediaList[i].dateTaken.Value.Day != previousDay)
+		else if (MediaList[i].dateTaken.Value.Day != previousDay)
 		{
 			<div class="spanAndRow">
 				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("ddd, MMM d, yyyy") : MediaList[i].dateTaken.Value.ToString("ddd, MMM d, yyyy"))</span>
 				<div class="row">
-					@do
-					{
-						int ii = i;
-						<div class="thumbnail">
-							@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
-                            @if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
-							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
-							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
-						</div>
-						if (i == MediaList.Count)
-							previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken!.Value.Day;
-						else
-							previousDay = UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day;
-						i++;
-					} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == (UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day));
-					@{ i--; }
+					@{
+						do
+						{
+							int ii = i;
+							<div class="thumbnail">
+								@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
+								@if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
+								<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
+								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
+							</div>
+							if (i == MediaList.Count)
+							{previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken!.Value.Day;
+							}
+							else
+								previousDay = UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day;
+							i++;
+						} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == (UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day));
+						i--;
+					}
 				</div>
 			</div>
 		}
@@ -200,16 +203,16 @@ else
 {
 	<CtrlGInput @ref=@ctrlGInput StartDateChanged="@StartDateChanged"/>
 }
-<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@(async () => await ClearChecks())"/>
+<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@(() => ClearChecks().Start())"/>
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code{
-	private CtrlGInput ctrlGInput;
+	private CtrlGInput ctrlGInput = null!;
 
 	private int previousDay;
-	
+
 	///Stores all content loaded.
-	public List<MediaRow> MediaList { get; private set; }
+	public List<MediaRow> MediaList { get; private set; } = null!;
 
 	public Guid SelectedItem
 	{
@@ -235,50 +238,42 @@ else
 	private Guid _selectedItem;
 
 	///Stores all items user has selected.
-	public HashSet<Guid> SelectedItems { get; private set; }
+	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 
 	///Used only for when viewing the contents of a collection.
-	[Parameter]
-	public Collection Collection { get; set; }
+	[Parameter] public Collection Collection { get; set; } = null!;
 
 	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
 	private int lastCheckedIndex;
 
 	///Used to control the visibility of the header element, if there is one. 
-	[Parameter]
-	public string HeaderVis { get; set; }
+	[Parameter] public string HeaderVis { get; set; } = null!;
 	
 	///Used for binding HeaderVis
-	[Parameter]
-	public EventCallback<string> HeaderVisChanged { get; set; }
+	[Parameter] public EventCallback<string> HeaderVisChanged { get; set; }
 
 	///Gets how many items are selected. Page using this component needs to bind this so it's properly rendered in the &lt;header&gt;.
-	[Parameter]
-	public int SelectedItemsCount { get; set; }
+	[Parameter] public int SelectedItemsCount { get; set; }
 
 	///Used for binding SelectedItemsCount.
-	[Parameter]
-	public EventCallback<int> SelectedItemsCountChanged { get; set; }
+	[Parameter] public EventCallback<int> SelectedItemsCountChanged { get; set; }
 	
-	[Parameter]
-	public bool UseDateAdded { get; set; }
+	[Parameter] public bool UseDateAdded { get; set; }
 
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter]
-	public string FirstQuery { get; set; }
+	[Parameter, EditorRequired]
+	public string FirstQuery { get; set; } = null!;
 	
 	///The query used to select add more content to the top of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter]
-	public string NotNullDTQueryTop { get; set; }
+	[Parameter, EditorRequired]
+	public string NotNullDTQueryTop { get; set; } = null!;
 	
 	///The query used to select add more content to the bottom of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter]
-	public string NotNullDTQueryBottom { get; set; }
-	
-	[Parameter, EditorRequired]
-	public string NoItemsText { get; set; }
+	[Parameter, EditorRequired] public string NotNullDTQueryBottom { get; set; } = null!;
 
-	private string zipFilename;
+	[Parameter, EditorRequired] public string NoItemsText { get; set; } = null!;
+
+	private string? zipFilename;
 
 	private bool progressVisible;
 	
@@ -286,29 +281,25 @@ else
 	public DateTime? oldestDT, newestDT;
 
 	//Controls the visibility of the divs that add more content.
-	private string moreContentTopDivVis, moreContentBottomDivVis;
+	private string moreContentTopDivVis = null!, moreContentBottomDivVis = null!;
 	
 	//TwoChoiceInput's
-	private string delPromptVis;
-	public string starPromptVis;
+	private string delPromptVis = "hidden";
+	public string starPromptVis = "hidden";
 	
 	//Stuff for viewing a single item.
 	///The index of the item user is currently viewing.
 	public int viewIndex;
 
 	private DateTime? newDateTaken;
-	private string newFilename, editFilenameDivVis, filenameErrorVis, editDateDivVis, dtErrorVis, infoVis, downloadDivVis;
-	private string itemDescription;
-	private List<Collection> collectionsIn;
+	private string newFilename = "", editFilenameDivVis = "hidden", filenameErrorVis = "hidden", editDateDivVis = "hidden", dtErrorVis = "hidden", infoVis = "hidden", downloadDivVis = "hidden";
+	private string? itemDescription;
+	private List<Collection>? collectionsIn;
 }
 
 @functions{
-	protected override void OnInitialized()
-	{
-		ctrlGInput = new CtrlGInput();
-		Reset();
-	}
-	
+	protected override void OnInitialized() => Reset();
+
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
 	private async Task ToggleCheck(Guid uuid)
 	{
@@ -378,7 +369,7 @@ else
 		}
 		catch (NpgsqlException e)
 		{
-			Console.WriteLine(e);
+			L.LogException(e);
 		}
 		finally
 		{
@@ -616,7 +607,7 @@ else
 	{
 		GC.Collect(); //Those damn videos always stirring up trouble.
 		GC.WaitForPendingFinalizers();
-		string result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
+		string? result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
 		if (result == null)
 		{
 			filenameErrorVis = "visible";
