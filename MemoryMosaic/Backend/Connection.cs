@@ -120,8 +120,6 @@ public static class Connection
             Open();
             using NpgsqlCommand cmd = new("SELECT path FROM media WHERE uuid=@uuid", connection);
             cmd.Parameters.AddWithValue("@uuid", uuid);
-            cmd.ExecuteNonQuery();
-
             using NpgsqlDataReader r = cmd.ExecuteReader();
             if (r.HasRows)
             {
@@ -183,7 +181,6 @@ public static class Connection
         {
             Open();
             using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail FROM media ORDER BY date_taken DESC", connection);
-            cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.GetString(6)));
             r.Close();
@@ -322,7 +319,6 @@ public static class Connection
         {
             Open();
             using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", connection);
-            cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
             while (r.Read())
@@ -549,8 +545,6 @@ public static class Connection
 
             using NpgsqlCommand selectCmd = new("SELECT name FROM collections WHERE id=@id", connection);
             selectCmd.Parameters.AddWithValue("@id", id);
-            selectCmd.ExecuteNonQuery();
-
             using NpgsqlDataReader r = selectCmd.ExecuteReader();
             if (r.HasRows)
             {
@@ -734,7 +728,6 @@ public static class Connection
         {
             Open();
             using NpgsqlCommand cmd = new($"SELECT id, name, cover, last_updated FROM collections {where} ORDER BY {orderBy}", connection);
-            cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
             r.Close();
@@ -762,7 +755,6 @@ public static class Connection
             Open();
             using NpgsqlCommand cmd = new("SELECT id, name, cover FROM collections AS c INNER JOIN collection_entries AS e ON c.id=e.collection_id WHERE uuid=@uuid ORDER BY name ASC", connection);
             cmd.Parameters.AddWithValue("@uuid", uuid);
-            cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
             r.Close();
@@ -815,8 +807,6 @@ public static class Connection
             Open();
             using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", connection);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
-            cmd.ExecuteNonQuery();
-
             using NpgsqlDataReader r = cmd.ExecuteReader();
             if (r.HasRows)
             {
@@ -847,8 +837,6 @@ public static class Connection
         {
             await using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", localConn);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
-            await cmd.ExecuteNonQueryAsync();
-
             await using NpgsqlDataReader r = cmd.ExecuteReader();
             if (r.HasRows)
             {

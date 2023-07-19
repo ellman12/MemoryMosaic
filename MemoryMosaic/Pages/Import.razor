@@ -262,7 +262,6 @@
 	{
 		C.Open();
 		using NpgsqlCommand cmd = new($"SELECT path, date_taken, uuid, thumbnail, date_deleted FROM media WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection);
-		cmd.ExecuteNonQuery();
 		using NpgsqlDataReader r = cmd.ExecuteReader();
 		if (!r.HasRows)
 		{

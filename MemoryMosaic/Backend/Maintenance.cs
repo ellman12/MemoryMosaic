@@ -36,7 +36,6 @@ public static class Maintenance
         {
             C.Open();
             using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail, description FROM media", C.connection);
-            cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
             while (r.Read())

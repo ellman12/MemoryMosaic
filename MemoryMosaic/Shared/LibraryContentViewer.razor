@@ -347,7 +347,6 @@ else
 				cmd.CommandText = notNullDTQuery;
 				cmd.Parameters.AddWithValue("@oldestOrNewestDT", oldestOrNewestDT);
 			}
-			cmd.ExecuteNonQuery();
 			using NpgsqlDataReader r = cmd.ExecuteReader();
 			while (r.Read())
 			{
