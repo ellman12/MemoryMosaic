@@ -57,11 +57,11 @@
 </div>
 
 @code {
-    private List<Collection> collections;
+    private List<Collection> collections = null!;
 
-    private CollectionCreator collectionCreator;
+    private CollectionCreator collectionCreator = null!;
     
-    private string sortBtnText, sortDivVis = "hidden";
+    private string sortBtnText = null!, sortDivVis = "hidden";
     private static CMSortMode mode = CMSortMode.LastModified;
     private static bool showAlbums = true, showFolders, showReadonly = true;
 
