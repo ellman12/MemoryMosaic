@@ -54,7 +54,7 @@ public class ImportFile
 		originalFilename = renamedFilename = Path.GetFileNameWithoutExtension(absolutePath);
 		extension = Path.GetExtension(absolutePath);
 		thumbnail = Functions.GenerateThumbnail(absolutePath);
-		D.GetDateTakenFromBoth(absolutePath!, out metadataDateTaken, out filenameDateTaken);
+		D.GetDateTakenFromBoth(absolutePath, out metadataDateTaken, out filenameDateTaken);
 		uuid = Guid.NewGuid();
 
 		//Determine default DT source for select control.
