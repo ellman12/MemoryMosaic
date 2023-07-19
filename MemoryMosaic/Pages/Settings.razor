@@ -98,9 +98,9 @@
         {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
         @if (maintenanceLoaded)
         {
-            <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths.Count)</a></button>
-            <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@mediaMissingFiles.Count)</a></button>
-            <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Import"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders.Count)</span></button>
+            <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths?.Count)</a></button>
+            <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@mediaMissingFiles?.Count)</a></button>
+            <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Import"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders?.Count)</span></button>
         }
     </div>
     
@@ -148,60 +148,46 @@
 
 @code {
     //Settings
-    private static string serverIP = S.serverIP;
-    private static string importFolderPath = S.importFolderPath;
-    private static string libraryRootPath = S.libFolderPath;
-    private static bool showPrompts = S.showPrompts;
-    private static bool displayNoDTInCV = S.displayNoDTInCV;
-    private static string backupFolderPath = S.backupFolderPath;
-    private static string tmpFolderPath = S.tmpFolderPath;
-    private static int thumbnailQuality = S.thumbnailQuality;
-    private static LogLevel logLevel = S.logLevel;
+    private string serverIP = S.serverIP;
+    private string importFolderPath = S.importFolderPath;
+    private string libraryRootPath = S.libFolderPath;
+    private bool showPrompts = S.showPrompts;
+    private bool displayNoDTInCV = S.displayNoDTInCV;
+    private string backupFolderPath = S.backupFolderPath;
+    private string tmpFolderPath = S.tmpFolderPath;
+    private int thumbnailQuality = S.thumbnailQuality;
+    private LogLevel logLevel = S.logLevel;
 
     //Updating thumbnails
-    private static int amountToUpdate, amountUpdated;
-    private static string thumbnailBtnVis = "visible";
-    private static string thumbnailProgressVis = "hidden";
+    private int amountToUpdate, amountUpdated;
+    private string thumbnailBtnVis = "visible";
+    private string thumbnailProgressVis = "hidden";
     
     //Maintenance
-    private static bool maintenanceLoaded;
-    private static List<string> untrackedPaths;
+    private bool maintenanceLoaded;
+    private List<string>? untrackedPaths;
 
     //Get all folders in mm_library and mm_import
-    private static string[] folderPaths;
-    private static readonly List<string> emptyFolders = new();
+    private string[]? folderPaths;
+    private List<string>? emptyFolders;
     
     //Missing files
-    private static List<MediaRow> mediaMissingFiles = new();
+    private List<MediaRow>? mediaMissingFiles;
     
     //Stats
-    private static bool statsLoaded;
-    private static long mediaRowCount, trashRowCount, collectionsCount;
-    private static long totalUsableDriveSize; //How much space the drive mm_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
-    private static long freeDriveSpace; //Bytes
-    private static long librarySize; //Bytes
-    private static MediaRow? oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
-    public static DateTime whenWentOnline; //When did the server go online?
+    private bool statsLoaded;
+    private long mediaRowCount, trashRowCount, collectionsCount;
+    private long totalUsableDriveSize; //How much space the drive mm_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
+    private long freeDriveSpace; //Bytes
+    private long librarySize; //Bytes
+    private MediaRow? oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
+    public static DateTime whenWentOnline;
     
     //Debug
-    private static string debugQuery;
+    private string? debugQuery;
 
     protected override void OnInitialized()
     {
-        maintenanceLoaded = false;
-        
-        //Items in lib folder but not DB.
-        untrackedPaths = new List<string>();
-        
-        //Items in database but not a file on server
-        mediaMissingFiles = new List<MediaRow>();
-
-        //Empty folders
-        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
-        foreach (string path in folderPaths)
-            if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
-        
-        //Stats
         statsLoaded = false;
         mediaRowCount = trashRowCount = 0;
         collectionsCount = 0;
@@ -211,7 +197,7 @@
     }
 
     ///Free up space on server by removing temporary files, empty folders, and emptying the trash.
-    private static void FreeUpSpace()
+    private void FreeUpSpace()
     {
         //Clear mm_tmp.
         Directory.Delete(S.tmpFolderPath, true);
@@ -222,7 +208,7 @@
     }
 
     ///Update settings.
-    private static void ApplyBtnClicked()
+    private void ApplyBtnClicked()
     {
         S.serverIP = serverIP;
         S.importFolderPath = importFolderPath;
@@ -237,7 +223,7 @@
     }
 
     ///Cancel modification of settings.
-    private static void CancelBtnClicked()
+    private void CancelBtnClicked()
     {
         serverIP = S.serverIP;
         importFolderPath = S.importFolderPath;
@@ -251,7 +237,7 @@
     }
 
     ///Reset settings to default values.
-    private static void ResetBtnClicked()
+    private void ResetBtnClicked()
     {
         S.ResetSettings();
         CancelBtnClicked();
@@ -282,18 +268,18 @@
     }
 
     //Delete all empty folders
-    private static void EmptyFoldersBtnClick()
+    private void EmptyFoldersBtnClick()
     {
-        emptyFolders.Reverse(); //Start at deepest folder and work up (to avoid dir not found errors).
+        emptyFolders!.Reverse(); //Start at deepest folder and work up (to avoid dir not found errors).
         foreach (string path in emptyFolders) Directory.Delete(path);
         emptyFolders.Clear();
     }
 
-    private static void RunMaintenanceCheck()
+    private void RunMaintenanceCheck()
     {
         maintenanceLoaded = true;
+        emptyFolders = new List<string>();
         untrackedPaths = M.GetUntrackedLibFiles();
-
         mediaMissingFiles = M.GetMediaMissingFiles();
 
         folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
@@ -302,7 +288,7 @@
     }
 
     ///Get various statistics about the server and the library.
-    private static async Task GetStatsAsync()
+    private async Task GetStatsAsync()
     {
         statsLoaded = true;
         mediaRowCount = Stats.GetNumItemsInLibrary();
@@ -322,7 +308,7 @@
     }
 
     ///Only for debugging/testing purposes.
-    private static void RunQuery()
+    private void RunQuery()
     {
         try
         {
