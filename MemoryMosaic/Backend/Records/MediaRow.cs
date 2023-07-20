@@ -21,6 +21,7 @@ public record MediaRow
         this.uuid = uuid;
         this.thumbnail = thumbnail;
         this.dateDeleted = dateDeleted;
+        video = D.IsVideoExt(Path.GetExtension(path));
     }
 
     public MediaRow(string p, DateTime? dt, DateTime da, Guid uuid, string thumbnail)
@@ -30,6 +31,7 @@ public record MediaRow
         dateAdded = da;
         this.uuid = uuid;
         this.thumbnail = thumbnail;
+        video = D.IsVideoExt(Path.GetExtension(path));
     }
 
     public MediaRow(string p, DateTime? dt, DateTime da, bool starred, Guid uuid, string thumbnail, string? description)
@@ -54,5 +56,6 @@ public record MediaRow
         this.uuid = uuid;
         this.thumbnail = thumbnail;
         this.description = description;
+        video = D.IsVideoExt(Path.GetExtension(path));
     }
 }
