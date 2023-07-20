@@ -57,7 +57,7 @@
 				<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
 			</div>
 
-			@if (collectionsIn.Count > 0)
+			@if (collectionsIn?.Count > 0)
 			{
 				<div id="collectionsInfo">
 					<span id="collectionsText">Collections Containing</span>
@@ -228,7 +228,7 @@
 	private DateTime? newDateTaken;
 	private string newFilename = "hidden", editFilenameDivVis = "hidden", filenameErrorVis = "hidden", editDateDivVis = "hidden", dtErrorVis = "hidden", infoVis = "hidden";
 	private string? itemDescription;
-	private List<Collection> collectionsIn = null!;
+	private List<Collection>? collectionsIn;
 	
 	private Guid SelectedItem
 	{
