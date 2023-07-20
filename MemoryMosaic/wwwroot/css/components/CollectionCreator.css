@@ -11,3 +11,11 @@
     margin-right: 6px;
     color: black; /* Font color */
 }
+
+#collectionCreator > div > input[type="checkbox"] {
+    margin-left: 12px;
+}
+
+#collectionCreator > div > span {
+    margin-left: 1px;
+}
