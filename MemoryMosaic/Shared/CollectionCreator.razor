@@ -17,12 +17,8 @@
     public List<Collection> Collections { get; set; } = null!;
 
     public event EventHandler? CollectionCreated;
-        
-    private string title = "New Collection";
-    private string newCollectionBtnIcon = "library_add";
-    private string collectionInputDisplay = "none";
-    private string confirmBtnDisplay = "none";
-    private string newCollectionBtnText = "New Collection";
+
+    private string title = "New Collection", newCollectionBtnIcon = "library_add", collectionInputDisplay = "none", confirmBtnDisplay = "none", newCollectionBtnText = "New Collection";
     public string NewCollectionName { get; private set; } = "";
     private bool folderChecked;
     
