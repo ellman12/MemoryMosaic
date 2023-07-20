@@ -77,16 +77,16 @@
     private CollectionCreator collectionCreator = null!;
 
     [Parameter]
-    public Guid SelectedItem { get; set; } = Guid.Empty;
+    public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
     
     [Parameter]
-    public HashSet<Guid>? SelectedItems { get; set; } //Passed in from the page. Items selected by user.
+    public HashSet<Guid>? SelectedItems { get; set; } //Items selected by user.
     
     [Parameter]
-    public string? HeaderVis { get; set; } = "hidden"; //Passed in from the calling page. Visibility of the header that displays selected items count, misc buttons, etc.
+    public string? HeaderVis { get; set; } = "hidden"; //The visibility of the header on the page, if one exists.
     
     [Parameter]
-    public EventCallback<string> HeaderVisChanged { get; set; } //Changing the passed in headerVis.
+    public EventCallback<string> HeaderVisChanged { get; set; } //Two-way binding.
 
     [Parameter]
     public string CollectionsVis { get; set; } = "hidden";
@@ -98,7 +98,7 @@
     public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
     [Parameter]
-    public bool ClearChecksOnConfirm { get; set; } = true;
+    public bool ClearChecksOnConfirm { get; set; } = true; //Used in Import.
 
     protected override void OnInitialized()
     {
