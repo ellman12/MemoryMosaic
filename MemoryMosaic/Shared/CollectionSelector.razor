@@ -138,6 +138,21 @@
         }
     }
 
+    public async void ToggleVis()
+    {
+        if (CollectionsVis == "hidden")
+        {
+            CollectionsVis = "visible";
+            await CollectionsVisChanged.InvokeAsync("visible"); 
+        }
+        else
+        {
+            CollectionsVis = "hidden";
+            await CollectionsVisChanged.InvokeAsync("hidden");
+        }
+        StateHasChanged();
+    }
+
     //Closing the div for selecting album(s) to add selected items to.
     private async Task CloseBtnClick()
     {

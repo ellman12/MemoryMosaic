@@ -176,6 +176,8 @@ If it can't find any content, it shows an h1 saying no content.
 	<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
 </div>
 
+<CollectionSelector @ref="@cs" SelectedItem="@SelectedItem" SelectedItems="@SelectedItems" @bind-HeaderVis="@HeaderVis" @bind-CollectionsVis="@collectionsVis"/>
+
 <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
@@ -203,10 +205,12 @@ else
 {
 	<CtrlGInput @ref=@ctrlGInput StartDateChanged="@StartDateChanged"/>
 }
-<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@(() => ClearChecks().Start())"/>
+<KeyboardShortcuts AltC="@cs.ToggleVis" AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@(() => ClearChecks().Start())"/>
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code{
+	public CollectionSelector cs { get; private set; } = new();
+	
 	private CtrlGInput ctrlGInput = null!;
 
 	private int previousDay;
@@ -251,6 +255,8 @@ else
 	
 	///Used for binding HeaderVis
 	[Parameter] public EventCallback<string> HeaderVisChanged { get; set; }
+	
+	private string collectionsVis = "hidden";
 
 	///Gets how many items are selected. Page using this component needs to bind this so it's properly rendered in the &lt;header&gt;.
 	[Parameter] public int SelectedItemsCount { get; set; }
@@ -436,8 +442,8 @@ else
 		foreach (Guid item in SelectedItems)
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
 		SelectedItems.Clear();
+		HeaderVis = delPromptVis = starPromptVis = "hidden";
 		await HeaderVisChanged.InvokeAsync("hidden");
-		delPromptVis = starPromptVis = "hidden";
 		SelectedItemsCount = 0;
 		await SelectedItemsCountChanged.InvokeAsync(0);
 		StateHasChanged();
