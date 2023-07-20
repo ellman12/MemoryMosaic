@@ -1,4 +1,4 @@
-﻿#collectionCreator {
+#collectionCreator {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -16,6 +16,6 @@
     margin-left: 12px;
 }
 
-#collectionCreator > div > span {
+#collectionCreator > div > label {
     margin-left: 1px;
 }
