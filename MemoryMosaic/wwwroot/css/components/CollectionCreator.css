@@ -7,7 +7,7 @@
 #collectionCreator > input[type="text"] {
     width: 200px;
     font-size: 16px;
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-left: 6px;
+    margin-right: 6px;
     color: black; /* Font color */
 }
