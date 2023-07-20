@@ -3,13 +3,17 @@
 
 <div id="collectionCreator">
     <button class="iconBtn" @onclick="@NewCollectionBtnClick" title="@title"><span class="material-icons-outlined">@newCollectionBtnIcon</span></button>
-    <input type="text" placeholder="@("Enter new " + (folder ? "folder" : "album") + " name")" @bind="@NewCollectionName" style="display: @collectionInputDisplay"/>
-    <button class="iconBtn" @onclick="@ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span></button>
+    
+    @if (acceptingInput)
+    {
+        <input type="text" placeholder="@("Enter new " + (folder ? "folder" : "album") + " name")" @bind="@NewCollectionName"/>
+        <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
 
-    <div style="display: @confirmBtnDisplay">
-        <input type="checkbox" id="folder" @bind="@folder">
-        <label for="folder">Folder</label>
-    </div>
+        <div>
+            <input type="checkbox" id="folder" @bind="@folder">
+            <label for="folder">Folder</label>
+        </div>
+    }
 </div>
 
 @code {
@@ -18,7 +22,7 @@
 
     public event EventHandler? CollectionCreated;
 
-    private string title = "New Collection", newCollectionBtnIcon = "library_add", collectionInputDisplay = "none", confirmBtnDisplay = "none";
+    private string title = "New Collection", newCollectionBtnIcon = "library_add";
     public string NewCollectionName { get; private set; } = "";
     private bool acceptingInput, folder;
     private bool AcceptingInput
@@ -31,15 +35,11 @@
             {
                 title = "Cancel";
                 newCollectionBtnIcon = "close";
-                collectionInputDisplay = "inline";
-                confirmBtnDisplay = "flex";
             }
             else
             {
                 title = "New Collection";
                 newCollectionBtnIcon = "library_add";
-                collectionInputDisplay = "none";
-                confirmBtnDisplay = "none";
                 NewCollectionName = "";
             }
         }
