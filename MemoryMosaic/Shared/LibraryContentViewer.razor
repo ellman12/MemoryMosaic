@@ -313,13 +313,13 @@ else
 		if (newClass.Contains("unchecked")) //No longer selected.
 		{
 			SelectedItems.Remove(uuid);
-			await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
 		}
 		else if (!SelectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking.
 		{
 			SelectedItems.Add(uuid);
-			await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
 		}
+		SelectedItemsCount = SelectedItems.Count;
+		await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
 	}
 
 	///<summary>Adds content either to the front or back of MediaList.</summary>
@@ -448,7 +448,7 @@ else
 		await SelectedItemsCountChanged.InvokeAsync(0);
 		StateHasChanged();
 	}
-
+	
 	///Shows the TwoChoiceInput if enabled. If not, then deletes the selected items.
 	public void DeleteBtnClick()
 	{
