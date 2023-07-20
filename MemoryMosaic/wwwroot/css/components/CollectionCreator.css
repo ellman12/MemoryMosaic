@@ -12,6 +12,11 @@
     color: black; /* Font color */
 }
 
+#collectionCreator > #error {
+    color: red;
+    margin-right: 6px;
+}
+
 #collectionCreator > div {
     display: flex;
     flex-direction: row;
