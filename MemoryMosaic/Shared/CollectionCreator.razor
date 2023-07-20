@@ -18,30 +18,34 @@
 
     public event EventHandler? CollectionCreated;
 
-    private string title = "New Collection", newCollectionBtnIcon = "library_add", collectionInputDisplay = "none", confirmBtnDisplay = "none", newCollectionBtnText = "New Collection";
+    private string title = "New Collection", newCollectionBtnIcon = "library_add", collectionInputDisplay = "none", confirmBtnDisplay = "none";
     public string NewCollectionName { get; private set; } = "";
-    private bool folder;
-    
-    private void NewCollectionBtnClick()
+    private bool acceptingInput, folder;
+    private bool AcceptingInput
     {
-        if (newCollectionBtnText == "New Collection")
+        get => acceptingInput;
+        set
         {
-            title = "Cancel";
-            newCollectionBtnIcon = "close";
-            newCollectionBtnText = "Cancel";
-            collectionInputDisplay = "inline";
-            confirmBtnDisplay = "flex";
-        }
-        else if (newCollectionBtnText == "Cancel")
-        {
-            title = "New Collection";
-            newCollectionBtnIcon = "library_add";
-            newCollectionBtnText = "New Collection";
-            collectionInputDisplay = "none";
-            confirmBtnDisplay = "none";
-            NewCollectionName = "";
+            acceptingInput = value;
+            if (acceptingInput)
+            {
+                title = "Cancel";
+                newCollectionBtnIcon = "close";
+                collectionInputDisplay = "inline";
+                confirmBtnDisplay = "flex";
+            }
+            else
+            {
+                title = "New Collection";
+                newCollectionBtnIcon = "library_add";
+                collectionInputDisplay = "none";
+                confirmBtnDisplay = "none";
+                NewCollectionName = "";
+            }
         }
     }
+
+    private void NewCollectionBtnClick() => AcceptingInput = !AcceptingInput;
     
     public void ConfirmBtnClick()
     {
@@ -53,11 +57,6 @@
 
         C.CreateCollection(NewCollectionName, folder);
         CollectionCreated?.Invoke(this, EventArgs.Empty);
-        NewCollectionName = "";
-        newCollectionBtnIcon = "library_add";
-        newCollectionBtnText = "New Collection";
-        collectionInputDisplay = "none";
-        confirmBtnDisplay = "none";
-        folder = false;
+        AcceptingInput = folder = false;
     }
 }
