@@ -3,11 +3,11 @@
 
 <div id="collectionCreator">
     <button class="iconBtn" @onclick="@NewCollectionBtnClick" title="@title"><span class="material-icons-outlined">@newCollectionBtnIcon</span></button>
-    <input type="text" placeholder="@("Enter new " + (folderChecked ? "folder" : "album") + " name")" @bind="@NewCollectionName" style="display: @collectionInputDisplay"/>
+    <input type="text" placeholder="@("Enter new " + (folder ? "folder" : "album") + " name")" @bind="@NewCollectionName" style="display: @collectionInputDisplay"/>
     <button class="iconBtn" @onclick="@ConfirmBtnClick" style="display: @confirmBtnDisplay"><span class="material-icons-outlined">check</span></button>
 
     <div style="display: @confirmBtnDisplay">
-        <input type="checkbox" id="folder" @bind="@folderChecked">
+        <input type="checkbox" id="folder" @bind="@folder">
         <label for="folder">Folder</label>
     </div>
 </div>
@@ -20,7 +20,7 @@
 
     private string title = "New Collection", newCollectionBtnIcon = "library_add", collectionInputDisplay = "none", confirmBtnDisplay = "none", newCollectionBtnText = "New Collection";
     public string NewCollectionName { get; private set; } = "";
-    private bool folderChecked;
+    private bool folder;
     
     private void NewCollectionBtnClick()
     {
@@ -51,13 +51,13 @@
             return;
         }
 
-        C.CreateCollection(NewCollectionName, folderChecked);
+        C.CreateCollection(NewCollectionName, folder);
         CollectionCreated?.Invoke(this, EventArgs.Empty);
         NewCollectionName = "";
         newCollectionBtnIcon = "library_add";
         newCollectionBtnText = "New Collection";
         collectionInputDisplay = "none";
         confirmBtnDisplay = "none";
-        folderChecked = false;
+        folder = false;
     }
 }
