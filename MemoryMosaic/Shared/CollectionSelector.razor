@@ -85,9 +85,6 @@
     public HashSet<Guid>? SelectedItems { get; set; } //Passed in from the page. Items selected by user.
     
     [Parameter]
-    public EventCallback<int> SelectedItemsCountChanged { get; set; } //Used for clearing SelectedItems. https://blazor-university.com/components/two-way-binding/
-    
-    [Parameter]
     public string? HeaderVis { get; set; } = "hidden"; //Passed in from the calling page. Visibility of the header that displays selected items count, misc buttons, etc.
     
     [Parameter]
@@ -150,7 +147,6 @@
         SelectedItems.Clear();
         CollectionsVis = "hidden";
         HeaderVis = "hidden";
-        await SelectedItemsCountChanged.InvokeAsync(0);
         await CollectionsVisChanged.InvokeAsync("hidden");
         await HeaderVisChanged.InvokeAsync("hidden");
     }
@@ -214,7 +210,6 @@
         {
             await ClearChecks();
             SelectedItems?.Clear();
-            await SelectedItemsCountChanged.InvokeAsync(0);
             await CollectionsVisChanged.InvokeAsync("hidden");
             await HeaderVisChanged.InvokeAsync("hidden");
         }
