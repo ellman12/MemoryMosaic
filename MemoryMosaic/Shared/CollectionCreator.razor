@@ -2,7 +2,7 @@
 <link href="/css/components/CollectionCreator.css" rel="stylesheet">
 
 <div id="collectionCreator">
-    <button class="iconBtn" @onclick="@NewCollectionBtnClick" title="@title"><span class="material-icons-outlined">@newCollectionBtnIcon</span></button>
+    <button class="iconBtn" @onclick="@NewCollectionBtnClick" title="@newCollectionBtnTitle"><span class="material-icons-outlined">@newCollectionBtnIcon</span></button>
     
     @if (acceptingInput)
     {
@@ -22,7 +22,7 @@
 
     public event EventHandler? CollectionCreated;
 
-    private string title = "New Collection", newCollectionBtnIcon = "library_add";
+    private string newCollectionBtnTitle = "New Collection", newCollectionBtnIcon = "library_add";
     public string NewCollectionName { get; private set; } = "";
     private bool acceptingInput, folder;
     private bool AcceptingInput
@@ -33,12 +33,12 @@
             acceptingInput = value;
             if (acceptingInput)
             {
-                title = "Cancel";
+                newCollectionBtnTitle = "Cancel";
                 newCollectionBtnIcon = "close";
             }
             else
             {
-                title = "New Collection";
+                newCollectionBtnTitle = "New Collection";
                 newCollectionBtnIcon = "library_add";
                 NewCollectionName = "";
             }
