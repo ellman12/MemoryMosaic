@@ -1,4 +1,4 @@
-#collectionCreator {
+﻿#collectionCreator {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -10,6 +10,12 @@
     margin-left: 6px;
     margin-right: 6px;
     color: black; /* Font color */
+}
+
+#collectionCreator > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 #collectionCreator > div > input[type="checkbox"] {
