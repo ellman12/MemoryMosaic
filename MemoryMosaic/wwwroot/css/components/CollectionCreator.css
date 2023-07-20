@@ -7,7 +7,26 @@
 #collectionCreator > input[type="text"] {
     width: 200px;
     font-size: 16px;
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-left: 6px;
+    margin-right: 6px;
     color: black; /* Font color */
+}
+
+#collectionCreator > #error {
+    color: red;
+    margin-right: 6px;
+}
+
+#collectionCreator > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#collectionCreator > div > input[type="checkbox"] {
+    margin-left: 6px;
+}
+
+#collectionCreator > div > label {
+    margin-left: 1px;
 }
