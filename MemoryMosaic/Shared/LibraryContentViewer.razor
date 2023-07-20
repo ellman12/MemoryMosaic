@@ -260,9 +260,6 @@ else
 
 	///Gets how many items are selected. Page using this component needs to bind this so it's properly rendered in the &lt;header&gt;.
 	[Parameter] public int SelectedItemsCount { get; set; }
-
-	///Used for binding SelectedItemsCount.
-	[Parameter] public EventCallback<int> SelectedItemsCountChanged { get; set; }
 	
 	[Parameter] public bool UseDateAdded { get; set; }
 
@@ -310,16 +307,11 @@ else
 	private async Task ToggleCheck(Guid uuid)
 	{
 		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
-		if (newClass.Contains("unchecked")) //No longer selected.
-		{
+		if (newClass.Contains("unchecked"))
 			SelectedItems.Remove(uuid);
-		}
-		else if (!SelectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking.
-		{
+		else
 			SelectedItems.Add(uuid);
-		}
 		SelectedItemsCount = SelectedItems.Count;
-		await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
 	}
 
 	///<summary>Adds content either to the front or back of MediaList.</summary>
@@ -445,7 +437,6 @@ else
 		HeaderVis = delPromptVis = starPromptVis = "hidden";
 		await HeaderVisChanged.InvokeAsync("hidden");
 		SelectedItemsCount = 0;
-		await SelectedItemsCountChanged.InvokeAsync(0);
 		StateHasChanged();
 	}
 	
