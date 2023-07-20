@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Backend.Records;
+namespace MemoryMosaic.Backend.Records;
 
 ///Represents a row in the media table.
 public record MediaRow
@@ -44,17 +44,6 @@ public record MediaRow
         video = D.IsVideoExt(Path.GetExtension(path));
     }
             
-    public MediaRow(string p, DateTime? dt, DateTime da, bool starred, bool separate, Guid uuid, string thumbnail)
-    {
-        path = p;
-        dateTaken = dt;
-        dateAdded = da;
-        this.starred = starred;
-        this.separate = separate;
-        this.uuid = uuid;
-        this.thumbnail = thumbnail;
-    }
-    
     public MediaRow(string p, DateTime? dt, DateTime da, bool starred, bool separate, Guid uuid, string thumbnail, string? description)
     {
         path = p;
