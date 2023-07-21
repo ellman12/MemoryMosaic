@@ -6,12 +6,12 @@
 
 @{
     <header>
-        <button class="iconBtn" id="clearBtn" style="visibility: @(selectedItemsCount == 0 ? "hidden" : "visible")" @onclick="@libContentViewer.ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText" style="visibility: @(selectedItemsCount == 0 ? "hidden" : "visible")">@selectedItemsCount selected</span>
+        <button class="iconBtn" id="clearBtn" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")">@lcv.SelectedItemsCount selected</span>
         <div>
             <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
-            <button class="textBtn" @onclick="@RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(selectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
-            <button class="textBtn" @onclick="@DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(selectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
+            <button class="textBtn" @onclick="@RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
+            <button class="textBtn" @onclick="@DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
     
         <div id="sortDiv" style="visibility: @sortDivVis">
@@ -36,7 +36,7 @@
 
     UpdateQueries();
     @* Date Added in this case is actually Date Deleted. *@
-    <LibraryContentViewer @ref="@libContentViewer" UseDateAdded="@(sortMode is TrashSortMode.OldestDateDeleted or TrashSortMode.NewestDateDeleted)" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" SelectedItemsCountChanged="@(() => selectedItemsCount = libContentViewer.SelectedItems.Count)" NoItemsText="No Items in Trash"/>
+    <LibraryContentViewer @ref="@lcv" UseDateAdded="@(sortMode is TrashSortMode.OldestDateDeleted or TrashSortMode.NewestDateDeleted)" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="No Items in Trash" Rerender="@StateHasChanged"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteItems" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@restorePromptVis" YesBtnClick="@RestoreItems" NoBtnClick="@(() => { restorePromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
@@ -44,8 +44,7 @@
 
 @code {
     private TrashSortMode sortMode = TrashSortMode.NewestDateDeleted;
-    private LibraryContentViewer libContentViewer = new();
-    private int selectedItemsCount;
+    private LibraryContentViewer lcv = new();
     private string sortBtnText = null!, choiceMsg = null!, orderBy = null!, sortColumn = null!, topQuery = null!, bottomQuery = null!, firstQuery = null!;
     private string delPromptVis = "hidden", restorePromptVis = "hidden", sortDivVis = "hidden";
 
@@ -102,18 +101,18 @@
         sortMode = newMode;
         SetSortBtnText();
         sortDivVis = "hidden";
-        await libContentViewer.ClearChecks();
-        libContentViewer.oldestDT = libContentViewer.newestDT = null;
-        libContentViewer.MediaList.Clear();
+        await lcv.ClearChecks();
+        lcv.oldestDT = lcv.newestDT = null;
+        lcv.MediaList.Clear();
         UpdateQueries();
-        libContentViewer.AddContentBottom();
+        lcv.AddContentBottom();
         StateHasChanged();
     }
 
     //Show choice div
     private void RestoreBtnClick()
     {
-        if (libContentViewer.MediaList.Count == 0) return;
+        if (lcv.MediaList.Count == 0) return;
         if (S.showPrompts == false)
         {
             RestoreItems();
@@ -122,7 +121,7 @@
         }
         
         restorePromptVis = "visible";
-        choiceMsg = libContentViewer.SelectedItems.Count switch
+        choiceMsg = lcv.SelectedItems.Count switch
         {
             0 => "Restore Everything?",
             1 => "Restore Selected Item?",
@@ -132,30 +131,29 @@
 
     private async void RestoreItems()
     {
-        if (libContentViewer.SelectedItems.Count == 0) //Restore ALL
+        if (lcv.SelectedItems.Count == 0) //Restore ALL
         {
             C.RestoreTrash();
-            libContentViewer.MediaList.Clear();
+            lcv.MediaList.Clear();
         }
         else //Restore selected
         {
-            foreach (Guid item in libContentViewer.SelectedItems)
+            foreach (Guid item in lcv.SelectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
-                libContentViewer.MediaList.RemoveAll(u => u.uuid == item);
+                lcv.MediaList.RemoveAll(u => u.uuid == item);
                 C.RestoreItem(item);
             }
         }
-        await libContentViewer.ClearChecks();
+        await lcv.ClearChecks();
         restorePromptVis = "hidden";
-        selectedItemsCount = 0;
         StateHasChanged();
     }
 
     //Show choice div
     private void DeleteBtnClick()
     {
-        if (libContentViewer.MediaList.Count == 0) return;
+        if (lcv.MediaList.Count == 0) return;
         if (S.showPrompts == false)
         {
             DeleteItems();
@@ -164,7 +162,7 @@
         }
 
         delPromptVis = "visible";
-        choiceMsg = libContentViewer.SelectedItems.Count switch
+        choiceMsg = lcv.SelectedItems.Count switch
         {
             0 => "PERMANENTLY Delete Everything?",
             1 => "PERMANENTLY Delete Selected Item?",
@@ -174,23 +172,22 @@
 
     private async void DeleteItems()
     {
-        if (libContentViewer.SelectedItems.Count == 0) //Delete ALL
+        if (lcv.SelectedItems.Count == 0) //Delete ALL
         {
             C.EmptyTrash();
-            libContentViewer.MediaList.Clear();
+            lcv.MediaList.Clear();
         }
         else //Delete selected
         {
-            foreach (Guid item in libContentViewer.SelectedItems)
+            foreach (Guid item in lcv.SelectedItems)
             {
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
-                libContentViewer.MediaList.RemoveAll(u => u.uuid == item);
+                lcv.MediaList.RemoveAll(u => u.uuid == item);
                 C.PermDeleteItem(item);
             }
         }
-        await libContentViewer.ClearChecks();
+        await lcv.ClearChecks();
         delPromptVis = "hidden";
-        selectedItemsCount = 0;
         StateHasChanged();
     }
 }

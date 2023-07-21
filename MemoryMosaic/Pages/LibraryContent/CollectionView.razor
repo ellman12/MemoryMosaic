@@ -8,8 +8,8 @@
 
 @{
     <header>
-        <button class="iconBtn" @onclick="@libContentViewer.ClearChecks" style="visibility: @headerVis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
-        <span style="visibility: @headerVis" id="selectedAmtText">@selectedItemsCount&nbsp;&nbsp;Selected</span>
+        <button class="iconBtn" @onclick="@lcv.ClearChecks" style="visibility: @lcv.HeaderVis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
+        <span style="visibility: @lcv.HeaderVis" id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
 
         <div id="collectionRenameDiv">
             @if (collection.readOnly)
@@ -33,16 +33,16 @@
         </div>
 
         <div id="buttons">
-            <button class="iconBtn" style="visibility: @headerVis"><span class="material-icons-outlined" @onclick="@libContentViewer.DownloadSelected">file_download</span></button>
-            <button class="iconBtn" style="visibility: @headerVis" @onclick="@(() => collectionsVis = "visible")" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
-            <button class="iconBtn" style="visibility: @headerVis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref libContentViewer.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
+            <button class="iconBtn" style="visibility: @lcv.HeaderVis"><span class="material-icons-outlined" @onclick="@lcv.DownloadSelected">file_download</span></button>
+            <button class="iconBtn" style="visibility: @lcv.HeaderVis" @onclick="@lcv.cs.ToggleVis" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
+            <button class="iconBtn" style="visibility: @lcv.HeaderVis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref lcv.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
             
             @if (!collection.readOnly)
             {
-                <button class="iconBtn" style="visibility: @headerVis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+                <button class="iconBtn" style="visibility: @lcv.HeaderVis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
             }
     
-            <button class="iconBtn" style="visibility: @headerVis" @onclick="@libContentViewer.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <button class="iconBtn" style="visibility: @lcv.HeaderVis" @onclick="@lcv.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             <button class="iconBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
         </div>
 
@@ -66,11 +66,8 @@
 
     //Loads every item with NULL Date Taken first, then items with Date Taken.
     @* Date Added in this instance is date_added_to_collection. *@
-    <LibraryContentViewer @ref="@libContentViewer" @bind-HeaderVis="@headerVis" SelectedItemsCountChanged="@(() => { selectedItemsCount = libContentViewer.SelectedItems.Count; StateHasChanged(); })" Collection="@collection"
-        UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" NoItemsText="@(collection.folder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
-    
-    <CollectionSelector SelectedItems="@libContentViewer.SelectedItems" @bind-HeaderVis="@headerVis" @bind-CollectionsVis="@collectionsVis"/>
-    <KeyboardShortcuts AltC="@(() => { F.VisToggle(ref collectionsVis); StateHasChanged(); })"/>
+    <LibraryContentViewer @ref="@lcv" Collection="@collection" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" Rerender="@StateHasChanged"
+         NoItemsText="@(collection.folder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Album")} \"{collection.name}\"?")
         YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
@@ -85,9 +82,8 @@
     private CVSortMode sortMode;
     private string orderBy = null!, sortColumn = null!, topQuery = null!, bottomQuery = null!, firstQuery = null!;
     
-    private LibraryContentViewer libContentViewer = new();
-    private int selectedItemsCount;
-    private string headerVis = null!, collectionsVis = null!, delPromptVis = null!, buttonsVis = null!, sortDivVis = null!, _newCollectionName = null!;
+    private LibraryContentViewer lcv = new();
+    private string delPromptVis = null!, buttonsVis = null!, sortDivVis = null!, _newCollectionName = null!;
     private string NewCollectionName
     {
         get => _newCollectionName;
@@ -112,7 +108,7 @@
         collection = await C.GetCollectionDetailsAsync(CollectionID) ?? throw new InvalidOperationException();
         sortMode = CVSortMode.NewestDateTaken;
         _newCollectionName = collection.name;
-        headerVis = collectionsVis = delPromptVis = buttonsVis = sortDivVis = "hidden";
+        delPromptVis = buttonsVis = sortDivVis = "hidden";
     }
 
     private void UpdateQueries()
@@ -153,11 +149,10 @@
     private void ChangeOrder(CVSortMode newMode)
     {
         sortMode = newMode;
-        libContentViewer.oldestDT = libContentViewer.newestDT = null;
-        libContentViewer.MediaList.Clear();
+        lcv.oldestDT = lcv.newestDT = null;
+        lcv.MediaList.Clear();
         UpdateQueries();
-        libContentViewer.AddContentBottom();
-        selectedItemsCount = 0;
+        lcv.AddContentBottom();
         StateHasChanged();
     }
 
@@ -170,14 +165,11 @@
     //Remove selected from the collection
     private async void RemoveBtnClick()
     {
-        foreach (Guid uuid in libContentViewer.SelectedItems) C.RemoveFromCollection(uuid, collection!.id);
-        headerVis = "hidden";
-        await libContentViewer.SelectedItemsCountChanged.InvokeAsync(0);
-        await libContentViewer.HeaderVisChanged.InvokeAsync("hidden");
-        await libContentViewer.ClearChecks();
-        libContentViewer.oldestDT = libContentViewer.newestDT = null;
-        libContentViewer.MediaList.Clear();
-        libContentViewer.AddContentBottom();
+        foreach (Guid uuid in lcv.SelectedItems) C.RemoveFromCollection(uuid, collection!.id);
+        await lcv.ClearChecks();
+        lcv.oldestDT = lcv.newestDT = null;
+        lcv.MediaList.Clear();
+        lcv.AddContentBottom();
         StateHasChanged();
     }
     
