@@ -6,8 +6,8 @@
 
 @{
     <header>
-        <button class="iconBtn" id="clearBtn" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")">@lcv.SelectedItemsCount selected</span>
+        <button class="iconBtn" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
         <div>
             <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
             <button class="textBtn" @onclick="@RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
