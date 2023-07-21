@@ -66,6 +66,8 @@
     </div>
 </div>
 
+<KeyboardShortcuts AltC="@ToggleVis"/>
+
 @code {
     public static List<Collection> albums = null!, folders = null!;
     public static List<bool> checkedAlbums = null!;
@@ -88,12 +90,8 @@
     [Parameter]
     public EventCallback<string> HeaderVisChanged { get; set; } //Two-way binding.
 
-    [Parameter]
-    public string CollectionsVis { get; set; } = "hidden";
+    private string CollectionsVis = "hidden";
     
-    [Parameter]
-    public EventCallback<string> CollectionsVisChanged { get; set; }
-
     [Parameter]
     public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
@@ -143,12 +141,10 @@
         if (CollectionsVis == "hidden")
         {
             CollectionsVis = "visible";
-            await CollectionsVisChanged.InvokeAsync("visible"); 
         }
         else
         {
             CollectionsVis = "hidden";
-            await CollectionsVisChanged.InvokeAsync("hidden");
         }
         StateHasChanged();
     }
@@ -157,7 +153,6 @@
     private async Task CloseBtnClick()
     {
         CollectionsVis = "hidden";
-        await CollectionsVisChanged.InvokeAsync("hidden");
         ClearAlbumChecks();
         ClearFolderChecks();
     }
@@ -169,7 +164,6 @@
         SelectedItems.Clear();
         CollectionsVis = "hidden";
         HeaderVis = "hidden";
-        await CollectionsVisChanged.InvokeAsync("hidden");
         await HeaderVisChanged.InvokeAsync("hidden");
     }
 
@@ -232,7 +226,6 @@
         {
             await ClearChecks();
             SelectedItems?.Clear();
-            await CollectionsVisChanged.InvokeAsync("hidden");
             await HeaderVisChanged.InvokeAsync("hidden");
         }
     }
