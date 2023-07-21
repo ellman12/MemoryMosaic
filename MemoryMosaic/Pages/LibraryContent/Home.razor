@@ -4,7 +4,7 @@
 <link href="css/LibraryContentPage.css" rel="stylesheet"/>
 
 @{
-    <header style="visibility: @headerVis">
+    <header style="visibility: @lcv.HeaderVis">
         <div id="buttons">
             <button class="iconBtn"><span class="material-icons-outlined" @onclick="@lcv.DownloadSelected">file_download</span></button>
             <button class="iconBtn" @onclick="@lcv.cs.ToggleVis"><span class="material-icons-outlined">collections</span></button>
@@ -17,11 +17,10 @@
 
     const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken >= @oldestOrNewestDT ORDER BY date_taken ASC LIMIT 100";
     const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken <= @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 100";
-    <LibraryContentViewer @ref="@lcv" @bind-HeaderVis="@headerVis" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="Import some items to get started"
+    <LibraryContentViewer @ref="@lcv" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="Import some items to get started" Rerender="@StateHasChanged"
         FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 100"/>
 }
 
 @code {
     private LibraryContentViewer lcv = new();
-    private string headerVis = "hidden";
 }

@@ -249,17 +249,32 @@ else
 
 	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
 	private int lastCheckedIndex;
+	
+	[Parameter, EditorRequired] public Action Rerender { private get; set; } = null!;
 
-	///Used to control the visibility of the header element, if there is one. 
-	[Parameter] public string HeaderVis { get; set; } = null!;
-	
-	///Used for binding HeaderVis
-	[Parameter] public EventCallback<string> HeaderVisChanged { get; set; }
-	
 	private string collectionsVis = "hidden";
+	
+	private string headerVis = "hidden";
+	public string HeaderVis
+	{
+		get => headerVis;
+		set
+		{
+			headerVis = value;
+			Rerender.Invoke();
+		}
+	}
 
-	///Gets how many items are selected. Page using this component needs to bind this so it's properly rendered in the &lt;header&gt;.
-	[Parameter] public int SelectedItemsCount { get; set; }
+	private int selectedItemsCount;
+	public int SelectedItemsCount
+	{
+		get => selectedItemsCount;
+		private set
+		{
+			selectedItemsCount = value;
+			Rerender.Invoke();
+		}
+	}
 	
 	[Parameter] public bool UseDateAdded { get; set; }
 
@@ -389,7 +404,7 @@ else
 	{
 		await ToggleCheck(uuid);
 		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>("getItemId", uuid));
-		await HeaderVisChanged.InvokeAsync(SelectedItems.Count > 0 ? "visible" : "hidden");
+		HeaderVis = SelectedItems.Count > 0 ? "visible" : "hidden";
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
 		if (eventArgs.ShiftKey)
@@ -435,7 +450,6 @@ else
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
 		SelectedItems.Clear();
 		HeaderVis = delPromptVis = starPromptVis = "hidden";
-		await HeaderVisChanged.InvokeAsync("hidden");
 		SelectedItemsCount = 0;
 		StateHasChanged();
 	}
@@ -526,7 +540,6 @@ else
 		
 		progressVisible = true;
 		HeaderVis = "hidden";
-		await HeaderVisChanged.InvokeAsync("hidden");
 		StateHasChanged();
 		await Task.Delay(0);
 
