@@ -254,6 +254,7 @@
 			}
 		}
 
+		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		importFiles = errors.Concat(good).OrderByDescending(file => libFilesWithSameName[file.originalFilename]?.Count).ToList();
 		L.LogLine($"Finish Import {nameof(OrganizeItems)}", LogLevel.Debug);
 	}
