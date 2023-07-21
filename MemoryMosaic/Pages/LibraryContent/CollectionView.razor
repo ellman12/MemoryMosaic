@@ -146,9 +146,11 @@
         if (S.displayNoDTInCV) firstQuery += $" ORDER BY {orderBy}";
     }
     
-    private void ChangeOrder(CVSortMode newMode)
+    private async void ChangeOrder(CVSortMode newMode)
     {
         sortMode = newMode;
+        sortDivVis = "hidden";
+        await lcv.ClearChecks();
         lcv.oldestDT = lcv.newestDT = null;
         lcv.MediaList.Clear();
         UpdateQueries();
