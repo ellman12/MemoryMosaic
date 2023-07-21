@@ -176,6 +176,8 @@ If it can't find any content, it shows an h1 saying no content.
 	<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
 </div>
 
+<CollectionSelector @ref="@cs" SelectedItem="@SelectedItem" SelectedItems="@SelectedItems" @bind-HeaderVis="@HeaderVis"/>
+
 <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
@@ -207,6 +209,8 @@ else
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code{
+	public CollectionSelector cs { get; private set; } = new();
+	
 	private CtrlGInput ctrlGInput = null!;
 
 	private int previousDay;
@@ -245,18 +249,30 @@ else
 
 	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
 	private int lastCheckedIndex;
-
-	///Used to control the visibility of the header element, if there is one. 
-	[Parameter] public string HeaderVis { get; set; } = null!;
 	
-	///Used for binding HeaderVis
-	[Parameter] public EventCallback<string> HeaderVisChanged { get; set; }
+	[Parameter, EditorRequired] public Action Rerender { private get; set; } = null!;
 
-	///Gets how many items are selected. Page using this component needs to bind this so it's properly rendered in the &lt;header&gt;.
-	[Parameter] public int SelectedItemsCount { get; set; }
+	private string headerVis = "hidden";
+	public string HeaderVis
+	{
+		get => headerVis;
+		set
+		{
+			headerVis = value;
+			Rerender.Invoke();
+		}
+	}
 
-	///Used for binding SelectedItemsCount.
-	[Parameter] public EventCallback<int> SelectedItemsCountChanged { get; set; }
+	private int selectedItemsCount;
+	public int SelectedItemsCount
+	{
+		get => selectedItemsCount;
+		private set
+		{
+			selectedItemsCount = value;
+			Rerender.Invoke();
+		}
+	}
 	
 	[Parameter] public bool UseDateAdded { get; set; }
 
@@ -304,16 +320,11 @@ else
 	private async Task ToggleCheck(Guid uuid)
 	{
 		string newClass = await JSRuntime.InvokeAsync<string>("toggleCheck", uuid);
-		if (newClass.Contains("unchecked")) //No longer selected.
-		{
+		if (newClass.Contains("unchecked"))
 			SelectedItems.Remove(uuid);
-			await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
-		}
-		else if (!SelectedItems.Contains(uuid)) //Needed to prevent adding dupes when shift clicking.
-		{
+		else
 			SelectedItems.Add(uuid);
-			await SelectedItemsCountChanged.InvokeAsync(SelectedItems.Count);
-		}
+		SelectedItemsCount = SelectedItems.Count;
 	}
 
 	///<summary>Adds content either to the front or back of MediaList.</summary>
@@ -391,7 +402,7 @@ else
 	{
 		await ToggleCheck(uuid);
 		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>("getItemId", uuid));
-		await HeaderVisChanged.InvokeAsync(SelectedItems.Count > 0 ? "visible" : "hidden");
+		HeaderVis = SelectedItems.Count > 0 ? "visible" : "hidden";
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
 		if (eventArgs.ShiftKey)
@@ -436,13 +447,11 @@ else
 		foreach (Guid item in SelectedItems)
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
 		SelectedItems.Clear();
-		await HeaderVisChanged.InvokeAsync("hidden");
-		delPromptVis = starPromptVis = "hidden";
+		HeaderVis = delPromptVis = starPromptVis = "hidden";
 		SelectedItemsCount = 0;
-		await SelectedItemsCountChanged.InvokeAsync(0);
 		StateHasChanged();
 	}
-
+	
 	///Shows the TwoChoiceInput if enabled. If not, then deletes the selected items.
 	public void DeleteBtnClick()
 	{
@@ -529,7 +538,6 @@ else
 		
 		progressVisible = true;
 		HeaderVis = "hidden";
-		await HeaderVisChanged.InvokeAsync("hidden");
 		StateHasChanged();
 		await Task.Delay(0);
 
