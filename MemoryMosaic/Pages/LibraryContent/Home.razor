@@ -15,10 +15,11 @@
         <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
     </header>
 
-    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken >= @oldestOrNewestDT ORDER BY date_taken ASC LIMIT 100";
-    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken <= @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 100";
-    <LibraryContentViewer @ref="@lcv" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="Import some items to get started" Rerender="@StateHasChanged"
-        FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 100"/>
+    const string shared = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_deleted IS NULL AND date_taken";
+    const string firstQuery = $"{shared} IS NOT NULL ORDER BY date_taken DESC LIMIT 100";
+    const string topQuery = $"{shared} >= @oldestOrNewestDT ORDER BY date_taken ASC LIMIT 100";
+    const string bottomQuery = $"{shared} <= @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 100";
+    <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="Import some items to get started" Rerender="@StateHasChanged"/>
 }
 
 @code {

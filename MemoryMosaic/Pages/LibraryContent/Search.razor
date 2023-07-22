@@ -22,20 +22,18 @@
         }
     </header>
     
-    query = String.IsNullOrWhiteSpace(searchText) ? "" : $"SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE date_deleted IS NULL AND path ILIKE '%{searchText}%' ORDER BY date_taken DESC";
-    <LibraryContentViewer @ref="@lcv" NotNullDTQueryTop="@query" NotNullDTQueryBottom="@query" FirstQuery="@query" NoItemsText="No Items Found" Rerender="@StateHasChanged"/>
-    
+    <LibraryContentViewer @ref="@lcv" NotNullDTQueryTop="@Query" NotNullDTQueryBottom="@Query" FirstQuery="@Query" NoItemsText="No Items Found" Rerender="@StateHasChanged"/>
     <KeyboardShortcuts Slash="FocusSearchInput"/>
 }
 
 @code {
     private LibraryContentViewer lcv = new();
     private ElementReference searchInput;
-    private string searchText = "", query = "";
+    private string searchText = "";
+    private string Query => String.IsNullOrWhiteSpace(searchText) ? "" : $"SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE date_deleted IS NULL AND path ILIKE '%{searchText}%' ORDER BY date_taken DESC";
 
     private void SearchMedia()
     {
-        query = String.IsNullOrWhiteSpace(searchText) ? "" : $"SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE date_deleted IS NULL AND path ILIKE '%{searchText}%' ORDER BY date_taken DESC";
         lcv.Reset();
         StateHasChanged();
     }
