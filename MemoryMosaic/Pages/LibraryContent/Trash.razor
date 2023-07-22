@@ -154,25 +154,27 @@
     private void DeleteBtnClick()
     {
         if (lcv.MediaList.Count == 0) return;
-        if (S.showPrompts == false)
+        
+        if (S.showPrompts)
+        {
+            choiceMsg = lcv.SelectedItems.Count switch
+            {
+                0 => "PERMANENTLY Delete Everything?",
+                1 => "PERMANENTLY Delete Selected Item?",
+                _ => "PERMANENTLY Delete Selected Items?"
+            };
+            delPromptVis = "visible";
+        }
+        else
         {
             DeleteItems();
-            StateHasChanged();
-            return;
         }
-
-        delPromptVis = "visible";
-        choiceMsg = lcv.SelectedItems.Count switch
-        {
-            0 => "PERMANENTLY Delete Everything?",
-            1 => "PERMANENTLY Delete Selected Item?",
-            _ => "PERMANENTLY Delete Selected Items?"
-        };
+        StateHasChanged();
     }
 
     private async void DeleteItems()
     {
-        if (lcv.SelectedItems.Count == 0) //Delete ALL
+        if (lcv.SelectedItems.Count == 0)
         {
             C.EmptyTrash();
             lcv.MediaList.Clear();
