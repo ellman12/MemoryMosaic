@@ -19,10 +19,11 @@
         }
     </header>
 
-    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE starred = true AND date_deleted IS NULL AND date_taken >= @oldestOrNewestDT ORDER BY date_taken ASC LIMIT 100";
-    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE starred = true AND date_deleted IS NULL AND date_taken <= @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 100";
-    <LibraryContentViewer @ref="@lcv" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="Items Marked As Starred and with a Date Taken Appear Here" Rerender="@StateHasChanged"
-        FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE starred = true AND date_deleted IS NULL AND date_taken IS NOT NULL ORDER BY date_taken DESC LIMIT 100"/>
+    const string Shared = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE starred = true AND date_deleted IS NULL AND date_taken";
+    const string FirstQuery = $"{Shared} IS NOT NULL ORDER BY date_taken DESC LIMIT 100";
+    const string TopQuery = $"{Shared} >= @oldestOrNewestDT ORDER BY date_taken ASC LIMIT 100";
+    const string BottomQuery = $"{Shared} <= @oldestOrNewestDT ORDER BY date_taken DESC LIMIT 100";
+    <LibraryContentViewer @ref="@lcv" FirstQuery="@FirstQuery" NotNullDTQueryTop="@TopQuery" NotNullDTQueryBottom="@BottomQuery" NoItemsText="Items Marked As Starred and with a Date Taken Appear Here" Rerender="@StateHasChanged"/>
 }
 
 @code {

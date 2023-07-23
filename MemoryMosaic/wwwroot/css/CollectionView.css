@@ -20,6 +20,7 @@ header {
     left: 145px;
     right: 0;
     z-index: 999;
+    height: 60px;
 }
 
 header > #buttons {
@@ -35,6 +36,7 @@ header > span {
 }
 
 header > #selectedAmtText {
+    font-size: 20px;
     margin-left: 20px;
     margin-right: 20px;
 }

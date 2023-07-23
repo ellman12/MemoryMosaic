@@ -14,11 +14,12 @@
         <button class="iconBtn" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
         <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
     </header>
-
-    const string topQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added >= @oldestOrNewestDT ORDER BY date_added ASC LIMIT 100";
-    const string bottomQuery = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL AND date_added <= @oldestOrNewestDT ORDER BY date_added DESC LIMIT 100";
-    <LibraryContentViewer @ref="@lcv" UseDateAdded="true" NoItemsText="Items Without a Date Taken Appear Here" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" Rerender="@StateHasChanged"
-        FirstQuery="SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL ORDER BY date_added DESC LIMIT 100"/>
+    
+    const string Shared = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE separate = false AND date_taken IS NULL AND date_deleted IS NULL";
+    const string FirstQuery = $"{Shared} ORDER BY date_added DESC LIMIT 100";
+    const string TopQuery = $"{Shared} AND date_added >= @oldestOrNewestDT ORDER BY date_added ASC LIMIT 100";
+    const string BottomQuery = $"{Shared} AND date_added <= @oldestOrNewestDT ORDER BY date_added DESC LIMIT 100";
+    <LibraryContentViewer @ref="@lcv" UseDateAdded="true" FirstQuery="@FirstQuery" NotNullDTQueryTop="@TopQuery" NotNullDTQueryBottom="@BottomQuery" NoItemsText="Items Without a Date Taken Appear Here" Rerender="@StateHasChanged"/>
 }
 
 @code {
