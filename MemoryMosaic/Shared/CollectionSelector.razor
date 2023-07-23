@@ -138,14 +138,8 @@
 
     public async void ToggleVis()
     {
-        if (CollectionsVis == "hidden")
-        {
-            CollectionsVis = "visible";
-        }
-        else
-        {
-            CollectionsVis = "hidden";
-        }
+        CollectionsVis = CollectionsVis == "hidden" ? "visible" : "hidden";
+        await JSRuntime.InvokeVoidAsync("toggleBackgroundScrolling");
         StateHasChanged();
     }
 

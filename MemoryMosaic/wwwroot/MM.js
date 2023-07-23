@@ -65,3 +65,8 @@ function closeDtPicker(index)
 {
     document.getElementById('dtPicker ' + index).style.display = 'none';
 }
+
+function toggleBackgroundScrolling()
+{
+    document.body.style.overflow = document.body.style.overflow === 'hidden' ? '' : 'hidden';
+}
