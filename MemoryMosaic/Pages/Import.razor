@@ -418,7 +418,7 @@
 	}
 
 	///Updates the collections field of each selected ImportItem.
-	private static void UpdateCollections()
+	private void UpdateCollections()
 	{
 		foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.uuid)))
 		{
@@ -440,6 +440,8 @@
 				}
 			}
 		}
+		
+		StateHasChanged();
 	}
 
 	private static async void FocusSearchInput() => await searchInput.FocusAsync();
