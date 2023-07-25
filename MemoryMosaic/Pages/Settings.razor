@@ -145,13 +145,16 @@
         }
     </div>
 
-    <div id="debugDiv">
-        <span class="header">Debug</span>
-        <div>
-            <input type="text" placeholder="Enter a query" @bind="@debugQuery"/>
-            <button class="textBtn" style="margin-left: 10px" @onclick="@RunQuery"><span class="material-icons-outlined">play_arrow</span><span>Run Query</span></button>
+    @if (Program.Debug)
+    {
+        <div id="debugDiv">
+            <span class="header">Debug</span>
+            <div>
+                <input type="text" placeholder="Enter a query" @bind="@debugQuery"/>
+                <button class="textBtn" style="margin-left: 10px" @onclick="@RunQuery"><span class="material-icons-outlined">play_arrow</span><span>Run Query</span></button>
+            </div>
         </div>
-    </div>
+    }
 </div>
 
 @code {

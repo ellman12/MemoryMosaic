@@ -60,5 +60,10 @@
 	<NavLink class="navLink" href="all-items" Match="NavLinkMatch.All"><span class="material-icons-outlined">select_all</span><span>All Items</span></NavLink>
 	<NavLink class="navLink" href="search" Match="NavLinkMatch.All"><span class="material-icons-outlined">&#xe8b6;</span><span>Search</span></NavLink>
 	<NavLink class="navLink" href="trash" Match="NavLinkMatch.All"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Trash</span></NavLink>
-	<NavLink class="navLink" href="settings" Match="NavLinkMatch.All"><span class="material-icons-outlined">&#xe8b8;</span><span>Settings</span></NavLink>
+    <NavLink class="navLink" href="settings" Match="NavLinkMatch.All"><span class="material-icons-outlined">&#xe8b8;</span><span>Settings</span></NavLink>
+    
+    @if (Program.Debug)
+    {
+        <NavLink class="navLink" href="test" Match="NavLinkMatch.All"><span class="material-icons-outlined">bug_report</span><span>Test</span></NavLink>
+    }
 </nav>
