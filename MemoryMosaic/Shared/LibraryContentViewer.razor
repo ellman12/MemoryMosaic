@@ -178,7 +178,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 <CollectionSelector @ref="@cs" SelectedItem="@SelectedItem" SelectedItems="@SelectedItems" @bind-HeaderVis="@HeaderVis"/>
 
-<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
+<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
 <ProgressPopUp Height="200" Width="200" Message="Preparing Zip..." Visible="@progressVisible"/>
