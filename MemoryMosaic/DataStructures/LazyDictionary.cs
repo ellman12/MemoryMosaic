@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic;
+﻿namespace MemoryMosaic.DataStructures;
 
 ///A more flexible alternative to the traditional Dictionary.
 public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement> where TKey : notnull

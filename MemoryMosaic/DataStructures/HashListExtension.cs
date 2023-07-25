@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic;
+﻿namespace MemoryMosaic.DataStructures;
 
 public static class HashListExtension
 {

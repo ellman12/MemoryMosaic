@@ -1,4 +1,4 @@
-namespace MemoryMosaic;
+namespace MemoryMosaic.DataStructures;
 
 ///<summary>Represents a <see cref="List{T}"/> of unique values that utilizes a <see cref="HashSet{T}"/> for efficient searching.</summary>
 public class HashList<T> : IList<T>, ISet<T>, IReadOnlyList<T>, IReadOnlySet<T>
