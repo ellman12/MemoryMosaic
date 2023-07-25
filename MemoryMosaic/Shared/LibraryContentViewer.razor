@@ -444,6 +444,7 @@ else
 	///Shows the TwoChoiceInput if enabled. If not, then deletes the selected items.
 	public void DeleteBtnClick()
 	{
+		if (SelectedItem == Guid.Empty && SelectedItems.Count == 0) return;
 		if (S.showPrompts == false)
 		{
 			DeleteSelected();
