@@ -19,7 +19,7 @@
     const string FirstQuery = $"{Shared} ORDER BY date_added DESC LIMIT 100";
     const string TopQuery = $"{Shared} AND date_added >= @oldestOrNewestDT ORDER BY date_added ASC LIMIT 100";
     const string BottomQuery = $"{Shared} AND date_added <= @oldestOrNewestDT ORDER BY date_added DESC LIMIT 100";
-    <LibraryContentViewer @ref="@lcv" UseDateAdded="true" FirstQuery="@FirstQuery" NotNullDTQueryTop="@TopQuery" NotNullDTQueryBottom="@BottomQuery" NoItemsText="Items Without a Date Taken Appear Here" Rerender="@StateHasChanged"/>
+    <LibraryContentViewer @ref="@lcv" FirstQuery="@FirstQuery" NotNullDTQueryTop="@TopQuery" NotNullDTQueryBottom="@BottomQuery" NoItemsText="Items Without a Date Taken Appear Here" Rerender="@StateHasChanged" UseDateAdded="true"/>
 }
 
 @code {

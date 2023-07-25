@@ -36,7 +36,7 @@
 
     UpdateQueries();
     @* Date Added in this case is actually Date Deleted. *@
-    <LibraryContentViewer @ref="@lcv" UseDateAdded="@(sortMode is TrashSortMode.OldestDateDeleted or TrashSortMode.NewestDateDeleted)" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="No Items in Trash" Rerender="@StateHasChanged"/>
+    <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="No Items in Trash" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is TrashSortMode.OldestDateDeleted or TrashSortMode.NewestDateDeleted)"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteItems" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@restorePromptVis" YesBtnClick="@RestoreItems" NoBtnClick="@(() => { restorePromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
@@ -96,16 +96,13 @@
         firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100) ORDER BY {orderBy}";
     }
     
-    private async void ChangeOrder(TrashSortMode newMode)
+    private void ChangeOrder(TrashSortMode newMode)
     {
         sortMode = newMode;
         SetSortBtnText();
         sortDivVis = "hidden";
-        await lcv.ClearChecks();
-        lcv.oldestDT = lcv.newestDT = null;
-        lcv.MediaList.Clear();
+        lcv.Reset();
         UpdateQueries();
-        lcv.AddContentBottom();
         StateHasChanged();
     }
 
