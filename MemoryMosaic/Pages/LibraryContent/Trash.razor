@@ -6,14 +6,17 @@
 
 @{
     <header>
-        <button class="iconBtn" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
+        @if (lcv.SelectedItemsCount > 0)
+        {
+            <button class="iconBtn" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
+            <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
+        }
         <div>
             <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
             <button class="textBtn" @onclick="@RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
             <button class="textBtn" @onclick="@DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
-    
+
         <div id="sortDiv" style="visibility: @sortDivVis">
             <button @onclick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))">
                 <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
