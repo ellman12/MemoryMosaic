@@ -19,8 +19,8 @@
     <div id="inputDiv" style="@PositioningStyle">
         <span id="message">@Message</span>
         <div id="buttons">
-            <button class="textBtn" @onclick="@(() => NoBtnClick.Invoke())"><span class="material-icons-outlined">@NoBtnIcon</span><span>@NoBtnText</span></button>
-            <button class="textBtn" @onclick="@(() => YesBtnClick.Invoke())"><span class="material-icons-outlined">@YesBtnIcon</span><span>@YesBtnText</span></button>
+            <button class="textBtn" @onclick="@NoBtnClick"><span class="material-icons-outlined">@NoBtnIcon</span><span>@NoBtnText</span></button>
+            <button class="textBtn" @onclick="@YesBtnClick"><span class="material-icons-outlined">@YesBtnIcon</span><span>@YesBtnText</span></button>
         </div>
     </div>
 </div>
