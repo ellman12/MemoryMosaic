@@ -141,7 +141,7 @@
     private async Task CloseBtnClick()
     {
         collectionsVis = "hidden";
-        await JSRuntime.InvokeVoidAsync("disableBackgroundScrolling");
+        await JSRuntime.InvokeVoidAsync("enableBackgroundScrolling");
         ClearAlbumChecks();
         ClearFolderChecks();
     }
