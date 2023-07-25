@@ -6,14 +6,17 @@
 
 @{
     <header>
-        <button class="iconBtn" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText" style="visibility: @(lcv.SelectedItemsCount == 0 ? "hidden" : "visible")">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
+        @if (lcv.SelectedItemsCount > 0)
+        {
+            <button class="iconBtn" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
+            <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
+        }
         <div>
             <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
             <button class="textBtn" @onclick="@RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
             <button class="textBtn" @onclick="@DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
-    
+
         <div id="sortDiv" style="visibility: @sortDivVis">
             <button @onclick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))">
                 <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
@@ -36,7 +39,7 @@
 
     UpdateQueries();
     @* Date Added in this case is actually Date Deleted. *@
-    <LibraryContentViewer @ref="@lcv" UseDateAdded="@(sortMode is TrashSortMode.OldestDateDeleted or TrashSortMode.NewestDateDeleted)" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="No Items in Trash" Rerender="@StateHasChanged"/>
+    <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="No Items in Trash" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is TrashSortMode.OldestDateDeleted or TrashSortMode.NewestDateDeleted)"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteItems" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
     <TwoChoiceInput @bind-TwoChoiceVis="@restorePromptVis" YesBtnClick="@RestoreItems" NoBtnClick="@(() => { restorePromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
@@ -96,16 +99,13 @@
         firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION ({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100) ORDER BY {orderBy}";
     }
     
-    private async void ChangeOrder(TrashSortMode newMode)
+    private void ChangeOrder(TrashSortMode newMode)
     {
         sortMode = newMode;
         SetSortBtnText();
         sortDivVis = "hidden";
-        await lcv.ClearChecks();
-        lcv.oldestDT = lcv.newestDT = null;
-        lcv.MediaList.Clear();
+        lcv.Reset();
         UpdateQueries();
-        lcv.AddContentBottom();
         StateHasChanged();
     }
 

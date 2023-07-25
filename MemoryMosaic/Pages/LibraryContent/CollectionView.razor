@@ -65,9 +65,7 @@
     UpdateQueries();
 
     //Loads every item with NULL Date Taken first, then items with Date Taken.
-    @* Date Added in this instance is date_added_to_collection. *@
-    <LibraryContentViewer @ref="@lcv" Collection="@collection" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" Rerender="@StateHasChanged"
-         NoItemsText="@(collection.folder ? "Folder is Empty" : "Album is Empty")" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" FirstQuery="@firstQuery"/>
+    <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="@($"{(collection.folder ? "Folder" : "Album")} is Empty")" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)"/>
     
     <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Album")} \"{collection.name}\"?")
         YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
@@ -146,15 +144,12 @@
         if (S.displayNoDTInCV) firstQuery += $" ORDER BY {orderBy}";
     }
     
-    private async void ChangeOrder(CVSortMode newMode)
+    private void ChangeOrder(CVSortMode newMode)
     {
         sortMode = newMode;
         sortDivVis = "hidden";
-        await lcv.ClearChecks();
-        lcv.oldestDT = lcv.newestDT = null;
-        lcv.MediaList.Clear();
+        lcv.Reset();
         UpdateQueries();
-        lcv.AddContentBottom();
         StateHasChanged();
     }
 
@@ -165,13 +160,10 @@
     }
 
     //Remove selected from the collection
-    private async void RemoveBtnClick()
+    private void RemoveBtnClick()
     {
         foreach (Guid uuid in lcv.SelectedItems) C.RemoveFromCollection(uuid, collection!.id);
-        await lcv.ClearChecks();
-        lcv.oldestDT = lcv.newestDT = null;
-        lcv.MediaList.Clear();
-        lcv.AddContentBottom();
+        lcv.Reset();
         StateHasChanged();
     }
     

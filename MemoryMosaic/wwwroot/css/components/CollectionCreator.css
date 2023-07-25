@@ -9,7 +9,10 @@
     font-size: 16px;
     margin-left: 6px;
     margin-right: 6px;
-    color: black; /* Font color */
+    background-color: black;
+    border: 1px solid white;
+    color: white;
+    border-radius: 4px;
 }
 
 #collectionCreator > #error {

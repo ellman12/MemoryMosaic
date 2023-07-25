@@ -140,14 +140,14 @@ If it can't find any content, it shows an h1 saying no content.
 						</div>
 						i++;
 					} while (i < MediaList.Count && MediaList[i].dateTaken == null);
-					@{ i--; } @* This is kind of stupid but idc. Fixes an issue where it would skip some items. *@
+					@{ i--; } @* This is kind of stupid but fixes an issue where it would skip some items. *@
 				</div>
 			</div>
 		}
-		else if (MediaList[i].dateTaken.Value.Day != previousDay)
+		else if (MediaList[i].dateTaken != null && MediaList[i].dateTaken!.Value.Day != previousDay)
 		{
 			<div class="spanAndRow">
-				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("ddd, MMM d, yyyy") : MediaList[i].dateTaken.Value.ToString("ddd, MMM d, yyyy"))</span>
+				<span>@(UseDateAdded ? MediaList[i].dateAdded.ToString("ddd, MMM d, yyyy") : MediaList[i].dateTaken!.Value.ToString("ddd, MMM d, yyyy"))</span>
 				<div class="row">
 					@{
 						do
@@ -163,9 +163,9 @@ If it can't find any content, it shows an h1 saying no content.
 							{previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken!.Value.Day;
 							}
 							else
-								previousDay = UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day;
+								previousDay = UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken!.Value.Day;
 							i++;
-						} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == (UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken.Value.Day));
+						} while (i < MediaList.Count && MediaList[i].dateTaken != null && previousDay == (UseDateAdded ? MediaList[i].dateAdded.Day : MediaList[i].dateTaken!.Value.Day));
 						i--;
 					}
 				</div>
@@ -178,7 +178,7 @@ If it can't find any content, it shows an h1 saying no content.
 
 <CollectionSelector @ref="@cs" SelectedItem="@SelectedItem" SelectedItems="@SelectedItems" @bind-HeaderVis="@HeaderVis"/>
 
-<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => delPromptVis = "hidden")" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
+<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
 <ProgressPopUp Height="200" Width="200" Message="Preparing Zip..." Visible="@progressVisible"/>
@@ -208,50 +208,44 @@ else
 <KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@(() => ClearChecks().Start())"/>
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
-@code{
+@code {
 	public CollectionSelector cs { get; private set; } = new();
 	
 	private CtrlGInput ctrlGInput = null!;
+	
+	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	[Parameter, EditorRequired] public string FirstQuery { get; set; } = null!;
+	
+	///The query used to select add more content to the top of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	[Parameter, EditorRequired] public string NotNullDTQueryTop { get; set; } = null!;
+	
+	///The query used to select add more content to the bottom of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	[Parameter, EditorRequired] public string NotNullDTQueryBottom { get; set; } = null!;
+	
+	[Parameter, EditorRequired] public string NoItemsText { get; set; } = null!;
 
-	private int previousDay;
-
-	///Stores all content loaded.
-	public List<MediaRow> MediaList { get; private set; } = null!;
-
-	public Guid SelectedItem
-	{
-		get => _selectedItem;
-		set
-		{
-			_selectedItem = value;
-			if (value == Guid.Empty)
-			{
-				newFilename = "";
-				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = downloadDivVis = "hidden";
-			}
-			else
-			{
-				newDateTaken = MediaList[viewIndex].dateTaken;
-				newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
-				collectionsIn = C.GetCollectionsContaining(SelectedItem);
-				itemDescription = MediaList[viewIndex].description;
-			}
-			StateHasChanged();
-		}
-	}
-	private Guid _selectedItem;
-
-	///Stores all items user has selected.
-	public HashSet<Guid> SelectedItems { get; private set; } = null!;
+	[Parameter, EditorRequired] public Action Rerender { private get; set; } = null!;
+	
+	[Parameter] public bool UseDateAdded { get; set; }
 
 	///Used only for when viewing the contents of a collection.
-	[Parameter] public Collection Collection { get; set; } = null!;
+	[Parameter] public Collection? Collection { get; set; }
 
-	///Stores the viewIndex in MediaList of the last item that was checked. Used for Shift-clicking to select multiple items.
-	private int lastCheckedIndex;
+	public List<MediaRow> MediaList { get; private set; } = null!;
 	
-	[Parameter, EditorRequired] public Action Rerender { private get; set; } = null!;
+	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 
+	private int previousDay, lastCheckedIndex;
+	
+	private DateTime? oldestDT, newestDT;
+	
+	private bool progressVisible;
+
+	private string? zipFilename;
+	
+	private string moreContentTopDivVis = null!, moreContentBottomDivVis = null!, delPromptVis = "hidden";
+	public string starPromptVis = "hidden";
+	
 	private string headerVis = "hidden";
 	public string HeaderVis
 	{
@@ -273,47 +267,42 @@ else
 			Rerender.Invoke();
 		}
 	}
-	
-	[Parameter] public bool UseDateAdded { get; set; }
+}
 
-	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter, EditorRequired]
-	public string FirstQuery { get; set; } = null!;
+@* Variables for viewing a single item in fullscreen. *@
+@code {
+	private int viewIndex;
 	
-	///The query used to select add more content to the top of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter, EditorRequired]
-	public string NotNullDTQueryTop { get; set; } = null!;
-	
-	///The query used to select add more content to the bottom of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
-	[Parameter, EditorRequired] public string NotNullDTQueryBottom { get; set; } = null!;
-
-	[Parameter, EditorRequired] public string NoItemsText { get; set; } = null!;
-
-	private string? zipFilename;
-
-	private bool progressVisible;
-	
-	//Used for loading more content.
-	public DateTime? oldestDT, newestDT;
-
-	//Controls the visibility of the divs that add more content.
-	private string moreContentTopDivVis = null!, moreContentBottomDivVis = null!;
-	
-	//TwoChoiceInput's
-	private string delPromptVis = "hidden";
-	public string starPromptVis = "hidden";
-	
-	//Stuff for viewing a single item.
-	///The index of the item user is currently viewing.
-	public int viewIndex;
-
 	private DateTime? newDateTaken;
 	private string newFilename = "", editFilenameDivVis = "hidden", filenameErrorVis = "hidden", editDateDivVis = "hidden", dtErrorVis = "hidden", infoVis = "hidden", downloadDivVis = "hidden";
 	private string? itemDescription;
 	private List<Collection>? collectionsIn;
+
+	private Guid _selectedItem;
+	public Guid SelectedItem
+	{
+		get => _selectedItem;
+		set
+		{
+			_selectedItem = value;
+			if (value == Guid.Empty)
+			{
+				newFilename = "";
+				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = downloadDivVis = "hidden";
+			}
+			else
+			{
+				newDateTaken = MediaList[viewIndex].dateTaken;
+				newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path);
+				collectionsIn = C.GetCollectionsContaining(SelectedItem);
+				itemDescription = MediaList[viewIndex].description;
+			}
+			StateHasChanged();
+		}
+	}
 }
 
-@functions{
+@functions  {
 	protected override void OnInitialized() => Reset();
 
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
@@ -596,7 +585,7 @@ else
 }
 
 @* Functions only for viewing a single item. *@
-@functions{
+@functions {
 	private void UpdateDateTaken()
 	{
 		if (C.UpdateDateTaken(MediaList[viewIndex].path, newDateTaken))

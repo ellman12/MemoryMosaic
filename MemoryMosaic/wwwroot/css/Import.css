@@ -18,11 +18,13 @@ header {
     position: fixed;
     top: 0;
     margin-left: var(--left-margin);
-    height: 60px;
+    margin-right: 1px;
+    height: 64px;
     background-color: black;
-    border: 1px solid white;
-    width: available;
+    border-bottom: 1px solid gray;
     width: -moz-available;
+    width: -webkit-fill-available; 
+    width: fill-available;
     z-index: 999;
 }
 
@@ -104,7 +106,7 @@ header > #buttons > .iconBtn {
     position: absolute;
     display: flex;
     flex-direction: column;
-    top: 60px;
+    top: 64px;
 }
 
 #mainDiv > .itemGroup {
