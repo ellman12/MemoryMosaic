@@ -229,7 +229,7 @@ else
 	[Parameter] public bool UseDateAdded { get; set; }
 
 	///Used only for when viewing the contents of a collection.
-	[Parameter] public Collection Collection { get; set; } = null!;
+	[Parameter] public Collection? Collection { get; set; }
 
 	public List<MediaRow> MediaList { get; private set; } = null!;
 	
