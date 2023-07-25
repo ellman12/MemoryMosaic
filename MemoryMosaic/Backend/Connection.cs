@@ -3,7 +3,12 @@ namespace MemoryMosaic.Backend;
 ///Contains static methods for interacting with the MM PostgreSQL database.
 public static class Connection
 {
+    #if DEBUG
+    private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=MemoryMosaicTest";
+    #else
     private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=Ph0t0s_Server; Database=MemoryMosaic";
+    #endif
+    
     public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
 
     ///Asynchronously creates, opens, and returns a new connection object.
