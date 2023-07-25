@@ -1,0 +1,24 @@
+@namespace MemoryMosaic.Shared
+@inherits Component
+@inject IJSRuntime JSRuntime
+
+@code{
+	protected string Style { get; private set; } = "visibility: hidden";
+
+	private bool visible;
+	private bool Visible
+	{
+		get => visible;
+		set
+		{
+			visible = value;
+			Style = $"visibility: {(visible ? "visible" : "hidden")}";
+			JSRuntime.InvokeVoidAsync($"{(visible ? "disable" : "enable")}BackgroundScrolling");
+			StateHasChanged();
+		}
+	}
+
+	public void Toggle() => Visible = !Visible;
+	public void Disable() => Visible = false;
+	public void Enable() => Visible = true;
+}
