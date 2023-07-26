@@ -3,22 +3,16 @@
 @inject IJSRuntime JSRuntime
 
 @code{
-	protected string Style { get; private set; } = "visibility: hidden";
+	protected readonly ElementVisibility visibility = new();
+	
+	public void Toggle() => UpdateState(!visibility.Visible);
+	public void Disable() => UpdateState(false);
+	public void Enable() => UpdateState(true);
 
-	private bool visible;
-	private bool Visible
+	private void UpdateState(bool newState)
 	{
-		get => visible;
-		set
-		{
-			visible = value;
-			Style = $"visibility: {(visible ? "visible" : "hidden")}";
-			JSRuntime.InvokeVoidAsync($"{(visible ? "disable" : "enable")}BackgroundScrolling");
-			StateHasChanged();
-		}
+		visibility.Visible = newState;
+		JSRuntime.InvokeVoidAsync($"{(visibility.Visible ? "disable" : "enable")}BackgroundScrolling");
+		StateHasChanged();
 	}
-
-	public void Toggle() => Visible = !Visible;
-	public void Disable() => Visible = false;
-	public void Enable() => Visible = true;
 }
