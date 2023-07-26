@@ -71,7 +71,7 @@
         YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
 }
 
-@code{
+@code {
     [Parameter]
     public string CollectionID { get; set; } = null!;
 
@@ -100,7 +100,7 @@
     }
 }
 
-@functions{
+@functions {
     protected override async Task OnInitializedAsync()
     {
         collection = await C.GetCollectionDetailsAsync(CollectionID) ?? throw new InvalidOperationException();
