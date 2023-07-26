@@ -34,7 +34,7 @@
 
         <div id="buttons">
             <button class="iconBtn" style="visibility: @lcv.HeaderVis"><span class="material-icons-outlined" @onclick="@lcv.DownloadSelected">file_download</span></button>
-            <button class="iconBtn" style="visibility: @lcv.HeaderVis" @onclick="@lcv.cs.ToggleVis" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
+            <button class="iconBtn" style="visibility: @lcv.HeaderVis" @onclick="@lcv.cs.Toggle" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
             <button class="iconBtn" style="visibility: @lcv.HeaderVis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref lcv.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
             
             @if (!collection.readOnly)

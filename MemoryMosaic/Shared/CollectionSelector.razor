@@ -1,9 +1,10 @@
 @* Reusable component that allows user to choose album(s) or a folder to add selected item(s) to. *@
+@inherits ToggleableComponent
 @inject IJSRuntime JSRuntime
 
 <link href="/css/components/CollectionSelector.css" rel="stylesheet">
 
-<div id="collectionSelectorBackground" style="visibility: @collectionsVis">
+<div id="collectionSelectorBackground" style="@visibility.Style">
     <div id="collectionSelector">
         <div id="header">
             <span>Add to</span>
@@ -66,7 +67,7 @@
     </div>
 </div>
 
-<KeyboardShortcuts AltC="@ToggleVis"/>
+<KeyboardShortcuts AltC="@Toggle"/>
 
 @code {
     public static List<Collection> albums = null!, folders = null!;
@@ -90,8 +91,6 @@
 
     [Parameter] public bool ClearChecksOnConfirm { get; set; } = true; //Used in Import.
     
-    private string collectionsVis = "hidden";
-
     protected override void OnInitialized()
     {
         albums = C.GetCollectionsTable(true, false, false);
@@ -130,17 +129,10 @@
         }
     }
 
-    public async void ToggleVis()
-    {
-        collectionsVis = collectionsVis == "hidden" ? "visible" : "hidden";
-        await JSRuntime.InvokeVoidAsync("toggleBackgroundScrolling");
-        StateHasChanged();
-    }
-
     //Closing the div for selecting album(s) to add selected items to.
     private async Task CloseBtnClick()
     {
-        collectionsVis = "hidden";
+       Disable();
         await JSRuntime.InvokeVoidAsync("enableBackgroundScrolling");
         ClearAlbumChecks();
         ClearFolderChecks();
@@ -151,7 +143,7 @@
         foreach (Guid item in SelectedItems)
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         SelectedItems.Clear();
-        collectionsVis = "hidden";
+       Disable();
         HeaderVis = "hidden";
         await HeaderVisChanged.InvokeAsync("hidden");
     }
