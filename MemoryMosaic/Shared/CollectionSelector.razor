@@ -83,9 +83,7 @@
 
     [Parameter] public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
     
-    [Parameter] public string? HeaderVis { get; set; } = "hidden"; //The visibility of the header on the page, if one exists.
-    
-    [Parameter] public EventCallback<string> HeaderVisChanged { get; set; } //Two-way binding.
+    [Parameter] public ElementVisibility? Header { get; set; } //The visibility of the header on the page, if one exists.
     
     [Parameter] public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
@@ -132,20 +130,19 @@
     //Closing the div for selecting album(s) to add selected items to.
     private async Task CloseBtnClick()
     {
-       Disable();
+        Disable();
         await JSRuntime.InvokeVoidAsync("enableBackgroundScrolling");
         ClearAlbumChecks();
         ClearFolderChecks();
     }
-    
+
     private async Task ClearChecks()
     {
         foreach (Guid item in SelectedItems)
             await JSRuntime.InvokeAsync<string>("removeCheck", item);
         SelectedItems.Clear();
-       Disable();
-        HeaderVis = "hidden";
-        await HeaderVisChanged.InvokeAsync("hidden");
+        Disable();
+        Header?.Disable();
     }
 
     private static void ClearAlbumChecks()
@@ -204,11 +201,7 @@
         await CloseBtnClick();
 
         if (ClearChecksOnConfirm)
-        {
             await ClearChecks();
-            SelectedItems.Clear();
-            await HeaderVisChanged.InvokeAsync("hidden");
-        }
     }
 
     private void PreviousSelectionBtnClick(bool save)
