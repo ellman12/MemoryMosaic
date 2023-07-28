@@ -14,6 +14,7 @@ public sealed class ElementVisibility
 		{
 			visible = value;
 			Style = $"visibility: {(visible ? "visible" : "hidden")}";
+			Rerender?.Invoke();
 		}
 	}
 	
