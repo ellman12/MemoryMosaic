@@ -33,9 +33,5 @@ public sealed class ElementVisibility
 			visibility.ChangeState(newState);
 	}
 
-	private void ChangeState(bool newState)
-	{
-		Visible = newState;
-		Rerender?.Invoke();
-	}
+	private void ChangeState(bool newState) => Visible = newState;
 }
