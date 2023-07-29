@@ -9,15 +9,15 @@
     <CollectionCreator @ref="@collectionCreator" Collections="@collections"/>
     
     <div id="checkboxes">
-        <div @onclick="@(() => { showAlbums = !showAlbums; GetCollectionsTable(); })">
+        <div @onclick="@(() => UpdateFilter(out showAlbums, !showAlbums))">
             <input type="checkbox" @bind="@showAlbums">
             <span>Show Albums</span>
         </div>
-        <div @onclick="@(() => { showFolders = !showFolders; GetCollectionsTable(); })">
+        <div @onclick="@(() => UpdateFilter(out showFolders, !showFolders))">
             <input type="checkbox" @bind="@showFolders">
             <span>Show Folders</span>
         </div>
-        <div @onclick="@(() => { showReadonly = !showReadonly; GetCollectionsTable(); })">
+        <div @onclick="@(() => UpdateFilter(out showReadonly, !showReadonly))">
             <input type="checkbox" @bind="@showReadonly">
             <span>Show Readonly</span>
         </div>
@@ -76,6 +76,12 @@
     protected override void OnAfterRender(bool firstRender)
     {
         collectionCreator.CollectionCreated += (_, _) => GetCollectionsTable();
+    }
+
+    private void UpdateFilter(out bool filterToggle, bool newState)
+    {
+        filterToggle = newState;
+        GetCollectionsTable();
     }
 
     private void GetCollectionsTable()
