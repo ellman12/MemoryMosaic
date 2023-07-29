@@ -30,17 +30,17 @@
     @* Display a single item in full screen, and allow moving left/right in the List. *@
 	<div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
 		<div id="buttons">
-			<button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
+			<button class="iconBtn" @onclick="@info.Toggle" title="Show Info"><span class="material-icons-outlined">info</span></button>
 			<button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 			<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 		</div>
 
-		<div id="infoDiv" style="visibility: @infoVis">
+		<div id="infoDiv" style="@info.Style">
 			<div id="itemInfo">
 				<div class="dataDiv" title="Date Taken">
 					<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
 					<span>@(MediaList[viewIndex].dateTaken == null ? "No Date Taken" : MediaList[viewIndex].dateTaken?.ToString("ddd, MMM d, yyyy h:mm:ss tt"))</span>
-					<button class="iconBtn" @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+					<button class="iconBtn" @onclick="@dateEdit.Enable"><span class="material-icons-outlined">edit</span></button>
 				</div>
 
 				<div class="dataDiv" title="Date Added">
@@ -51,7 +51,7 @@
 				<div class="dataDiv">
 					<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
 					<span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].path)</span>
-					<button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+					<button class="iconBtn" @onclick="@editFilename.Enable"><span class="material-icons-outlined">edit</span></button>
 				</div>
 
 				<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
@@ -78,22 +78,22 @@
 			}
 		</div>
 
-		<div class="inputBox" style="visibility: @editDateDivVis">
+		<div class="inputBox" style="@dateEdit.Style">
 		    <span>Enter new date taken:</span>
 		    <input title="" type="datetime-local" @bind="@newDateTaken" step="1"/>
-		    <span class="errorSpan" style="visibility: @dtErrorVis">Error Changing Date Taken</span>
+		    <span class="errorSpan" style="visibility: @dtError">Error Changing Date Taken</span>
 		    <div>
-		        <button class="iconBtn" @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
+		        <button class="iconBtn" @onclick="@dateEdit.Disable"><span class="material-icons-outlined">close</span></button>
 		        <button class="iconBtn" @onclick="@UpdateDateTaken"><span class="material-icons-outlined">check</span></button>
 		    </div>
 		</div>
 
-		<div class="inputBox" style="visibility: @editFilenameDivVis">
+		<div class="inputBox" style="@editFilename.Style">
 		    <span>Enter new filename:</span>
 		    <input title="" type="text" @bind="@newFilename" required/>
-		    <span class="errorSpan" style="visibility: @filenameErrorVis">A file with the same Date Taken and/or name already exists.</span>
+		    <span class="errorSpan" style="@filenameError.Style">A file with the same Date Taken and/or name already exists.</span>
 		    <div>
-		        <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = filenameErrorVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
+		        <button class="iconBtn" @onclick="@(() => { editFilename.Disable(); filenameError.Disable(); newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
 		        <button class="iconBtn" @onclick="@RenameFile"><span class="material-icons-outlined">check</span></button>
 		    </div>
 		</div>
@@ -159,8 +159,8 @@
 		}
 
 		<KeyboardShortcuts AltLeft="@(() => SelectedItem = Guid.Empty)" CtrlLeft="@ChangeItemLeft" CtrlRight="@ChangeItemRight"
-			CtrlE="@(() => F.VisToggle(ref editDateDivVis))" Esc="@(() => SelectedItem = Guid.Empty)"
-			I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
+			CtrlE="@dateEdit.Toggle" Esc="@(() => SelectedItem = Guid.Empty)"
+			I="@info.Toggle" AltF="@editFilename.Toggle"/>
 	}
 	
 	<ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
@@ -226,8 +226,9 @@
 	private int viewIndex;
 
 	private DateTime? newDateTaken;
-	private string newFilename = "hidden", editFilenameDivVis = "hidden", filenameErrorVis = "hidden", editDateDivVis = "hidden", dtErrorVis = "hidden", infoVis = "hidden";
+	private readonly ElementVisibility editFilename = new(), filenameError = new(), dateEdit = new(), dtError = new(), info = new();
 	private string? itemDescription;
+	private string newFilename = "";
 	private List<Collection>? collectionsIn;
 	
 	private Guid SelectedItem
@@ -239,7 +240,7 @@
 			if (value == Guid.Empty)
 			{
 				newFilename = "";
-				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = "hidden";
+				ElementVisibility.ChangeStates(false, editFilename, filenameError, dateEdit, dtError, info);
 			}
 			else
 			{
@@ -296,12 +297,12 @@
 	{
 		if (C.UpdateDateTaken(MediaList[viewIndex].path, newDateTaken))
 		{
-			editDateDivVis = "hidden";
+			dateEdit.Disable();
 			MediaList[viewIndex].dateTaken = newDateTaken;
 		}
 		else
 		{
-			dtErrorVis = "visible";
+			dtError.Enable();
 		}
 	}
 	
@@ -322,11 +323,11 @@
 		string? result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
 		if (result == null)
 		{
-			filenameErrorVis = "visible";
+			filenameError.Enable();
 		}
 		else
 		{
-			editFilenameDivVis = "hidden";
+			editFilename.Disable();
 			MediaList[viewIndex].path = result;
 		}
 	}
