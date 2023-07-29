@@ -1,24 +1,24 @@
 @* Re-usable component for allowing user to choose the date taken they want LCV to start at. *@
+@inherits ToggleableComponent
 <link href="css/components/CtrlGInput.css" rel="stylesheet"/>
 
-<div id="ctrlGBackground" style="visibility: @ctrlGVis">
+<div id="ctrlGBackground" style="@Visibility.Style">
 	<div id="ctrlGInput">
 		<span>Choose New Starting Date Taken:</span>
 		
 		<div>
 			<input type="date" @bind="@NewStartDate"/>
-			<button class="iconBtn" @onclick="@(() => { ctrlGVis = "hidden"; StartDateChanged.Invoke(); })"><span class="material-icons-outlined">check</span></button>
-			<button class="iconBtn" @onclick="@(() => ctrlGVis = "hidden")"><span class="material-icons-outlined">close</span></button>
+			<button class="iconBtn" @onclick="@(() => { Disable(); StartDateChanged.Invoke(); })"><span class="material-icons-outlined">check</span></button>
+			<button class="iconBtn" @onclick="@Disable"><span class="material-icons-outlined">close</span></button>
 		</div>
 	</div>
 </div>
 
-<KeyboardShortcuts CtrlG="@(() => { ctrlGVis = "visible"; StateHasChanged(); })"/>
+<KeyboardShortcuts CtrlG="@Enable"/>
 
 @code {
 	[Parameter, EditorRequired]
 	public Action StartDateChanged { get; set; } = null!;
 	
 	public DateTime NewStartDate { get; private set; } = DateTime.Today;
-	private string ctrlGVis = "hidden";
 }

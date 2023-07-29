@@ -12,12 +12,12 @@
             <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
         }
         <div>
-            <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
+            <button class="textBtn" @onclick="@sortDiv.Toggle"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
             <button class="textBtn" @onclick="@RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
             <button class="textBtn" @onclick="@DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
         </div>
 
-        <div id="sortDiv" style="visibility: @sortDivVis">
+        <div id="sortDiv" style="@sortDiv.Style">
             <button @onclick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))">
                 <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
                 <span class="btnText" style="color: @(sortMode == TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")">Newest Date Deleted First</span>
@@ -41,15 +41,16 @@
     @* Date Added in this case is actually Date Deleted. *@
     <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="No Items in Trash" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is TrashSortMode.OldestDateDeleted or TrashSortMode.NewestDateDeleted)"/>
     
-    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteItems" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
-    <TwoChoiceInput @bind-TwoChoiceVis="@restorePromptVis" YesBtnClick="@RestoreItems" NoBtnClick="@(() => { restorePromptVis = "hidden"; StateHasChanged(); })" Message="@choiceMsg"/>
+    <TwoChoiceInput @ref="@delPrompt" YesBtnClick="@DeleteItems" NoBtnClick="@delPrompt.Disable" Message="@choiceMsg"/>
+    <TwoChoiceInput @ref="@restorePrompt" YesBtnClick="@RestoreItems" NoBtnClick="@restorePrompt.Disable" Message="@choiceMsg"/>
 }
 
 @code {
     private TrashSortMode sortMode = TrashSortMode.NewestDateDeleted;
     private LibraryContentViewer lcv = new();
     private string sortBtnText = null!, choiceMsg = null!, orderBy = null!, sortColumn = null!, topQuery = null!, bottomQuery = null!, firstQuery = null!;
-    private string delPromptVis = "hidden", restorePromptVis = "hidden", sortDivVis = "hidden";
+    private readonly ElementVisibility sortDiv = new();
+    private TwoChoiceInput delPrompt = new(), restorePrompt = new();
 
     protected override void OnInitialized() => SetSortBtnText();
 
@@ -103,7 +104,7 @@
     {
         sortMode = newMode;
         SetSortBtnText();
-        sortDivVis = "hidden";
+        sortDiv.Disable();
         lcv.Reset();
         UpdateQueries();
         StateHasChanged();
@@ -119,7 +120,7 @@
             return;
         }
         
-        restorePromptVis = "visible";
+        restorePrompt.Enable();
         choiceMsg = lcv.SelectedItems.Count switch
         {
             0 => "Restore Everything?",
@@ -145,7 +146,7 @@
             }
         }
         await lcv.ClearChecks();
-        restorePromptVis = "hidden";
+        restorePrompt.Disable();
         StateHasChanged();
     }
 
@@ -162,7 +163,7 @@
                 1 => "PERMANENTLY Delete Selected Item?",
                 _ => "PERMANENTLY Delete Selected Items?"
             };
-            delPromptVis = "visible";
+            delPrompt.Enable();
         }
         else
         {
@@ -188,7 +189,7 @@
             }
         }
         await lcv.ClearChecks();
-        delPromptVis = "hidden";
+        delPrompt.Disable();
         StateHasChanged();
     }
 }

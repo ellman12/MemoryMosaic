@@ -1,21 +1,10 @@
-﻿@*Reusable component that allows user to choose between two options (Yes/No by default).
-    Required Parameters:
-    1. String Message: What to say to user
-    2. Method to run when 'Yes' pressed https://stackoverflow.com/a/56831924
-    3. Method to run when 'No' pressed
-    4. String TwoChoiceVis. Either 'hidden' (default) or 'visible'.
-    
-    Optional Parameters:
-    1. String YesBtnText: 'Yes' by default
-    2. String NoBtnText: 'No' by default
-    3. String PositioningStyle. Styling used for positioning this thing. Defaults to center of screen, but can be changed to like absolute position and top right corner of screen.
-    4. String YesBtnIcon. The Google Icons icon for the Yes button. Default is "check".
-    5. String NoBtnIcon. The Google Icons icon for the No button. Default is "close".
-*@
+@* Reusable component that allows user to choose between two options. *@
 @using MemoryMosaic.Backend
+@inherits ToggleableComponent
+
 <link href="css/components/TwoChoiceInput.css" rel="stylesheet"/>
 
-<div id="inputBackground" style="visibility: @TwoChoiceVis">
+<div id="inputBackground" style="@Visibility.Style">
     <div id="inputDiv" style="@PositioningStyle">
         <span id="message">@Message</span>
         <div id="buttons">
@@ -34,12 +23,6 @@
     
     [Parameter, EditorRequired]
     public Action YesBtnClick { get; set; } = null!;
-
-    [Parameter]
-    public string TwoChoiceVis { get; set; } = null!;
-    
-    [Parameter]
-    public EventCallback<string> TwoChoiceVisChanged { get; set; } //Changing the passed in TwoChoiceVis.
 
     //Optional parameters ↓
     [Parameter]

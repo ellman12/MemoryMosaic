@@ -23,8 +23,8 @@
         </div>
     </div>
 
-    <button class="textBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
-    <div id="sortDiv" style="visibility: @sortDivVis">
+    <button class="textBtn" @onclick="@sortDiv.Toggle" id="sortBtn"><span class="material-icons-outlined">sort</span><span class="btnText">@sortBtnText</span></button>
+    <div id="sortDiv" style="@sortDiv.Style">
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.Title))">
             <span class="material-icons-outlined" style="@(mode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
             <span style="color: @(mode == CMSortMode.Title ? "#1a73e8" : "white")">Collection Title</span>
@@ -60,8 +60,10 @@
     private List<Collection> collections = null!;
 
     private CollectionCreator collectionCreator = null!;
+
+    private readonly ElementVisibility sortDiv = new();
     
-    private string sortBtnText = null!, sortDivVis = "hidden";
+    private string sortBtnText = null!;
     private static CMSortMode mode = CMSortMode.LastModified;
     private static bool showAlbums = true, showFolders, showReadonly = true;
 
@@ -99,6 +101,6 @@
         mode = newMode;
         GetCollectionsTable();
         SetSortBtnText();
-        sortDivVis = "hidden";
+        sortDiv.Disable();
     }
 }

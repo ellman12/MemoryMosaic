@@ -1,0 +1,18 @@
+@namespace MemoryMosaic.Classes
+@inherits Component
+@inject IJSRuntime JSRuntime
+
+@code{
+	public ElementVisibility Visibility { get; } = new();
+	
+	public void Toggle() => UpdateState(!Visibility.Visible);
+	public void Disable() => UpdateState(false);
+	public void Enable() => UpdateState(true);
+
+	private void UpdateState(bool newState)
+	{
+		Visibility.Visible = newState;
+		JSRuntime.InvokeVoidAsync($"{(Visibility.Visible ? "disable" : "enable")}BackgroundScrolling");
+		StateHasChanged();
+	}
+}

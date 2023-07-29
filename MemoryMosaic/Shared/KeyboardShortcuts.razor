@@ -95,4 +95,6 @@
 		if (CtrlRight != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Right, CtrlRight);
 		if (Slash != null) HotKeysContext.Add(ModKeys.None, Keys.Slash, Slash);
 	}
+	
+	public void RegisterHotkey(ModKeys modKeys, Keys key, Action action) => HotKeysContext.Add(modKeys, key, action);
 }
