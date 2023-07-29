@@ -8,8 +8,8 @@
 
 @{
     <header>
-        <button class="iconBtn" @onclick="@lcv.ClearChecks" style="visibility: @lcv.HeaderVis" id="clearBtn"><span class="material-icons-outlined">close</span></button>
-        <span style="visibility: @lcv.HeaderVis" id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
+        <button class="iconBtn" @onclick="@lcv.ClearChecks" style="@lcv.Header.Style" id="clearBtn"><span class="material-icons-outlined">close</span></button>
+        <span style="@lcv.Header.Style" id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
 
         <div id="collectionRenameDiv">
             @if (collection.readOnly)
@@ -23,30 +23,31 @@
 
             <span title="@(collection.readOnly ? "Readonly" : "")" class="material-icons-outlined">@(collection.readOnly ? "lock" : "")</span>
 
-            <button class="iconBtn" @onclick="@CancelBtnClick" style="visibility: @buttonsVis">
-                <span class="material-icons-outlined">close</span>
-            </button>
-
-            <button class="iconBtn" @onclick="@ConfirmBtnClick" style="visibility: @buttonsVis">
-                <span class="material-icons-outlined">check</span>
-            </button>
+            @if (buttons.Visible)
+            {
+                <button class="iconBtn" @onclick="@CancelBtnClick"><span class="material-icons-outlined">close</span></button>
+                <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+            }
         </div>
 
         <div id="buttons">
-            <button class="iconBtn" style="visibility: @lcv.HeaderVis"><span class="material-icons-outlined" @onclick="@lcv.DownloadSelected">file_download</span></button>
-            <button class="iconBtn" style="visibility: @lcv.HeaderVis" @onclick="@lcv.cs.Toggle" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
-            <button class="iconBtn" style="visibility: @lcv.HeaderVis" title="Add or Remove Stars From Selected" @onclick="@(() => F.VisToggle(ref lcv.starPromptVis))"><span class="material-icons-outlined">star_outline</span></button>
-            
-            @if (!collection.readOnly)
+            @if (lcv.Header.Visible)
             {
-                <button class="iconBtn" style="visibility: @lcv.HeaderVis" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+                <button class="iconBtn"><span class="material-icons-outlined" @onclick="@lcv.DownloadSelected">file_download</span></button>
+                <button class="iconBtn" @onclick="@lcv.cs.Toggle" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
+                <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@lcv.StarPrompt.Toggle"><span class="material-icons-outlined">star_outline</span></button>
+
+                if (!collection.readOnly)
+                {
+                    <button class="iconBtn" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+                }
+
+                <button class="iconBtn" @onclick="@lcv.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
             }
-    
-            <button class="iconBtn" style="visibility: @lcv.HeaderVis" @onclick="@lcv.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-            <button class="iconBtn" @onclick="@(() => F.VisToggle(ref sortDivVis))" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
+            <button class="iconBtn" @onclick="@sortDiv.Toggle" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
         </div>
 
-        <div id="moreOptionsDiv" style="visibility: @sortDivVis">
+        <div id="moreOptionsDiv" style="@sortDiv.Style">
             <button @onclick="@(() => ChangeOrder(CVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(CVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(CVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
@@ -67,8 +68,8 @@
     //Loads every item with NULL Date Taken first, then items with Date Taken.
     <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="@($"{(collection.folder ? "Folder" : "Album")} is Empty")" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)"/>
     
-    <TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Album")} \"{collection.name}\"?")
-        YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@(() => { delPromptVis = "hidden"; /* StateHasChanged(); */ })"/>
+    <TwoChoiceInput @ref="@delPrompt" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Album")} \"{collection.name}\"?")
+        YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@delPrompt.Disable"/>
 }
 
 @code{
@@ -79,9 +80,11 @@
     
     private CVSortMode sortMode;
     private string orderBy = null!, sortColumn = null!, topQuery = null!, bottomQuery = null!, firstQuery = null!;
-    
+
+    private TwoChoiceInput delPrompt = new();
     private LibraryContentViewer lcv = new();
-    private string delPromptVis = null!, buttonsVis = null!, sortDivVis = null!, _newCollectionName = null!;
+    private readonly ElementVisibility buttons = new(), sortDiv = new();
+    private string _newCollectionName = null!;
     private string NewCollectionName
     {
         get => _newCollectionName;
@@ -89,12 +92,12 @@
         {
             if (value == collection!.name) //Same so don't need to reapply
             {
-                buttonsVis = "hidden";
+                buttons.Disable();
             }
             else if (value != collection.name)
             {
                 _newCollectionName = value;
-                buttonsVis = "visible";
+                buttons.Enable();
             }
         }
     }
@@ -106,7 +109,7 @@
         collection = await C.GetCollectionDetailsAsync(CollectionID) ?? throw new InvalidOperationException();
         sortMode = CVSortMode.NewestDateTaken;
         _newCollectionName = collection.name;
-        delPromptVis = buttonsVis = sortDivVis = "hidden";
+        ElementVisibility.ChangeStates(false, delPrompt.Visibility, buttons, sortDiv);
     }
 
     private void UpdateQueries()
@@ -147,7 +150,7 @@
     private void ChangeOrder(CVSortMode newMode)
     {
         sortMode = newMode;
-        sortDivVis = "hidden";
+        sortDiv.Disable();
         lcv.Reset();
         UpdateQueries();
         StateHasChanged();
@@ -175,7 +178,7 @@
             return;
         }
 
-        delPromptVis = "visible";
+        delPrompt.Enable();
     }
     
     private void DeleteCollection()
@@ -187,13 +190,13 @@
     //Functions for collection stuff
     private void CancelBtnClick()
     {
-        buttonsVis = "hidden";
+        buttons.Disable();
         NewCollectionName = collection!.name; //Reset to OG
     }
 
     private void ConfirmBtnClick()
     {
-        buttonsVis = "hidden";
+        buttons.Disable();
         if (NewCollectionName != "")
             C.RenameCollection(NewCollectionName, collection!.id);
         else

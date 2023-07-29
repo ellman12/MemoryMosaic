@@ -6,7 +6,7 @@
 @{
     <header>
         <span id="starredText">Starred</span>
-        @if (lcv.HeaderVis == "visible")
+        @if (lcv.Header.Visible)
         {
             <div id="buttons">
                 <button class="iconBtn"><span class="material-icons-outlined" @onclick="@lcv.DownloadSelected">file_download</span></button>

@@ -1,3 +1,4 @@
+@using System.IO.Compression
 @*
 Component used in Index, Starred, CollectionView, No Date Taken, and Trash for displaying items in the MM library in small chunks at a time, as well as other shared behavior like showing prompts when deleting items, etc.
 More content is added when mouse enters the top or bottom of the screen, as long as there is more content with date taken before/after the content already loaded.
@@ -5,6 +6,7 @@ The default amount of items loaded at a time is 50.
 If it can't find any content, it shows an h1 saying no content.
 *@
 @inject IJSRuntime JSRuntime
+@inject NavigationManager navigationManager
 <link href="/css/components/ViewItem.css" rel="stylesheet">
 <link href="/css/components/LibraryContentViewer.css" rel="stylesheet">
 
@@ -17,7 +19,7 @@ If it can't find any content, it shows an h1 saying no content.
 @* Display a single item in full screen, and allow moving left/right in the List. *@
 <div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
 	<div id="buttons">
-	    <button class="iconBtn" @onclick="@(() => F.VisToggle(ref infoVis))" title="Show Info"><span class="material-icons-outlined">info</span></button>
+	    <button class="iconBtn" @onclick="@info.Toggle" title="Show Info"><span class="material-icons-outlined">info</span></button>
 	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
 		<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
 	    
@@ -27,12 +29,12 @@ If it can't find any content, it shows an h1 saying no content.
 	    }
 	</div>
 
-	<div id="infoDiv" style="visibility: @infoVis">
+	<div id="infoDiv" style="@info.Style">
 		<div id="itemInfo">
 			<div class="dataDiv" title="Date Taken">
 				<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
 				<span>@(MediaList[viewIndex].dateTaken == null ? "No Date Taken" : MediaList[viewIndex].dateTaken?.ToString("ddd, MMM d, yyyy h:mm:ss tt"))</span>
-				<button class="iconBtn" @onclick="@(() => editDateDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+				<button class="iconBtn" @onclick="@dateEdit.Enable"><span class="material-icons-outlined">edit</span></button>
 			</div>
 
 			<div class="dataDiv" title="Date Added">
@@ -43,7 +45,7 @@ If it can't find any content, it shows an h1 saying no content.
 			<div class="dataDiv">
 				<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
 				<span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].path)</span>
-				<button class="iconBtn" @onclick="@(() => editFilenameDivVis = "visible")"><span class="material-icons-outlined">edit</span></button>
+				<button class="iconBtn" @onclick="@editFilename.Enable"><span class="material-icons-outlined">edit</span></button>
 			</div>
 
 			<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
@@ -70,22 +72,22 @@ If it can't find any content, it shows an h1 saying no content.
 		}
 	</div>
 
-	<div class="inputBox" style="visibility: @editDateDivVis">
+	<div class="inputBox" style="@dateEdit.Style">
 	    <span>Enter new date taken:</span>
 	    <input title="" type="datetime-local" @bind="@newDateTaken" step="1"/>
-	    <span class="errorSpan" style="visibility: @dtErrorVis">Error Changing Date Taken</span>
+	    <span class="errorSpan" style="@dtError.Style">Error Changing Date Taken</span>
 	    <div>
-	        <button class="iconBtn" @onclick="@(() => editDateDivVis = "hidden")"><span class="material-icons-outlined">close</span></button>
+	        <button class="iconBtn" @onclick="@dateEdit.Enable"><span class="material-icons-outlined">close</span></button>
 	        <button class="iconBtn" @onclick="@UpdateDateTaken"><span class="material-icons-outlined">check</span></button>
 	    </div>
 	</div>
 
-	<div class="inputBox" style="visibility: @editFilenameDivVis">
+	<div class="inputBox" style="@editFilename.Style">
 	    <span>Enter new filename:</span>
 	    <input title="" type="text" @bind="@newFilename" required/>
-	    <span class="errorSpan" style="visibility: @filenameErrorVis">A file with the same Date Taken and/or name already exists.</span>
+	    <span class="errorSpan" style="@filenameError.Style">A file with the same Date Taken and/or name already exists.</span>
 	    <div>
-	        <button class="iconBtn" @onclick="@(() => { editFilenameDivVis = filenameErrorVis = "hidden"; newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
+	        <button class="iconBtn" @onclick="@(() => { editFilename.Disable(); filenameError.Disable(); newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
 	        <button class="iconBtn" @onclick="@RenameFile"><span class="material-icons-outlined">check</span></button>
 	    </div>
 	</div>
@@ -121,7 +123,7 @@ If it can't find any content, it shows an h1 saying no content.
 </div>
 
 <div id="libContentViewer">
-	<div id="moreContentTopDiv" style="visibility: @moreContentTopDivVis" @onmouseover="@(() => AddContentTop())" @onscroll="@(() => AddContentTop())" @onmousewheel="@(() => AddContentTop())" @onpointerenter="@(() => AddContentTop())" @ontouchenter="@(() => AddContentTop())"></div>
+	<div id="moreContentTopDiv" style="@moreContentTopDiv.Style" @onmouseover="@(() => AddContentTop())" @onscroll="@(() => AddContentTop())" @onmousewheel="@(() => AddContentTop())" @onpointerenter="@(() => AddContentTop())" @ontouchenter="@(() => AddContentTop())"></div>
 	@for (int i = 0; i < MediaList.Count; i++)
 	{
 		if (MediaList[i].dateTaken == null)
@@ -173,21 +175,15 @@ If it can't find any content, it shows an h1 saying no content.
 		}
 	}
 
-	<div id="moreContentBottomDiv" style="visibility: @moreContentBottomDivVis" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
+	<div id="moreContentBottomDiv" style="@moreContentBottomDiv.Style" @onmouseover="@(() => AddContentBottom())" @onscroll="@(() => AddContentBottom())" @onmousewheel="@(() => AddContentBottom())" @onpointerenter="@(() => AddContentBottom())" @ontouchenter="@(() => AddContentBottom())"></div>
 </div>
 
-<CollectionSelector @ref="@cs" SelectedItem="@SelectedItem" SelectedItems="@SelectedItems" @bind-HeaderVis="@HeaderVis"/>
+<CollectionSelector @ref="@cs" SelectedItem="@SelectedItem" SelectedItems="@SelectedItems" Header="@Header"/>
 
-<TwoChoiceInput @bind-TwoChoiceVis="@delPromptVis" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => { delPromptVis = "hidden"; StateHasChanged(); })" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
-<TwoChoiceInput YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" @bind-TwoChoiceVis="@starPromptVis" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+<TwoChoiceInput @ref="@delPrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@delPrompt.Disable" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
+<TwoChoiceInput @ref="@StarPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
 <ProgressPopUp Height="200" Width="200" Message="Preparing Zip..." Visible="@progressVisible"/>
-<div id="downloadDivBackground" style="visibility: @downloadDivVis">
-	<div id="downloadDiv">
-		<a href="mm_tmp/@zipFilename" download="@zipFilename">Click to Download</a>
-		<button class="iconBtn"><span class="material-icons-outlined" @onclick="@(() => downloadDivVis = "hidden")">check</span></button>
-	</div>
-</div>
 
 @*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)
@@ -197,9 +193,8 @@ If it can't find any content, it shows an h1 saying no content.
 		<KeyboardShortcuts Left="@ChangeItemLeft" Right="@ChangeItemRight"/>
 	}
 
-	<KeyboardShortcuts AltLeft="@(() => SelectedItem = Guid.Empty)" CtrlLeft="@ChangeItemLeft" CtrlRight="@ChangeItemRight" 
-		CtrlE="@(() => F.VisToggle(ref editDateDivVis))"
-		Esc="@(() => SelectedItem = Guid.Empty)" I="@(() => { F.VisToggle(ref infoVis); StateHasChanged(); })" AltF="@(() => { F.VisToggle(ref editFilenameDivVis); StateHasChanged(); })"/>
+	<KeyboardShortcuts AltLeft="@(() => SelectedItem = Guid.Empty)" CtrlLeft="@ChangeItemLeft" CtrlRight="@ChangeItemRight" CtrlE="@dateEdit.Toggle"
+		Esc="@(() => SelectedItem = Guid.Empty)" I="@info.Toggle" AltF="@editFilename.Toggle"/>
 }
 else
 {
@@ -210,6 +205,9 @@ else
 
 @code {
 	public CollectionSelector cs { get; private set; } = new();
+
+	private TwoChoiceInput delPrompt = new();
+	public TwoChoiceInput StarPrompt { get; private set; } = new();
 	
 	private CtrlGInput ctrlGInput = null!;
 	
@@ -243,19 +241,8 @@ else
 
 	private string? zipFilename;
 	
-	private string moreContentTopDivVis = null!, moreContentBottomDivVis = null!, delPromptVis = "hidden";
-	public string starPromptVis = "hidden";
-	
-	private string headerVis = "hidden";
-	public string HeaderVis
-	{
-		get => headerVis;
-		set
-		{
-			headerVis = value;
-			Rerender.Invoke();
-		}
-	}
+	private ElementVisibility moreContentTopDiv = new(), moreContentBottomDiv = new(), downloadPrompt = new();
+	public ElementVisibility Header { get; private set; } = new();
 
 	private int selectedItemsCount;
 	public int SelectedItemsCount
@@ -274,8 +261,9 @@ else
 	private int viewIndex;
 	
 	private DateTime? newDateTaken;
-	private string newFilename = "", editFilenameDivVis = "hidden", filenameErrorVis = "hidden", editDateDivVis = "hidden", dtErrorVis = "hidden", infoVis = "hidden", downloadDivVis = "hidden";
 	private string? itemDescription;
+	private string newFilename = "";
+	private readonly ElementVisibility editFilename = new(), filenameError = new(), dateEdit = new(), dtError = new(), info = new();
 	private List<Collection>? collectionsIn;
 
 	private Guid _selectedItem;
@@ -288,7 +276,7 @@ else
 			if (value == Guid.Empty)
 			{
 				newFilename = "";
-				editFilenameDivVis = filenameErrorVis = editDateDivVis = dtErrorVis = infoVis = downloadDivVis = "hidden";
+				ElementVisibility.ChangeStates(false, editFilename, filenameError, dateEdit, dtError, info, downloadPrompt);
 			}
 			else
 			{
@@ -303,7 +291,12 @@ else
 }
 
 @functions  {
-	protected override void OnInitialized() => Reset();
+	protected override void OnInitialized()
+	{
+		downloadPrompt.Rerender = StateHasChanged;
+		Header.Rerender = Rerender;
+		Reset();
+	}
 
 	///Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from SelectedItems.
 	private async Task ToggleCheck(Guid uuid)
@@ -321,14 +314,14 @@ else
 	///<param name="notNullDTQuery">The query to be used when oldestOrNewestDT is NOT null. This is used after the page has content and needs more either at the top or bottom of the page. Use &lt; for getting content older than the oldest DT, and &gt; for getting content newer than the newest DT.</param>
 	///<param name="oldestOrNewestDT">The DateTime tracking the oldest or newest DT so far, for adding more content.</param>
 	///<param name="bottom">If true, adding items to the end of the List. If false, adding items to the front of the List.</param>
-	///<param name="divVis">The variable controlling the visibility of the div for adding more content.</param>
+	///<param name="moreContentDiv">The variable controlling the visibility of the div for adding more content.</param>
 	///<returns>The amount of items added to MediaList (0 if none or an error).</returns>
 	///<remarks>The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.</remarks>
-	private int AddContent(string firstQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ref string divVis)
+	private int AddContent(string firstQuery, string notNullDTQuery, ref DateTime? oldestOrNewestDT, bool bottom, ElementVisibility moreContentDiv)
 	{
 		if (String.IsNullOrWhiteSpace(firstQuery) || String.IsNullOrWhiteSpace(notNullDTQuery))
 		{
-			divVis = "hidden";
+			moreContentDiv.Disable();
 			return 0;
 		}
 
@@ -376,22 +369,21 @@ else
 		}
 		
 		//If there is no more content available to display, hide the div so user can click through it to click any items below the div.
-		if (amountAdded == 0) divVis = "hidden";
+		if (amountAdded == 0) moreContentDiv.Disable();
 		return amountAdded;
 	}
 	
 	///Adds content to the front of MediaList when user hovers over top of page after using Ctrl G. Returns how many items were added (0 if none or error occurred).
-	public int AddContentTop() => AddContent(FirstQuery, NotNullDTQueryTop, ref newestDT, false, ref moreContentTopDivVis);
+	public int AddContentTop() => AddContent(FirstQuery, NotNullDTQueryTop, ref newestDT, false, moreContentTopDiv);
 
 	///Adds content to the end of MediaList when user hovers over bottom of page. Returns how many items were added (0 if none or error occurred).
-	public int AddContentBottom() => AddContent(FirstQuery, NotNullDTQueryBottom, ref oldestDT, true, ref moreContentBottomDivVis);
+	public int AddContentBottom() => AddContent(FirstQuery, NotNullDTQueryBottom, ref oldestDT, true, moreContentBottomDiv);
 
 	///Called when the check for an item is clicked, or when an item is clicked and Ctrl is down or there is at least 1 item selected. Toggles that item's check, or multiple items if Shift is held down.
 	private async Task CheckClicked(Guid uuid, MouseEventArgs eventArgs)
 	{
 		await ToggleCheck(uuid);
 		int thisIndex = Int32.Parse(await JSRuntime.InvokeAsync<string>("getItemId", uuid));
-		HeaderVis = SelectedItems.Count > 0 ? "visible" : "hidden";
 
 		//Get if Shift was held down when clicking the checkbox. Used for selecting multiple items.
 		if (eventArgs.ShiftKey)
@@ -406,6 +398,9 @@ else
 		{
 			lastCheckedIndex = thisIndex;
 		}
+		
+		Header.Visible = SelectedItems.Count > 0;
+		SelectedItemsCount = SelectedItems.Count;
 	
 		//Add items from start to end into SelectedItems. Used for Shift Click.
 		async Task AddSelected(int startIndex, int endIndex)
@@ -436,7 +431,7 @@ else
 		foreach (Guid item in SelectedItems)
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
 		SelectedItems.Clear();
-		HeaderVis = delPromptVis = starPromptVis = "hidden";
+		ElementVisibility.ChangeStates(false, Header, delPrompt.Visibility, StarPrompt.Visibility);
 		SelectedItemsCount = 0;
 		StateHasChanged();
 	}
@@ -450,7 +445,7 @@ else
 			DeleteSelected();
 			return;
 		}
-		delPromptVis = "visible";
+		delPrompt.Enable();
 		StateHasChanged();
 	}
 
@@ -488,6 +483,7 @@ else
 			}
 		}
 
+		delPrompt.Disable();
 		await ClearChecks();
 		StateHasChanged();
 	}
@@ -497,7 +493,7 @@ else
 	{
 		if (SelectedItem == Guid.Empty && SelectedItems.Count > 0)
 		{
-			starPromptVis = "visible";
+			StarPrompt.Toggle();
 			StateHasChanged();
 		}
 		else if (SelectedItem != Guid.Empty)
@@ -512,12 +508,12 @@ else
 	public async void UpdateStars(bool starred)
 	{
 		C.UpdateStarred(SelectedItems, starred);
-		starPromptVis = "hidden";
+		StarPrompt.Disable();
 
 		foreach (MediaRow item in MediaList)
 			if (SelectedItems.Contains(item.uuid))
 				item.starred = starred;
-			
+
 		await ClearChecks();
 	}
 	
@@ -527,9 +523,10 @@ else
 		if (SelectedItems.Count == 0) return;
 		
 		progressVisible = true;
-		HeaderVis = "hidden";
-		StateHasChanged();
+		Header.Disable();
+		await InvokeAsync(StateHasChanged);
 		await Task.Delay(0);
+		await Task.Delay(1);
 
 		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}");
 		Directory.CreateDirectory(zipFolderPath);
@@ -545,13 +542,15 @@ else
 		
 		zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
 		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
-		System.IO.Compression.ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath);
+		ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath, CompressionLevel.Fastest, false);
 		
 		progressVisible = false;
-		downloadDivVis = "visible";
-		StateHasChanged();
-		
+		downloadPrompt.Enable();
+		await InvokeAsync(StateHasChanged);
+
 		Directory.Delete(zipFolderPath, true); //Not needed after it's zipped.
+		
+		navigationManager.NavigateTo($"mm_tmp/{zipFilename}", true);
 	}
 
 	public void Reset()
@@ -574,13 +573,10 @@ else
 				newestDT = MediaList.First().dateTaken;				
 			}
 		}
-		moreContentBottomDivVis = "visible";
-		moreContentTopDivVis = delPromptVis = starPromptVis = "hidden";
+		moreContentBottomDiv.Enable();
+		ElementVisibility.ChangeStates(false, moreContentTopDiv, delPrompt.Visibility, info, dtError, dateEdit, editFilename, filenameError, downloadPrompt);
 		progressVisible = false;
-		
-		infoVis = dtErrorVis = editDateDivVis = editFilenameDivVis = filenameErrorVis = downloadDivVis = "hidden";
 		viewIndex = 0;
-
 		itemDescription = "";
 	}
 }
@@ -591,12 +587,12 @@ else
 	{
 		if (C.UpdateDateTaken(MediaList[viewIndex].path, newDateTaken))
 		{
-			editDateDivVis = "hidden";
+			dateEdit.Disable();
 			MediaList[viewIndex].dateTaken = newDateTaken;
 		}
 		else
 		{
-			dtErrorVis = "visible";
+			dtError.Enable();
 		}
 	}
 
@@ -607,11 +603,11 @@ else
 		string? result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken);
 		if (result == null)
 		{
-			filenameErrorVis = "visible";
+			filenameError.Enable();
 		}
 		else
 		{
-			editFilenameDivVis = "hidden";
+			editFilename.Disable();
 			MediaList[viewIndex].path = result;
 		}
 	}
@@ -624,7 +620,7 @@ else
 			viewIndex = AddContentTop();
 			if (viewIndex == 0) return;
 		}
-		else viewIndex--; 
+		else viewIndex--;
 		SelectedItem = MediaList[viewIndex].uuid;
 	}
 
@@ -645,7 +641,7 @@ else
 		oldestDT = newestDT = ctrlGInput.NewStartDate;
 		MediaList.Clear();
 		await ClearChecks();
-		moreContentTopDivVis = "visible";		
+		moreContentTopDiv.Enable();
 		StateHasChanged();
 		
 		AddContentTop();
