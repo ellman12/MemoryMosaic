@@ -20,6 +20,8 @@ public sealed class ElementVisibility
 	
 	public ElementVisibility() { }
 
+	public ElementVisibility(bool startingState) => Visible = startingState;
+
 	public ElementVisibility(Action rerender) => Rerender = rerender;
 
 	public void Toggle() => ChangeState(!Visible);
