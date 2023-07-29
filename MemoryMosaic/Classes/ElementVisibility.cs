@@ -4,7 +4,7 @@ public sealed class ElementVisibility
 {
 	public string Style { get; private set; } = "visibility: hidden";
 	
-	public Action? Rerender { get; private set; }
+	public Action? Rerender { get; set; }
 
 	private bool visible;
 	public bool Visible
