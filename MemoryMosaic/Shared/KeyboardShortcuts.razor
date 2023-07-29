@@ -1,7 +1,6 @@
 @implements IDisposable
 @using Toolbelt.Blazor.HotKeys
 @inject HotKeys HotKeys
-@inject NavigationManager navigationManager
 
 @code {
 	public void Dispose() => HotKeysContext.Dispose();
