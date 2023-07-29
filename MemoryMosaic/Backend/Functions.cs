@@ -43,11 +43,6 @@ public static class Functions
         return $"{Math.Round(compactBytes, 3)} {unit}";
     }
 
-    ///<summary>
-    ///Toggle a string variable to either "visible" or "hidden".
-    ///</summary>
-    public static void VisToggle(ref string visibility) => visibility = visibility == "visible" ? "hidden" : "visible";
-
     ///<summary>Given the absolute path to a image/video file, use ffmpeg to generate a compressed thumbnail of the image or the first frame.</summary>
     ///<param name="filePath">The absolute path to where the file is.</param>
     ///<returns>A base64 string representing the thumbnail.</returns>
