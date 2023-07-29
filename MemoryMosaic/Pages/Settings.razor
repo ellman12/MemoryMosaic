@@ -65,19 +65,23 @@
         }
 
         <div id="thumbnail-settings">
-            <div id="thumbnail-slider">
-                <span title="Lower the number, higher the quality.">Thumbnail Quality: @thumbnailQuality</span>
-                <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
-            </div>
+            @if (!thumbnailProgress.Visible)
+            {
+                <div id="thumbnail-slider">
+                    <span title="Lower the number, higher the quality.">Thumbnail Quality: @thumbnailQuality</span>
+                    <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
+                </div>
+            }
+            
             <div id="thumbnail-updating">
-                @if (thumbnailBtnVis == "visible")
+                @if (thumbnailBtn.Visible && !thumbnailProgress.Visible)
                 {
                     <button class="textBtn" @onclick="@UpdateThumbnails"><span class="material-icons-outlined">image</span><span>Recreate Thumbnails</span></button>
                 }
-                
-                @if (thumbnailProgressVis == "visible")
+
+                @if (thumbnailProgress.Visible)
                 {
-                    <progress max="100" value="@((float)amountUpdated / amountToUpdate * 100)"></progress>
+                    <progress max="100" value="@((float) amountUpdated / amountToUpdate * 100)"></progress>
                     <span>@amountUpdated Updated, @(amountToUpdate - amountUpdated) Remaining</span>
                 }
             </div>
@@ -171,8 +175,7 @@
 
     //Updating thumbnails
     private int amountToUpdate, amountUpdated;
-    private string thumbnailBtnVis = "visible";
-    private string thumbnailProgressVis = "hidden";
+    private readonly ElementVisibility thumbnailBtn = new(true), thumbnailProgress = new();
     
     //Maintenance
     private bool maintenanceLoaded;
@@ -257,8 +260,7 @@
     private async Task UpdateThumbnails()
     {
         amountUpdated = amountToUpdate = 0;
-        thumbnailBtnVis = "hidden";
-        thumbnailProgressVis = "visible";
+        thumbnailProgress.Enable();
 
         List<MediaRow> allItems = C.LoadEntireMediaTable();
         amountToUpdate = allItems.Count;
@@ -274,8 +276,7 @@
             await InvokeAsync(StateHasChanged);
         });
         
-        thumbnailBtnVis = "visible";
-        thumbnailProgressVis = "hidden";
+        thumbnailProgress.Disable();
     }
 
     //Delete all empty folders
