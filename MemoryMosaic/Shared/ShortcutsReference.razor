@@ -1,7 +1,8 @@
 @* Overlay thing for showing all the shortcuts in PSS *@
+@inherits ToggleableComponent
 <link href="css/components/ShortcutsReference.css" rel="stylesheet"/>
 
-<div id="referenceBackground" style="@visibility.Style">
+<div id="referenceBackground" style="@Visibility.Style">
     <div id="reference">
         <div id="header">
             <span>Keyboard Shortcuts</span>
@@ -128,11 +129,9 @@
     </div>
 </div>
 
-<KeyboardShortcuts CtrlSlash="@(() => { visibility.Toggle(); StateHasChanged(); })"/>
+<KeyboardShortcuts CtrlSlash="@(() => { Visibility.Toggle(); StateHasChanged(); })"/>
 
 @code {
-    private readonly ElementVisibility visibility = new();
-    
     [Parameter]
     public string? IText { get; set; }
 
