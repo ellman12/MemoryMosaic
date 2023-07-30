@@ -143,11 +143,12 @@
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
                 lcv.MediaList.RemoveAll(u => u.uuid == item);
                 C.RestoreItem(item);
+                await InvokeAsync(StateHasChanged);
             }
         }
         await lcv.ClearChecks();
         restorePrompt.Disable();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     //Show choice div
@@ -186,10 +187,11 @@
                 await JSRuntime.InvokeAsync<string>("removeCheck", item);
                 lcv.MediaList.RemoveAll(u => u.uuid == item);
                 C.PermDeleteItem(item);
+                await InvokeAsync(StateHasChanged);
             }
         }
         await lcv.ClearChecks();
         delPrompt.Disable();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }
