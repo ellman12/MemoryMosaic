@@ -13,8 +13,8 @@
                 <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
             </div>
         </div>
-        
-        <div id="collectionCreatorDiv"><CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())"/></div>
+
+        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())"/>
 
         <div id="collectionGroups">
             <button class="iconBtn" @onclick="@(() => PreviousSelectionBtnClick(false))" title="Restore the last selection of collections."><span class="material-icons-outlined">history</span></button>

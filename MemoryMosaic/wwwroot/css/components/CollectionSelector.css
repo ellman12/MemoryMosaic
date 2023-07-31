@@ -39,7 +39,7 @@
     align-items: center;
 }
 
-#collectionSelector > #collectionCreatorDiv {
+#collectionSelector > #collectionCreator {
     display: flex;
     align-items: center;
     position: absolute;
