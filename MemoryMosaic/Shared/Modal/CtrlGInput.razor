@@ -2,7 +2,7 @@
 @inherits ToggleableComponent
 <link href="css/components/modal/CtrlGInput.css" rel="stylesheet"/>
 
-<div id="ctrlGBackground" style="@Visibility.Style">
+<ModalBackground Visibility="@Visibility">
 	<div id="ctrlGInput">
 		<span>Choose New Starting Date Taken:</span>
 		
@@ -12,7 +12,7 @@
 			<button class="iconBtn" @onclick="@Disable"><span class="material-icons-outlined">close</span></button>
 		</div>
 	</div>
-</div>
+</ModalBackground>
 
 <KeyboardShortcuts CtrlG="@Enable"/>
 
