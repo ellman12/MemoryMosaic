@@ -183,7 +183,7 @@ If it can't find any content, it shows an h1 saying no content.
 <TwoChoiceInput @ref="@delPrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@delPrompt.Disable" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput @ref="@StarPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
-<ProgressPopUp Height="200" Width="200" Message="Preparing Zip..." Visible="@progressVisible"/>
+<ProgressPopUp @ref="@downloadPopUp" Height="200" Width="200" Message="Preparing Zip..."/>
 
 @*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)
@@ -210,6 +210,8 @@ else
 	public TwoChoiceInput StarPrompt { get; private set; } = new();
 	
 	private CtrlGInput ctrlGInput = null!;
+
+	private ProgressPopUp? downloadPopUp; //I let Blazor handle the initialization of this. I get render handle errors if I try to do it manually.
 	
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
 	[Parameter, EditorRequired] public string FirstQuery { get; set; } = null!;
@@ -237,8 +239,6 @@ else
 	
 	private DateTime? oldestDT, newestDT;
 	
-	private bool progressVisible;
-
 	private string? zipFilename;
 	
 	private ElementVisibility moreContentTopDiv = new(), moreContentBottomDiv = new(), downloadPrompt = new();
@@ -523,7 +523,7 @@ else
 	{
 		if (SelectedItems.Count == 0) return;
 		
-		progressVisible = true;
+		downloadPopUp?.Enable();
 		Header.Disable();
 		await InvokeAsync(StateHasChanged);
 		await Task.Delay(0);
@@ -545,7 +545,7 @@ else
 		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
 		ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath, CompressionLevel.Fastest, false);
 		
-		progressVisible = false;
+		downloadPopUp?.Disable();
 		downloadPrompt.Enable();
 		await InvokeAsync(StateHasChanged);
 
@@ -576,7 +576,7 @@ else
 		}
 		moreContentBottomDiv.Enable();
 		ElementVisibility.ChangeStates(false, moreContentTopDiv, delPrompt.Visibility, info, dtError, dateEdit, editFilename, filenameError, downloadPrompt);
-		progressVisible = false;
+		downloadPopUp?.Disable();
 		viewIndex = 0;
 		itemDescription = "";
 	}

@@ -3,38 +3,37 @@
 <title>Backups — Maintenance - MemoryMosaic</title>
 <link href="css/maintenance/Backups.css" rel="stylesheet"/>
 
-@{
-    <header>
-        <button class="textBtn" @onclick="@(async () => { popUpMsg = "Creating Backup. Do not navigate away from this page."; popUpVis = true; StateHasChanged(); await Task.Run(CreateBackup); popUpVis = false; })"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
-        <button class="textBtn" @onclick="@(() => { Directory.Delete(S.backupFolderPath, true); Directory.CreateDirectory(S.backupFolderPath); backups.Clear(); })"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete All Backups</span></button>
-        <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
-    </header>
+<header>
+    <button class="textBtn" @onclick="@CreateBackup"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
+    <button class="textBtn" @onclick="@DeleteAllBackups"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete All Backups</span></button>
+    <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
+</header>
 
-    if (backups.Count == 0)
-    {
-        <h1>No MemoryMosaic Backups</h1>
-        return;
-    }
+<ProgressPopUp @ref="@backupPopUp" Message="Creating Backup. Do not navigate away from this page."/>
+<ProgressPopUp @ref="@restorePopUp" Message="Restoring Backup. Do not navigate away from this page."/>
+<ProgressPopUp @ref="@deletePopUp" Message="Deleting all backups. Do not navigate away from this page."/>
 
-    <div id="mainDiv">
-        @foreach ((string, DateTime, long) backup in backups)
-        {
-            <div class="backup">
-                <span>@backup.Item2</span>
-                <span>@F.FormatBytes(backup.Item3)</span>
-                <button class="iconBtn" @onclick="@(async () => { popUpMsg = "Restoring Backup. Do not navigate away from this page."; popUpVis = true; StateHasChanged(); await Task.Run(() => RestoreBackup(backup.Item1)); popUpVis = false; })" title="Restore This Backup"><span class="material-icons">restore</span></button>
-                <button class="iconBtn" @onclick="@(() => { backups.RemoveAll(b => b.Item1 == backup.Item1); Directory.Delete(backup.Item1, true); })" title="Delete This Backup"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-            </div>
-        }
-    </div>
-    
-    <ProgressPopUp Message="@popUpMsg" Visible="@popUpVis"/>
+@if (backups.Count == 0)
+{
+    <h1>No MemoryMosaic Backups</h1>
+    return;
 }
 
-@code {
-    private bool popUpVis;
-    private string popUpMsg = null!;
+<div id="mainDiv">
+    @foreach ((string, DateTime, long) backup in backups)
+    {
+        <div class="backup">
+            <span>@backup.Item2</span>
+            <span>@F.FormatBytes(backup.Item3)</span>
+            <button class="iconBtn" @onclick="@(() => RestoreBackup(backup.Item1))" title="Restore This Backup"><span class="material-icons">restore</span></button>
+            <button class="iconBtn" @onclick="@(() => DeleteBackup(backup.Item1))" title="Delete This Backup"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+        </div>
+    }
+</div>
 
+@code {
+    private ProgressPopUp backupPopUp = new(), restorePopUp = new(), deletePopUp = new();
+    
     ///Stores each backup's full path, date and time it was made, and its size in bytes.
     private List<(string, DateTime, long)> backups = new();
 
@@ -60,9 +59,14 @@
 
 @functions {
     ///Copies the contents of mm_library to a backup folder, and dumps the contents of the database to a .bak file in that folder.
-    private void CreateBackup()
+    private async void CreateBackup()
     {
         L.LogLine("Backup Started", LogLevel.Info);
+        
+        backupPopUp.Enable();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(0);
+        await Task.Delay(1);
 
         string backupFolder = Path.Combine(S.backupFolderPath, $"MM Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
         string dbDumpPath = Path.Combine(backupFolder, "Database.bak");
@@ -100,7 +104,7 @@
             }
         };
         process.Start();
-        process.WaitForExit();
+        await process.WaitForExitAsync();
         
         L.LogLine("Psql process finished", LogLevel.Debug);
         
@@ -110,18 +114,25 @@
             Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("MM Backup", null).Replace(';', ':')),
             Item3 = F.GetFolderSize(backupFolder)
         });
+        
+        backupPopUp.Disable();
+        await InvokeAsync(StateHasChanged);
 
         L.LogLine("Backup Finished", LogLevel.Info);
     }
 
     ///Restore MM to this backup.
-    private static void RestoreBackup(string backupFullPath)
+    private async void RestoreBackup(string backupFullPath)
     {
         L.LogLine("Restore started", LogLevel.Info);
+        
+        restorePopUp.Enable();
+        await InvokeAsync(StateHasChanged);
+
         L.LogLine("Begin clearing database", LogLevel.Debug);
         
         C.Open();
-        using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
+        await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
         cmd.ExecuteNonQuery();
         C.Close();
         
@@ -138,7 +149,7 @@
         };
         process.StartInfo = startInfo;
         process.Start();
-        process.WaitForExit();
+        await process.WaitForExitAsync();
         
         L.LogLine("Database restored, clearing mm_library", LogLevel.Debug);
         if (Directory.Exists(S.libFolderPath)) Directory.Delete(S.libFolderPath, true);
@@ -146,7 +157,35 @@
         L.LogLine("mm_library cleared, restoring mm_library", LogLevel.Debug);
         FileSystem.CopyDirectory(backupFullPath, S.libFolderPath);
         File.Delete(Path.Combine(S.libFolderPath, "Database.bak"));
+        
+        restorePopUp.Disable();
+        await InvokeAsync(StateHasChanged);
 
         L.LogLine("mm_library restored, restoration finished", LogLevel.Info);
+    }
+
+    private void DeleteBackup(string backupFullPath)
+    {
+        backups.RemoveAll(b => b.Item1 == backupFullPath);
+        Directory.Delete(backupFullPath, true);
+    }
+
+    private async void DeleteAllBackups()
+    {
+        L.LogLine("Deletion started", LogLevel.Info);
+        
+        deletePopUp.Enable();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(0);
+        await Task.Delay(1);
+        
+        Directory.Delete(S.backupFolderPath, true);
+        Directory.CreateDirectory(S.backupFolderPath);
+        backups.Clear();
+        
+        deletePopUp.Disable();
+        await InvokeAsync(StateHasChanged);
+        
+        L.LogLine("Deletion finished", LogLevel.Info);
     }
 }

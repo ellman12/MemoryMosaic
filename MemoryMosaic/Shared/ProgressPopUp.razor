@@ -1,40 +1,16 @@
 @* Reusable component for a simple popup for long-running processes to prevent user from navigating away from page. *@
+@inherits ToggleableComponent
 <link href="css/components/ProgressPopUp.css" rel="stylesheet"/>
 
-<div id="popupBackground" style="display: @(Visible ? "inline" : "none")">
+<div id="popupBackground" style="@Visibility.Style">
     <div id="progressPopUp" style="width: @(Width + "px"); height: @(Height + "px")">
         <span style="font-size: @(FontSize + "px")">@Message</span>
     </div>
 </div>
 
 @code {
-
-    private bool _visible;
-    private string _message = null!;
-
-    #pragma warning disable BL0007
-    [Parameter]
-    public bool Visible
-    {
-        get => _visible;
-        set
-        {
-            _visible = value;
-            StateHasChanged();
-        }
-    }
-
     [Parameter, EditorRequired]
-    public string Message
-    {
-        get => _message;
-        set
-        {
-            _message = value;
-            StateHasChanged();
-        }
-    }
-    #pragma warning restore BL0007
+    public string Message { get; set; } = null!;
 
     [Parameter]
     public int Width { get; set; } = 320;

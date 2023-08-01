@@ -153,14 +153,20 @@
 	</div>
 }
 
-<ProgressPopUp Message="@popUpMsg" Visible="@addingItems"/>
+@{
+	string popUpMsg;
+	if (selectedItems.Count == 0 || selectedItems.Count == importFiles.Count) popUpMsg = "Adding All Items...";
+	else if (selectedItems.Count == 1) popUpMsg = "Adding 1 Item...";
+	else popUpMsg = $"Adding {selectedItems.Count} Items...";
+	<ProgressPopUp @ref="@popUp" Message="@popUpMsg"/>
+}
 
 @code {
+	private ProgressPopUp popUp = new();
+	
 	private static ElementReference searchInput;
 
-	private bool finishedLoading, addingItems;
-
-	private string? popUpMsg;
+	private bool finishedLoading;
 
 	public static string pathWidthClass = "shortWidth";
 	
@@ -299,11 +305,7 @@
 	{
 		L.LogLine($"Begin {nameof(AddItems)}", LogLevel.Info);
 
-		if (selectedItems.Count == 0 || selectedItems.Count == importFiles.Count) popUpMsg = "Adding All Items...";
-		else if (selectedItems.Count == 1) popUpMsg = "Adding 1 Item...";
-		else popUpMsg = $"Adding {selectedItems.Count} Items...";
-		
-		addingItems = true;
+		popUp.Enable();
 		await InvokeAsync(StateHasChanged);
 
 		List<ImportFile> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count 
@@ -342,7 +344,7 @@
 		else
 			importFiles.Clear();
 		
-		addingItems = false;
+		popUp.Disable();
 		OrganizeItems();
 		await InvokeAsync(StateHasChanged);
 
