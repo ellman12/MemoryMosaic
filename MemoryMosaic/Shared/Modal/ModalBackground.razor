@@ -1,0 +1,21 @@
+<link href="css/components/modal/ModalBackground.css" rel="stylesheet"/>
+
+@if (Visibility.Visible)
+{
+	<div class="modalBackground" style="background: @Background">
+		@ChildContent
+	</div>
+}
+
+@code {
+
+	[Parameter, EditorRequired]
+	public RenderFragment ChildContent { get; set; } = null!;
+
+	[Parameter, EditorRequired]
+	public ElementVisibility Visibility { get; set; } = null!;
+	
+	[Parameter] 
+	public string Background { get; set; } = "rgba(211, 211, 211, 0.25)";
+
+}
