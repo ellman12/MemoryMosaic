@@ -6,7 +6,7 @@
 
 <header>
     <span id="collectionsText">Collections</span>
-    <CollectionCreator @ref="@collectionCreator" Collections="@collections"/>
+    <CollectionCreator @ref="@collectionCreator" Collections="@collections" OnCollectionCreate="@GetCollectionsTable"/>
     
     <div id="checkboxes">
         <div @onclick="@(() => UpdateFilter(out showAlbums, !showAlbums))">
@@ -71,11 +71,6 @@
     {
         GetCollectionsTable();
         SetSortBtnText();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        collectionCreator.CollectionCreated += (_, _) => GetCollectionsTable();
     }
 
     private void UpdateFilter(out bool filterToggle, bool newState)
