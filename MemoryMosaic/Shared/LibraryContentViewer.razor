@@ -183,7 +183,7 @@ If it can't find any content, it shows an h1 saying no content.
 <TwoChoiceInput @ref="@delPrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@delPrompt.Disable" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 <TwoChoiceInput @ref="@StarPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
-<ProgressPopUp @ref="@downloadPopUp" Height="200" Width="200" Message="Preparing Zip..."/>
+<ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @*Hotkeys exclusive to viewing a single item.*@
 @if (SelectedItem != Guid.Empty)

@@ -9,9 +9,9 @@
     <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
 </header>
 
-<ProgressPopUp @ref="@backupPopUp" Message="Creating Backup. Do not navigate away from this page."/>
-<ProgressPopUp @ref="@restorePopUp" Message="Restoring Backup. Do not navigate away from this page."/>
-<ProgressPopUp @ref="@deletePopUp" Message="Deleting all backups. Do not navigate away from this page."/>
+<ProgressPopUp @ref="@backupPopUp" Width="320" Height="300" Message="Creating Backup. Do not navigate away from this page."/>
+<ProgressPopUp @ref="@restorePopUp" Width="320" Height="300" Message="Restoring Backup. Do not navigate away from this page."/>
+<ProgressPopUp @ref="@deletePopUp" Width="320" Height="300" Message="Deleting all backups. Do not navigate away from this page."/>
 
 @if (backups.Count == 0)
 {
