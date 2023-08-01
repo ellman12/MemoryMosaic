@@ -2,11 +2,11 @@
 @inherits ToggleableComponent
 <link href="css/components/modal/ProgressPopUp.css" rel="stylesheet"/>
 
-<div id="popupBackground" style="@Visibility.Style">
+<ModalBackground Visibility="@Visibility">
     <div id="progressPopUp" style="width: @(Width + "px"); height: @(Height + "px")">
         <span style="font-size: @(FontSize + "px")">@Message</span>
     </div>
-</div>
+</ModalBackground>
 
 @code {
     [Parameter, EditorRequired]
