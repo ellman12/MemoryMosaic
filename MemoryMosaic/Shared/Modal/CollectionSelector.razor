@@ -4,7 +4,7 @@
 
 <link href="css/components/modal/CollectionSelector.css" rel="stylesheet"/>
 
-<div id="collectionSelectorBackground" style="@Visibility.Style">
+<ModalBackground Visibility="@Visibility">
     <div id="collectionSelector">
         <div id="header">
             <span>Add to</span>
@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())"/>
+        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@RefreshData"/>
 
         <div id="collectionGroups">
             <button class="iconBtn" @onclick="@(() => PreviousSelectionBtnClick(false))" title="Restore the last selection of collections."><span class="material-icons-outlined">history</span></button>
@@ -65,7 +65,7 @@
             </div>
         </div>
     </div>
-</div>
+</ModalBackground>
 
 <KeyboardShortcuts AltC="@Toggle"/>
 
@@ -98,12 +98,7 @@
         checkedFolderIndex = -1; //-1 = a folder isn't picked
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender) collectionCreator.CollectionCreated += RefreshData;
-    }
-
-    private async void RefreshData(object? sender, EventArgs e)
+    private async void RefreshData()
     {
         albums = C.GetCollectionsTable(true, false, false);
         folders = C.GetCollectionsTable(false, true, false);
