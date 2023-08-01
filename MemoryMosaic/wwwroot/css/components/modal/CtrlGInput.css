@@ -1,12 +1,6 @@
-﻿/* Re-usable component for allowing user to choose the date taken they want LCV to start at. */
+/* Re-usable component for allowing user to choose the date taken they want LCV to start at. */
 #ctrlGInput {
-    background-color: black;
     padding: 12px 12px 6px;
-    position: fixed;
-    z-index: 999999;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
     border: 1px solid white;
     display: flex;
     flex-direction: column;

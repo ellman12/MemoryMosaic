@@ -1,9 +1,4 @@
-#collectionSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background-color: black;
+#collectionSelector {
     width: 490px;
     height: 800px;
     z-index: 999999;
