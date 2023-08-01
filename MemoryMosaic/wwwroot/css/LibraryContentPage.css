@@ -15,14 +15,6 @@ header {
     height: 60px;
 }
 
-header > #buttons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: absolute;
-    right: 55px;
-}
-
 header > span {
     font-size: 20px;
 }
@@ -31,6 +23,14 @@ header > #selectedAmtText {
     font-size: 20px;
     margin-left: 20px;
     margin-right: 20px;
+}
+
+header > #buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    right: 55px;
 }
 
 /* Only used for Starred obv */

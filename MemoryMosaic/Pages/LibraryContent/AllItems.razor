@@ -5,14 +5,14 @@
 
 @{
     <header style="@lcv.Header.Style">
+        <button class="iconBtn" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
+        <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
         <div id="buttons">
             <button class="iconBtn"><span class="material-icons-outlined" @onclick="@lcv.DownloadSelected">file_download</span></button>
             <button class="iconBtn" @onclick="@lcv.cs.Toggle"><span class="material-icons-outlined">collections</span></button>
             <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@lcv.StarPrompt.Toggle"><span class="material-icons-outlined">star_outline</span></button>
             <button class="iconBtn" @onclick="@lcv.DeleteBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
         </div>
-        <button class="iconBtn" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
-        <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
     </header>
 
     const string Shared = "SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE date_deleted IS NULL";
