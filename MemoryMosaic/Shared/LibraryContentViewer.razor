@@ -209,17 +209,17 @@ else
 	private TwoChoiceInput delPrompt = new();
 	public TwoChoiceInput StarPrompt { get; private set; } = new();
 	
-	private CtrlGInput ctrlGInput = null!;
+	private CtrlGInput ctrlGInput = new();
 
 	private ProgressPopUp? downloadPopUp; //I let Blazor handle the initialization of this. I get render handle errors if I try to do it manually.
 	
-	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.
 	[Parameter, EditorRequired] public string FirstQuery { get; set; } = null!;
 	
-	///The query used to select add more content to the top of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	///The query used to select add more content to the top of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.
 	[Parameter, EditorRequired] public string NotNullDTQueryTop { get; set; } = null!;
 	
-	///The query used to select add more content to the bottom of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail.
+	///The query used to select add more content to the bottom of the page. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.
 	[Parameter, EditorRequired] public string NotNullDTQueryBottom { get; set; } = null!;
 	
 	[Parameter, EditorRequired] public string NoItemsText { get; set; } = null!;
