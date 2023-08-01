@@ -4,7 +4,7 @@
 
 <link href="css/components/modal/TwoChoiceInput.css" rel="stylesheet"/>
 
-<div id="inputBackground" style="@Visibility.Style">
+<ModalBackground Visibility="@Visibility">
     <div id="inputDiv" style="@PositioningStyle">
         <span id="message">@Message</span>
         <div id="buttons">
@@ -12,7 +12,7 @@
             <button class="textBtn" @onclick="@YesBtnClick"><span class="material-icons-outlined">@YesBtnIcon</span><span>@YesBtnText</span></button>
         </div>
     </div>
-</div>
+</ModalBackground>
 
 @code {
     [Parameter, EditorRequired]
