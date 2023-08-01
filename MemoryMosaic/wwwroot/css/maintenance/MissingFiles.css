@@ -1,4 +1,8 @@
-﻿header {
+﻿* {
+    user-select: none;
+}
+
+header {
     background-color: black;
     display: flex;
     flex-direction: row;
