@@ -1,4 +1,4 @@
-/* Re-usable component for allowing user to choose the date taken they want LCV to start at. */
+﻿/* Re-usable component for allowing user to choose the date taken they want LCV to start at. */
 #ctrlGInput {
     padding: 12px 12px 6px;
     border: 1px solid white;
@@ -17,8 +17,12 @@
 }
 
 #ctrlGInput > div > input[type="date"] {
-    color: black;
-    width: 108px;
+    background-color: black;
+    color: white;
+    width: 110px;
+    height: 30px;
+    border: 1px solid white;
+    border-radius: 4px;
 }
 
 #ctrlGInput > div > button {
