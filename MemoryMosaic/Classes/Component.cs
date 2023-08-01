@@ -7,5 +7,5 @@ public abstract class Component : ComponentBase
 {
 	public string? Id { get; set; }
 	
-	public string? CssClass { get; set; }
+	public string? Class { get; set; }
 }
