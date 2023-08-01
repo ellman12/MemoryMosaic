@@ -5,7 +5,7 @@ namespace MemoryMosaic.Classes;
 ///Extends the ComponentBase class provided by Microsoft.
 public abstract class Component : ComponentBase
 {
-	public string? Id { get; set; }
+	[Parameter] public string? Id { get; set; }
 	
-	public string? Class { get; set; }
+	[Parameter] public string? Class { get; set; }
 }
