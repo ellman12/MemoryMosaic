@@ -1,13 +1,4 @@
-#collectionSelectorBackground {
-    position: fixed;
-    width: 140%;
-    height: 100%;
-    background-color: rgba(211, 211, 211, 0.4);
-    margin-left: -80px;
-    z-index: 999999;
-}
-
-#collectionSelectorBackground > #collectionSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
+#collectionSelector { /* How to center a div: https://stackoverflow.com/a/23703655 */
     position: fixed;
     left: 50%;
     top: 50%;

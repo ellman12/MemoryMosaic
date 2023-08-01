@@ -1,5 +1,5 @@
 using System.Reflection;
-using MemoryMosaic.Shared;
+using MemoryMosaic.Shared.Modal;
 
 namespace MemoryMosaic.Backend;
 

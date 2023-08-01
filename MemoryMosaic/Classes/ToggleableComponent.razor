@@ -2,7 +2,7 @@
 @inherits Component
 @inject IJSRuntime JSRuntime
 
-@code{
+@code {
 	public ElementVisibility Visibility { get; } = new();
 	
 	public void Toggle() => UpdateState(!Visibility.Visible);

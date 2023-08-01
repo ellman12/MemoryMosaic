@@ -1,18 +1,4 @@
-* {
-    user-select: none;
-}
-
-#inputBackground {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: rgba(72, 71, 71, 0.41);
-    z-index: 9999;
-}
-
-#inputBackground > #inputDiv {
+#inputDiv {
     background-color: black;
     border: 1px solid white;
     width: 250px;
@@ -20,7 +6,7 @@
     z-index: 999;
 }
 
-#inputBackground > #inputDiv > #message {
+#inputDiv > #message {
     text-align: center;
     overflow-wrap: break-word;
     position: absolute;
@@ -30,7 +16,7 @@
     transform: translate(-50%, -50%);
 }
 
-#inputBackground > #inputDiv > #buttons {
+#inputDiv > #buttons {
     display: flex;
     flex-direction: row;
     position: absolute;
@@ -38,7 +24,7 @@
     right: 10px;
 }
 
-#inputBackground > #inputDiv > #buttons > button {
+#inputDiv > #buttons > button {
     margin-left: 10px;
     height: 40px;
     min-width: 90px;
