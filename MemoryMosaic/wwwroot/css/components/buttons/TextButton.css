@@ -1,0 +1,19 @@
+.textBtn {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 11px;
+}
+
+.textBtn > :first-child {
+    padding-right: 11px;
+}
+
+.textBtn:hover {
+    background-color: var(--hover-color);
+    cursor: pointer;
+}

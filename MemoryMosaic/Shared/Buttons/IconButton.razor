@@ -1,1 +1,8 @@
+@* Button with just an icon and no text. *@
 @inherits Button
+
+<link href="css/components/buttons/IconButton.css" rel="stylesheet"/>
+
+<button id="@Id" class="iconBtn @Class" @onclick="@OnClick">
+	<span class="material-icons-outlined">@Icon</span>
+</button>
