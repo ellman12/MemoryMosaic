@@ -200,7 +200,7 @@ else
 {
 	<CtrlGInput @ref=@ctrlGInput StartDateChanged="@StartDateChanged"/>
 }
-<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@(() => ClearChecks().Start())"/>
+<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@ClearChecks"/>
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code {
@@ -427,7 +427,7 @@ else
 		}
 	}
 	
-	public async Task ClearChecks()
+	public async void ClearChecks()
 	{
 		foreach (Guid item in SelectedItems)
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
@@ -467,7 +467,7 @@ else
 	}
 
 	///Deletes all selected items.
-	private async void DeleteSelected()
+	private void DeleteSelected()
 	{
 		if (SelectedItem != Guid.Empty)
 		{
@@ -485,7 +485,7 @@ else
 		}
 
 		delPrompt.Disable();
-		await ClearChecks();
+		ClearChecks();
 		StateHasChanged();
 	}
 
@@ -506,7 +506,7 @@ else
 	}
 
 	///Updates the 'starred' field in the DB and the List for the SelectedItems.
-	public async void UpdateStars(bool starred)
+	public void UpdateStars(bool starred)
 	{
 		C.UpdateStarred(SelectedItems, starred);
 		StarPrompt.Disable();
@@ -515,7 +515,7 @@ else
 			if (SelectedItems.Contains(item.uuid))
 				item.starred = starred;
 
-		await ClearChecks();
+		ClearChecks();
 	}
 	
 	///Creates a .zip file for downloading the items the user wants to download.
@@ -539,7 +539,7 @@ else
 			File.Copy(fullPath, destPath);
 		}
 
-		await ClearChecks();
+		ClearChecks();
 		
 		zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
 		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
@@ -641,7 +641,7 @@ else
 	{
 		oldestDT = newestDT = ctrlGInput.NewStartDate;
 		MediaList.Clear();
-		await ClearChecks();
+		ClearChecks();
 		moreContentTopDiv.Enable();
 		StateHasChanged();
 		

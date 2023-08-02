@@ -146,7 +146,7 @@
                 await InvokeAsync(StateHasChanged);
             }
         }
-        await lcv.ClearChecks();
+        lcv.ClearChecks();
         restorePrompt.Disable();
         await InvokeAsync(StateHasChanged);
     }
@@ -190,7 +190,7 @@
                 await InvokeAsync(StateHasChanged);
             }
         }
-        await lcv.ClearChecks();
+        lcv.ClearChecks();
         delPrompt.Disable();
         await InvokeAsync(StateHasChanged);
     }
