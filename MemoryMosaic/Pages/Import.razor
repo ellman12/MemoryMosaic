@@ -20,37 +20,40 @@
 	<KeyboardShortcuts AltS="@(() => { pathWidthClass = pathWidthClass == "shortWidth" ? "fullWidth" : "shortWidth"; StateHasChanged(); })" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Del="DeleteSelected" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
 	
 	<header>
-		<button style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")" class="iconBtn" @onclick="@ClearChecks"><span class="material-icons">close</span></button>
-		<span style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+		@if (selectedItems.Count > 0)
+		{
+			<IconButton Icon="close" OnClick="@ClearChecks"/>
+			<span>@selectedItems.Count&nbsp;&nbsp;Selected</span>
+		}
 
 		<div id="statsDiv">
 			<span>@(searchResults.Count > 0 || !String.IsNullOrWhiteSpace(searchText) ? $"{searchResults.Count} Results" : $"{importFiles.Count} Files")</span>
 			<span style="visibility: @(errorAmount > 0 ? "visible" : "hidden")" id="errorAmount">@errorAmount Filename Errors</span>
 		</div>
-		
+
 		@if (errorAmount == 0) {
 			string addBtnMsg;
 			if (selectedItems.Count == 0 || selectedItems.Count == importFiles.Count) addBtnMsg = "Add All";
 			else if (selectedItems.Count == 1) addBtnMsg = "Add 1 Item";
 			else addBtnMsg = $"Add {selectedItems.Count} Items";
-			<button id="addBtn" class="textBtn" @onclick="@AddItems"><span class="material-icons-outlined">library_add</span><span>@addBtnMsg</span></button>
+			<TextButton ID="addBtn" Icon="library_add" Text="@addBtnMsg" OnClick="@AddItems"/>
 		}
 		
 		<input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
-		
+
 		<span id="statusMessage">@statusMessage</span>
-		
+
 		<div id="yearWarnInputs">
 			<input id="yearCheck" type="checkbox" @bind="@yearCheckEnabled"/>
 			<label for="yearCheck">Year Check</label>
-			
+
 			@if (yearCheckEnabled)
 			{
 				<input type="text" @bind="@minYear" placeholder="Min Year"/>
 				<input type="text" @bind="@maxYear" placeholder="Max Year"/>
 			}
 		</div>
-		
+
 		<div id="buttons" style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
 			<select @bind="@newDTSource">
 				@{
@@ -64,20 +67,20 @@
 					<option>Custom</option>
 				}
 			</select>
-			
-			<button class="iconBtn" @onclick="@UpdateDateTakenSources" title="Apply"><span class="material-icons-outlined">save</span></button>
-			<button class="iconBtn" @onclick="@ToggleStars"><span class="material-icons-outlined">star</span></button>
-			<button class="iconBtn" @onclick="@DeleteSelected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+
+			<IconButton Icon="save" OnClick="@UpdateDateTakenSources" Title="Update DT Source"/>
+			<IconButton Icon="star" OnClick="@ToggleStars"/>
+			<IconButton Icon="trash" OnClick="@DeleteSelected"/>
 		</div>
 	</header>
-	
+
 	<CollectionSelector OnCheckClicked="@UpdateCollections" SelectedItems="@selectedItems" ClearChecksOnConfirm="false"/>
-	
+
 	<div id="mainDiv">
 		@for (int i = 0; i < importFiles.Count; i++)
 		{
 			if (!String.IsNullOrWhiteSpace(searchText) && !searchResults.Contains(importFiles[i].uuid)) continue;
-			
+
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
 				<div class="itemGroup">
@@ -88,7 +91,7 @@
 							i++;
 						} while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename);
 						@{ i--; } @* Kind of stupid but fixes a problem where some items could be skipped. *@
-						
+
 						@if (libFilesWithSameName.TryGetValue(importFiles[i].originalFilename, out List<MediaRow> sameName))
 						{
 							foreach (MediaRow mediaRow in sameName)
@@ -119,7 +122,7 @@
 					<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 					continue;
 				}
-				
+
 				<div class="itemGroup">
 					<div class="errorDiv">
 						@if (hasErrors)
@@ -140,7 +143,7 @@
 							{
 								<ImportItem Index="i" ImportFile="@importFiles[i]"/>
 							}
-							
+
 							foreach (MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename])
 							{
 								<LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/>
@@ -163,13 +166,13 @@
 
 @code {
 	private ProgressPopUp popUp = new();
-	
+
 	private static ElementReference searchInput;
 
 	private bool finishedLoading;
 
 	public static string pathWidthClass = "shortWidth";
-	
+
 	///If Import should check the DT year of each item to see if it's outside of a range of valid values.
 	private static bool yearCheckEnabled = true;
 
@@ -205,7 +208,7 @@
 	protected override void OnInitialized()
 	{
 		L.LogLine($"Begin Import {nameof(OnInitialized)}", LogLevel.Info);
-		
+
 		allAbsPaths = F.GetSupportedFiles(S.importFolderPath);
 		importFiles = new List<ImportFile>(allAbsPaths.Count);
 		libFilesWithSameName.Clear();
@@ -223,7 +226,7 @@
 		OrganizeItems();
 		finishedLoading = true;
 		StateHasChanged();
-		
+
 		L.LogLine($"Finish Import {nameof(OnInitialized)}", LogLevel.Info);
 	}
 
@@ -245,7 +248,7 @@
 			if (i + 1 < importFiles.Count && importFiles[i].originalFilename == importFiles[i + 1].originalFilename && importFiles[i].extension == importFiles[i + 1].extension)
 			{
 				errorAmount++;
-				
+
 				do
 				{
 					errors.Add(importFiles[i]);
@@ -308,9 +311,9 @@
 		popUp.Enable();
 		await InvokeAsync(StateHasChanged);
 
-		List<ImportFile> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count 
+		List<ImportFile> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count
 			? importFiles : importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList();
-		
+
 		await Parallel.ForEachAsync(filesToAdd, async (file, _) =>
 		{
 			DateTime? dtToUse = file.dateTakenSource switch
@@ -323,14 +326,14 @@
 			};
 
 			await C.InsertMedia(C.CreateShortPath(dtToUse, file.renamedFilename + file.extension), dtToUse, file.uuid, file.thumbnail, file.starred);
-			
+
 			string destFolder = C.CreateFullDateFolderPath(dtToUse);
 			Directory.CreateDirectory(destFolder);
 			string destPath = C.CreateFullPath(dtToUse, file.originalFilename + file.extension);
 			File.Move(file.absolutePath, destPath);
-			
+
 			await Task.Run(() => D.UpdateDateTaken(destPath, dtToUse), _);
-			
+
 			if (file.collections != null)
 				foreach (Collection collection in file.collections)
 					await C.AddToCollectionAsync(file.uuid, collection.id);
@@ -343,7 +346,7 @@
 		}
 		else
 			importFiles.Clear();
-		
+
 		popUp.Disable();
 		OrganizeItems();
 		await InvokeAsync(StateHasChanged);
@@ -355,7 +358,7 @@
 	{
 		searchResults.Clear();
 		if (String.IsNullOrWhiteSpace(searchText)) return;
-		
+
 		foreach (ImportFile file in importFiles)
 		{
 			if (file.renamedFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1 || file.originalFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1)
@@ -394,15 +397,17 @@
 	}
 
 	///Updates the starred field of the selected items. If all have a star, removes stars from all. If some do and don't have a star, adds stars to the ones that don't. If none have a star, adds stars to all of them.
-	private static void ToggleStars()
+	private void ToggleStars()
 	{
 		List<ImportFile> selectedFiles = importFiles.Where(file => selectedItems.Contains(file.uuid)).ToList();
 		bool allStarred = selectedFiles.All(file => file.starred);
 
 		foreach (ImportFile importFile in selectedFiles)
 			importFile.starred = !allStarred;
+
+		StateHasChanged();
 	}
-	
+
 	///Sends all selected files to the Recycle Bin.
 	private void DeleteSelected()
 	{
@@ -416,7 +421,7 @@
 		ClearChecks();
 		OrganizeItems();
 		StateHasChanged();
-		
+
 		L.LogLine($"Finish {nameof(DeleteSelected)}", LogLevel.Info);
 	}
 
@@ -435,7 +440,7 @@
 			else
 			{
 				file.collections.RemoveWhere(folder => CS.folders.Contains(folder)); //TODO: there's probably a better/more efficient way to do this.
-				
+
 				for (int a = 0; a < CS.checkedAlbums.Count; a++)
 				{
 					if (CS.checkedAlbums[a] == false) continue;
@@ -443,12 +448,12 @@
 				}
 			}
 		}
-		
+
 		StateHasChanged();
 	}
 
 	private static async void FocusSearchInput() => await searchInput.FocusAsync();
-	
+
 	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
 	private void SaveChanges()
 	{
@@ -459,21 +464,21 @@
 
 		StringBuilder fileOutput = new();
 		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
-		
+
 		foreach (ImportFile file in importFiles)
 			fileOutput.AppendLine(file.ToTabDelimitedString());
-		
+
 		File.WriteAllText(filePath, fileOutput.ToString());
 		statusMessage = $"{importFiles.Count} Items Saved to Disk";
 		StateHasChanged();
-		
+
 		L.LogLine($"Finish {nameof(SaveChanges)}", LogLevel.Info);
 	}
 
 	private void LoadItemsFromDisk()
 	{
 		L.LogLine($"Begin {nameof(LoadItemsFromDisk)}", LogLevel.Info);
-		
+
 		string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp");
 		if (!File.Exists(filePath))
 		{
@@ -481,16 +486,16 @@
 			StateHasChanged();
 			return;
 		}
-		
+
 		string[] lines = File.ReadAllLines(filePath);
-		
+
 		if (lines.Length == 0)
 		{
 			statusMessage = "No Items Found to Load";
 			StateHasChanged();
 			return;
 		}
-		
+
 		importFiles.Clear();
 		StateHasChanged(); //IDK why but this is necessary otherwise the code below doesn't work.
 		foreach (string line in lines)
@@ -502,7 +507,7 @@
 		OrganizeItems();
 		statusMessage = "";
 		StateHasChanged();
-		
+
 		L.LogLine($"Finish {nameof(LoadItemsFromDisk)}", LogLevel.Info);
 	}
 
