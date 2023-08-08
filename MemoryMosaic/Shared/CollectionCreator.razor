@@ -2,7 +2,7 @@
 <link href="css/components/CollectionCreator.css" rel="stylesheet"/>
 
 <div id="collectionCreator">
-    <button class="iconBtn" @onclick="@NewCollectionBtnClick" title="@newCollectionBtnTitle"><span class="material-icons-outlined">@newCollectionBtnIcon</span></button>
+    <IconButton Icon="@newCollectionBtnIcon" OnClick="@NewCollectionBtnClick" title="@newCollectionBtnTitle"/>
     
     @if (acceptingInput)
     {
@@ -13,7 +13,7 @@
             <span title="@errorIconTitle" id="error" class="material-icons-outlined">error_outline</span>
         }
         
-        <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+        <IconButton Icon="check" OnClick="@ConfirmBtnClick"/>
         
         <div>
             <input type="checkbox" id="folder" @bind="@folder">
