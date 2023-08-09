@@ -8,8 +8,11 @@
 
 @{
     <header>
-        <button class="iconBtn" @onclick="@lcv.ClearChecks" style="@lcv.Header.Style" id="clearBtn"><span class="material-icons-outlined">close</span></button>
-        <span style="@lcv.Header.Style" id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
+        @if (lcv.Header.Visible)
+        {
+            <IconButton Icon="close" OnClick="@lcv.ClearChecks" id="clearBtn"/>
+            <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
+        }
 
         <div id="collectionRenameDiv">
             @if (collection.readOnly)
@@ -25,26 +28,26 @@
 
             @if (buttons.Visible)
             {
-                <button class="iconBtn" @onclick="@CancelBtnClick"><span class="material-icons-outlined">close</span></button>
-                <button class="iconBtn" @onclick="@ConfirmBtnClick"><span class="material-icons-outlined">check</span></button>
+                <IconButton Icon="close" OnClick="@CancelBtnClick"/>
+                <IconButton Icon="check" OnClick="@ConfirmBtnClick"/>
             }
         </div>
 
         <div id="buttons">
             @if (lcv.Header.Visible)
             {
-                <button class="iconBtn"><span class="material-icons-outlined" @onclick="@lcv.DownloadSelected">file_download</span></button>
-                <button class="iconBtn" @onclick="@lcv.cs.Toggle" title="Add Selected to Collection"><span class="material-icons-outlined">library_add</span></button>
-                <button class="iconBtn" title="Add or Remove Stars From Selected" @onclick="@lcv.StarPrompt.Toggle"><span class="material-icons-outlined">star_outline</span></button>
+                <IconButton Icon="file_download" OnClick="@lcv.DownloadSelected"/>
+                <IconButton Icon="library_add" OnClick="@lcv.cs.Toggle" Title="Add Selected to Collection"/>
+                <IconButton Icon="star_outline" OnClick="@lcv.StarPrompt.Toggle"/>
 
                 if (!collection.readOnly)
                 {
-                    <button class="iconBtn" @onclick="@RemoveBtnClick" title="Remove Selected"><span class="material-icons-outlined">remove</span></button>
+                    <IconButton Icon="remove" OnClick="@RemoveBtnClick" Title="Remove Selected"/>
                 }
 
-                <button class="iconBtn" @onclick="@lcv.DeleteBtnClick" title="Delete Selected"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+                <IconButton Icon="trash" OnClick="@lcv.DeleteBtnClick"/>
             }
-            <button class="iconBtn" @onclick="@sortDiv.Toggle" title="More Options"><span class="material-icons-outlined">more_vert</span></button>
+            <IconButton Icon="more_vert" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })" Title="More Options"/>
         </div>
 
         <div id="moreOptionsDiv" style="@sortDiv.Style">
@@ -52,9 +55,9 @@
             <button @onclick="@(() => ChangeOrder(CVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
             <button @onclick="@(() => ChangeOrder(CVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
             <button @onclick="@(() => ChangeOrder(CVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
-            
+
             <button @onclick="@ToggleReadonly"><span class="material-icons-outlined">@(collection.readOnly ? "lock_open" : "lock")</span><span>@(collection.readOnly ? "Remove" : "Make") Readonly</span></button>
-            
+
             @if (!collection.readOnly)
             {
                 <button @onclick="@(() => C.ChangeCollectionType(collection.id, !collection.folder))"><span class="material-icons-outlined">@(collection.folder ? "perm_media" : "collections")</span><span>@(collection.folder ? "Change to Album" : "Change to Folder")</span></button>
