@@ -4,8 +4,8 @@
 <link href="css/maintenance/Backups.css" rel="stylesheet"/>
 
 <header>
-    <TextButton Icon="restore" Text="Create Backup" OnClick="@CreateBackup"/>
-    <TextButton Icon="trash" Text="Delete All Backups" OnClick="@DeleteAllBackups"/>
+    <IconTextButton Icon="restore" Text="Create Backup" OnClick="@CreateBackup"/>
+    <IconTextButton Icon="trash" Text="Delete All Backups" OnClick="@DeleteAllBackups"/>
     <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
 </header>
 

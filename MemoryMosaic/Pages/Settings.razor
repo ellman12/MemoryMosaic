@@ -76,7 +76,7 @@
             <div id="thumbnail-updating">
                 @if (thumbnailBtn.Visible && !thumbnailProgress.Visible)
                 {
-                    <TextButton Icon="image" Text="Update Thumbnails" OnClick="@UpdateThumbnails"/>
+                    <IconTextButton Icon="image" Text="Update Thumbnails" OnClick="@UpdateThumbnails"/>
                 }
 
                 @if (thumbnailProgress.Visible)
@@ -87,29 +87,29 @@
             </div>
         </div>
 
-        <TextButton Icon="check" Text="Apply" OnClick="@ApplyBtnClicked"/>
-        <TextButton Icon="close" Text="Cancel" OnClick="@CancelBtnClicked"/>
-        <TextButton Icon="restart_alt" Text="Reset" OnClick="@ResetBtnClicked"/>
+        <IconTextButton Icon="check" Text="Apply" OnClick="@ApplyBtnClicked"/>
+        <IconTextButton Icon="close" Text="Cancel" OnClick="@CancelBtnClicked"/>
+        <IconTextButton Icon="restart_alt" Text="Reset" OnClick="@ResetBtnClicked"/>
     </div>
 
     <div>
         <span class="header">Maintenance</span>
         <button class="textBtn" title="Create and Restore Backups of MM"><span class="material-icons-outlined">restore</span><a href="maintenance/backups">Backups</a></button>
 
-        <TextButton Icon="restart_alt" Text="Restart Server" OnClick="@RestartServer"/>
-        <TextButton Icon="folder_delete" Text="Clear mm_tmp" OnClick="@ClearTmpFolder"/>
-        <TextButton Icon="folder_delete" Text="Free Up Space" OnClick="@FreeUpSpace" Title="Clear mm_tmp and Empty Trash"/>
+        <IconTextButton Icon="restart_alt" Text="Restart Server" OnClick="@RestartServer"/>
+        <IconTextButton Icon="folder_delete" Text="Clear mm_tmp" OnClick="@ClearTmpFolder"/>
+        <IconTextButton Icon="folder_delete" Text="Free Up Space" OnClick="@FreeUpSpace" Title="Clear mm_tmp and Empty Trash"/>
 
         @if (!maintenanceLoaded)
         {
-            <TextButton Icon="build" Text="Run Maintenance Check" OnClick="@RunMaintenanceCheck"/>
+            <IconTextButton Icon="build" Text="Run Maintenance Check" OnClick="@RunMaintenanceCheck"/>
         }
 
         @if (maintenanceLoaded)
         {
             <button class="textBtn" title=""><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths?.Count)</a></button>
             <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@mediaMissingFiles?.Count)</a></button>
-            <TextButton Icon="folder" Text="@($"Empty Folders ({emptyFolders?.Count})")" OnClick="@EmptyFoldersBtnClick" Title="Click to Delete All Empty Folders From Library and Import"/>
+            <IconTextButton Icon="folder" Text="@($"Empty Folders ({emptyFolders?.Count})")" OnClick="@EmptyFoldersBtnClick" Title="Click to Delete All Empty Folders From Library and Import"/>
         }
     </div>
     
@@ -117,7 +117,7 @@
         <span class="header">Stats</span>
         @if (!statsLoaded)
         {
-            <TextButton Icon="insights" Text="Load Stats" OnClick="@GetStats"/>
+            <IconTextButton Icon="insights" Text="Load Stats" OnClick="@GetStats"/>
         }
 
         @if (statsLoaded)
@@ -164,7 +164,7 @@
             <span class="header">Debug</span>
             <div>
                 <input type="text" style="margin-right: 10px" placeholder="Enter a query" @bind="@debugQuery"/>
-                <TextButton Icon="play_arrow" Text="Run Query" OnClick="@RunQuery"/>
+                <IconTextButton Icon="play_arrow" Text="Run Query" OnClick="@RunQuery"/>
             </div>
         </div>
     }

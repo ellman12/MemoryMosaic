@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <TextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })"/>
+    <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })"/>
     <div id="sortDiv" style="@sortDiv.Style">
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.Title))">
             <span class="material-icons-outlined" style="@(mode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>

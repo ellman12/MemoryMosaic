@@ -12,9 +12,9 @@
             <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
         }
         <div>
-            <TextButton Icon="sort" Text="@sortBtnText" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })"/>
-            <TextButton Icon="restore_from_trash" Text="@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")" OnClick="@RestoreBtnClick"/>
-            <TextButton Icon="delete_forever" Text="@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")" OnClick="@DeleteBtnClick"/>
+            <IconTextButton Icon="sort" Text="@sortBtnText" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })"/>
+            <IconTextButton Icon="restore_from_trash" Text="@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")" OnClick="@RestoreBtnClick"/>
+            <IconTextButton Icon="delete_forever" Text="@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")" OnClick="@DeleteBtnClick"/>
         </div>
 
         <div id="sortDiv" style="@sortDiv.Style">

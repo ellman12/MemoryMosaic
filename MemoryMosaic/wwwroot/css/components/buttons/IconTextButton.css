@@ -1,4 +1,4 @@
-.textBtn {
+.iconTextBtn {
     background-color: black;
     border: 1px solid white;
     border-radius: 4px;
@@ -9,11 +9,11 @@
     padding: 11px;
 }
 
-.textBtn > :first-child {
+.iconTextBtn > :first-child {
     padding-right: 11px;
 }
 
-.textBtn:hover {
+.iconTextBtn:hover {
     background-color: var(--hover-color);
     cursor: pointer;
 }
