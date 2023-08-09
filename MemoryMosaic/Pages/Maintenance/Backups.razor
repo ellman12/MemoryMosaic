@@ -4,8 +4,8 @@
 <link href="css/maintenance/Backups.css" rel="stylesheet"/>
 
 <header>
-    <button class="textBtn" @onclick="@CreateBackup"><span class="material-icons-outlined">restore</span><span>Create Backup</span></button>
-    <button class="textBtn" @onclick="@DeleteAllBackups"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>Delete All Backups</span></button>
+    <TextButton Icon="restore" Text="Create Backup" OnClick="@CreateBackup"/>
+    <TextButton Icon="trash" Text="Delete All Backups" OnClick="@DeleteAllBackups"/>
     <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
 </header>
 
@@ -25,8 +25,8 @@
         <div class="backup">
             <span>@backup.Item2</span>
             <span>@F.FormatBytes(backup.Item3)</span>
-            <button class="iconBtn" @onclick="@(() => RestoreBackup(backup.Item1))" title="Restore This Backup"><span class="material-icons">restore</span></button>
-            <button class="iconBtn" @onclick="@(() => DeleteBackup(backup.Item1))" title="Delete This Backup"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
+            <IconButton Icon="restore" OnClick="@(() => RestoreBackup(backup.Item1))" Title="Restore This Backup"/>
+            <IconButton Icon="trash" OnClick="@(() => DeleteBackup(backup.Item1))" Title="Delete This Backup"/>
         </div>
     }
 </div>
@@ -164,9 +164,10 @@
         L.LogLine("mm_library restored, restoration finished", LogLevel.Info);
     }
 
-    private void DeleteBackup(string backupFullPath)
+    private async void DeleteBackup(string backupFullPath)
     {
         backups.RemoveAll(b => b.Item1 == backupFullPath);
+        await InvokeAsync(StateHasChanged);
         Directory.Delete(backupFullPath, true);
     }
 
