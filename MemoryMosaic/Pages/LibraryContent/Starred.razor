@@ -8,12 +8,12 @@
         <span id="starredText">Starred</span>
         @if (lcv.Header.Visible)
         {
-            <button class="iconBtn" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
+            <IconButton Icon="close" OnClick="@lcv.ClearChecks"/>
             <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
             <div id="buttons">
                 <IconButton Icon="file_download" OnClick="@lcv.DownloadSelected"/>
-                <button class="iconBtn" @onclick="@lcv.cs.Toggle"><span class="material-icons-outlined">collections</span></button>
-                <button class="iconBtn" title="Remove Stars From Selected" @onclick="@(() => lcv.UpdateStars(false))"><span class="material-icons-outlined">star_outline</span></button>
+                <IconButton Icon="collections" OnClick="@lcv.cs.Toggle"/>
+                <IconButton Icon="star_outline" OnClick="@(() => lcv.UpdateStars(false))" Title="Remove Stars From Selected"/>
                 <IconButton Icon="trash" OnClick="@lcv.DeleteBtnClick"/>
             </div>
         }
