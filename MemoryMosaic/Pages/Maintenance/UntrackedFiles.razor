@@ -4,16 +4,8 @@
 <link href="css/maintenance/UntrackedFiles.css" rel="stylesheet"/>
 
 <header>
-    <button class="textBtn" @onclick="@MoveAll">
-        <span class="material-icons-outlined">drive_file_move</span><span>Move All to Import</span>
-    </button>
-
-    <button class="textBtn" @onclick="@DeleteAll">
-        <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24">
-            <path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path>
-        </svg>
-        <span>Delete All</span>
-    </button>
+    <TextButton Icon="drive_file_move" Text="Move All to Import" OnClick="@MoveAll"/>
+    <TextButton Icon="trash" Text="Delete All" OnClick="@DeleteAll"/>
 </header>
 
 @{
@@ -45,16 +37,8 @@
                 }
 
                 <span title="@name" class="filenameSpan">@name</span>
-
-                <button class="iconBtn" title="Move This Item to Import Folder" @onclick="@(() => MoveBtnClick(ii))">
-                    <span class="material-icons-outlined">drive_file_move</span>
-                </button>
-
-                <button class="iconBtn" title="Delete This Item From Server" @onclick="@(() => DeleteBtnClick(ii))">
-                    <svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24">
-                        <path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path>
-                    </svg>
-                </button>
+                <IconButton Icon="drive_file_move" OnClick="@(() => MoveBtnClick(ii))" Title="Move This Item to Import"/>
+                <IconButton Icon="trash" OnClick="@(() => DeleteBtnClick(ii))" Title="Delete This Item From Server"/>
             </div>
         }
     </div>

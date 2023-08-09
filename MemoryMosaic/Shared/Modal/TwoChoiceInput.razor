@@ -8,8 +8,8 @@
     <div id="inputDiv" style="@PositioningStyle">
         <span id="message">@Message</span>
         <div id="buttons">
-            <button class="textBtn" @onclick="@NoBtnClick"><span class="material-icons-outlined">@NoBtnIcon</span><span>@NoBtnText</span></button>
-            <button class="textBtn" @onclick="@YesBtnClick"><span class="material-icons-outlined">@YesBtnIcon</span><span>@YesBtnText</span></button>
+            <TextButton Icon="@NoBtnIcon" Text="@NoBtnText" OnClick="@NoBtnClick"/>
+            <TextButton Icon="@YesBtnIcon" Text="@YesBtnText" OnClick="@YesBtnClick"/>
         </div>
     </div>
 </ModalBackground>

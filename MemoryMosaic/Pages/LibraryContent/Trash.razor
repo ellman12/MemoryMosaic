@@ -8,13 +8,13 @@
     <header>
         @if (lcv.SelectedItemsCount > 0)
         {
-            <button class="iconBtn" @onclick="@lcv.ClearChecks"><span class="material-icons-outlined">close</span></button>
+            <IconButton Icon="close" OnClick="@lcv.ClearChecks"/>
             <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
         }
         <div>
-            <button class="textBtn" @onclick="@sortDiv.Toggle"><span class="material-icons-outlined">sort</span><span>@sortBtnText</span></button>
-            <button class="textBtn" @onclick="@RestoreBtnClick"><span class="material-icons-outlined">restore_from_trash</span><span>@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")</span></button>
-            <button class="textBtn" @onclick="@DeleteBtnClick"><span class="material-icons-outlined">delete_forever</span><span>@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")</span></button>
+            <TextButton Icon="sort" Text="@sortBtnText" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })"/>
+            <TextButton Icon="restore_from_trash" Text="@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")" OnClick="@RestoreBtnClick"/>
+            <TextButton Icon="delete_forever" Text="@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")" OnClick="@DeleteBtnClick"/>
         </div>
 
         <div id="sortDiv" style="@sortDiv.Style">
