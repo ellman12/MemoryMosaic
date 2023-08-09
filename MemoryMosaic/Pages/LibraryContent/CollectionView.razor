@@ -66,7 +66,7 @@
     UpdateQueries();
 
     //Loads every item with NULL Date Taken first, then items with Date Taken.
-    <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="@($"{(collection.folder ? "Folder" : "Album")} is Empty")" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)"/>
+    <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="@($"{(collection.folder ? "Folder" : "Album")} is Empty")" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" Collection="@collection"/>
     
     <TwoChoiceInput @ref="@delPrompt" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Album")} \"{collection.name}\"?")
         YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@delPrompt.Disable"/>
