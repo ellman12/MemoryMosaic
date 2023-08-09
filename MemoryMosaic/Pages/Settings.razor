@@ -76,7 +76,7 @@
             <div id="thumbnail-updating">
                 @if (thumbnailBtn.Visible && !thumbnailProgress.Visible)
                 {
-                    <button class="textBtn" @onclick="@UpdateThumbnails"><span class="material-icons-outlined">image</span><span>Recreate Thumbnails</span></button>
+                    <TextButton Icon="image" Text="Update Thumbnails" OnClick="@UpdateThumbnails"/>
                 }
 
                 @if (thumbnailProgress.Visible)
@@ -87,30 +87,39 @@
             </div>
         </div>
 
-        <button class="textBtn" @onclick="@ApplyBtnClicked"><span class="material-icons-outlined">check</span><span>Apply</span></button>
-        <button class="textBtn" @onclick="@CancelBtnClicked"><span class="material-icons-outlined">close</span><span>Cancel</span></button>
-        <button class="textBtn" @onclick="@ResetBtnClicked"><span class="material-icons-outlined">restart_alt</span><span>Reset</span></button>
+        <TextButton Icon="check" Text="Apply" OnClick="@ApplyBtnClicked"/>
+        <TextButton Icon="close" Text="Cancel" OnClick="@CancelBtnClicked"/>
+        <TextButton Icon="restart_alt" Text="Reset" OnClick="@ResetBtnClicked"/>
     </div>
 
     <div>
         <span class="header">Maintenance</span>
         <button class="textBtn" title="Create and Restore Backups of MM"><span class="material-icons-outlined">restore</span><a href="maintenance/backups">Backups</a></button>
-        <button class="textBtn" @onclick="@(() => Process.Start("shutdown.exe", "-r -t 0"))"><span class="material-icons-outlined">restart_alt</span><span>Restart Server</span></button>
-        <button class="textBtn" @onclick="@(() => { Directory.Delete(S.tmpFolderPath, true); Directory.CreateDirectory(S.tmpFolderPath); })"><span class="material-icons-outlined">folder_delete</span><span>Clear mm_tmp</span></button>
-        <button title="Clear mm_tmp and Empty Trash" class="textBtn" @onclick="@FreeUpSpace"><span class="material-icons-outlined">folder_delete</span><span>Free Up Space</span></button>
+
+        <TextButton Icon="restart_alt" Text="Restart Server" OnClick="@RestartServer"/>
+        <TextButton Icon="folder_delete" Text="Clear mm_tmp" OnClick="@ClearTmpFolder"/>
+        <TextButton Icon="folder_delete" Text="Free Up Space" OnClick="@FreeUpSpace" Title="Clear mm_tmp and Empty Trash"/>
+
         @if (!maintenanceLoaded)
-        {<button class="textBtn" @onclick="@RunMaintenanceCheck"><span class="material-icons-outlined">build</span><span>Run Maintenance Check</span></button>}
+        {
+            <TextButton Icon="build" Text="Run Maintenance Check" OnClick="@RunMaintenanceCheck"/>
+        }
+
         @if (maintenanceLoaded)
         {
-            <button class="textBtn" title="Items in Library Folder but NOT in Database"><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths?.Count)</a></button>
+            <button class="textBtn" title=""><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths?.Count)</a></button>
             <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@mediaMissingFiles?.Count)</a></button>
-            <button class="textBtn" @onclick="@EmptyFoldersBtnClick" title="Click to Delete All Empty Folders From Library and Import"><span class="material-icons-outlined">folder</span><span>Empty Folders (@emptyFolders?.Count)</span></button>
+            <TextButton Icon="folder" Text="@($"Empty Folders ({emptyFolders?.Count})")" OnClick="@EmptyFoldersBtnClick" Title="Click to Delete All Empty Folders From Library and Import"/>
         }
     </div>
     
     <div id="statsDiv">
         <span class="header">Stats</span>
-        @if (!statsLoaded) {<button class="textBtn" @onclick="@GetStatsAsync" title="Click to Load Stats for Library"><span class="material-icons-outlined">insights</span><span>Load Stats</span></button>}
+        @if (!statsLoaded)
+        {
+            <TextButton Icon="insights" Text="Load Stats" OnClick="@GetStats"/>
+        }
+
         @if (statsLoaded)
         {
             <span>@($"{mediaRowCount} {(mediaRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
@@ -154,8 +163,8 @@
         <div id="debugDiv">
             <span class="header">Debug</span>
             <div>
-                <input type="text" placeholder="Enter a query" @bind="@debugQuery"/>
-                <button class="textBtn" style="margin-left: 10px" @onclick="@RunQuery"><span class="material-icons-outlined">play_arrow</span><span>Run Query</span></button>
+                <input type="text" style="margin-right: 10px" placeholder="Enter a query" @bind="@debugQuery"/>
+                <TextButton Icon="play_arrow" Text="Run Query" OnClick="@RunQuery"/>
             </div>
         </div>
     }
@@ -213,10 +222,7 @@
     ///Free up space on server by removing temporary files, empty folders, and emptying the trash.
     private void FreeUpSpace()
     {
-        //Clear mm_tmp.
-        Directory.Delete(S.tmpFolderPath, true);
-        Directory.CreateDirectory(S.tmpFolderPath);
-        
+        ClearTmpFolder();
         EmptyFoldersBtnClick();
         C.EmptyTrash();
     }
@@ -257,7 +263,15 @@
         CancelBtnClicked();
     }
 
-    private async Task UpdateThumbnails()
+    private void RestartServer() => Process.Start("shutdown.exe", "-r -t 0");
+
+    private void ClearTmpFolder()
+    {
+        Directory.Delete(S.tmpFolderPath, true);
+        Directory.CreateDirectory(S.tmpFolderPath);
+    }
+
+    private async void UpdateThumbnails()
     {
         amountUpdated = amountToUpdate = 0;
         thumbnailProgress.Enable();
@@ -275,8 +289,9 @@
             amountUpdated++;
             await InvokeAsync(StateHasChanged);
         });
-        
+
         thumbnailProgress.Disable();
+        await InvokeAsync(StateHasChanged);
     }
 
     //Delete all empty folders
@@ -300,7 +315,7 @@
     }
 
     ///Get various statistics about the server and the library.
-    private async Task GetStatsAsync()
+    private async void GetStats()
     {
         statsLoaded = true;
         mediaRowCount = Stats.GetNumItemsInLibrary();
