@@ -2,7 +2,7 @@
 <link href="css/components/LibraryItem.css" rel="stylesheet"/>
 
 <div class="libraryItem">
-	<span class="material-icons-outlined checkbox unchecked">check_circle</span>
+	<MaterialIcon Icon="check_circle" Class="checkbox unchecked"/>
 	<img src="data:image/jpg;base64,@MediaRow.thumbnail" onclick="window.open('mm_library/@MediaRow.path', '_blank').focus();" alt="" loading="lazy"/>
 	<span class="shortPath @(Import.pathWidthClass == "shortWidth" ? "shortWidth" : "fullWidth")">@("Library/" + MediaRow.path)</span>
 	<span class="dateTaken">@(MediaRow.dateTaken == null ? "No Date Taken" : MediaRow.dateTaken)</span>

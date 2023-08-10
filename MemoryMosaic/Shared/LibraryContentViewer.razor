@@ -135,8 +135,8 @@ If it can't find any content, it shows an h1 saying no content.
 					{
 						int ii = i;
 						<div class="thumbnail">
-							@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
-							@if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
+							@if (MediaList[ii].starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
+                            @if (MediaList[ii].video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
 							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
 						</div>
@@ -156,8 +156,8 @@ If it can't find any content, it shows an h1 saying no content.
 						{
 							int ii = i;
 							<div class="thumbnail">
-								@if (MediaList[ii].starred) { <span class="material-icons-outlined star-icon">star</span> }
-								@if (MediaList[ii].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
+								@if (MediaList[ii].starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
+                                @if (MediaList[ii].video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
 								<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span>
 								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
 							</div>
