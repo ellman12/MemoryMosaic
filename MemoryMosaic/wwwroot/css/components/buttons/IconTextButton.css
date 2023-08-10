@@ -2,7 +2,7 @@
     background-color: black;
     border: 1px solid white;
     border-radius: 4px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     font-size: 1rem;
     font-weight: 400;
