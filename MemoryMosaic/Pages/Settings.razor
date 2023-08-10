@@ -94,8 +94,7 @@
 
     <div>
         <span class="header">Maintenance</span>
-        <button class="textBtn" title="Create and Restore Backups of MM"><span class="material-icons-outlined">restore</span><a href="maintenance/backups">Backups</a></button>
-
+        <LinkButton Icon="restore" Text="Backups" Href="maintenance/backups" Title="Create and Restore Backups of MM"/>
         <IconTextButton Icon="restart_alt" Text="Restart Server" OnClick="@RestartServer"/>
         <IconTextButton Icon="folder_delete" Text="Clear mm_tmp" OnClick="@ClearTmpFolder"/>
         <IconTextButton Icon="folder_delete" Text="Free Up Space" OnClick="@FreeUpSpace" Title="Clear mm_tmp and Empty Trash"/>
@@ -107,8 +106,8 @@
 
         @if (maintenanceLoaded)
         {
-            <button class="textBtn" title=""><span class="material-icons-outlined">insert_drive_file</span><a href="maintenance/untracked-files">Untracked Files (@untrackedPaths?.Count)</a></button>
-            <button class="textBtn" title="Paths in Database but File Is Not Present in Library"><span class="material-icons-outlined">find_in_page</span><a href="maintenance/missing-files">Missing Files (@mediaMissingFiles?.Count)</a></button>
+            <LinkButton Icon="insert_drive_file" Text="@($"Untracked Files ({untrackedPaths?.Count})")" Href="maintenance/untracked-files" Title="Items in Library Folder but NOT in Database"/>
+            <LinkButton Icon="find_in_page" Text="@($"Missing Files ({mediaMissingFiles?.Count})")" Href="maintenance/missing-files" Title="Items in Database but the Files Don't Exist"/>
             <IconTextButton Icon="folder" Text="@($"Empty Folders ({emptyFolders?.Count})")" OnClick="@EmptyFoldersBtnClick" Title="Click to Delete All Empty Folders From Library and Import"/>
         }
     </div>
@@ -263,9 +262,9 @@
         CancelBtnClicked();
     }
 
-    private void RestartServer() => Process.Start("shutdown.exe", "-r -t 0");
+    private static void RestartServer() => Process.Start("shutdown.exe", "-r -t 0");
 
-    private void ClearTmpFolder()
+    private static void ClearTmpFolder()
     {
         Directory.Delete(S.tmpFolderPath, true);
         Directory.CreateDirectory(S.tmpFolderPath);
@@ -312,6 +311,8 @@
         folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
+
+        StateHasChanged();
     }
 
     ///Get various statistics about the server and the library.
@@ -332,6 +333,8 @@
         newestDTItem = await Stats.FindItemWithNewestDateTakenAsync();
         oldestDAItem = await Stats.FindItemWithOldestDateAddedAsync();
         newestDAItem = await Stats.FindItemWithNewestDateAddedAsync();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     ///Only for debugging/testing purposes.

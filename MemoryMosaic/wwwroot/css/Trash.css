@@ -53,18 +53,3 @@ header > #sortDiv {
     border: 1px solid white;
     z-index: 9999;
 }
-
-#sortDiv > button {
-    width: 100%;
-    border: none;
-    background-color: black;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    padding: 11px;
-}
-
-#sortDiv > button:hover {
-    background-color: var(--hover-color);
-    cursor: pointer;
-}

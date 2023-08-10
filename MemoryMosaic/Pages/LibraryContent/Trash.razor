@@ -18,22 +18,10 @@
         </div>
 
         <div id="sortDiv" style="@sortDiv.Style">
-            <button @onclick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))">
-                <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-                <span class="btnText" style="color: @(sortMode == TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")">Newest Date Deleted First</span>
-            </button>
-            <button @onclick="@(() => ChangeOrder(TrashSortMode.NewestDateTaken))">
-                <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-                <span class="btnText" style="color: @(sortMode == TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span>
-            </button>
-            <button @onclick="@(() => ChangeOrder(TrashSortMode.OldestDateDeleted))">
-                <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")">check</span>
-                <span class="btnText" style="color: @(sortMode == TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")">Oldest Date Deleted First</span>
-            </button>
-            <button @onclick="@(() => ChangeOrder(TrashSortMode.OldestDateTaken))">
-                <span class="material-icons-outlined" style="@(sortMode == TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span>
-                <span class="btnText" style="color: @(sortMode == TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span>
-            </button>
+            <DropdownButton Icon="check" Text="Newest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")"/>
+            <DropdownButton Icon="check" Text="Newest Date Taken First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateTaken))" IconStyle="@(sortMode == TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")"/>
+            <DropdownButton Icon="check" Text="Oldest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")"/>
+            <DropdownButton Icon="check" Text="Oldest Date Taken First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateTaken))" IconStyle="@(sortMode == TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")"/>
         </div>
     </header>
 
