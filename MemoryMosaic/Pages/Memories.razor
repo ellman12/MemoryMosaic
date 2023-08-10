@@ -137,8 +137,8 @@
 						{
 							int ii = i;
 							<div class="thumbnail" @onclick="@(() => { viewIndex = ii; SelectedItem = MediaList[ii].uuid; })">
-								@if (MediaList[i].starred) { <span class="material-icons-outlined star-icon">star</span> }
-								@if (MediaList[i].video) { <span class="material-icons-outlined video-icon">play_circle_outline</span> }
+								@if (MediaList[i].starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
+								@if (MediaList[i].video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
 								<img src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/>
 							</div>
 							i++;
