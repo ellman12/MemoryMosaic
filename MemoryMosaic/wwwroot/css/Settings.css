@@ -25,8 +25,7 @@
     font-size: 24px;
 }
 
-#body > div > button {
-    display: inline-flex;
+#body > div > .iconTextBtn {
     margin-right: 5px;
     margin-bottom: 15px;
 }
