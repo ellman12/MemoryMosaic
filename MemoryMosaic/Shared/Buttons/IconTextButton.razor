@@ -12,11 +12,13 @@
     {
     	<span class="material-icons-outlined" style="@IconStyle">@Icon</span>
     }
-	<span style="@TextStyle">@Text</span>
+	<span style="color: @TextColor; @TextStyle">@Text</span>
 </button>
 
 @code {
 	[Parameter, EditorRequired] public string Text { get; set; } = null!;
+
+	[Parameter] public string TextColor { get; set; } = "white";
 
 	[Parameter] public string? TextStyle { get; set; }
 }
