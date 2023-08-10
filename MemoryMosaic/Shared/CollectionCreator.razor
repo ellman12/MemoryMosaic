@@ -8,9 +8,9 @@
     {
         <input type="text" placeholder="@($"Enter new {(folder ? "folder" : "album")} name")" @bind="@NewCollectionName"/>
 
-        if (!String.IsNullOrWhiteSpace(errorIconTitle))
+        if (!String.IsNullOrWhiteSpace(ErrorIconTitle))
         {
-            <span title="@errorIconTitle" id="error" class="material-icons-outlined">error_outline</span>
+            <span title="@ErrorIconTitle" id="error" class="material-icons-outlined">error_outline</span>
         }
         
         <IconButton Icon="check" OnClick="@ConfirmBtnClick"/>
@@ -30,6 +30,16 @@
     public Action? OnCollectionCreate { get; set; }
 
     private string newCollectionBtnTitle = "New Collection", errorIconTitle = "", newCollectionBtnIcon = "library_add";
+    private string ErrorIconTitle
+    {
+        get => errorIconTitle;
+        set
+        {
+            errorIconTitle = value;
+            StateHasChanged();
+        }
+    }
+
     public string NewCollectionName { get; private set; } = "";
     private bool acceptingInput, folder;
     private bool AcceptingInput
@@ -47,8 +57,9 @@
             {
                 newCollectionBtnTitle = "New Collection";
                 newCollectionBtnIcon = "library_add";
-                NewCollectionName = errorIconTitle = "";
+                NewCollectionName = ErrorIconTitle = "";
             }
+            StateHasChanged();
         }
     }
 
@@ -58,18 +69,19 @@
     {
         if (String.IsNullOrWhiteSpace(NewCollectionName))
         {
-            errorIconTitle = "Provide Name for Collection";
+            ErrorIconTitle = "Provide Name for Collection";
             return;
         }
         
         if (Collections.Select(c => c.name).Contains(NewCollectionName))
         {
-            errorIconTitle = "Collection Name in Use";
+            ErrorIconTitle = "Collection Name in Use";
             return;
         }
 
         C.CreateCollection(NewCollectionName, folder);
         OnCollectionCreate?.Invoke();
         AcceptingInput = folder = false;
+        StateHasChanged();
     }
 }
