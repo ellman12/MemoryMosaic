@@ -26,20 +26,20 @@
     <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })"/>
     <div id="sortDiv" style="@sortDiv.Style">
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.Title))">
-            <span class="material-icons-outlined" style="@(mode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == CMSortMode.Title ? "#1a73e8" : "white")">Collection Title</span>
+            <span class="material-icons-outlined" style="@(sortMode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(sortMode == CMSortMode.Title ? "#1a73e8" : "white")">Collection Title</span>
         </button>
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.TitleReversed))">
-            <span class="material-icons-outlined" style="@(mode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == CMSortMode.TitleReversed ? "#1a73e8" : "white")">Collection Title Reversed</span>
+            <span class="material-icons-outlined" style="@(sortMode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(sortMode == CMSortMode.TitleReversed ? "#1a73e8" : "white")">Collection Title Reversed</span>
         </button>
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.LastModified))">
-            <span class="material-icons-outlined" style="@(mode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == CMSortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
+            <span class="material-icons-outlined" style="@(sortMode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(sortMode == CMSortMode.LastModified ? "#1a73e8" : "white")">Last Modified</span>
         </button>
         <button class="textBtn" @onclick="@(() => ChangeOrder(CMSortMode.LastModifiedReversed))">
-            <span class="material-icons-outlined" style="@(mode == CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
-            <span style="color: @(mode == CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
+            <span class="material-icons-outlined" style="@(sortMode == CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")">check</span>
+            <span style="color: @(sortMode == CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")">Last Modified Reversed</span>
         </button>
     </div>
 </header>
@@ -64,7 +64,7 @@
     private readonly ElementVisibility sortDiv = new();
     
     private string sortBtnText = null!;
-    private static CMSortMode mode = CMSortMode.LastModified;
+    private static CMSortMode sortMode = CMSortMode.LastModified;
     private static bool showAlbums = true, showFolders, showReadonly = true;
 
     protected override void OnInitialized()
@@ -81,13 +81,13 @@
 
     private void GetCollectionsTable()
     {
-        collections = C.GetCollectionsTable(showAlbums, showFolders, showReadonly, mode);
+        collections = C.GetCollectionsTable(showAlbums, showFolders, showReadonly, sortMode);
         StateHasChanged();
     }
 
     private void SetSortBtnText()
     {
-        sortBtnText = mode switch
+        sortBtnText = sortMode switch
         {
             CMSortMode.Title => "Collection Title",
             CMSortMode.TitleReversed => "Title Reversed",
@@ -99,7 +99,7 @@
 
     private void ChangeOrder(CMSortMode newMode)
     {
-        mode = newMode;
+        sortMode = newMode;
         GetCollectionsTable();
         SetSortBtnText();
         sortDiv.Disable();
