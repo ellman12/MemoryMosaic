@@ -19,13 +19,13 @@ If it can't find any content, it shows an h1 saying no content.
 @* Display a single item in full screen, and allow moving left/right in the List. *@
 <div id="viewDiv" style="visibility: @(SelectedItem == Guid.Empty ? "hidden" : "visible")">
 	<div id="buttons">
-	    <button class="iconBtn" @onclick="@info.Toggle" title="Show Info"><span class="material-icons-outlined">info</span></button>
-	    <button class="iconBtn" @onclick="@DeleteBtnClick" title="Delete"><svg width="24px" height="24px" class="material-icons-outlined" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg></button>
-		<button class="iconBtn" @onclick="@StarBtnClick" title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"><span class="material-icons-outlined">@(MediaList[viewIndex].starred ? "star" : "star_outline")</span></button>
-	    
+	    <IconButton Icon="info" OnClick="@info.Toggle"/>
+		<IconButton Icon="trash" OnClick="@DeleteBtnClick"/>
+		<IconButton Icon="@(MediaList[viewIndex].starred ? "star" : "star_outline")" OnClick="@StarBtnClick" Title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"/>
+
 	    @if (Collection is {readOnly: false } && !MediaList[viewIndex].video)
 	    {
-	        <button class="iconBtn" @onclick="@(() => C.UpdateCollectionCover(Collection.id, MediaList[viewIndex].path))" title="Use As Collection Cover"><span class="material-icons-outlined">collections</span></button>
+	        <IconButton Icon="collections" OnClick="@(() => C.UpdateCollectionCover(Collection.id, MediaList[viewIndex].path))" Title="Use As Collection Cover"/>
 	    }
 	</div>
 
@@ -34,7 +34,7 @@ If it can't find any content, it shows an h1 saying no content.
 			<div class="dataDiv" title="Date Taken">
 				<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
 				<span>@(MediaList[viewIndex].dateTaken == null ? "No Date Taken" : MediaList[viewIndex].dateTaken?.ToString("ddd, MMM d, yyyy h:mm:ss tt"))</span>
-				<button class="iconBtn" @onclick="@dateEdit.Enable"><span class="material-icons-outlined">edit</span></button>
+				<IconButton Icon="edit" OnClick="@dateEdit.Enable"/>
 			</div>
 
 			<div class="dataDiv" title="Date Added">
@@ -45,7 +45,7 @@ If it can't find any content, it shows an h1 saying no content.
 			<div class="dataDiv">
 				<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg>
 				<span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].path)</span>
-				<button class="iconBtn" @onclick="@editFilename.Enable"><span class="material-icons-outlined">edit</span></button>
+				<IconButton Icon="edit" OnClick="@editFilename.Enable"/>
 			</div>
 
 			<textarea @bind="@itemDescription" @onfocusout="@UpdateDescription" autocomplete="off" autocorrect="on" placeholder="Enter a description for this item." spellcheck="true"></textarea>
@@ -77,8 +77,8 @@ If it can't find any content, it shows an h1 saying no content.
 	    <input title="" type="datetime-local" @bind="@newDateTaken" step="1"/>
 	    <span class="errorSpan" style="@dtError.Style">Error Changing Date Taken</span>
 	    <div>
-	        <button class="iconBtn" @onclick="@dateEdit.Enable"><span class="material-icons-outlined">close</span></button>
-	        <button class="iconBtn" @onclick="@UpdateDateTaken"><span class="material-icons-outlined">check</span></button>
+	        <IconButton Icon="close" OnClick="@dateEdit.Enable"/>
+	        <IconButton Icon="check" OnClick="@UpdateDateTaken"/>
 	    </div>
 	</div>
 
@@ -87,12 +87,12 @@ If it can't find any content, it shows an h1 saying no content.
 	    <input title="" type="text" @bind="@newFilename" required/>
 	    <span class="errorSpan" style="@filenameError.Style">A file with the same Date Taken and/or name already exists.</span>
 	    <div>
-	        <button class="iconBtn" @onclick="@(() => { editFilename.Disable(); filenameError.Disable(); newFilename = ""; })"><span class="material-icons-outlined">close</span></button>
-	        <button class="iconBtn" @onclick="@RenameFile"><span class="material-icons-outlined">check</span></button>
+	        <IconButton Icon="close" OnClick="@(() => { editFilename.Disable(); filenameError.Disable(); newFilename = ""; })"/>
+	        <IconButton Icon="check" OnClick="@RenameFile"/>
 	    </div>
 	</div>
 
-	<button class="iconBtn" id="backBtn" @onclick="@(() => SelectedItem = Guid.Empty)"><span class="material-icons-outlined">keyboard_backspace</span></button>
+	<IconButton ID="backBtn" Icon="keyboard_backspace" OnClick="@(() => SelectedItem = Guid.Empty)"/>
 
 	@* Only show the left button if there's more stuff that can be loaded. *@
 	@if (viewIndex == 0) { viewIndex = AddContentTop(); }
@@ -200,7 +200,7 @@ else
 {
 	<CtrlGInput @ref=@ctrlGInput StartDateChanged="@StartDateChanged"/>
 }
-<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@(() => ClearChecks().Start())"/>
+<KeyboardShortcuts AltS="@AltSFired" CtrlD="@DeleteBtnClick" Del="@DeleteBtnClick" Esc="@ClearChecks"/>
 <ShortcutsReference DelText="Delete Selected Item(s)" CtrlDText="Delete Selected Item(s)" CtrlGText="Go to a Specific Point in Your Library" AltCText="Show/Hide CollectionSelector" AltSText="Add/Remove Star to Selected Item(s)"/>
 
 @code {
@@ -427,7 +427,7 @@ else
 		}
 	}
 	
-	public async Task ClearChecks()
+	public async void ClearChecks()
 	{
 		foreach (Guid item in SelectedItems)
 			await JSRuntime.InvokeAsync<string>("removeCheck", item);
@@ -467,7 +467,7 @@ else
 	}
 
 	///Deletes all selected items.
-	private async void DeleteSelected()
+	private void DeleteSelected()
 	{
 		if (SelectedItem != Guid.Empty)
 		{
@@ -485,7 +485,7 @@ else
 		}
 
 		delPrompt.Disable();
-		await ClearChecks();
+		ClearChecks();
 		StateHasChanged();
 	}
 
@@ -506,7 +506,7 @@ else
 	}
 
 	///Updates the 'starred' field in the DB and the List for the SelectedItems.
-	public async void UpdateStars(bool starred)
+	public void UpdateStars(bool starred)
 	{
 		C.UpdateStarred(SelectedItems, starred);
 		StarPrompt.Disable();
@@ -515,7 +515,7 @@ else
 			if (SelectedItems.Contains(item.uuid))
 				item.starred = starred;
 
-		await ClearChecks();
+		ClearChecks();
 	}
 	
 	///Creates a .zip file for downloading the items the user wants to download.
@@ -539,7 +539,7 @@ else
 			File.Copy(fullPath, destPath);
 		}
 
-		await ClearChecks();
+		ClearChecks();
 		
 		zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
 		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
@@ -641,7 +641,7 @@ else
 	{
 		oldestDT = newestDT = ctrlGInput.NewStartDate;
 		MediaList.Clear();
-		await ClearChecks();
+		ClearChecks();
 		moreContentTopDiv.Enable();
 		StateHasChanged();
 		

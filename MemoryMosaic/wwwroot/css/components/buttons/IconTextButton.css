@@ -1,0 +1,19 @@
+.iconTextBtn {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 11px;
+}
+
+.iconTextBtn > :first-child {
+    padding-right: 11px;
+}
+
+.iconTextBtn:hover {
+    background-color: var(--hover-color);
+    cursor: pointer;
+}

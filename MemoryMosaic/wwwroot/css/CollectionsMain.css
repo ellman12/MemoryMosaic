@@ -59,16 +59,6 @@ header > #sortDiv {
     border: 1px solid white;
 }
 
-header > #sortDiv > button {
-    width: 100%;
-    border: none;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    font-weight: 400;
-    padding: 11px;
-}
-
 #mainDiv {
     display: flex;
     flex-direction: row;
