@@ -17,11 +17,13 @@
         <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@RefreshData"/>
 
         <div id="collectionGroups">
-            <button class="iconBtn" @onclick="@(() => PreviousSelectionBtnClick(false))" title="Restore the last selection of collections."><span class="material-icons-outlined">history</span></button>
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(1, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(2, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(3, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
-            <button class="iconBtn" @onclick="@(mouseEventArgs => SaveBtnClick(4, mouseEventArgs))" title="Ctrl click to save; click to apply."><span class="material-icons-outlined">save</span></button>
+            <IconButton Icon="history" OnClick="@(() => PreviousSelectionBtnClick(false))" Title="Restore the last selection of collections."/>
+
+            @for (int i = 1; i < 6; i++)
+            {
+                int ii = i;
+                <IconButton Icon="save" EventArgsOnClick="@(mouseEventArgs => SaveBtnClick(ii, mouseEventArgs))" Title="Ctrl click to save; click to apply."/>
+            }
         </div>
         
         <div id="collectionsSearch">
@@ -248,6 +250,8 @@
             ClearAlbumChecks();
             ClearFolderChecks();
         }
+        StateHasChanged();
+        return;
 
         void SaveSelectionToDisk()
         {
