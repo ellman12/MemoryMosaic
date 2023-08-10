@@ -41,11 +41,6 @@ header > #selectedAmtText {
     margin-right: 20px;
 }
 
-#moreOptionsDiv > button:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
-
 #moreOptionsDiv {
     display: flex;
     flex-direction: column;
@@ -56,17 +51,6 @@ header > #selectedAmtText {
     background-color: black;
     border: 1px solid white;
     width: auto;
-}
-
-#moreOptionsDiv > button {
-    width: 100%;
-    border: none;
-    background-color: black;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    font-weight: 400;
-    padding: 11px;
 }
 
 header > #collectionRenameDiv {

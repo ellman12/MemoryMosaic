@@ -51,17 +51,17 @@
         </div>
 
         <div id="moreOptionsDiv" style="@sortDiv.Style">
-            <button @onclick="@(() => ChangeOrder(CVSortMode.OldestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.OldestDateTaken ? "#1a73e8" : "white")">Oldest Date Taken First</span></button>
-            <button @onclick="@(() => ChangeOrder(CVSortMode.NewestDateTaken))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestDateTaken ? "#1a73e8" : "white")">Newest Date Taken First</span></button>
-            <button @onclick="@(() => ChangeOrder(CVSortMode.OldestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.OldestAdded ? "#1a73e8" : "white")">Oldest Added First</span></button>
-            <button @onclick="@(() => ChangeOrder(CVSortMode.NewestAdded))"><span class="material-icons-outlined" style="@(sortMode == CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")">check</span><span style="color: @(sortMode == CVSortMode.NewestAdded ? "#1a73e8" : "white")">Newest Added First</span></button>
+            <DropdownButton Icon="check" Text="Oldest Date Taken First" OnClick="@(() => ChangeOrder(CVSortMode.OldestDateTaken))" IconStyle="@(sortMode == CVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.OldestDateTaken ? "#1a73e8" : "white")"/>
+            <DropdownButton Icon="check" Text="Newest Date Taken First" OnClick="@(() => ChangeOrder(CVSortMode.NewestDateTaken))" IconStyle="@(sortMode == CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.NewestDateTaken ? "#1a73e8" : "white")"/>
+            <DropdownButton Icon="check" Text="Oldest Added First" OnClick="@(() => ChangeOrder(CVSortMode.OldestAdded))" IconStyle="@(sortMode == CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.OldestAdded ? "#1a73e8" : "white")"/>
+            <DropdownButton Icon="check" Text="Newest Added First" OnClick="@(() => ChangeOrder(CVSortMode.NewestAdded))" IconStyle="@(sortMode == CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.NewestAdded ? "#1a73e8" : "white")"/>
 
-            <button @onclick="@ToggleReadonly"><span class="material-icons-outlined">@(collection.readOnly ? "lock_open" : "lock")</span><span>@(collection.readOnly ? "Remove" : "Make") Readonly</span></button>
+            <DropdownButton Icon="@(collection.readOnly ? "lock_open" : "lock")" Text="@($"{(collection.readOnly ? "Remove" : "Make")} Readonly)")" OnClick="@ToggleReadonly"/>
 
             @if (!collection.readOnly)
             {
-                <button @onclick="@(() => C.ChangeCollectionType(collection.id, !collection.folder))"><span class="material-icons-outlined">@(collection.folder ? "perm_media" : "collections")</span><span>@(collection.folder ? "Change to Album" : "Change to Folder")</span></button>
-                <button @onclick="@DeleteCollectionBtnClick"><svg width="24px" height="24px" class="material-icons" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg><span>@(collection.folder ? "Delete Folder" : "Delete Album")</span></button>
+                <DropdownButton Icon="@(collection.folder ? "perm_media" : "collections")" Text="@(collection.folder ? "Change to Album" : "Change to Folder")" OnClick="@ChangeCollectionType"/>
+                <DropdownButton Icon="trash" Text="@(collection.folder ? "Delete Folder" : "Delete Album")" OnClick="@DeleteCollectionBtnClick"/>
             }
         </div>
     </header>
@@ -159,10 +159,18 @@
         StateHasChanged();
     }
 
-    private async Task ToggleReadonly()
+    private async void ToggleReadonly()
     {
         await C.ToggleReadonlyAsync(collection ?? throw new InvalidOperationException());
         collection.readOnly = !collection.readOnly;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void ChangeCollectionType()
+    {
+        C.ChangeCollectionType(collection!.id, !collection.folder);
+        collection.folder = !collection.folder;
+        StateHasChanged();
     }
 
     //Remove selected from the collection
