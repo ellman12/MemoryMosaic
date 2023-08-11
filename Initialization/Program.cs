@@ -51,6 +51,7 @@ Settings.backupFolderPath = mm_backup;
 Settings.tmpFolderPath = mm_tmp;
 Settings.showPrompts = true;
 Settings s = new();
+File.WriteAllText(Path.Combine(mmRoot, "mm_debug_settings.json"), JsonConvert.SerializeObject(s));
 File.WriteAllText(Path.Combine(mmRoot, "mm_settings.json"), JsonConvert.SerializeObject(s));
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Done\n");

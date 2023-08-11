@@ -33,7 +33,11 @@ public class Settings
         
     public const int POSTGRES_VERSION = 15;
 
+#if DEBUG
+    public static readonly string SettingsPath = Path.Combine(Environment.CurrentDirectory, "mm_debug_settings.json");
+#else
     public static readonly string SettingsPath = Path.Combine(Environment.CurrentDirectory, "mm_settings.json");
+#endif
 
     public static void WriteSettings() => File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
 
