@@ -41,15 +41,3 @@ header > div {
 header > div > .iconTextBtn {
     margin-left: 10px;
 }
-
-header > #sortDiv {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    position: absolute;
-    top: 54px;
-    right: 330px;
-    background-color: black;
-    border: 1px solid white;
-    z-index: 9999;
-}
