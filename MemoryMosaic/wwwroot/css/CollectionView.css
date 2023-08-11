@@ -41,18 +41,6 @@ header > #selectedAmtText {
     margin-right: 20px;
 }
 
-#moreOptionsDiv {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    position: absolute;
-    top: 58px;
-    right: 58px;
-    background-color: black;
-    border: 1px solid white;
-    width: auto;
-}
-
 header > #collectionRenameDiv {
     display: flex;
     flex-direction: row;
