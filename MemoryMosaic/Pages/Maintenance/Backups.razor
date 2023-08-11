@@ -32,7 +32,7 @@
 </div>
 
 @code {
-    private ProgressPopUp backupPopUp = new(), restorePopUp = new(), deletePopUp = new();
+    private ProgressPopUp backupPopUp = null!, restorePopUp = null!, deletePopUp = null!;
     
     ///Stores each backup's full path, date and time it was made, and its size in bytes.
     private List<(string, DateTime, long)> backups = new();

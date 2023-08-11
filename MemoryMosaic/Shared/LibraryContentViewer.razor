@@ -211,7 +211,7 @@ else
 	
 	private CtrlGInput ctrlGInput = new();
 
-	private ProgressPopUp? downloadPopUp; //I let Blazor handle the initialization of this. I get render handle errors if I try to do it manually.
+	private ProgressPopUp downloadPopUp = null!;
 	
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.
 	[Parameter, EditorRequired] public string FirstQuery { get; set; } = null!;
@@ -523,7 +523,7 @@ else
 	{
 		if (SelectedItems.Count == 0) return;
 		
-		downloadPopUp?.Enable();
+		downloadPopUp.Enable();
 		Header.Disable();
 		await InvokeAsync(StateHasChanged);
 		await Task.Delay(0);
@@ -545,7 +545,7 @@ else
 		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
 		ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath, CompressionLevel.Fastest, false);
 		
-		downloadPopUp?.Disable();
+		downloadPopUp.Disable();
 		downloadPrompt.Enable();
 		await InvokeAsync(StateHasChanged);
 
