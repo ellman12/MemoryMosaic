@@ -23,14 +23,15 @@
         </div>
     </div>
 
-    <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })"/>
-    <div id="sortDiv" style="@sortDiv.Style">
-        <DropdownButton Icon="check" Text="Collection Title" OnClick="@(() => ChangeOrder(CMSortMode.Title))" IconStyle="@(sortMode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.Title ? "#1a73e8" : "white")"/>
-        <DropdownButton Icon="check" Text="Title Reversed" OnClick="@(() => ChangeOrder(CMSortMode.TitleReversed))" IconStyle="@(sortMode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.TitleReversed ? "#1a73e8" : "white")"/>
-        <DropdownButton Icon="check" Text="Last Modified" OnClick="@(() => ChangeOrder(CMSortMode.LastModified))" IconStyle="@(sortMode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModified ? "#1a73e8" : "white")"/>
-        <DropdownButton Icon="check" Text="Last Modified Reversed" OnClick="@(() => ChangeOrder(CMSortMode.LastModifiedReversed))" IconStyle="@(sortMode == CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")"/>
-    </div>
+    <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@dropdown.Toggle"/>
 </header>
+
+<Dropdown @ref="@dropdown" Positioning="top: 60px; right: 90px">
+    <DropdownButton Icon="check" Text="Collection Title" OnClick="@(() => ChangeOrder(CMSortMode.Title))" IconStyle="@(sortMode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.Title ? "#1a73e8" : "white")"/>
+    <DropdownButton Icon="check" Text="Title Reversed" OnClick="@(() => ChangeOrder(CMSortMode.TitleReversed))" IconStyle="@(sortMode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.TitleReversed ? "#1a73e8" : "white")"/>
+    <DropdownButton Icon="check" Text="Last Modified" OnClick="@(() => ChangeOrder(CMSortMode.LastModified))" IconStyle="@(sortMode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModified ? "#1a73e8" : "white")"/>
+    <DropdownButton Icon="check" Text="Last Modified Reversed" OnClick="@(() => ChangeOrder(CMSortMode.LastModifiedReversed))" IconStyle="@(sortMode == CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")"/>
+</Dropdown>
 
 <div id="mainDiv">
     @foreach (Collection collection in collections)
@@ -49,7 +50,7 @@
 
     private CollectionCreator collectionCreator = null!;
 
-    private readonly ElementVisibility sortDiv = new();
+    private Dropdown dropdown = new();
     
     private string sortBtnText = null!;
     private static CMSortMode sortMode = CMSortMode.LastModified;
@@ -90,6 +91,6 @@
         sortMode = newMode;
         GetCollectionsTable();
         SetSortBtnText();
-        sortDiv.Disable();
+        dropdown.Disable();
     }
 }

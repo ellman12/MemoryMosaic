@@ -48,17 +48,6 @@ header > #sortBtn {
     right: 250px;
 }
 
-header > #sortDiv {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    position: absolute;
-    top: 60px;
-    right: 250px;
-    background-color: black;
-    border: 1px solid white;
-}
-
 #mainDiv {
     display: flex;
     flex-direction: row;
