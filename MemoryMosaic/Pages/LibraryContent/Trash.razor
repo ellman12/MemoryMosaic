@@ -11,19 +11,20 @@
             <IconButton Icon="close" OnClick="@lcv.ClearChecks"/>
             <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
         }
+
         <div>
-            <IconTextButton Icon="sort" Text="@sortBtnText" OnClick="@(() => { sortDiv.Toggle(); StateHasChanged(); })"/>
+            <IconTextButton Icon="sort" Text="@sortBtnText" OnClick="@(() => { dropdown.Toggle(); StateHasChanged(); })"/>
             <IconTextButton Icon="restore_from_trash" Text="@(lcv.SelectedItemsCount == 0 ? "Restore ALL" : "Restore Selected")" OnClick="@RestoreBtnClick"/>
             <IconTextButton Icon="delete_forever" Text="@(lcv.SelectedItemsCount == 0 ? "Delete ALL" : "Delete Selected")" OnClick="@DeleteBtnClick"/>
         </div>
-
-        <div id="sortDiv" style="@sortDiv.Style">
-            <DropdownButton Icon="check" Text="Newest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")"/>
-            <DropdownButton Icon="check" Text="Newest Date Taken First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateTaken))" IconStyle="@(sortMode == TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")"/>
-            <DropdownButton Icon="check" Text="Oldest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")"/>
-            <DropdownButton Icon="check" Text="Oldest Date Taken First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateTaken))" IconStyle="@(sortMode == TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")"/>
-        </div>
     </header>
+
+    <Dropdown @ref="@dropdown" Positioning="top: 55px; right: 315px">
+        <DropdownButton Icon="check" Text="Newest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")"/>
+        <DropdownButton Icon="check" Text="Newest Date Taken First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateTaken))" IconStyle="@(sortMode == TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")"/>
+        <DropdownButton Icon="check" Text="Oldest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")"/>
+        <DropdownButton Icon="check" Text="Oldest Date Taken First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateTaken))" IconStyle="@(sortMode == TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")"/>
+    </Dropdown>
 
     UpdateQueries();
     @* Date Added in this case is actually Date Deleted. *@
@@ -36,8 +37,8 @@
 @code {
     private TrashSortMode sortMode = TrashSortMode.NewestDateDeleted;
     private LibraryContentViewer lcv = new();
+    private Dropdown dropdown = new();
     private string sortBtnText = null!, choiceMsg = null!, orderBy = null!, sortColumn = null!, topQuery = null!, bottomQuery = null!, firstQuery = null!;
-    private readonly ElementVisibility sortDiv = new();
     private TwoChoiceInput delPrompt = new(), restorePrompt = new();
 
     protected override void OnInitialized() => SetSortBtnText();
@@ -92,7 +93,7 @@
     {
         sortMode = newMode;
         SetSortBtnText();
-        sortDiv.Disable();
+        dropdown.Disable();
         lcv.Reset();
         UpdateQueries();
         StateHasChanged();

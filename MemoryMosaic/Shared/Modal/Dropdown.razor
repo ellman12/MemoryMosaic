@@ -1,0 +1,14 @@
+@inherits ToggleableComponent
+
+<link href="css/components/modal/Dropdown.css" rel="stylesheet"/>
+
+<div class="dropdown" style="@Visibility.Style; @Positioning">
+	@ChildContent
+</div>
+
+@code {
+	[Parameter, EditorRequired] public RenderFragment ChildContent { get; set; } = null!;
+
+	[Parameter, EditorRequired] public string Positioning { get; set; } = null!;
+
+}
