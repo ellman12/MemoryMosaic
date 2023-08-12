@@ -211,7 +211,7 @@ else
 	
 	private CtrlGInput ctrlGInput = new();
 
-	private ProgressPopUp downloadPopUp = null!;
+	private ProgressPopUp? downloadPopUp;
 	
 	///The query only used to select data on first page load. The query MUST SELECT these columns in this exact order: path, date_taken, date_added, starred, uuid, thumbnail, description.
 	[Parameter, EditorRequired] public string FirstQuery { get; set; } = null!;
@@ -523,7 +523,7 @@ else
 	{
 		if (SelectedItems.Count == 0) return;
 		
-		downloadPopUp.Enable();
+		downloadPopUp!.Enable();
 		Header.Disable();
 		await InvokeAsync(StateHasChanged);
 		await Task.Delay(0);
