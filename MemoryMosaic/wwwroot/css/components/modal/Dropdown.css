@@ -1,8 +1,0 @@
-.dropdown {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    background-color: black;
-    border: 1px solid white;
-    z-index: 99999;
-}
