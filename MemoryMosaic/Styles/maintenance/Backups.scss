@@ -1,0 +1,56 @@
+* {
+    user-select: none;
+    scrollbar-width: none !important;
+    --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: var(--left-margin);
+    margin-top: 10px;
+}
+
+header > button {
+    margin-right: 12px;
+}
+
+header > span {
+    font-size: 18px;
+}
+
+h1 {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+    user-select: none;
+}
+
+#mainDiv {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 145px;
+    top: 90px;
+}
+
+#mainDiv > .backup {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    margin-bottom: 20px;
+}
+
+#mainDiv > .backup > span {
+    font-size: 19px;
+    margin-right: 30px;
+    width: 270px;
+}

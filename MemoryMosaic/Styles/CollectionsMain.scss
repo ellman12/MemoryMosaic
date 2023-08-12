@@ -1,0 +1,98 @@
+/* Main collections page where user clicks collection thumbnail they want to view items of */
+* {
+    user-select: none;
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: fixed;
+    z-index: 999;
+    left: 160px;
+    height: 70px;
+    width: 100%;
+    border-bottom: 1px solid gray;
+    background-color: black;
+}
+
+header > #collectionsText {
+    font-size: 20px;
+    margin-left: 10px;
+    margin-right: 40px;
+}
+
+header > #checkboxes {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    right: 470px;
+    width: 150px;
+}
+
+header > #checkboxes > div {
+    width: 130px;
+    display: flex;
+    align-items: center;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+header > #checkboxes > div > span {
+    margin-left: 1px;
+}
+
+header > #sortBtn {
+    position: absolute;
+    right: 250px;
+}
+
+#mainDiv {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    position: absolute;
+    left: 145px;
+    top: 84px;
+}
+
+/* Div containing collection name and thumbnail */
+#mainDiv > .collection {
+    position: relative;
+    margin-bottom: 45px;
+    margin-left: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+#mainDiv > .collection:hover {
+    cursor: pointer;
+}
+
+#mainDiv > .collection:hover > .thumbnail > .dotsBtn {
+    opacity: 1;
+    transition: all .3s cubic-bezier(0, 0, .2, 1);
+}
+
+#mainDiv > .collection > .thumbnail {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    width: 200px;
+    height: 200px;
+    background-color: #212121;
+    border-radius: 4px;
+}
+
+#mainDiv > .collection > .collectionName {
+    width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-top: 7px;
+    margin-left: 5px;
+}

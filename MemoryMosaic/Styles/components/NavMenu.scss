@@ -1,0 +1,49 @@
+* {
+    text-decoration: none;
+}
+
+nav {
+    left: 0;
+    top: 0;
+    position: fixed;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Hide scrollbars in Firefox */
+    width: 132px;
+}
+
+nav::-webkit-scrollbar {
+    display: none; /* Hide scrollbars in Safari and Chrome */
+}
+
+nav > .navLink {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 47px;
+    border: none;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+nav > .navLink > span + span, nav > .navLink > svg + span {
+    padding-left: 11px;
+}
+
+nav > .navLink:hover {
+    background-color: var(--hover-color);
+    cursor: pointer;
+}
+
+nav > .active {
+    background-color: rgb(0, 72, 255, 0.06);
+}
+
+nav > .active:hover {
+    background-color: rgb(0, 72, 255, 0.09);
+}
+
+nav > .active > * {
+    color: #0080ff;
+    fill: #0080ff;
+}

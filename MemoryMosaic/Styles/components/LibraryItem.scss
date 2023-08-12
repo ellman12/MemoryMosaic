@@ -1,0 +1,55 @@
+.libraryItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    min-height: 60px;
+}
+
+.errorDiv > .libraryItem > .shortPath {
+    color: red;
+    margin-right: 10px;
+}
+
+.warnDiv > .libraryItem > .shortPath {
+    color: yellow;
+    margin-right: 10px;
+}
+
+.libraryItem > .shortPath {
+    color: green;
+    margin-right: 10px;
+}
+
+.libraryItem > .checkbox {
+    opacity: 0;
+    margin-left: 4px;
+    margin-right: 10px;
+}
+
+.libraryItem > .shortWidth {
+    max-width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.libraryItem > .shortWidth:hover {
+    max-width: initial;
+    width: auto;
+}
+
+.libraryItem > .fullWidth {
+    width: auto;
+}
+
+.libraryItem > img {
+    width: 4%;
+    margin-right: 10px;
+}
+
+.libraryItem > .inTrash {
+    color: red;
+    margin-left: 10px;
+}

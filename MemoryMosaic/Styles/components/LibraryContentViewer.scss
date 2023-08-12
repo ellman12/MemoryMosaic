@@ -1,0 +1,102 @@
+h1 {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+    user-select: none;
+}
+
+#libContentViewer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 145px;
+    top: 60px;
+}
+
+#libContentViewer > .spanAndRow {
+    display: flex;
+    flex-direction: column;
+    margin-right: 25px;
+}
+
+#libContentViewer > .spanAndRow > span {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+#libContentViewer > .spanAndRow > .row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+#libContentViewer > .spanAndRow > .row > .thumbnail > .star-icon {
+    position: absolute;
+    left: 8px;
+    bottom: 10px;
+}
+
+#libContentViewer > .spanAndRow > .row > .thumbnail > .video-icon {
+    position: absolute;
+    right: 8px;
+    top: 10px;
+    pointer-events: none;
+}
+
+#libContentViewer > .spanAndRow > .row > .thumbnail > .checkbox {
+    opacity: 0;
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 8px;
+}
+
+#libContentViewer > .spanAndRow > .row > .thumbnail > .checked {
+    color: #009FFF;
+    visibility: visible;
+    opacity: 1;
+    transition: 0.3s; /* These transitions can't be in .checkbox because it causes them to very briefly be visible on initial page load. */
+}
+
+#libContentViewer > .spanAndRow > .row > .thumbnail > img {
+    height: 200px;
+}
+
+#libContentViewer > .spanAndRow > .row > .thumbnail {
+    position: relative; /* https://stackoverflow.com/a/12365963 */
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+#libContentViewer > .spanAndRow > .row > .thumbnail:hover > .unchecked { /* Show checkbox on hover */
+    opacity: 0.42;
+    transition: 0.3s;
+}
+
+#libContentViewer > .spanAndRow > .row > .thumbnail > .unchecked:hover {
+    opacity: 1;
+    transition: 0.3s;
+}
+
+#moreContentTopDiv {
+    background-color: transparent;
+    outline: 10px solid red;
+    width: 100%;
+    height: 600px;
+    position: absolute;
+    z-index: 800;
+}
+
+#moreContentBottomDiv {
+    background-color: transparent;
+    outline: 10px solid blue;
+    width: 100%;
+    height: 600px;
+    position: absolute;
+    z-index: 800;
+    bottom: -200px;
+}
