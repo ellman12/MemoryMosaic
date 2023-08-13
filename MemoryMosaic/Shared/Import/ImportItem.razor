@@ -1,7 +1,7 @@
 @using MemoryMosaic.Pages
 @inject IJSRuntime JSRuntime
 
-<link href="css/components/ImportItem.css" rel="stylesheet"/>
+<link href="css/Components/ImportItem.css" rel="stylesheet"/>
 
 <div class="importItem" @onclick="@(mouseArgs => { if (mouseArgs.CtrlKey) CheckClicked(mouseArgs); })">
 	<button class="checkBtn" @onclick="@CheckClicked"><span class="material-icons-outlined checkbox @(Import.selectedItems.Contains(ImportFile.uuid) ? "checked" : "unchecked")">check_circle</span></button>
