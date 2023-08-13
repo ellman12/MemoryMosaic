@@ -17,6 +17,10 @@ public class Startup
         services.AddRazorPages();
         services.AddServerSideBlazor().AddHubOptions(hub => hub.MaximumReceiveMessageSize = 100 * 1024 * 1024); //https://stackoverflow.com/a/61459904
         services.AddHotKeys();
+
+    #if DEBUG
+        services.AddSassCompiler();
+    #endif
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

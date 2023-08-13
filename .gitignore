@@ -520,5 +520,8 @@ $RECYCLE.BIN/
 
 _NCrunch*
 
+# MemoryMosaic-specific ignores.
 MemoryMosaic/mm_settings.json
 MemoryMosaic/mm_debug_settings.json
+
+MemoryMosaic/wwwroot/css/
