@@ -1,4 +1,4 @@
-namespace MemoryMosaic.Classes;
+namespace MemoryMosaic;
 
 public sealed class ElementVisibility
 {
