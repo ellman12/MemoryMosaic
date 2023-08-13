@@ -1,7 +1,9 @@
-@* Reusable component for a simple interface to create new albums and folders *@
+@* Reusable component for a simple interface to create new albums and folders. *@
+@inherits Component
+
 <link href="css/components/CollectionCreator.css" rel="stylesheet"/>
 
-<div id="collectionCreator">
+<div id="collectionCreator" class="@Class">
     <IconButton Icon="@newCollectionBtnIcon" OnClick="@NewCollectionBtnClick" title="@newCollectionBtnTitle"/>
     
     @if (acceptingInput)
