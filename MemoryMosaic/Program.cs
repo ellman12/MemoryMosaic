@@ -27,12 +27,12 @@ namespace MemoryMosaic;
 
 public class Program
 {
-    #if DEBUG
-        public const bool Debug = true;
-    #else
-        public const bool Debug = false;
-    #endif
-    
+#if DEBUG
+    public const bool Debug = true;
+#else
+    public const bool Debug = false;
+#endif
+
     public static void Main(string[] args)
     {
         //Populate config with default values if file doesn't exist. If exists, read in values.
