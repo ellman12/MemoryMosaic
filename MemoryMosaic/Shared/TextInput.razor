@@ -1,0 +1,19 @@
+@inherits Component
+
+<link href="css/Components/TextInput.css" rel="stylesheet"/>
+
+@* https://stackoverflow.com/a/75706085 *@
+<input type="text" @bind="@Input" @bind:after="@OnInputChanged" @bind:event="oninput" placeholder="@Placeholder"/>
+
+@code {
+	[Parameter]
+	public string? Input { get; set; }
+
+	[Parameter]
+	public EventCallback<string?> InputChanged { get; set; }
+
+	private async void OnInputChanged() => await InputChanged.InvokeAsync(Input);
+
+	[Parameter]
+	public string? Placeholder { get; set; }
+}
