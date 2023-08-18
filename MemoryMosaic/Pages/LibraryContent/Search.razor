@@ -2,12 +2,11 @@
 
 <title>Search - MM</title>
 <link href="css/Pages/LibraryContentPage.css" rel="stylesheet"/>
-<link href="css/Search.css" rel="stylesheet"/>
 
 @{
     <header>
-        <input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchMedia(); })" @onfocusout="@SearchMedia" placeholder="Search for Items by Filename"/>
-        
+		<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchMedia(); })" OnFocusOut="@SearchMedia" Placeholder="Search original/renamed filenames" Style="position: absolute; left: 45%; top: 40%; transform: translate(-50%, -50%)"/>
+
         @if (lcv.Header.Visible)
         {
             <IconButton Icon="close" OnClick="@lcv.ClearChecks"/>
@@ -23,12 +22,12 @@
     </header>
     
     <LibraryContentViewer @ref="@lcv" NotNullDTQueryTop="@Query" NotNullDTQueryBottom="@Query" FirstQuery="@Query" NoItemsText="No Items Found" Rerender="@StateHasChanged"/>
-    <KeyboardShortcuts Slash="FocusSearchInput"/>
+    <KeyboardShortcuts Slash="@(() => searchInput?.Focus())"/>
 }
 
 @code {
     private LibraryContentViewer lcv = new();
-    private ElementReference searchInput;
+    private TextInput searchInput = null!;
     private string searchText = "";
     private string Query => String.IsNullOrWhiteSpace(searchText) ? "" : $"SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE date_deleted IS NULL AND path ILIKE '%{searchText}%' ORDER BY date_taken DESC";
 
@@ -37,6 +36,4 @@
         lcv.Reset();
         StateHasChanged();
     }
-    
-    private async void FocusSearchInput() => await searchInput.FocusAsync();
 }

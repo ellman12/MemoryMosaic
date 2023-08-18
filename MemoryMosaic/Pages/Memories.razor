@@ -90,7 +90,7 @@
 
 		<div class="inputBox" style="@editFilename.Style">
 		    <span>Enter new filename:</span>
-		    <input title="" type="text" @bind="@newFilename" required/>
+			<TextInput @bind-Input="@newFilename"/>
 		    <span class="errorSpan" style="@filenameError.Style">A file with the same Date Taken and/or name already exists.</span>
 		    <div>
 		        <IconButton Icon="close" OnClick="@(() => { editFilename.Disable(); filenameError.Disable(); newFilename = ""; })"/>

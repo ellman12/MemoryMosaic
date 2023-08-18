@@ -17,7 +17,7 @@
 		return;
 	}
 
-	<KeyboardShortcuts AltS="@TogglePathWidth" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Del="DeleteSelected" Esc="@ClearChecks" Slash="@FocusSearchInput"/>
+	<KeyboardShortcuts AltS="@TogglePathWidth" CtrlA="@SelectAll" CtrlS="@SaveChanges" CtrlO="@LoadItemsFromDisk" Del="DeleteSelected" Esc="@ClearChecks" Slash="@(() => searchInput.Focus())"/>
 	
 	<header>
 		@if (selectedItems.Count > 0)
@@ -39,7 +39,7 @@
 			<IconTextButton ID="addBtn" Icon="library_add" Text="@addBtnMsg" OnClick="@AddItems"/>
 		}
 		
-		<input @ref="@searchInput" id="search" type="text" @bind="@searchText" @bind:event="oninput" @onkeydown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" @onfocusout="@SearchItems" placeholder="Search original/renamed filenames"/>
+		<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" OnFocusOut="@SearchItems" Placeholder="Search original/renamed filenames" Style="position: absolute; left: 610px"/>
 
 		<span id="statusMessage">@statusMessage</span>
 
@@ -167,7 +167,7 @@
 @code {
 	private ProgressPopUp popUp = null!;
 
-	private static ElementReference searchInput;
+	private TextInput searchInput = null!;
 
 	private bool finishedLoading;
 
@@ -457,8 +457,6 @@
 
 		StateHasChanged();
 	}
-
-	private static async void FocusSearchInput() => await searchInput.FocusAsync();
 
 	///Dumps all the data for Import into a .tmp file that can be restored when the page loads.
 	private void SaveChanges()

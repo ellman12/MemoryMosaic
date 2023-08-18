@@ -8,27 +8,27 @@
         <span class="header">Settings</span>
         <div class="text-setting">
             <span>Server IP Address</span>
-            <input type="text" @bind="@serverIP"/>
+            <TextInput @bind-Input="@serverIP" Width="100%"/>
         </div>
 
         <div class="text-setting">
             <span>Where to look for items to add to your library</span>
-            <input type="text" @bind="@importFolderPath"/>
+            <TextInput @bind-Input="@importFolderPath" Width="100%"/>
         </div>
 
         <div class="text-setting">
             <span>Root path to library folder</span>
-            <input type="text" @bind="@libraryRootPath"/>
+            <TextInput @bind-Input="@libraryRootPath" Width="100%"/>
         </div>
 
         <div class="text-setting">
             <span>Where to backup library and database</span>
-            <input type="text" @bind="@backupFolderPath"/>
+            <TextInput @bind-Input="@backupFolderPath" Width="100%"/>
         </div>
         
         <div class="text-setting">
             <span>Where to store temporary items</span>
-            <input type="text" @bind="@tmpFolderPath"/>
+            <TextInput @bind-Input="@tmpFolderPath" Width="100%"/>
         </div>
         
         <div class="toggle-setting">
@@ -162,7 +162,7 @@
         <div id="debugDiv">
             <span class="header">Debug</span>
             <div>
-                <input type="text" style="margin-right: 10px" placeholder="Enter a query" @bind="@debugQuery"/>
+                <TextInput @bind-Input="@debugQuery" Placeholder="Enter a query" Width="600px; margin-right: 10px"/>
                 <IconTextButton Icon="play_arrow" Text="Run Query" OnClick="@RunQuery"/>
             </div>
         </div>
