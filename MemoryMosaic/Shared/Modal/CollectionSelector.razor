@@ -27,7 +27,7 @@
         </div>
         
         <div id="collectionsSearch">
-            <input type="text" @bind="@searchText" @bind:event="oninput" placeholder="Search Collections"/>
+            <TextInput @bind-Input="@searchText" Placeholder="Search Collections"/>
             <IconButton Icon="clear" OnClick="@(() => searchText = "")"/>
         </div>
         

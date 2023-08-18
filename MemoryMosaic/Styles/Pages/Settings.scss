@@ -58,14 +58,6 @@
     text-underline: cadetblue;
 }
 
-#body > div > .text-setting > input[type="text"] {
-    background-color: black;
-    color: white;
-    border: 1px solid white;
-    border-radius: 4px;
-    width: 100%;
-}
-
 #body > div > .toggle-setting {
     display: flex;
     flex-direction: row;
@@ -131,12 +123,4 @@
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-}
-
-#body > #debugDiv > div > input[type="text"] {
-    background-color: black;
-    color: white;
-    border: 1px solid white;
-    border-radius: 4px;
-    width: 77%;
 }

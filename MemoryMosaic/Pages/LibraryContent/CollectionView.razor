@@ -9,19 +9,12 @@
 <header>
     @if (lcv.Header.Visible)
     {
-        <IconButton Icon="close" OnClick="@lcv.ClearChecks" id="clearBtn"/>
+        <IconButton Icon="close" OnClick="@lcv.ClearChecks" ID="clearBtn"/>
         <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
     }
 
     <div id="collectionRenameDiv">
-        @if (collection.readOnly)
-        {
-            <input disabled type="text" placeholder="Enter new collection name" @bind="@NewCollectionName" @bind:event="oninput" autocomplete="off"/>
-        }
-        else
-        {
-            <input type="text" placeholder="Enter new collection name" @bind="@NewCollectionName" @bind:event="oninput" autocomplete="off"/>
-        }
+        <TextInput @bind-Input="@NewCollectionName" Placeholder="Enter new collection name" FontSize="20" Width="600px" Style="border: 2px solid black" Disabled="@collection.readOnly"/>
 
         <MaterialIcon Icon="@(collection.readOnly ? "lock" : "")" Title="@(collection.readOnly ? "Readonly" : "")"/>
 

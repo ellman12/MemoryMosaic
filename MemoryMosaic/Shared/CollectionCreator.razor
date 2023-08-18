@@ -4,11 +4,11 @@
 <link href="css/Components/CollectionCreator.css" rel="stylesheet"/>
 
 <div id="collectionCreator" class="@Class">
-    <IconButton Icon="@newCollectionBtnIcon" OnClick="@NewCollectionBtnClick" title="@newCollectionBtnTitle"/>
+    <IconButton Icon="@newCollectionBtnIcon" OnClick="@NewCollectionBtnClick" Title="@newCollectionBtnTitle"/>
     
     @if (acceptingInput)
     {
-        <input type="text" placeholder="@($"Enter new {(folder ? "folder" : "album")} name")" @bind="@NewCollectionName"/>
+        <TextInput @bind-Input="@NewCollectionName" Placeholder="@($"Enter new {(folder ? "folder" : "album")} name")"/>
 
         if (!String.IsNullOrWhiteSpace(ErrorIconTitle))
         {
