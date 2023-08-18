@@ -3,7 +3,14 @@
 <link href="css/Components/TextInput.css" rel="stylesheet"/>
 
 @* https://stackoverflow.com/a/75706085 *@
-<input type="text" @bind="@Input" @bind:after="@OnInputChanged" @bind:event="oninput" placeholder="@Placeholder"/>
+@if (Disabled)
+{
+	<input type="text" @bind="@Input" @bind:after="@OnInputChanged" @bind:event="oninput" placeholder="@Placeholder" disabled/>
+}
+else
+{
+	<input type="text" @bind="@Input" @bind:after="@OnInputChanged" @bind:event="oninput" placeholder="@Placeholder"/>
+}
 
 @code {
 	[Parameter]
@@ -16,4 +23,7 @@
 
 	[Parameter]
 	public string? Placeholder { get; set; }
+
+	[Parameter]
+	public bool Disabled { get; set; }
 }
