@@ -5,11 +5,11 @@
 @* https://stackoverflow.com/a/75706085 *@
 @if (Disabled)
 {
-	<input type="text" style="width: @Width" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
+	<input @ref="@input" type="text" id="@ID" class="@Class" style="width: @Width" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
 }
 else
 {
-	<input type="text" style="width: @Width" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
+	<input @ref="@input" type="text" id="@ID" class="@Class" style="width: @Width" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
 }
 
 @code {
@@ -33,6 +33,10 @@ else
 
 	[Parameter]
 	public Action? OnFocusOut { get; set; }
+
+	public async void Focus() => await input.FocusAsync();
+
+	private ElementReference input;
 
 	private async void UpdateInput() => await InputChanged.InvokeAsync(Input);
 
