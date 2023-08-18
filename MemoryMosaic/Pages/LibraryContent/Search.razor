@@ -22,7 +22,7 @@
     </header>
     
     <LibraryContentViewer @ref="@lcv" NotNullDTQueryTop="@Query" NotNullDTQueryBottom="@Query" FirstQuery="@Query" NoItemsText="No Items Found" Rerender="@StateHasChanged"/>
-    <KeyboardShortcuts Slash="@(() => searchInput?.Focus())"/>
+    <KeyboardShortcuts Slash="@(() => searchInput.Focus())"/>
 }
 
 @code {
