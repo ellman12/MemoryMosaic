@@ -5,11 +5,11 @@
 @* https://stackoverflow.com/a/75706085 *@
 @if (Disabled)
 {
-	<input @ref="@input" type="text" id="@ID" class="@Class" style="width: @Width" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
+	<input @ref="@input" type="text" id="@ID" class="@Class" style="width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
 }
 else
 {
-	<input @ref="@input" type="text" id="@ID" class="@Class" style="width: @Width" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
+	<input @ref="@input" type="text" id="@ID" class="@Class" style="width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
 }
 
 @code {
@@ -24,6 +24,9 @@ else
 
 	[Parameter]
 	public string Width { get; set; } = "200px";
+
+	[Parameter]
+	public string Style { get; set; } = null!;
 
 	[Parameter]
 	public bool Disabled { get; set; }
