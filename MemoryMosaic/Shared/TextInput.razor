@@ -5,11 +5,11 @@
 @* https://stackoverflow.com/a/75706085 *@
 @if (Disabled)
 {
-	<input type="text" style="width: @Width" @bind="@Input" @bind:after="@OnInputChanged" @bind:event="oninput" placeholder="@Placeholder" disabled/>
+	<input type="text" style="width: @Width" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
 }
 else
 {
-	<input type="text" style="width: @Width" @bind="@Input" @bind:after="@OnInputChanged" @bind:event="oninput" placeholder="@Placeholder"/>
+	<input type="text" style="width: @Width" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
 }
 
 @code {
@@ -19,8 +19,6 @@ else
 	[Parameter]
 	public EventCallback<string?> InputChanged { get; set; }
 
-	private async void OnInputChanged() => await InputChanged.InvokeAsync(Input);
-
 	[Parameter]
 	public string? Placeholder { get; set; }
 
@@ -29,4 +27,16 @@ else
 
 	[Parameter]
 	public bool Disabled { get; set; }
+
+	[Parameter]
+	public Action<KeyboardEventArgs>? OnKeyDown { get; set; }
+
+	[Parameter]
+	public Action? OnFocusOut { get; set; }
+
+	private async void UpdateInput() => await InputChanged.InvokeAsync(Input);
+
+	private void HandleKeyDown(KeyboardEventArgs e) => OnKeyDown?.Invoke(e);
+
+	private void HandleFocusOut() => OnFocusOut?.Invoke();
 }
