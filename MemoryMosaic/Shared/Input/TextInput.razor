@@ -1,6 +1,6 @@
-@inherits Component
+@inherits InputComponent<string?>
 
-<link href="css/Components/TextInput.css" rel="stylesheet"/>
+<link href="css/Components/Input/TextInput.css" rel="stylesheet"/>
 
 @* https://stackoverflow.com/a/75706085 *@
 @{
@@ -16,37 +16,6 @@
 }
 
 @code {
-	[Parameter]
-	public string? Input { get; set; }
-
-	[Parameter]
-	public EventCallback<string?> InputChanged { get; set; }
-
-	[Parameter]
-	public string? Placeholder { get; set; }
-
-	[Parameter]
-	public int FontSize { get; set; } = 16;
-
-	[Parameter]
-	public string Width { get; set; } = "200px";
-
-	[Parameter]
-	public string Style { get; set; } = null!;
-
-	[Parameter]
-	public bool Disabled { get; set; }
-
-	[Parameter]
-	public Action<KeyboardEventArgs>? OnKeyDown { get; set; }
-
-	[Parameter]
-	public Action? OnFocusOut { get; set; }
-
-	public async void Focus() => await input.FocusAsync();
-
-	private ElementReference input;
-
 	private async void UpdateInput() => await InputChanged.InvokeAsync(Input);
 
 	private void HandleKeyDown(KeyboardEventArgs e) => OnKeyDown?.Invoke(e);
