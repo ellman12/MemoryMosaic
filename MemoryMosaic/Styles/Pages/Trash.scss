@@ -4,12 +4,6 @@ header {
     @include page-header(0, 60px, 145px);
 }
 
-header > #selectedAmtText {
-    font-size: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
 header > div {
     display: flex;
     align-items: center;
