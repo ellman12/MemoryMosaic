@@ -10,4 +10,6 @@ public abstract class Component : ComponentBase
 	[Parameter] public string? Class { get; set; }
 
 	[Parameter] public string? Title { get; set; }
+
+	[Parameter] public string? Style { get; set; }
 }

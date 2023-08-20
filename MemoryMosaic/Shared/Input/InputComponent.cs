@@ -21,9 +21,6 @@ public class InputComponent<T> : Component
 	public string Width { get; set; } = "200px";
 
 	[Parameter]
-	public string Style { get; set; } = null!;
-
-	[Parameter]
 	public bool Disabled { get; set; }
 
 	[Parameter]
