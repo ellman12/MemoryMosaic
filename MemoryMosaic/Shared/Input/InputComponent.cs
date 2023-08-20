@@ -32,7 +32,7 @@ public class InputComponent<T> : Component
 	[Parameter]
 	public Action? OnFocusOut { get; set; }
 
-	protected ElementReference input;
-
 	public async void Focus() => await input.FocusAsync();
+
+	protected ElementReference input;
 }
