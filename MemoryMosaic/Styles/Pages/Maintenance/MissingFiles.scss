@@ -1,11 +1,11 @@
 ﻿@import "../../Shared";
 
 header {
-    @include page-header(0, auto, 145px);
+    @include page-header(0, auto);
 }
 
 main {
-    @include main(70px, 145px);
+    @include main(70px);
     position: absolute;
 }
 

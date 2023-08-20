@@ -10,7 +10,7 @@ header > button {
 }
 
 main {
-    @include main(70px, 145px);
+    @include main(70px);
 }
 
 main > .itemDiv {

@@ -63,7 +63,7 @@ header > #buttons > .iconBtn {
 }
 
 main {
-    @include flex-main(column, 64px, 145px);
+    @include flex-main(column, 64px);
 }
 
 main > .itemGroup {

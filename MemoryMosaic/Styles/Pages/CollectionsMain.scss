@@ -38,7 +38,7 @@ header > #sortBtn {
 }
 
 main {
-    @include flex-main(row, 84px, 145px);
+    @include flex-main(row, 84px);
     flex-wrap: wrap;
     justify-content: flex-start;
 }

@@ -1,7 +1,7 @@
 @import "../../Shared";
 
 header {
-    @include page-header(0, auto, 145px);
+    @include page-header(0, auto);
     margin-top: 10px;
 }
 
@@ -14,7 +14,7 @@ header > span {
 }
 
 main {
-    @include flex-main(column, 145px, 90px);
+    @include flex-main(column, 90px);
     flex-wrap: wrap;
 }
 

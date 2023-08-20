@@ -1,7 +1,7 @@
 @import "../Shared";
 
 header {
-    @include page-header(0, 56px, 145px);
+    @include page-header(0, 56px);
 }
 
 header > span {
