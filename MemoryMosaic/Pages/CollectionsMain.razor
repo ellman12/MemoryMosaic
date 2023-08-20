@@ -33,7 +33,7 @@
     <DropdownButton Icon="check" Text="Last Modified Reversed" OnClick="@(() => ChangeOrder(CMSortMode.LastModifiedReversed))" IconStyle="@(sortMode == CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")"/>
 </Dropdown>
 
-<div id="mainDiv">
+<main>
     @foreach (Collection collection in collections)
     { 
         <a class="collection" href="/collection-view/@collection.id"> @*Text and collection thumbnail*@
@@ -43,7 +43,7 @@
             <span class="collectionName">@collection.name</span>
         </a>
     }
-</div>
+</main>
 
 @code {
     private List<Collection> collections = null!;

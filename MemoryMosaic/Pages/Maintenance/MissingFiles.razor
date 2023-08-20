@@ -7,7 +7,7 @@
     <IconTextButton Icon="trash" Text="Delete All Paths From DB" OnClick="@DeleteMissingPaths"/>
 </header>
 
-<div id="mainDiv">
+<main>
     @foreach (MediaRow row in mediaMissingItems)
     {
         <div class="missingItem">
@@ -23,7 +23,7 @@
             </div>
         </div>
     }
-</div>
+</main>
 
 @code {
     private readonly List<MediaRow> mediaMissingItems = M.GetMediaMissingFiles();

@@ -27,6 +27,18 @@ h1 {
 	text-align: center;
 }
 
+@mixin main($top, $left: 145px) {
+	top: $top;
+	left: $left;
+	position: absolute;
+}
+
+@mixin flex-main($flex-direction, $top, $left: 145px) {
+	@include main($top, $left);
+	display: flex;
+	flex-direction: $flex-direction;
+}
+
 @mixin hover {
 	background-color: rgba(211, 211, 211, 0.1);
 	cursor: pointer;

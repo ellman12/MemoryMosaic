@@ -9,29 +9,27 @@ header > button {
     margin-right: 12px;
 }
 
-#mainDiv {
-    position: absolute;
-    left: 145px;
-    top: 71px;
+main {
+    @include main(70px, 145px);
 }
 
-#mainDiv > .itemDiv {
+main > .itemDiv {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 10px;
 }
 
-#mainDiv > .itemDiv > img {
+main > .itemDiv > img {
     width: 4%;
 }
 
-#mainDiv > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/
+main > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/
     transform: scale(1.9);
     cursor: pointer;
 }
 
-#mainDiv > .itemDiv > span {
+main > .itemDiv > span {
     margin-left: 10px;
     width: 300px;
     overflow: hidden;
@@ -39,6 +37,6 @@ header > button {
     text-overflow: ellipsis;
 }
 
-#mainDiv > .itemDiv > button {
+main > .itemDiv > button {
     margin-left: 4px;
 }

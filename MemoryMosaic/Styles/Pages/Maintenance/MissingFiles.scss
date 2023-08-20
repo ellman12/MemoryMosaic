@@ -4,20 +4,19 @@ header {
     @include page-header(0, auto, 145px);
 }
 
-#mainDiv {
+main {
+    @include main(70px, 145px);
     position: absolute;
-    left: 145px;
-    top: 70px;
 }
 
-#mainDiv > .missingItem {
+main > .missingItem {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 10px;
 }
 
-#mainDiv > .missingItem > .thumbnail {
+main > .missingItem > .thumbnail {
     margin: 0;
     padding: 0;
     display: flex;
@@ -27,18 +26,18 @@ header {
     border-radius: 4px;
 }
 
-#mainDiv > .missingItem > .thumbnail > img {
+main > .missingItem > .thumbnail > img {
     object-fit: cover;
     width: 60px;
     height: 60px;
 }
 
-#mainDiv > .missingItem > .info {
+main > .missingItem > .info {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-#mainDiv > .missingItem > .info > span {
+main > .missingItem > .info > span {
     margin-left: 10px;
 }

@@ -37,18 +37,14 @@ header > #sortBtn {
     right: 250px;
 }
 
-#mainDiv {
-    display: flex;
-    flex-direction: row;
+main {
+    @include flex-main(row, 84px, 145px);
     flex-wrap: wrap;
     justify-content: flex-start;
-    position: absolute;
-    left: 145px;
-    top: 84px;
 }
 
 /* Div containing collection name and thumbnail */
-#mainDiv > .collection {
+main > .collection {
     position: relative;
     margin-bottom: 45px;
     margin-left: 25px;
@@ -56,16 +52,16 @@ header > #sortBtn {
     flex-direction: column;
 }
 
-#mainDiv > .collection:hover {
+main > .collection:hover {
     cursor: pointer;
 }
 
-#mainDiv > .collection:hover > .thumbnail > .dotsBtn {
+main > .collection:hover > .thumbnail > .dotsBtn {
     opacity: 1;
     transition: all .3s cubic-bezier(0, 0, .2, 1);
 }
 
-#mainDiv > .collection > .thumbnail {
+main > .collection > .thumbnail {
     margin: 0;
     padding: 0;
     display: flex;
@@ -77,7 +73,7 @@ header > #sortBtn {
     border-radius: 4px;
 }
 
-#mainDiv > .collection > .collectionName {
+main > .collection > .collectionName {
     width: 200px;
     overflow: hidden;
     white-space: nowrap;

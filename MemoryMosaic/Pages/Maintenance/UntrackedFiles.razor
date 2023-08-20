@@ -15,7 +15,7 @@
         return;
     }
     
-    <div id="mainDiv">
+    <main>
         @for (int i = 0; i < untrackedFiles.Count; i++)
         {
             int ii = i;
@@ -41,7 +41,7 @@
                 <IconButton Icon="trash" OnClick="@(() => DeleteBtnClick(ii))" Title="Delete This Item From Server"/>
             </div>
         }
-    </div>
+    </main>
 }
 
 @code {
