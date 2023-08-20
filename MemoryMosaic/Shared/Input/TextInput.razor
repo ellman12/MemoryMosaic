@@ -4,21 +4,12 @@
 
 @* https://stackoverflow.com/a/75706085 *@
 @{
-	string width = Width == "available" ? "available; width: -moz-available; width: -webkit-fill-available;" : Width;
 	if (Disabled)
 	{
-		<input @ref="@input" type="text" id="@ID" class="@Class" style="font-size: @(FontSize)px; width: @width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
+		<input @ref="@input" type="text" id="@ID" class="@Class" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
 	}
 	else
 	{
-		<input @ref="@input" type="text" id="@ID" class="@Class" style="font-size: @(FontSize)px; width: @width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
+		<input @ref="@input" type="text" id="@ID" class="@Class" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
 	}
-}
-
-@code {
-	private async void UpdateInput() => await InputChanged.InvokeAsync(Input);
-
-	private void HandleKeyDown(KeyboardEventArgs e) => OnKeyDown?.Invoke(e);
-
-	private void HandleFocusOut() => OnFocusOut?.Invoke();
 }

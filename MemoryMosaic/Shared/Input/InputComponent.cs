@@ -35,4 +35,15 @@ public class InputComponent<T> : Component
 	public async void Focus() => await input.FocusAsync();
 
 	protected ElementReference input;
+
+	protected async void UpdateInput() => await InputChanged.InvokeAsync(Input);
+
+	protected void HandleKeyDown(KeyboardEventArgs e) => OnKeyDown?.Invoke(e);
+
+	protected void HandleFocusOut() => OnFocusOut?.Invoke();
+
+	protected override void OnInitialized()
+	{
+		Width = Width == "available" ? "available; width: -moz-available; width: -webkit-fill-available;" : Width;
+	}
 }
