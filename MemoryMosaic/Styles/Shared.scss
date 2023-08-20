@@ -13,7 +13,6 @@
 	--hover-color: rgba(211, 211, 211, 0.1);
 	font-family: Product Sans, sans-serif;
 	color: white;
-	--left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
 	user-select: none;
 	scrollbar-width: none !important;
 }
@@ -43,4 +42,16 @@
 	width: available;
 	width: -webkit-fill-available;
 	width: -moz-available;
+}
+
+@mixin page-header($border-bottom: 1px solid gray, $height: auto, $left) {
+	border-bottom: $border-bottom;
+	height: $height;
+	@include available-width;
+	@include flex-row;
+	position: fixed;
+	top: 0;
+	left: $left;
+	background-color: black;
+	z-index: 999;
 }

@@ -1,14 +1,7 @@
-﻿header {
-    background-color: black;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    align-content: center;
-    position: fixed;
-    left: 145px;
-    right: 0;
-    top: 4px;
-    z-index: 999;
+﻿@import "../../Shared";
+
+header {
+    @include page-header(0, auto, 145px);
 }
 
 #mainDiv {

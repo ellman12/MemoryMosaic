@@ -1,15 +1,8 @@
 /* Main collections page where user clicks collection thumbnail they want to view items of */
+@import "../Shared";
+
 header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: fixed;
-    z-index: 999;
-    left: 160px;
-    height: 70px;
-    width: 100%;
-    border-bottom: 1px solid gray;
-    background-color: black;
+    @include page-header(1px solid gray, 64px, 164px);
 }
 
 header > #collectionsText {

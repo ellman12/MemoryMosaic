@@ -1,3 +1,5 @@
+@import "../Shared";
+
 h1 {
     position: absolute;
     top: 40%;
@@ -8,20 +10,7 @@ h1 {
 }
 
 header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    margin-left: var(--left-margin);
-    margin-right: 1px;
-    height: 64px;
-    background-color: black;
-    border-bottom: 1px solid gray;
-    width: -moz-available;
-    width: -webkit-fill-available; 
-    width: fill-available;
-    z-index: 999;
+    @include page-header(1px solid gray, 64px);
 }
 
 header > .iconBtn {

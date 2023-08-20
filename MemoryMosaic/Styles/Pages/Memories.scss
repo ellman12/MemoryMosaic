@@ -1,15 +1,7 @@
+@import "../Shared";
+
 header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: fixed;
-    z-index: 999;
-    left: 160px;
-    height: 56px;
-    width: 100%;
-    padding-bottom: 6px;
-    border-bottom: 1px solid gray;
-    background-color: black;
+    @include page-header(0, 56px, 145px);
 }
 
 header > span {
