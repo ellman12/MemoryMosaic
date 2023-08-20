@@ -3,16 +3,37 @@
 
 /*This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg*/
 @font-face {
-    font-family: 'Product Sans';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2) format('woff2');
+	font-family: 'Product Sans';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2) format('woff2');
 }
 
 * {
-    --hover-color: rgba(211, 211, 211, 0.1);
-    font-family: Product Sans, sans-serif;
-    color: white;
+	--hover-color: rgba(211, 211, 211, 0.1);
+	font-family: Product Sans, sans-serif;
+	color: white;
 }
 
 svg {fill: white;}
+
+@mixin hover {
+	background-color: rgba(211, 211, 211, 0.1);
+	cursor: pointer;
+}
+
+@mixin flex-col {
+	display: flex;
+	flex-direction: column;
+}
+
+@mixin flex-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+@mixin flex-justify-center {
+	display: flex;
+	justify-content: center;
+}
