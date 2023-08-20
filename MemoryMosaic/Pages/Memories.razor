@@ -15,7 +15,7 @@
         }
     </select>
 
-	<input title="" type="number" @bind="@SelectedDay" @bind:event="oninput"/>
+	<IntInput @bind-Input="@SelectedDay" Width="40px"/>
 	
 	<IconButton ID="randomBtn" Icon="shuffle" OnClick="@PickRandomDate" Title="Pick Random Date"/>
 </header>

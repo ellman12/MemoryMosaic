@@ -49,8 +49,8 @@
 
 			@if (yearCheckEnabled)
 			{
-				<input type="text" @bind="@minYear" placeholder="Min Year"/>
-				<input type="text" @bind="@maxYear" placeholder="Max Year"/>
+				<IntInput @bind-Input="@minYear" HideSpinner="true" Placeholder="Min Year" Style="width: 39px; margin-left: 5px"/>
+				<IntInput @bind-Input="@maxYear" HideSpinner="true" Placeholder="Max Year" Style="width: 39px; margin-left: 5px"/>
 			}
 		</div>
 

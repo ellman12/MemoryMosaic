@@ -1,0 +1,25 @@
+@inherits InputComponent<int>
+
+<link href="css/Components/Input/IntInput.css" rel="stylesheet"/>
+
+@{
+	if (Disabled)
+	{
+		<input @ref="@input" type="number" id="@ID" class="@Class @(HideSpinner ? "hide-number-buttons" : "")" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" min="@Min" max="@Max" maxlength="2" placeholder="@Placeholder" disabled/>
+	}
+	else
+	{
+		<input @ref="@input" type="number" id="@ID" class="@Class @(HideSpinner ? "hide-number-buttons" : "")" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" min="@Min" max="@Max" placeholder="@Placeholder"/>
+	}
+}
+
+@code {
+	[Parameter]
+	public bool HideSpinner { get; set; }
+
+	[Parameter]
+	public int Min { get; set; } = Int32.MinValue;
+
+	[Parameter]
+	public int Max { get; set; } = Int32.MaxValue;
+}
