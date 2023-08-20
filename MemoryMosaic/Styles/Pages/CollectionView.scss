@@ -1,35 +1,3 @@
-@import "../Shared";
-
-h1 {
-    text-align: center;
-    position: absolute;
-    left: 50%;
-    top: 40%;
-    transform: translate(-50%, -50%);
-}
-
-header {
-    @include page-header(0, 60px, 145px);
-}
-
-header > #buttons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: absolute;
-    right: 55px;
-}
-
-header > span {
-    font-size: 20px;
-}
-
-header > #selectedAmtText {
-    font-size: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
 header > #collectionRenameDiv {
     display: flex;
     flex-direction: row;
