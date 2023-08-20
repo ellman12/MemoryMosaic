@@ -39,7 +39,7 @@
 			<IconTextButton ID="addBtn" Icon="library_add" Text="@addBtnMsg" OnClick="@AddItems"/>
 		}
 		
-		<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" OnFocusOut="@SearchItems" Placeholder="Search original/renamed filenames" Style="position: absolute; left: 610px"/>
+		<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchItems(); })" OnFocusOut="@SearchItems" Placeholder="Search original/renamed filenames" Style="width: 245px; position: absolute; left: 610px"/>
 
 		<span id="statusMessage">@statusMessage</span>
 

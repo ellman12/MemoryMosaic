@@ -5,7 +5,7 @@
 
 @{
     <header>
-		<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchMedia(); })" OnFocusOut="@SearchMedia" Placeholder="Search original/renamed filenames" Style="position: absolute; left: 45%; top: 40%; transform: translate(-50%, -50%)"/>
+		<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchMedia(); })" OnFocusOut="@SearchMedia" Placeholder="Search original/renamed filenames" Style="width: 245px; position: absolute; left: 45%; top: 40%; transform: translate(-50%, -50%)"/>
 
         @if (lcv.Header.Visible)
         {
