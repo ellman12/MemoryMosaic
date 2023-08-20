@@ -6,10 +6,10 @@ namespace MemoryMosaic.Shared.Input;
 public class InputComponent<T> : Component
 {
 	[Parameter]
-    public T Input { get; set; } //TODO: figure out how to handle this warning.
+    public T? Input { get; set; }
 
 	[Parameter]
-    public EventCallback<T> InputChanged { get; set; }
+    public EventCallback<T?> InputChanged { get; set; }
 
 	[Parameter]
     public string? Placeholder { get; set; }
