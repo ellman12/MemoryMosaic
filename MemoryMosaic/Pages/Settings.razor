@@ -5,7 +5,7 @@
 
 <div id="body">
     <div>
-        <span class="header">Settings</span>
+        <span>Settings</span>
         <div class="text-setting">
             <span>Server IP Address</span>
             <TextInput @bind-Input="@serverIP" Width="available"/>
@@ -93,7 +93,7 @@
     </div>
 
     <div>
-        <span class="header">Maintenance</span>
+        <span>Maintenance</span>
         <LinkButton Icon="restore" Text="Backups" Href="maintenance/backups" Title="Create and Restore Backups of MM"/>
         <IconTextButton Icon="restart_alt" Text="Restart Server" OnClick="@RestartServer"/>
         <IconTextButton Icon="folder_delete" Text="Clear mm_tmp" OnClick="@ClearTmpFolder"/>
@@ -113,7 +113,7 @@
     </div>
     
     <div id="statsDiv">
-        <span class="header">Stats</span>
+        <span>Stats</span>
         @if (!statsLoaded)
         {
             <IconTextButton Icon="insights" Text="Load Stats" OnClick="@GetStats"/>
@@ -159,8 +159,8 @@
 
     @if (Program.Debug)
     {
-        <div id="debugDiv">
-            <span class="header">Debug</span>
+        <div>
+            <span>Debug</span>
             <div>
                 <TextInput @bind-Input="@debugQuery" Placeholder="Enter a query" Width="600px; margin-right: 10px"/>
                 <IconTextButton Icon="play_arrow" Text="Run Query" OnClick="@RunQuery"/>

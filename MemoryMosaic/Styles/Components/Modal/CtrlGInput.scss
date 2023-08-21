@@ -1,30 +1,26 @@
 ﻿/* Re-usable component for allowing user to choose the date taken they want LCV to start at. */
 #ctrlGInput {
-    padding: 12px 12px 6px;
-    border: 1px solid white;
-    display: flex;
-    flex-direction: column;
-}
+	padding: 12px 12px 6px;
+	border: 1px solid white;
+	display: flex;
+	flex-direction: column;
 
-#ctrlGInput > span {
-    margin-bottom: 4px;
-}
+	> span { margin-bottom: 4px; }
 
-#ctrlGInput > div {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
+	> div {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 
-#ctrlGInput > div > input[type="date"] {
-    background-color: black;
-    color: white;
-    width: 110px;
-    height: 30px;
-    border: 1px solid white;
-    border-radius: 4px;
-}
+		> input[type="date"] {
+			background-color: black;
+			color: white;
+			width: 110px;
+			height: 30px;
+			border: 1px solid white;
+			border-radius: 4px;
+		}
 
-#ctrlGInput > div > button {
-    margin-left: 6px;
+		> button { margin-left: 6px; }
+	}
 }

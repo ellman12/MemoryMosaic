@@ -1,42 +1,39 @@
 @import "../../Shared";
 
 header {
-    @include page-header(0, auto, 145px);
-}
+	@include page-header(0, 60px);
 
-header > button {
-    margin-top: 10px;
-    margin-right: 12px;
+	button {
+		margin-right: 12px;
+	}
 }
 
 main {
-    @include main(70px);
-}
+	@include main(70px);
 
-main > .itemDiv {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 10px;
-}
+	> div {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin-bottom: 10px;
 
-main > .itemDiv > img {
-    width: 4%;
-}
+		> img {
+			width: 4%;
 
-main > .itemDiv > img:hover { /*https://stackoverflow.com/a/25036868*/
-    transform: scale(1.9);
-    cursor: pointer;
-}
+			&:hover { /*https://stackoverflow.com/a/25036868*/
+				transform: scale(1.9);
+				cursor: pointer;
+			}
+		}
 
-main > .itemDiv > span {
-    margin-left: 10px;
-    width: 300px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
+		> span {
+			margin-left: 10px;
+			width: 300px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
 
-main > .itemDiv > button {
-    margin-left: 4px;
+		> .iconBtn { margin-left: 4px; }
+	}
 }
