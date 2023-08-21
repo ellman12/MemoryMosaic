@@ -2,82 +2,70 @@
 @import "../Shared";
 
 header {
-    @include page-header(1px solid gray, 64px, 164px);
-}
+	@include page-header(1px solid gray, 64px, 164px);
 
-header > #collectionsText {
-    font-size: 20px;
-    margin-left: 10px;
-    margin-right: 40px;
-}
+	> #collectionsText {
+		font-size: 20px;
+		margin-left: 10px;
+		margin-right: 40px;
+	}
 
-header > #checkboxes {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    position: absolute;
-    right: 470px;
-    width: 150px;
-}
+	> #checkboxes {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		position: absolute;
+		right: 470px;
+		width: 150px;
 
-header > #checkboxes > div {
-    width: 130px;
-    display: flex;
-    align-items: center;
-    margin-top: 1px;
-    margin-bottom: 1px;
-}
+		> div {
+			width: 130px;
+			display: flex;
+			align-items: center;
+			margin-top: 1px;
+			margin-bottom: 1px;
 
-header > #checkboxes > div > span {
-    margin-left: 1px;
-}
+			> span { margin-left: 1px; }
+		}
+	}
 
-header > #sortBtn {
-    position: absolute;
-    right: 250px;
+	> #sortBtn {
+		position: absolute;
+		right: 250px;
+	}
 }
 
 main {
-    @include flex-main(row, 84px);
-    flex-wrap: wrap;
-    justify-content: flex-start;
-}
+	@include flex-main(row, 84px);
+	flex-wrap: wrap;
+	justify-content: flex-start;
 
-/* Div containing collection name and thumbnail */
-main > .collection {
-    position: relative;
-    margin-bottom: 45px;
-    margin-left: 25px;
-    display: flex;
-    flex-direction: column;
-}
+	> a {
+		position: relative;
+		margin-bottom: 45px;
+		margin-left: 25px;
+		display: flex;
+		flex-direction: column;
 
-main > .collection:hover {
-    cursor: pointer;
-}
+		> div {
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: center;
+			overflow: hidden;
+			width: 200px;
+			height: 200px;
+			background-color: #212121;
+			border-radius: 4px;
+		}
 
-main > .collection:hover > .thumbnail > .dotsBtn {
-    opacity: 1;
-    transition: all .3s cubic-bezier(0, 0, .2, 1);
-}
-
-main > .collection > .thumbnail {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
-    width: 200px;
-    height: 200px;
-    background-color: #212121;
-    border-radius: 4px;
-}
-
-main > .collection > .collectionName {
-    width: 200px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-top: 7px;
-    margin-left: 5px;
+		> span {
+			width: 200px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			margin-top: 7px;
+			margin-left: 5px;
+		}
+	}
 }
