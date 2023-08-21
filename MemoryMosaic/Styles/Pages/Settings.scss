@@ -9,8 +9,10 @@
 	> div {
 		width: 40%;
 		border: 3px solid white;
-		padding: 15px;
 		border-radius: 20px;
+		padding-top: 15px;
+		padding-right: 15px;
+		padding-left: 15px;
 		margin-bottom: 25px;
 
 		> span:first-of-type {
@@ -100,8 +102,8 @@
 		}
 	}
 
-	> #debugDiv > div:last-of-type {
-		@include flex-col;
-		margin-bottom: 20px;
+	> div:last-of-type > div {
+		@include flex-row;
+		margin-bottom: 10px;
 	}
 }
