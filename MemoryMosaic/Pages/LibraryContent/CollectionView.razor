@@ -15,7 +15,7 @@
     }
 
     <div id="collectionRenameDiv">
-        <TextInput @bind-Input="@NewCollectionName" Placeholder="Enter new collection name" FontSize="20" Width="600px" Style="border: 2px solid black" Disabled="@collection.readOnly"/>
+        <TextInput @bind-Input="@NewCollectionName" Placeholder="Enter new collection name" FontSize="20" Width="600px" Disabled="@collection.readOnly"/>
 
         <MaterialIcon Icon="@(collection.readOnly ? "lock" : "")" Title="@(collection.readOnly ? "Readonly" : "")"/>
 
