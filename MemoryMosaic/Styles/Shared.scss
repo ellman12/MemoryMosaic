@@ -16,6 +16,8 @@
 	user-select: none;
 	font-weight: normal;
 	scrollbar-width: none !important;
+
+	&::selection { background-color: #0080ff; }
 }
 
 h1 {
