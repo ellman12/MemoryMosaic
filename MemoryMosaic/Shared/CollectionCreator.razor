@@ -17,10 +17,7 @@
         
         <IconButton Icon="check" OnClick="@ConfirmBtnClick"/>
         
-        <div>
-            <input type="checkbox" id="folder" @bind="@folder">
-            <label for="folder">Folder</label>
-        </div>
+        <Checkbox @bind-Input="@folder" Label="Folder"/>
     }
 </div>
 
