@@ -1,40 +1,15 @@
-* {
-    user-select: none;
-}
+@import "../Shared";
 
-header {
-    background-color: black;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    align-content: center;
-    position: fixed;
-    left: 145px;
-    right: 0;
-    z-index: 999;
-    height: 60px;
-}
+header { @include page-header(0, 60px);
+	> span {
+		font-size: 20px;
+		margin-left: 20px;
+		margin-right: 20px;
+	}
 
-header > span {
-    font-size: 20px;
-}
-
-header > #selectedAmtText {
-    font-size: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
-header > #buttons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: absolute;
-    right: 55px;
-}
-
-/* Only used for Starred obv */
-header > #starredText {
-    position: absolute;
-    left: 43%;
+	> #buttons {
+		@include flex-row;
+		position: absolute;
+		right: 55px;
+	}
 }

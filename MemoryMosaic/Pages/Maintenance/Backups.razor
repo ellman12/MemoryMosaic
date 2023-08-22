@@ -19,7 +19,7 @@
     return;
 }
 
-<div id="mainDiv">
+<main>
     @foreach ((string, DateTime, long) backup in backups)
     {
         <div class="backup">
@@ -29,7 +29,7 @@
             <IconButton Icon="trash" OnClick="@(() => DeleteBackup(backup.Item1))" Title="Delete This Backup"/>
         </div>
     }
-</div>
+</main>
 
 @code {
     private ProgressPopUp backupPopUp = null!, restorePopUp = null!, deletePopUp = null!;

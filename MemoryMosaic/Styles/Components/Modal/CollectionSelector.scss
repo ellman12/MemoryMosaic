@@ -1,123 +1,90 @@
-#collectionSelector {
-    width: 490px;
-    height: 800px;
-    z-index: 999999;
-    border: 1px solid white;
-}
+@import "../../Shared.scss";
 
-#collectionSelector > #header {
-    height: 50px;
-    padding-top: 4px;
-    padding-left: 10px;
-    position: fixed;
-    width: 100%;
-    top: 0;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
+#collection-selector {
+	@include flex-col;
+	width: 490px;
+	height: 92vh;
+	z-index: 999999;
+	border: 1px solid white;
+	padding-left: 8px;
+	padding-right: 8px;
 
-#collectionSelector > #header > #buttons {
-    position: absolute;
-    right: 13px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
+	> div { margin-bottom: 4px; }
 
-#collectionSelector > #collectionCreator {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    height: 60px;
-    width: 100%;
-    left: 6px;
-    top: 45px;
-}
+	#header {
+		@include flex-row;
+		height: 50px;
+		padding-top: 4px;
 
-#collectionGroups {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: absolute;
-    top: 100px;
-    height: 70px;
-    width: 450px;
-    left: 2px;
-}
+		div {
+			@include flex-row;
+			position: absolute;
+			right: 2px;
 
-#collectionGroups > button {
-    margin-right: 10px;
-}
+			.iconBtn {
+				margin-left: 4px;
+				margin-right: 4px;
+			}
+		}
+	}
 
-#collectionsSearch {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    height: 60px;
-    top: 153px;
-    left: 8px;
-}
+	#collection-groups {
+		@include flex-row;
 
-#collectionsSearch > .iconBtn {
-    margin-left: 6px;
-}
+		.iconBtn { margin-right: 4px; }
 
-#collections {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 210px;
-    left: 6px;
-    width: 97.5%;
-    height: 100%;
-}
+		.hidden-buttons {
+			@include flex-row;
+			opacity: 0;
+			transition: 0.25s;
+		}
 
-#collections > span {
-    margin-bottom: 8px;
-}
+		&:hover > .hidden-buttons { opacity: 1; }
+	}
 
-.collectionsList {
-    margin-bottom: 12px;
-    border: 1px solid white;
-    padding-right: 2px;
-    height: 255px;
-    overflow-y: scroll;
-}
+	#collections-search {
+		@include flex-row;
 
-.collectionsList > .collection {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-}
+		.iconBtn { margin-left: 8px; }
+	}
 
-.collectionsList > .collection:hover {
-    background-color: rgba(211, 211, 211, 0.1);
-    cursor: pointer;
-}
+	#collections {
+		@include flex-col;
+		flex: 1 1 auto;
 
-.collectionsList > .collection > .coverDiv {
-    display: flex;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    overflow: hidden;
-}
+		> span { margin-bottom: 4px; }
 
-.collectionsList > .collection > img {
-    width: 60px;
-    height: 60px;
-}
+		> div {
+			@include flex-col;
+			border: 1px solid white;
+			margin-bottom: 8px;
+			flex: 1 1 20vh;
+			overflow-y: scroll;
 
-.collectionsList .collection input[type="checkbox"] {
-    margin-left: 7px;
-}
+			.collection {
+				@include flex-row;
+				flex-wrap: nowrap;
 
-.collectionsList .collection span {
-    margin-top: -1px;
-    margin-left: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+				&:hover { @include hover; }
+
+				.cover {
+					@include flex-justify-center;
+					width: 60px;
+					height: 60px;
+					overflow: hidden;
+				}
+
+				.checkbox {
+					@include flex-row;
+
+					input[type="checkbox"] {
+						margin: 0 0 0 8px;
+						vertical-align: center;
+					}
+
+					span { margin-left: 6px; }
+				}
+			}
+		}
+	}
 }

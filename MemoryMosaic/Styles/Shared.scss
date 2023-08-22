@@ -3,16 +3,82 @@
 
 /*This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg*/
 @font-face {
-    font-family: 'Product Sans';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2) format('woff2');
+	font-family: "Product Sans";
+	font-style: normal;
+	font-weight: 400;
+	src: local("Open Sans"), local("OpenSans"), url(https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2) format("woff2");
+}
+
+:root {
+	--hover-color: rgba(211, 211, 211, 0.1);
 }
 
 * {
-    --hover-color: rgba(211, 211, 211, 0.1);
-    font-family: Product Sans, sans-serif;
-    color: white;
+	font-family: Product Sans, sans-serif;
+	color: white;
+	user-select: none;
+	font-weight: normal;
+	scrollbar-width: none !important;
+
+	&::selection { background-color: #0080ff; }
 }
 
-svg {fill: white;}
+h1 {
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	text-align: center;
+}
+
+@mixin main($top, $left: 145px) {
+	top: $top;
+	left: $left;
+	position: absolute;
+}
+
+@mixin flex-main($flex-direction, $top, $left: 145px) {
+	@include main($top, $left);
+	display: flex;
+	flex-direction: $flex-direction;
+}
+
+@mixin hover {
+	background-color: rgba(211, 211, 211, 0.1);
+	cursor: pointer;
+}
+
+@mixin flex-col {
+	display: flex;
+	flex-direction: column;
+}
+
+@mixin flex-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+@mixin flex-justify-center {
+	display: flex;
+	justify-content: center;
+}
+
+@mixin available-width {
+	width: available;
+	width: -webkit-fill-available;
+	width: -moz-available;
+}
+
+@mixin page-header($border-bottom: 1px solid gray, $height: auto, $left: 145px) {
+	border-bottom: $border-bottom;
+	height: $height;
+	@include available-width;
+	@include flex-row;
+	position: fixed;
+	top: 0;
+	left: $left;
+	background-color: black;
+	z-index: 999;
+}

@@ -1,56 +1,26 @@
-* {
-    user-select: none;
-    scrollbar-width: none !important;
-    --left-margin: 146px; /* For things with absolute positioning, how far to be away from left side of page */
-}
+@import "../../Shared";
 
 header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    left: var(--left-margin);
-    margin-top: 10px;
+	@include page-header(0, 60px);
+
+	button { margin-right: 12px; }
+
+	span { font-size: 18px; }
 }
 
-header > button {
-    margin-right: 12px;
-}
+main {
+	@include flex-main(column, 90px);
+	flex-wrap: wrap;
 
-header > span {
-    font-size: 18px;
-}
+	> .backup {
+		@include flex-row;
+		height: 30px;
+		margin-bottom: 20px;
 
-h1 {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    text-align: center;
-    user-select: none;
-}
-
-#mainDiv {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    position: absolute;
-    left: 145px;
-    top: 90px;
-}
-
-#mainDiv > .backup {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 30px;
-    margin-bottom: 20px;
-}
-
-#mainDiv > .backup > span {
-    font-size: 19px;
-    margin-right: 30px;
-    width: 270px;
+		> span {
+			font-size: 19px;
+			margin-right: 30px;
+			width: 270px;
+		}
+	}
 }

@@ -1,19 +1,7 @@
-* {
-    user-select: none;
-}
+@import "../Shared";
 
 header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: fixed;
-    z-index: 999;
-    left: 160px;
-    height: 56px;
-    width: 100%;
-    padding-bottom: 6px;
-    border-bottom: 1px solid gray;
-    background-color: black;
+    @include page-header(0, 56px);
 }
 
 header > span {
@@ -33,65 +21,51 @@ header > #randomBtn {
     margin-left: 5px;
 }
 
-h1 {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    text-align: center;
-    user-select: none;
+main {
+    @include flex-main(column, 170px, 80px);
 }
 
-#mainDiv {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    left: 170px;
-    top: 80px;
-}
-
-#mainDiv > span {
+main > span {
     font-size: 30px;
     display: block;
 }
 
-#mainDiv > div {
+main > div {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     margin-bottom: 12px;
 }
 
-#mainDiv > div > .thumbnail > .star-icon {
+main > div > .thumbnail > .star-icon {
     position: absolute;
     left: 8px;
     bottom: 10px;
 }
 
-#mainDiv > div > .thumbnail > .video-icon {
+main > div > .thumbnail > .video-icon {
     position: absolute;
     right: 8px;
     top: 10px;
     pointer-events: none;
 }
 
-#mainDiv > div > .thumbnail > img {
+main > div > .thumbnail > img {
     height: 200px;
     margin-left: 3px;
     margin-right: 3px;
     margin-top: 3px;
 }
 
-#mainDiv > div > .thumbnail {
+main > div > .thumbnail {
     position: relative; /* https://stackoverflow.com/a/12365963 */
 }
 
-#mainDiv > div > .thumbnail:hover {
+main > div > .thumbnail:hover {
     cursor: pointer;
 }
 
-#mainDiv > div > .thumbnail > img {
+main > div > .thumbnail > img {
     height: 200px;
     margin-left: 3px;
     margin-right: 3px;

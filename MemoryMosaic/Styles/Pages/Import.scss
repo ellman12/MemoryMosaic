@@ -1,33 +1,7 @@
-* {
-    scrollbar-width: none !important;
-    --left-margin: 145px; /* For things with absolute positioning, how far to be away from left side of page */
-    user-select: none;
-}
-
-h1 {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    text-align: center;
-}
+@import "../Shared";
 
 header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    margin-left: var(--left-margin);
-    margin-right: 1px;
-    height: 64px;
-    background-color: black;
-    border-bottom: 1px solid gray;
-    width: -moz-available;
-    width: -webkit-fill-available; 
-    width: fill-available;
-    z-index: 999;
+    @include page-header(1px solid gray, 64px);
 }
 
 header > .iconBtn {
@@ -88,21 +62,17 @@ header > #buttons > .iconBtn {
     margin-left: 5px;
 }
 
-#mainDiv {
-    margin-left: var(--left-margin);
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    top: 64px;
+main {
+    @include flex-main(column, 64px);
 }
 
-#mainDiv > .itemGroup {
+main > .itemGroup {
     margin-top: 5px;
     margin-bottom: 5px;
 }
 
-#mainDiv > .itemGroup > .errorDiv {
+main > .itemGroup > .errorDiv {
 }
 
-#mainDiv > .itemGroup > .warnDiv {
+main > .itemGroup > .warnDiv {
 }

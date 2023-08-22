@@ -15,7 +15,7 @@
         return;
     }
     
-    <div id="mainDiv">
+    <main>
         @for (int i = 0; i < untrackedFiles.Count; i++)
         {
             int ii = i;
@@ -26,7 +26,7 @@
             string shortPath = path.Replace(S.libFolderPath, "").Replace('\\', '/');
             shortPath = Path.GetFileName(S.libFolderPath) + shortPath;
 
-            <div class="itemDiv">
+            <div>
                 @if (ext is ".jpg" or ".jpeg" or ".png" or ".gif")
                 {
                     <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus();" src="@shortPath" alt="@shortPath" loading="lazy"/>
@@ -41,7 +41,7 @@
                 <IconButton Icon="trash" OnClick="@(() => DeleteBtnClick(ii))" Title="Delete This Item From Server"/>
             </div>
         }
-    </div>
+    </main>
 }
 
 @code {

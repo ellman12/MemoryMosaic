@@ -1,29 +1,25 @@
 ﻿#collectionCreator {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 
-#collectionCreator > input[type="text"] {
-    margin-left: 6px;
-    margin-right: 6px;
-}
+	> input[type="text"] {
+		margin-left: 6px;
+		margin-right: 6px;
+	}
 
-#collectionCreator > #error {
-    color: red;
-    margin-right: 6px;
-}
+	> #error {
+		color: red;
+		margin-right: 6px;
+	}
 
-#collectionCreator > div {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
+	> div {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 
-#collectionCreator > div > input[type="checkbox"] {
-    margin-left: 6px;
-}
+		> input[type="checkbox"] { margin-left: 6px; }
 
-#collectionCreator > div > label {
-    margin-left: 1px;
+		> label { margin-left: 1px; }
+	}
 }

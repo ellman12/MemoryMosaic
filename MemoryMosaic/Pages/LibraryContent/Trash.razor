@@ -2,14 +2,14 @@
 @inject IJSRuntime JSRuntime
 
 <title>Trash - MemoryMosaic</title>
-<link href="css/Trash.css" rel="stylesheet"/>
+<link href="css/Pages/Trash.css" rel="stylesheet"/>
 
 @{
     <header>
         @if (lcv.SelectedItemsCount > 0)
         {
             <IconButton Icon="close" OnClick="@lcv.ClearChecks"/>
-            <span id="selectedAmtText">@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
+            <span>@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span>
         }
 
         <div>

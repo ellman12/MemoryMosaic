@@ -26,24 +26,27 @@
     <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@dropdown.Toggle"/>
 </header>
 
-<Dropdown @ref="@dropdown" Positioning="top: 60px; right: 90px">
+<Dropdown @ref="@dropdown" Positioning="top: 60px; right: 182px">
     <DropdownButton Icon="check" Text="Collection Title" OnClick="@(() => ChangeOrder(CMSortMode.Title))" IconStyle="@(sortMode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.Title ? "#1a73e8" : "white")"/>
     <DropdownButton Icon="check" Text="Title Reversed" OnClick="@(() => ChangeOrder(CMSortMode.TitleReversed))" IconStyle="@(sortMode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.TitleReversed ? "#1a73e8" : "white")"/>
     <DropdownButton Icon="check" Text="Last Modified" OnClick="@(() => ChangeOrder(CMSortMode.LastModified))" IconStyle="@(sortMode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModified ? "#1a73e8" : "white")"/>
     <DropdownButton Icon="check" Text="Last Modified Reversed" OnClick="@(() => ChangeOrder(CMSortMode.LastModifiedReversed))" IconStyle="@(sortMode == CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")"/>
 </Dropdown>
 
-<div id="mainDiv">
+<main>
     @foreach (Collection collection in collections)
-    { 
-        <a class="collection" href="/collection-view/@collection.id"> @*Text and collection thumbnail*@
-            <div class="thumbnail">
-                @if (collection.cover != ""){<img src="mm_library/@collection.cover" alt=""/>}
+    {
+        <a href="/collection-view/@collection.id">
+            <div>
+                @if (!String.IsNullOrWhiteSpace(collection.cover))
+                {
+                    <img src="mm_library/@collection.cover" alt=""/>
+                }
             </div>
-            <span class="collectionName">@collection.name</span>
+            <span>@collection.name</span>
         </a>
     }
-</div>
+</main>
 
 @code {
     private List<Collection> collections = null!;
