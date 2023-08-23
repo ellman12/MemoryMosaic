@@ -77,11 +77,6 @@
 				.checkbox {
 					@include flex-row;
 
-					input[type="checkbox"] {
-						margin: 0 0 0 8px;
-						vertical-align: center;
-					}
-
 					span { margin-left: 6px; }
 				}
 			}
