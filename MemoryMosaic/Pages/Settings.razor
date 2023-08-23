@@ -30,17 +30,10 @@
             <span>Where to store temporary items</span>
             <TextInput @bind-Input="@tmpFolderPath" Width="available"/>
         </div>
-        
-        <div class="toggle-setting">
-            <input type="checkbox" id="show-prompts" @bind="@showPrompts"/>
-            <label for="show-prompts">Show Prompts?</label>
-        </div>
-        
-        <div class="toggle-setting">
-            <input type="checkbox" id="show-no-dt-in-collections" @bind="@displayNoDTInCV"/>
-            <label for="show-no-dt-in-collections">Show items with no DT in collections?</label>
-        </div>
-        
+
+        <Checkbox @bind-Input="@showPrompts" Label="Show Prompts?"/>
+        <Checkbox @bind-Input="@displayNoDTInCV" Label="Show Items with No Dt in Collections?"/>
+
         @{
             string color = logLevel switch
             {

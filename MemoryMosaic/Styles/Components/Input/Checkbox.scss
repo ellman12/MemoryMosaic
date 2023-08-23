@@ -1,0 +1,15 @@
+@import "../../Shared";
+
+.checkbox {
+	@include flex-row;
+	width: fit-content;
+	height: fit-content;
+
+	> span {
+		white-space: nowrap;
+		margin-left: 2px;
+		margin-right: 2px;
+
+		&:last-of-type { margin-top: -1px; }
+	}
+}

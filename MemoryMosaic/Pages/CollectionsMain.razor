@@ -9,18 +9,9 @@
     <CollectionCreator @ref="@collectionCreator" Collections="@collections" OnCollectionCreate="@GetCollectionsTable"/>
     
     <div id="checkboxes">
-        <div @onclick="@(() => UpdateFilter(out showAlbums, !showAlbums))">
-            <input type="checkbox" @bind="@showAlbums">
-            <span>Show Albums</span>
-        </div>
-        <div @onclick="@(() => UpdateFilter(out showFolders, !showFolders))">
-            <input type="checkbox" @bind="@showFolders">
-            <span>Show Folders</span>
-        </div>
-        <div @onclick="@(() => UpdateFilter(out showReadonly, !showReadonly))">
-            <input type="checkbox" @bind="@showReadonly">
-            <span>Show Readonly</span>
-        </div>
+        <Checkbox @bind-Input="@showAlbums" Label="Show Albums" OnChange="@GetCollectionsTable"/>
+        <Checkbox @bind-Input="@showFolders" Label="Show Folders" OnChange="@GetCollectionsTable"/>
+        <Checkbox @bind-Input="@showReadonly" Label="Show Readonly" OnChange="@GetCollectionsTable"/>
     </div>
 
     <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@dropdown.Toggle"/>
@@ -63,12 +54,6 @@
     {
         GetCollectionsTable();
         SetSortBtnText();
-    }
-
-    private void UpdateFilter(out bool filterToggle, bool newState)
-    {
-        filterToggle = newState;
-        GetCollectionsTable();
     }
 
     private void GetCollectionsTable()

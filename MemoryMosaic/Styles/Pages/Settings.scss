@@ -51,13 +51,9 @@
 			text-underline: cadetblue;
 		}
 
-		> .toggle-setting {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			margin-bottom: 7px;
-
-			> input[type="checkbox"] { margin-right: 4px; }
+		> .checkbox {
+			margin-right: 4px;
+			margin-bottom: 4px;
 		}
 
 		> .dropdown-setting {

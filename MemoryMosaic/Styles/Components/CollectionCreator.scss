@@ -13,13 +13,5 @@
 		margin-right: 6px;
 	}
 
-	> div {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-
-		> input[type="checkbox"] { margin-left: 6px; }
-
-		> label { margin-left: 1px; }
-	}
+	> .checkbox { margin-left: 2px; }
 }

@@ -2,7 +2,7 @@
 @import "../Shared";
 
 header {
-	@include page-header(1px solid gray, 64px, 164px);
+	@include page-header(1px solid gray, 75px, 164px);
 
 	> #collectionsText {
 		font-size: 20px;
@@ -11,22 +11,9 @@ header {
 	}
 
 	> #checkboxes {
-		display: flex;
-		align-items: center;
-		flex-direction: column;
+		@include flex-col;
 		position: absolute;
 		right: 470px;
-		width: 150px;
-
-		> div {
-			width: 130px;
-			display: flex;
-			align-items: center;
-			margin-top: 1px;
-			margin-bottom: 1px;
-
-			> span { margin-left: 1px; }
-		}
 	}
 
 	> #sortBtn {
@@ -36,7 +23,7 @@ header {
 }
 
 main {
-	@include flex-main(row, 84px);
+	@include flex-main(row, 90px);
 	flex-wrap: wrap;
 	justify-content: flex-start;
 

@@ -1,0 +1,24 @@
+@inherits InputComponent<bool>
+
+<link href="css/Components/Input/Checkbox.css" rel="stylesheet"/>
+
+<div @ref="@input" class="checkbox" @onclick="@OnClick">
+	<MaterialIcon Icon="@(Input ? "check_box" : "check_box_outline_blank")" IconStyle="@($"color: {(Input ? "#0080ff" : "white")}")"/>
+	@if (!String.IsNullOrWhiteSpace(Label))
+	{
+		<span style="font-size: @(FontSize)px">@Label</span>
+	}
+</div>
+
+@code {
+	[Parameter] public string? Label { get; set; }
+
+	[Parameter] public Action? OnChange { get; set; }
+
+	private void OnClick()
+	{
+		Input = !Input;
+		UpdateInput();
+		OnChange?.Invoke();
+	}
+}

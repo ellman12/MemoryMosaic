@@ -44,8 +44,7 @@
 		<span id="statusMessage">@statusMessage</span>
 
 		<div id="yearWarnInputs">
-			<input id="yearCheck" type="checkbox" @bind="@yearCheckEnabled"/>
-			<label for="yearCheck">Year Check</label>
+			<Checkbox @bind-Input="@yearCheckEnabled" Label="Year Check"/>
 
 			@if (yearCheckEnabled)
 			{

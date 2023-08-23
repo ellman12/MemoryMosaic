@@ -48,11 +48,7 @@
                                 <img src="mm_library/@albums[i].cover" alt=""/>
                             }
                         </div>
-
-                        <div class="checkbox">
-                            <input type="checkbox" @bind="@checkedAlbums[ii]" @bind:event="oninput">
-                            <span>@albums[i].name</span>
-                        </div>
+                        <Checkbox @bind-Input="@checkedAlbums[ii]" Label="@albums[i].name"/>
                     </div>
                 }
             </div>
@@ -72,10 +68,7 @@
                             }
                         </div>
 
-                        <div class="checkbox">
-                            <input type="checkbox" @bind="@checkedFolders[ii]" @bind:event="oninput">
-                            <span>@folders[i].name</span>
-                        </div>
+                        <Checkbox @bind-Input="@checkedFolders[ii]" Label="@folders[i].name"/>
                     </div>
                 }
             </div>
@@ -299,6 +292,7 @@
         ClearFolderChecks();
         checkedFolderIndex = -1;
         checkedAlbums[index] = !checkedAlbums[index];
+        StateHasChanged();
     }
 
     private void FolderClicked(int index)
@@ -307,5 +301,6 @@
         ClearFolderChecks();
         checkedFolderIndex = index;
         checkedFolders[index] = true;
+        StateHasChanged();
     }
 }
