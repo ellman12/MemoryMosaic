@@ -5,8 +5,6 @@ namespace MemoryMosaic;
 
 public class Settings
 {
-    [JsonProperty] public static string serverIP = null!;
-        
     ///The full path to the mm_import folder on the server. This is where items live before being added to the library.
     [JsonProperty] public static string importFolderPath = null!;
 
@@ -54,7 +52,6 @@ public class Settings
     //Delete .json file and reset settings to default.
     public static void ResetSettings()
     {
-        serverIP = "localhost"; 
         importFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_import";
         libFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_library";
         backupFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_backup";

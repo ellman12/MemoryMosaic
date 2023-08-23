@@ -7,11 +7,6 @@
     <div>
         <span>Settings</span>
         <div class="text-setting">
-            <span>Server IP Address</span>
-            <TextInput @bind-Input="@serverIP" Width="available"/>
-        </div>
-
-        <div class="text-setting">
             <span>Where to look for items to add to your library</span>
             <TextInput @bind-Input="@importFolderPath" Width="available"/>
         </div>
@@ -164,7 +159,6 @@
 
 @code {
     //Settings
-    private string serverIP = S.serverIP;
     private string importFolderPath = S.importFolderPath;
     private string libraryRootPath = S.libFolderPath;
     private bool showPrompts = S.showPrompts;
@@ -222,7 +216,6 @@
     ///Update settings.
     private void ApplyBtnClicked()
     {
-        S.serverIP = serverIP;
         S.importFolderPath = importFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
@@ -237,7 +230,6 @@
     ///Cancel modification of settings.
     private void CancelBtnClicked()
     {
-        serverIP = S.serverIP;
         importFolderPath = S.importFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;

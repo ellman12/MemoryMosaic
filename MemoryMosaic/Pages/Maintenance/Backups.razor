@@ -100,7 +100,7 @@
                 RedirectStandardOutput = false,
                 WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
                 FileName = "cmd.exe",
-                Arguments = $"/C pg_dump.exe \"host={S.serverIP} port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\" > \"{dbDumpPath}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+                Arguments = $"/C pg_dump.exe \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\" > \"{dbDumpPath}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
             }
         };
         process.Start();

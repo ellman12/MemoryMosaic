@@ -39,12 +39,8 @@ if (!mm_backup.EndsWith("mm_backup"))
 Console.WriteLine($"Your photos and videos will be backed up to \"{mm_backup}\"\n");
 Directory.CreateDirectory(mm_backup);
 
-Console.WriteLine("\nEnter ip of the server:");
-string serverIP = Console.ReadLine()!;
-
 Console.ForegroundColor = ConsoleColor.Yellow;
 Console.WriteLine("\nSaving settings...");
-Settings.serverIP = serverIP;
 Settings.importFolderPath = mm_import;
 Settings.libFolderPath = mm_library;
 Settings.backupFolderPath = mm_backup;
