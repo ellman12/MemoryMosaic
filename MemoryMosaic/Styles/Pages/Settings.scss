@@ -31,24 +31,11 @@
 			margin-top: 4px;
 			margin-bottom: 10px;
 
-			> span, #statsDiv > span, #statsDiv > a {
+			> span {
 				display: block;
 				margin-bottom: 7px;
 				padding: 0;
 			}
-		}
-
-		> #statsDiv > #drivePercentage {
-			@include flex-row;
-			margin-bottom: 7px;
-
-			> progress { margin-right: 10px; }
-		}
-
-		> #statsDiv > a {
-			color: #0080ff;
-			text-decoration: underline;
-			text-underline: cadetblue;
 		}
 
 		> .checkbox {
@@ -96,10 +83,32 @@
 				}
 			}
 		}
+
+		&:last-of-type > div {
+			@include flex-row;
+			margin-bottom: 10px;
+		}
+
 	}
 
-	> div:last-of-type > div {
-		@include flex-row;
-		margin-bottom: 10px;
+	> #stats {
+		> #drivePercentage {
+			@include flex-row;
+			margin-bottom: 7px;
+
+			> progress { margin-right: 10px; }
+		}
+
+		> span, > a {
+			display: block;
+			margin-bottom: 7px;
+			padding: 0;
+		}
+
+		> a {
+			color: #0080ff;
+			text-decoration: underline;
+			text-underline: cadetblue;
+		}
 	}
 }
