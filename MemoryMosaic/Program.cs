@@ -35,8 +35,9 @@ public class Program
 
     public static void Main(string[] args)
     {
-        //Populate config with default values if file doesn't exist. If exists, read in values.
-        if (File.Exists(S.SettingsPath) && File.ReadAllText(S.SettingsPath) != "")
+        Directory.CreateDirectory(S.FolderPath);
+
+        if (File.Exists(S.FilePath) && !String.IsNullOrWhiteSpace(File.ReadAllText(S.FilePath)))
             S.ReadSettings();
         else
             S.ResetSettings();

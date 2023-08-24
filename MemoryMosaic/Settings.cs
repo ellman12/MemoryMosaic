@@ -32,17 +32,19 @@ public class Settings
     public const int POSTGRES_VERSION = 15;
 
 #if DEBUG
-    public static readonly string SettingsPath = Path.Combine(Environment.CurrentDirectory, "mm_debug_settings.json");
+    public static readonly string FolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaicTest");
+    public static readonly string FilePath = Path.Combine(FolderPath, "mm_debug_settings.json");
 #else
-    public static readonly string SettingsPath = Path.Combine(Environment.CurrentDirectory, "mm_settings.json");
+    public static readonly string FolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaic");
+    public static readonly string FilePath = Path.Combine(FolderPath, "mm_settings.json");
 #endif
 
-    public static void WriteSettings() => File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
+    public static void WriteSettings() => File.WriteAllText(FilePath, JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677
 
     public static void ReadSettings()
     {
-        new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(SettingsPath).Build();
-        JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SettingsPath));
+        new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(FilePath).Build();
+        JsonConvert.DeserializeObject<Settings>(File.ReadAllText(FilePath));
         importFolderPath = importFolderPath.Replace('\\', '/');
         libFolderPath = libFolderPath.Replace('\\', '/');
         backupFolderPath = backupFolderPath.Replace('\\', '/');
@@ -59,6 +61,6 @@ public class Settings
         showPrompts = displayNoDTInCV = true;
         thumbnailQuality = 7;
         logLevel = LogLevel.Error;
-        File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new Settings()));
+        File.WriteAllText(FilePath, JsonConvert.SerializeObject(new Settings()));
     }
 }

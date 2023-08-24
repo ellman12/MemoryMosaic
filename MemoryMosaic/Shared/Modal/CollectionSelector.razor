@@ -217,7 +217,7 @@
     ///Handles saving and restoring of groups of saved Collections.
     private void SaveBtnClick(int id, MouseEventArgs mouseEventArgs)
     {
-        string filePath = Path.Join(Environment.CurrentDirectory, $"slot{id}.tmp");
+        string filePath = Path.Join(S.FolderPath, $"slot{id}.tmp");
         if (mouseEventArgs.CtrlKey) //Save/overwrite selection.
         {
             SaveSelectionToDisk();
