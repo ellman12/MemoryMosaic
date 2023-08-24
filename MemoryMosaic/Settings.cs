@@ -51,13 +51,18 @@ public class Settings
         tmpFolderPath = tmpFolderPath.Replace('\\', '/');
     }
 
-    //Delete .json file and reset settings to default.
     public static void ResetSettings()
     {
-        importFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_import";
-        libFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_library";
-        backupFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_backup";
-        tmpFolderPath = @"C:/Users/Elliott/Pictures/MemoryMosaic/mm_tmp";
+    #if DEBUG
+        const string root = "C:/Users/Elliott/Pictures/MemoryMosaic_Debug";
+    #else
+        const string root = "C:/Users/Elliott/Pictures/MemoryMosaic";
+    #endif
+
+        importFolderPath = $"{root}/mm_import";
+        libFolderPath = $"{root}/mm_library";
+        backupFolderPath = $"{root}/mm_backup";
+        tmpFolderPath = $"{root}/mm_tmp";
         showPrompts = displayNoDTInCV = true;
         thumbnailQuality = 7;
         logLevel = LogLevel.Error;
