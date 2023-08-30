@@ -20,4 +20,21 @@ public static class Input
 			_ => defaultValue
 		};
 	}
+
+	///Prompts for input until a proper folder path is entered.
+	public static string GetFolderPath(string prompt) => GetCheck(input => !String.IsNullOrWhiteSpace(input) && Path.IsPathFullyQualified(input) && Path.IsPathRooted(input) && !Path.HasExtension(input), prompt);
+
+	///Prompts for input until check returns true.
+	private static string GetCheck(Predicate<string> check, string prompt)
+	{
+		string input;
+		Console.Write(prompt);
+		while (true)
+		{
+			input = Console.ReadLine()!;
+			if (check(input)) break;
+			Output.WriteLine("Invalid format. Please try again.", ConsoleColor.Red);
+		}
+		return input;
+	}
 }
