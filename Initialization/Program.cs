@@ -1,13 +1,10 @@
 using System.Diagnostics;
 using Initialization;
-using MemoryMosaic;
-using MemoryMosaic.Backend.Enums;
 
 #region Setup
-LogLevel originalLogLevel = Settings.logLevel;
-Settings.logLevel = LogLevel.Error;
+const int POSTGRES_VERSION = 15;
 
-string PsqlPath = $"C:/Program Files/PostgreSQL/{Settings.POSTGRES_VERSION}/bin/psql.exe";
+string PsqlPath = $"C:/Program Files/PostgreSQL/{POSTGRES_VERSION}/bin/psql.exe";
 
 int index = Environment.CurrentDirectory.LastIndexOf("Initialization", StringComparison.Ordinal);
 string SolutionRoot = Environment.CurrentDirectory.Substring(0, index).Replace('\\', '/');
@@ -15,7 +12,7 @@ string SolutionRoot = Environment.CurrentDirectory.Substring(0, index).Replace('
 
 if (!File.Exists(PsqlPath))
 {
-	Output.WriteLine($"PostgreSQL {Settings.POSTGRES_VERSION} not installed! Download it here: https://www.postgresql.org/download/", ConsoleColor.Red);
+	Output.WriteLine($"PostgreSQL {POSTGRES_VERSION} not installed! Download it here: https://www.postgresql.org/download/", ConsoleColor.Red);
 	return;
 }
 
@@ -55,4 +52,3 @@ if (debug)
 }
 
 
-Settings.logLevel = originalLogLevel;
