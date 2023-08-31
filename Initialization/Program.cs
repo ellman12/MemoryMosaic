@@ -1,18 +1,15 @@
-using System.Diagnostics;
+global using C = Initialization.Constants;
 using Initialization;
 
 #region Setup
-const int POSTGRES_VERSION = 15;
-
-string PsqlPath = $"C:/Program Files/PostgreSQL/{POSTGRES_VERSION}/bin/psql.exe";
 
 int index = Environment.CurrentDirectory.LastIndexOf("Initialization", StringComparison.Ordinal);
 string SolutionRoot = Environment.CurrentDirectory.Substring(0, index).Replace('\\', '/');
 #endregion
 
-if (!File.Exists(PsqlPath))
+if (!File.Exists(C.PsqlPath))
 {
-	Output.WriteLine($"PostgreSQL {POSTGRES_VERSION} not installed! Download it here: https://www.postgresql.org/download/", ConsoleColor.Red);
+	Output.WriteLine($"PostgreSQL {C.PostgresVersion} not installed! Download it here: https://www.postgresql.org/download/", ConsoleColor.Red);
 	return;
 }
 
