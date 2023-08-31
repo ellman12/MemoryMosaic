@@ -1,4 +1,5 @@
 using System.Data;
+using System.Diagnostics;
 using Npgsql;
 
 namespace Initialization;
@@ -25,6 +26,17 @@ public static class Database
 		using var cmd = new NpgsqlCommand($"CREATE DATABASE \"{name}\" WITH OWNER = postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;", Connection);
 		cmd.ExecuteNonQuery();
 		Close();
+	}
+
+	public static void CreateTables(string name)
+	{
+		ProcessStartInfo dbInitCmd = new()
+		{
+			FileName = C.PsqlPath,
+			Arguments = $"-U postgres -d {name} -f \"{C.CreateTablesFilePath}\""
+		};
+		Process.Start(dbInitCmd)!.WaitForExit(); 
+
 	}
 
 	public static void Delete(string name)

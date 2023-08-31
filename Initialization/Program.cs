@@ -28,7 +28,7 @@ if (debug)
 	}
 	Output.WriteLine("Creating MemoryMosaicTest", ConsoleColor.Cyan);	
 	Database.Create("MemoryMosaicTest");
-	
+	Database.CreateTables("MemoryMosaicTest");
 	
 
 	string testLibPath = Input.GetFolderPath("Enter path to where the library should be stored: ");
