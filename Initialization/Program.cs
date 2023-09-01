@@ -31,6 +31,7 @@ if (debug)
 	{
 		Output.WriteLine("Creating MemoryMosaicTest", ConsoleColor.Cyan);	
 		Database.Create("MemoryMosaicTest");
+		Output.WriteLine("Creating MemoryMosaicTest's Tables", ConsoleColor.Cyan);	
 		Database.CreateTables("MemoryMosaicTest");
 	}
 

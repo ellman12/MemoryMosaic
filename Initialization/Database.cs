@@ -30,13 +30,19 @@ public static class Database
 
 	public static void CreateTables(string name)
 	{
-		ProcessStartInfo dbInitCmd = new()
+		ProcessStartInfo cmd = new()
 		{
 			FileName = C.PsqlPath,
-			Arguments = $"-U postgres -d {name} -f \"{C.CreateTablesFilePath}\""
+			Arguments = $"-U postgres -d {name} -f \"{C.CreateTablesFilePath}\"",
+			RedirectStandardOutput = true
 		};
-		Process.Start(dbInitCmd)!.WaitForExit(); 
 
+		Process p;
+		do
+		{
+			p = Process.Start(cmd) ?? throw new NullReferenceException();
+			p.WaitForExit();
+		} while (p.ExitCode != 0);
 	}
 
 	public static void Delete(string name)
