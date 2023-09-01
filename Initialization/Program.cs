@@ -1,12 +1,6 @@
 global using C = Initialization.Constants;
 using Initialization;
 
-#region Setup
-
-int index = Environment.CurrentDirectory.LastIndexOf("Initialization", StringComparison.Ordinal);
-string SolutionRoot = Environment.CurrentDirectory.Substring(0, index).Replace('\\', '/');
-#endregion
-
 if (!File.Exists(C.PsqlPath))
 {
 	Output.WriteLine($"PostgreSQL {C.PostgresVersion} not installed! Download it here: https://www.postgresql.org/download/", ConsoleColor.Red);
@@ -23,33 +17,41 @@ if (debug)
 {
 	if (Database.Exists("MemoryMosaicTest") && Input.GetYN("Test database exists. Overwrite?", true))
 	{
-		Output.WriteLine("Deleting MemoryMosaicTest", ConsoleColor.Cyan);	
+		Output.WriteLine("Deleting MemoryMosaicTest", ConsoleColor.Cyan);
 		Database.Delete("MemoryMosaicTest");
 	}
 
 	if (!Database.Exists("MemoryMosaicTest"))
 	{
-		Output.WriteLine("Creating MemoryMosaicTest", ConsoleColor.Cyan);	
+		Output.WriteLine("Creating MemoryMosaicTest", ConsoleColor.Cyan);
 		Database.Create("MemoryMosaicTest");
-		Output.WriteLine("Creating MemoryMosaicTest's Tables", ConsoleColor.Cyan);	
+		Output.WriteLine("Creating MemoryMosaicTest's Tables", ConsoleColor.Cyan);
 		Database.CreateTables("MemoryMosaicTest");
 	}
 
-	string testLibPath = Input.GetFolderPath("Enter path to where the library should be stored: ");
-	Console.WriteLine(testLibPath);
+	string testLibPath = Input.GetFolderPath("Enter path for mm_library, where the library should be stored: ");
+	VerifyPath(ref testLibPath, "mm_library");
 
-	// var directoryInfo = new DirectoryInfo("");
-	// if (Directory.Exists(testLibPath))
-	
-	
-	
-	string testImportPath = Input.GetFolderPath("Enter path to where items waiting to be imported should be stored: ");
-	string testTmpPath = Input.GetFolderPath("Enter path to where temporary items should be stored: ");
-	string testBackupPath = Input.GetFolderPath("Enter path to where backups should be stored: ");
-	
-	
-	//TODO: test the paths and create the folders
-	// void VerifyPath?
+	string testImportPath = Input.GetFolderPath("Enter path for mm_import, where items waiting to be imported should be stored: ");
+	VerifyPath(ref testImportPath, "mm_import");
+
+	string testTmpPath = Input.GetFolderPath("Enter path to mm_tmp, where temporary files should be stored: ");
+	VerifyPath(ref testTmpPath, "mm_tmp");
+
+	string testBackupPath = Input.GetFolderPath("Enter path to mm_backup, where backups should be stored: ");
+	VerifyPath(ref testBackupPath, "mm_backup");
+
+
 }
 
+return;
 
+void VerifyPath(ref string path, string mmFolder)
+{
+	path = path.Trim();
+	if (path.Last() is '/' or '\\')
+		path = path.Substring(0, path.Length - 1);
+	
+	if (!path.EndsWith(mmFolder))
+		path = Path.Join(path, mmFolder);
+}
