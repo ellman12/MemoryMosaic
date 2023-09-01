@@ -2,11 +2,11 @@ namespace Initialization;
 
 public static class Constants
 {
-	public const string PostgresVersion = "15";
+	public const int PostgresVersion = 15;
 
-	public const string PostgresBinPath = $"C:/Program Files/PostgreSQL/{PostgresVersion}/bin"; 
+	private static readonly string PostgresBinPath = $"C:/Program Files/PostgreSQL/{PostgresVersion}/bin"; 
 	
-	public const string PsqlPath = $"{PostgresBinPath}/psql.exe";
+	public static readonly string PsqlPath = $"{PostgresBinPath}/psql.exe";
 
 	public static readonly string CreateTablesFilePath;
 
