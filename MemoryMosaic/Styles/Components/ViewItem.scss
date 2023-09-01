@@ -60,8 +60,7 @@
     background-color: black;
     border: 1px solid white;
     margin-bottom: 12px;
-    width: available;
-    width: -moz-available;
+    @include available-width;
     height: 100px;
 }
 
