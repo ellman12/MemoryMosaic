@@ -5,7 +5,7 @@
 <link href="css/Components/Modal/TwoChoiceInput.css" rel="stylesheet"/>
 
 <ModalBackground Visibility="@Visibility">
-    <div id="inputDiv" style="@PositioningStyle">
+    <div id="inputDiv">
         <span id="message">@Message</span>
         <div id="buttons">
             <IconTextButton Icon="@NoBtnIcon" Text="@NoBtnText" OnClick="@NoBtnClick"/>
@@ -30,9 +30,6 @@
 
     [Parameter]
     public string NoBtnText { get; set; } = "No";
-    
-    [Parameter]
-    public string PositioningStyle { get; set; } = "position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);";
     
     [Parameter]
     public string YesBtnIcon { get; set; } = "check";
