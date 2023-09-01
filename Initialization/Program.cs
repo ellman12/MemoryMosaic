@@ -30,23 +30,23 @@ if (debug)
 	}
 
 	string testLibPath = Input.GetFolderPath("Enter path for mm_library, where the library should be stored: ");
-	VerifyPath(ref testLibPath, "mm_library");
+	VerifyPathAndCreateFolder(ref testLibPath, "mm_library");
 
 	string testImportPath = Input.GetFolderPath("Enter path for mm_import, where items waiting to be imported should be stored: ");
-	VerifyPath(ref testImportPath, "mm_import");
+	VerifyPathAndCreateFolder(ref testImportPath, "mm_import");
 
 	string testTmpPath = Input.GetFolderPath("Enter path to mm_tmp, where temporary files should be stored: ");
-	VerifyPath(ref testTmpPath, "mm_tmp");
+	VerifyPathAndCreateFolder(ref testTmpPath, "mm_tmp");
 
 	string testBackupPath = Input.GetFolderPath("Enter path to mm_backup, where backups should be stored: ");
-	VerifyPath(ref testBackupPath, "mm_backup");
+	VerifyPathAndCreateFolder(ref testBackupPath, "mm_backup");
 
 
 }
 
 return;
 
-void VerifyPath(ref string path, string mmFolder)
+void VerifyPathAndCreateFolder(ref string path, string mmFolder)
 {
 	path = path.Trim();
 	if (path.Last() is '/' or '\\')
