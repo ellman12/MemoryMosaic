@@ -26,10 +26,13 @@ if (debug)
 		Output.WriteLine("Deleting MemoryMosaicTest", ConsoleColor.Cyan);	
 		Database.Delete("MemoryMosaicTest");
 	}
-	Output.WriteLine("Creating MemoryMosaicTest", ConsoleColor.Cyan);	
-	Database.Create("MemoryMosaicTest");
-	Database.CreateTables("MemoryMosaicTest");
-	
+
+	if (!Database.Exists("MemoryMosaicTest"))
+	{
+		Output.WriteLine("Creating MemoryMosaicTest", ConsoleColor.Cyan);	
+		Database.Create("MemoryMosaicTest");
+		Database.CreateTables("MemoryMosaicTest");
+	}
 
 	string testLibPath = Input.GetFolderPath("Enter path to where the library should be stored: ");
 	Console.WriteLine(testLibPath);
