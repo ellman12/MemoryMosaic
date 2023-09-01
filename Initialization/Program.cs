@@ -1,5 +1,6 @@
 global using C = Initialization.Constants;
 using Initialization;
+using Microsoft.VisualBasic.FileIO;
 
 if (!File.Exists(C.PsqlPath))
 {
@@ -54,4 +55,8 @@ void VerifyPathAndCreateFolder(ref string path, string mmFolder)
 	
 	if (!path.EndsWith(mmFolder))
 		path = Path.Join(path, mmFolder);
+
+	if (Directory.Exists(path) && Input.GetYN($"{path} exists and has {Directory.EnumerateFiles(path).Count()} files. Overwrite?", true))
+		FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+	Directory.CreateDirectory(path);
 }
