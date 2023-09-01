@@ -1,11 +1,10 @@
+@import "../Shared";
+
 #viewDiv {
+    @include center-align;
     height: 101%;
     width: 100%;
-    position: fixed;
     z-index: 999;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
     background-color: black;
 }
 
@@ -128,10 +127,7 @@
 }
 
 #viewDiv > .inputBox {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    @include center-align;
     background-color: black;
     width: 235px;
     height: 125px;

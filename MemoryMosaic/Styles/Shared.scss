@@ -82,3 +82,10 @@ h1 {
 	background-color: black;
 	z-index: 999;
 }
+
+@mixin center-align($top: 50%, $left: 50%) {
+	position: fixed;
+	top: $top;
+	left: $left;
+	transform: translate(-50%, -50%);
+}

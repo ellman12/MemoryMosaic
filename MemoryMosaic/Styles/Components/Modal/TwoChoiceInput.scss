@@ -1,21 +1,17 @@
+@import "../../Shared";
+
 #inputDiv {
-	position: fixed;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
+	@include center-align;
 	border: 1px solid white;
 	width: 250px;
 	height: 170px;
 	z-index: 999;
 
 	> #message {
+		@include center-align(35%);
 		text-align: center;
 		overflow-wrap: break-word;
-		position: absolute;
 		width: 95%;
-		left: 50%;
-		top: 35%;
-		transform: translate(-50%, -50%);
 	}
 
 	> #buttons {
