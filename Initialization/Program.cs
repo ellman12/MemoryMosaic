@@ -1,10 +1,9 @@
-global using C = Initialization.Constants;
 using Initialization;
 using Microsoft.VisualBasic.FileIO;
 
-if (!File.Exists(C.PsqlPath))
+if (!File.Exists(Constants.PsqlPath))
 {
-	Output.WriteLine($"PostgreSQL {C.PostgresVersion} not installed! Download it here: https://www.postgresql.org/download/", ConsoleColor.Red);
+	Output.WriteLine($"PostgreSQL {Constants.PostgresVersion} not installed! Download it here: https://www.postgresql.org/download/", ConsoleColor.Red);
 	return;
 }
 

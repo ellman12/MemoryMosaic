@@ -32,8 +32,8 @@ public static class Database
 	{
 		ProcessStartInfo cmd = new()
 		{
-			FileName = C.PsqlPath,
-			Arguments = $"-U postgres -d {name} -f \"{C.CreateTablesFilePath}\"",
+			FileName = Constants.PsqlPath,
+			Arguments = $"-U postgres -d {name} -f \"{Constants.CreateTablesFilePath}\"",
 			RedirectStandardOutput = true
 		};
 
