@@ -1,7 +1,22 @@
 @import "../../Shared";
 
 main {
-    @include flex-main(row, 60px);
-    flex-wrap: wrap;
-}
+	@include flex-main(row, 60px);
+	flex-wrap: wrap;
 
+	> div {
+		@include flex-col;
+		margin-right: 25px;
+
+		> span {
+			font-size: 16px;
+			margin-bottom: 4px;
+		}
+
+		> div {
+			@include flex-row;
+			flex-wrap: wrap;
+			margin-bottom: 20px;
+		}
+	}
+}

@@ -6,3 +6,32 @@ Items can be selected, and depending on the page, different options may be appli
 @inherits Component
 
 <link href="css/Components/LibraryContentViewer/LibraryContentViewer.css" rel="stylesheet"/>
+<link href="css/Components/LibraryContentViewer/Thumbnail.css" rel="stylesheet"/>
+
+<div id="top-load-div"></div>
+<main>
+	@foreach (var group in Content.GroupBy(row => row.dateTaken?.Date))
+	{
+		<div>
+			<span>@(group.First().dateTaken == null ? "No Date Taken" : group.First().dateTaken!.Value.ToString("ddd, MMM d, yyyy"))</span>
+			<div>
+				@foreach (MediaRow item in group)
+				{
+					<Thumbnail Item="@item"/>
+				}
+			</div>
+		</div>
+	}
+</main>
+<div id="bottom-load-div"></div>
+
+@code {
+
+	private List<MediaRow> Content { get; set; } = null!;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Content = C.LoadEntireMediaTable();
+	}
+
+}
