@@ -69,6 +69,13 @@
 	
 	[Parameter]
 	public Action? Slash { get; set; }
+	
+	[Parameter]
+	public Action? CtrlShiftMinus { get; set; }
+	
+	[Parameter]
+	public Action? CtrlShiftPlus { get; set; }
+	
 
 	protected override void OnInitialized()
 	{
@@ -94,5 +101,7 @@
 		if (CtrlLeft != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Left, CtrlLeft);
 		if (CtrlRight != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Right, CtrlRight);
 		if (Slash != null) HotKeysContext.Add(ModKeys.None, Keys.Slash, Slash);
+		if (CtrlShiftMinus != null) HotKeysContext.Add(ModKeys.Ctrl | ModKeys.Shift, Keys.Hyphen, CtrlShiftMinus);
+		if (CtrlShiftPlus != null) HotKeysContext.Add(ModKeys.Ctrl | ModKeys.Shift, Keys.Equal, CtrlShiftPlus);
 	}
 }
