@@ -2,13 +2,13 @@
 	position: relative; /* https://stackoverflow.com/a/12365963 */
 	cursor: pointer;
 	margin-right: 4px;
-	
+
 	> .star-icon {
 		position: absolute;
 		bottom: 8px;
 		left: 8px;
 	}
-	
+
 	> .video-icon {
 		position: absolute;
 		top: 8px;
@@ -22,11 +22,5 @@
 		left: 8px;
 	}
 
-	&:hover > .checkbox {
-		opacity: 1;
-	}
-	
-	> img {
-		height: 200px;
-	}
+	&:hover > .checkbox { opacity: 1; }
 }

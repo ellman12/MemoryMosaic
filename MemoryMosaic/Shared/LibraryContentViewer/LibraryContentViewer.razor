@@ -12,7 +12,7 @@ Items can be selected, and depending on the page, different options may be appli
 <main>
 	@if (mode == LCVMode.None)
 	{
-		<div>
+		<div class="ungrouped">
 			@foreach (MediaRow item in Content)
 			{
 				<Thumbnail Item="@item"/>
@@ -23,7 +23,7 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		foreach (var group in Content.GroupBy(SortFunction))
 		{
-			<div>
+			<div class="group">
 				<span>@(group.First().dateTaken == null ? "No Date Taken" : group.First().dateTaken!.Value.ToString(DateFormat))</span>
 				<div>
 					@foreach (MediaRow item in group)
