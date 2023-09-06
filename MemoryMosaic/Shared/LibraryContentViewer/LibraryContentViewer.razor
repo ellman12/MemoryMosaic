@@ -8,6 +8,8 @@ Items can be selected, and depending on the page, different options may be appli
 <link href="css/Components/LibraryContentViewer/LibraryContentViewer.css" rel="stylesheet"/>
 <link href="css/Components/LibraryContentViewer/Thumbnail.css" rel="stylesheet"/>
 
+<KeyboardShortcuts CtrlShiftMinus="@(() => Mode--)" CtrlShiftPlus="@(() => Mode++)"/>
+
 <div id="top-load-div"></div>
 <main>
 	@if (mode == LCVMode.None)
@@ -40,7 +42,18 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	private List<MediaRow> Content { get; set; } = null!;
 
-	private LCVMode mode = LCVMode.None;
+	private LCVMode mode = LCVMode.Day;
+	private LCVMode Mode
+	{
+		get => mode;
+		set
+		{
+			int intValue = (int) value;
+			if (intValue is < 0 or > 3) return;
+			mode = value;
+			StateHasChanged();
+		}
+	}
 	
 	private Func<MediaRow, dynamic?> SortFunction => mode switch 
 	{
