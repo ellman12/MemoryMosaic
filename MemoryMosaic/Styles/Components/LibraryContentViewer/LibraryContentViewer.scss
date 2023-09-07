@@ -8,21 +8,6 @@ main {
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-
-		> .thumbnail {
-			height: 19vh; //This used to be 20, and started at 40. 20 was sometimes causing weird gaps below wide items like video thumbnails.
-			flex-grow: 1;
-			margin: 2px;
-
-			> img {
-				max-height: 100%;
-				min-width: 100%;
-				object-fit: cover;
-				vertical-align: bottom;
-			}
-
-			> .img:last-child { flex-grow: 10; }
-		}
 	}
 
 	> .group {
@@ -38,10 +23,6 @@ main {
 			@include flex-row;
 			flex-wrap: wrap;
 			margin-bottom: 20px;
-
-			> .thumbnail {
-				> img { height: 200px; }
-			}
 		}
 	}
 }
