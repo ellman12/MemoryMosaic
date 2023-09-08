@@ -5,11 +5,11 @@ Items can be selected, and depending on the page, different options may be appli
 *@
 @inherits Component
 
-<KeyboardShortcuts CtrlShiftMinus="@(() => Mode--)" CtrlShiftPlus="@(() => Mode++)"/>
+<KeyboardShortcuts CtrlShiftMinus="@(() => ViewMode--)" CtrlShiftPlus="@(() => ViewMode++)"/>
 
 <div id="top-load-div"></div>
 <main>
-	@if (mode == ViewMode.None)
+	@if (viewMode == ViewMode.None)
 	{
 		<div class="ungrouped">
 			@foreach (MediaRow item in Content)
@@ -39,20 +39,20 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	private List<MediaRow> Content { get; set; } = null!;
 
-	private ViewMode mode = ViewMode.Day;
-	private ViewMode Mode
+	private ViewMode viewMode;
+	private ViewMode ViewMode
 	{
-		get => mode;
+		get => viewMode;
 		set
 		{
 			int intValue = (int) value;
 			if (intValue is < 0 or > 3) return;
-			mode = value;
+			viewMode = value;
 			StateHasChanged();
 		}
 	}
 	
-	private Func<MediaRow, dynamic?> SortFunction => mode switch 
+	private Func<MediaRow, dynamic?> SortFunction => ViewMode switch 
 	{
 		ViewMode.None => row => row.dateTaken?.Date,
 		ViewMode.Day => row => row.dateTaken?.Date,
@@ -61,7 +61,7 @@ Items can be selected, and depending on the page, different options may be appli
 		_ => throw new ArgumentOutOfRangeException()
 	};
 	
-	private string DateFormat => mode switch
+	private string DateFormat => ViewMode switch
 	{
 		ViewMode.None => "",
 		ViewMode.Day => "ddd, MMM d, yyyy",
@@ -73,5 +73,6 @@ Items can be selected, and depending on the page, different options may be appli
 	protected override async Task OnInitializedAsync()
 	{
 		Content = C.LoadEntireMediaTable();
+		ViewMode = DefaultViewMode;
 	}
 }
