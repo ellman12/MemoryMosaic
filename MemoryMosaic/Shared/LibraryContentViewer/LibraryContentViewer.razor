@@ -23,7 +23,7 @@ Items can be selected, and depending on the page, different options may be appli
 		foreach (var group in Content.GroupBy(SortFunction))
 		{
 			<div class="group">
-				<span>@(group.First().dateTaken == null ? "No Date Taken" : group.First().dateTaken!.Value.ToString(DateFormat))</span>
+				<span>@FormatDateTaken(group.First().dateTaken)</span>
 				<div>
 					@foreach (MediaRow item in group)
 					{
@@ -67,18 +67,28 @@ Items can be selected, and depending on the page, different options may be appli
 		_ => throw new ArgumentOutOfRangeException()
 	};
 	
-	private string DateFormat => ViewMode switch
-	{
-		ViewMode.None => "",
-		ViewMode.Day => "ddd, MMM d, yyyy",
-		ViewMode.Month => "MMM yyyy",
-		ViewMode.Year => "yyyy",
-		_ => throw new ArgumentOutOfRangeException()
-	};
-
 	protected override async Task OnInitializedAsync()
 	{
 		Content = C.LoadEntireMediaTable();
 		ViewMode = DefaultViewMode;
+	}
+}
+
+@functions {
+	private string FormatDateTaken(DateTime? dateTaken)
+	{
+		if (dateTaken == null) return "No Date Taken";
+		if (ViewMode == ViewMode.None) return "";
+
+		bool thisYear = dateTaken.Value.Year == DateTime.Now.Year;
+		string formatString = ViewMode switch
+		{
+			ViewMode.Day => thisYear ? "ddd, MMM d" : "ddd, MMM d, yyyy",
+			ViewMode.Month => thisYear ? "MMMM" : "MMMM yyyy",
+			ViewMode.Year => "yyyy",
+			_ => ""
+		};
+
+		return dateTaken.Value.ToString(formatString);
 	}
 }
