@@ -36,6 +36,12 @@ Items can be selected, and depending on the page, different options may be appli
 </main>
 <div id="bottom-load-div"></div>
 
+@* Optional Parameters *@
+@code {
+	[Parameter]
+	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day; 
+}
+
 @code {
 	private List<MediaRow> Content { get; set; } = null!;
 
