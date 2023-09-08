@@ -24,8 +24,8 @@
 	&:hover > .checkbox { opacity: 1; }
 }
 
-.ungrouped > .thumbnail {
-	height: 19vh; //This used to be 20, and started at 40. 20 was sometimes causing weird gaps below wide items like video thumbnails.
+div .thumbnail {
+	height: 19vh;
 	flex-grow: 1;
 	margin: 2px;
 
@@ -36,12 +36,5 @@
 		vertical-align: bottom;
 	}
 
-	> .img:last-child { flex-grow: 10; }
-}
-
-.group > div > .thumbnail {
-	margin-right: 2px;
-	margin-left: 2px;
-
-	> img { height: 200px; }
+	&:nth-last-of-type(-n+6) { flex-grow: 0; } //I hate this, but it works.
 }
