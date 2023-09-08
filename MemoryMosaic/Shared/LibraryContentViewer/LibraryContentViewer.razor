@@ -9,7 +9,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 <div id="top-load-div"></div>
 <main>
-	@if (mode == LCVMode.None)
+	@if (mode == ViewMode.None)
 	{
 		<div class="ungrouped">
 			@foreach (MediaRow item in Content)
@@ -39,8 +39,8 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	private List<MediaRow> Content { get; set; } = null!;
 
-	private LCVMode mode = LCVMode.Day;
-	private LCVMode Mode
+	private ViewMode mode = ViewMode.Day;
+	private ViewMode Mode
 	{
 		get => mode;
 		set
@@ -54,19 +54,19 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	private Func<MediaRow, dynamic?> SortFunction => mode switch 
 	{
-		LCVMode.None => row => row.dateTaken?.Date,
-		LCVMode.Day => row => row.dateTaken?.Date,
-		LCVMode.Month => row => new {row.dateTaken?.Month, row.dateTaken?.Year},
-		LCVMode.Year => row => row.dateTaken?.Year,
+		ViewMode.None => row => row.dateTaken?.Date,
+		ViewMode.Day => row => row.dateTaken?.Date,
+		ViewMode.Month => row => new {row.dateTaken?.Month, row.dateTaken?.Year},
+		ViewMode.Year => row => row.dateTaken?.Year,
 		_ => throw new ArgumentOutOfRangeException()
 	};
 	
 	private string DateFormat => mode switch
 	{
-		LCVMode.None => "",
-		LCVMode.Day => "ddd, MMM d, yyyy",
-		LCVMode.Month => "MMM yyyy",
-		LCVMode.Year => "yyyy",
+		ViewMode.None => "",
+		ViewMode.Day => "ddd, MMM d, yyyy",
+		ViewMode.Month => "MMM yyyy",
+		ViewMode.Year => "yyyy",
 		_ => throw new ArgumentOutOfRangeException()
 	};
 
