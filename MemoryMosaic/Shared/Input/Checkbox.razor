@@ -1,7 +1,5 @@
 @inherits InputComponent<bool>
 
-<link href="css/Components/Input/Checkbox.css" rel="stylesheet"/>
-
 <div @ref="@input" class="checkbox @(Input ? "checked" : "unchecked")" @onclick="@OnClick">
 	<MaterialIcon Icon="@(Input ? "check_box" : "check_box_outline_blank")" IconStyle="@($"color: {(Input ? "#0080ff" : "white")}")"/>
 	@if (!String.IsNullOrWhiteSpace(Label))
