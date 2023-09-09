@@ -11,31 +11,27 @@
 	
 	[Parameter, EditorRequired]
 	public required LibraryContentViewer Parent { get; set; }
-	
-	private bool selected;
-	private bool Selected
-	{
-		get => selected;
-		set
-		{
-			if (selected) Parent.SelectedItems.Remove(Item.uuid);
-			else Parent.SelectedItems.Add(Item.uuid);
-			
-			selected = value;
-			Parent.Rerender();
-		}
-	}
 }
 
 @functions {
+	private void ToggleSelected()
+	{
+		if (Parent.SelectedItems.Contains(Item.uuid))
+			Parent.SelectedItems.Remove(Item.uuid);
+		else
+			Parent.SelectedItems.Add(Item.uuid);
+
+		Parent.Rerender();
+	}
+	
 	private void CheckClicked()
 	{
-		Selected = !Selected;
+		ToggleSelected();
 	}
 
 	private void ThumbnailClicked(MouseEventArgs eventArgs)
 	{
 		if (Parent.SelectedItems.Count > 0 || eventArgs.CtrlKey)
-			Selected = !Selected;
+			CheckClicked();
 	}
 }
