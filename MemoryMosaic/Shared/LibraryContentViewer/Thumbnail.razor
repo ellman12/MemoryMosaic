@@ -14,16 +14,25 @@
 	
 	[Parameter, EditorRequired]
 	public required Action Rerender { get; set; }
+
+	private bool selected;
+	private bool Selected
+	{
+		get => selected;
+		set
+		{
+			if (selected) Parent.SelectedItems.Remove(Item.uuid);
+			else Parent.SelectedItems.Add(Item.uuid);
+			selected = value;
+			Rerender.Invoke();
+		}
+	}
 }
 
 @functions {
 	private void CheckClicked()
 	{
-		if (Parent.SelectedItems.Contains(Item.uuid))
-			Parent.SelectedItems.Remove(Item.uuid);
-		else
-			Parent.SelectedItems.Add(Item.uuid);
-		
-		Rerender.Invoke();
+		Selected = !Selected;
+	}
 	}
 }
