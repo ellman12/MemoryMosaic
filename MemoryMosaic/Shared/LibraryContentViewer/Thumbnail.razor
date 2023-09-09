@@ -33,9 +33,9 @@
 		Selected = !Selected;
 	}
 
-	private void ThumbnailClicked()
+	private void ThumbnailClicked(MouseEventArgs eventArgs)
 	{
-		if (Parent.SelectedItems.Count > 0)
+		if (Parent.SelectedItems.Count > 0 || eventArgs.CtrlKey)
 			Selected = !Selected;
 	}
 }
