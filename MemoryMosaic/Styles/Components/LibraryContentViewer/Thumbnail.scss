@@ -21,7 +21,7 @@
 		left: 8px;
 	}
 
-	&:hover > .checkbox { opacity: 1; }
+	&:hover > .checkbox, .checked { opacity: 1; }
 }
 
 div .thumbnail {

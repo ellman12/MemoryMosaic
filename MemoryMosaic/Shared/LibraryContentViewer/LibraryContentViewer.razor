@@ -14,7 +14,7 @@ Items can be selected, and depending on the page, different options may be appli
 		<div class="ungrouped">
 			@foreach (MediaRow item in Content)
 			{
-				<Thumbnail Item="@item"/>
+				<Thumbnail Item="@item" Parent="@this"/>
 			}
 		</div>
 	}
@@ -27,7 +27,7 @@ Items can be selected, and depending on the page, different options may be appli
 				<div>
 					@foreach (MediaRow item in group)
 					{
-						<Thumbnail Item="@item"/>
+						<Thumbnail Item="@item" Parent="@this"/>
 					}
 				</div>
 			</div>
@@ -36,10 +36,12 @@ Items can be selected, and depending on the page, different options may be appli
 </main>
 <div id="bottom-load-div"></div>
 
-@* Optional Parameters *@
 @code {
+	[CascadingParameter]
+	public HashSet<Guid> SelectedItems { get; private set; } = null!;
+
 	[Parameter]
-	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day; 
+	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
 }
 
 @code {
@@ -69,6 +71,7 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	protected override async Task OnInitializedAsync()
 	{
+		SelectedItems = new HashSet<Guid>();
 		Content = C.LoadEntireMediaTable();
 		ViewMode = DefaultViewMode;
 	}

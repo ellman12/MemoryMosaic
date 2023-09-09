@@ -1,11 +1,24 @@
 <div class="thumbnail">
 	@if (Item.starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
 	@if (Item.video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
-	<Checkbox/>
+	<Checkbox Input="@Parent.SelectedItems.Contains(Item.uuid)" OnChange="@CheckClicked"/>
 	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path"/>
 </div>
 
 @code {
 	[Parameter, EditorRequired]
 	public required MediaRow Item { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required LibraryContentViewer Parent { get; set; }
+}
+
+@functions {
+	private void CheckClicked()
+	{
+		if (Parent.SelectedItems.Contains(Item.uuid))
+			Parent.SelectedItems.Remove(Item.uuid);
+		else
+			Parent.SelectedItems.Add(Item.uuid);
+	}
 }
