@@ -5,7 +5,7 @@ Items can be selected, and depending on the page, different options may be appli
 *@
 @inherits Component
 
-<KeyboardShortcuts CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
+<KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
 
 <header style="visibility: @(SelectedItems.Count > 0 ? "visible" : "hidden")">
 	<IconButton Icon="close" OnClick="@ClearChecks"/>
