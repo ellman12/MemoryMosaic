@@ -12,9 +12,6 @@
 	[Parameter, EditorRequired]
 	public required LibraryContentViewer Parent { get; set; }
 	
-	[Parameter, EditorRequired]
-	public required Action Rerender { get; set; }
-
 	private bool selected;
 	private bool Selected
 	{
@@ -23,8 +20,9 @@
 		{
 			if (selected) Parent.SelectedItems.Remove(Item.uuid);
 			else Parent.SelectedItems.Add(Item.uuid);
+			
 			selected = value;
-			Rerender.Invoke();
+			Parent.Rerender();
 		}
 	}
 }

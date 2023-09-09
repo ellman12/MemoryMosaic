@@ -26,7 +26,7 @@ Items can be selected, and depending on the page, different options may be appli
 		<div class="ungrouped">
 			@foreach (MediaRow item in Content)
 			{
-				<Thumbnail Item="@item" Parent="@this" Rerender="@StateHasChanged"/>
+				<Thumbnail @key="@item" Item="@item" Parent="@this"/>
 			}
 		</div>
 	}
@@ -39,7 +39,7 @@ Items can be selected, and depending on the page, different options may be appli
 				<div>
 					@foreach (MediaRow item in group)
 					{
-						<Thumbnail Item="@item" Parent="@this" Rerender="@StateHasChanged"/>
+						<Thumbnail @key="@item" Item="@item" Parent="@this"/>
 					}
 				</div>
 			</div>
@@ -89,6 +89,8 @@ Items can be selected, and depending on the page, different options may be appli
 }
 
 @functions {
+	public void Rerender() => StateHasChanged();
+	
 	private string FormatDateTaken(DateTime? dateTaken)
 	{
 		if (dateTaken == null) return "No Date Taken";
