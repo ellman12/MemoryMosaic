@@ -7,6 +7,18 @@ Items can be selected, and depending on the page, different options may be appli
 
 <KeyboardShortcuts CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
 
+<header style="visibility: @(SelectedItems.Count > 0 ? "visible" : "hidden")">
+	<IconButton Icon="close" OnClick="@ClearChecks"/>
+	<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
+	
+	<div id="buttons">
+		<IconButton Icon="file_download" Title="Download Selected"/>
+		<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
+		<IconButton Icon="star_outline" Title="Add or Remove Stars From Selected"/>
+		<IconButton Icon="trash" Title="Delete Selected"/>
+	</div>
+</header>
+
 <div id="top-load-div"></div>
 <main>
 	@if (viewMode == ViewMode.None)
@@ -14,7 +26,7 @@ Items can be selected, and depending on the page, different options may be appli
 		<div class="ungrouped">
 			@foreach (MediaRow item in Content)
 			{
-				<Thumbnail Item="@item" Parent="@this"/>
+				<Thumbnail Item="@item" Parent="@this" Rerender="@StateHasChanged"/>
 			}
 		</div>
 	}
@@ -27,7 +39,7 @@ Items can be selected, and depending on the page, different options may be appli
 				<div>
 					@foreach (MediaRow item in group)
 					{
-						<Thumbnail Item="@item" Parent="@this"/>
+						<Thumbnail Item="@item" Parent="@this" Rerender="@StateHasChanged"/>
 					}
 				</div>
 			</div>
@@ -37,15 +49,14 @@ Items can be selected, and depending on the page, different options may be appli
 <div id="bottom-load-div"></div>
 
 @code {
-	[CascadingParameter]
-	public HashSet<Guid> SelectedItems { get; private set; } = null!;
-
 	[Parameter]
 	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
 }
 
 @code {
 	private List<MediaRow> Content { get; set; } = null!;
+	
+	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 
 	private ViewMode viewMode;
 	private ViewMode ViewMode
@@ -93,5 +104,11 @@ Items can be selected, and depending on the page, different options may be appli
 		};
 
 		return dateTaken.Value.ToString(formatString);
+	}
+
+	private void ClearChecks()
+	{
+		SelectedItems.Clear();
+		StateHasChanged();
 	}
 }

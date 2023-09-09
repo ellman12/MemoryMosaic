@@ -1,5 +1,22 @@
 @import "../../Shared";
 
+header {
+	@include page-header(1px solid gray, 60px);
+	align-items: center;
+	background-color: black;
+
+	> span {
+		font-size: 18px;
+		margin-left: 8px;
+	}
+
+	> #buttons {
+		@include flex-row;
+		position: absolute;
+		right: 55px;
+	}
+}
+
 main {
 	@include flex-main(row, 60px);
 	flex-wrap: wrap;
