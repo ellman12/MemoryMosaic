@@ -2,7 +2,7 @@
 	@if (Item.starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
 	@if (Item.video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
 	<Checkbox Input="@Parent.SelectedItems.Contains(Item.uuid)" OnChange="@CheckClicked"/>
-	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path" @onclick="@ThumbnailClicked"/>
+	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path" @onclick="@ImgClicked"/>
 </div>
 
 @code {
@@ -29,7 +29,7 @@
 		ToggleSelected();
 	}
 
-	private void ThumbnailClicked(MouseEventArgs eventArgs)
+	private void ImgClicked(MouseEventArgs eventArgs)
 	{
 		if (Parent.SelectedItems.Count > 0 || eventArgs.CtrlKey)
 			CheckClicked();
