@@ -38,8 +38,15 @@ Items can be selected, and depending on the page, different options may be appli
 		foreach (var group in Content.GroupBy(SortFunction))
 		{
 			<div class="group">
-				<span>@FormatDateTaken(group.First().dateTaken)</span>
-				<div>
+				@if (group.Count() > 1)
+				{
+					<Checkbox Label="@FormatDateTaken(group.First().dateTaken)"/>
+				}
+				else
+				{
+					<span>@FormatDateTaken(group.First().dateTaken)</span>
+				}
+				<div class="thumbnails">
 					@foreach (MediaRow item in group)
 					{
 						<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
