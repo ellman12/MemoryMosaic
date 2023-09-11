@@ -1,7 +1,7 @@
-<div class="thumbnail">
+<div class="thumbnail" @onclick="@(eventArgs => OnClick.Invoke(eventArgs, Index))">
 	@if (Item.starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
 	@if (Item.video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
-	<Checkbox Input="@Parent.SelectedItems.Contains(Item.uuid)" OnChange="@CheckClicked"/>
+	<Checkbox Input="@Parent.SelectedIndexes.Contains(Index)" OnChange="@CheckClicked"/>
 	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path" @onclick="@ImgClicked"/>
 </div>
 
@@ -11,15 +11,21 @@
 	
 	[Parameter, EditorRequired]
 	public required LibraryContentViewer Parent { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required int Index { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required Action<MouseEventArgs, int> OnClick { get; set; }
 }
 
 @functions {
 	private void ToggleSelected()
 	{
-		if (Parent.SelectedItems.Contains(Item.uuid))
-			Parent.SelectedItems.Remove(Item.uuid);
+		if (Parent.SelectedIndexes.Contains(Index))
+			Parent.SelectedIndexes.Remove(Index);
 		else
-			Parent.SelectedItems.Add(Item.uuid);
+			Parent.SelectedIndexes.Add(Index);
 
 		Parent.Rerender();
 	}
@@ -31,7 +37,7 @@
 
 	private void ImgClicked(MouseEventArgs eventArgs)
 	{
-		if (Parent.SelectedItems.Count > 0 || eventArgs.CtrlKey)
+		if (Parent.SelectedIndexes.Count > 0 || eventArgs.CtrlKey)
 			CheckClicked();
 	}
 }

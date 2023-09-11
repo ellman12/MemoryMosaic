@@ -7,9 +7,9 @@ Items can be selected, and depending on the page, different options may be appli
 
 <KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
 
-<header style="visibility: @(SelectedItems.Count > 0 ? "visible" : "hidden")">
+<header style="visibility: @(SelectedIndexes.Count > 0 ? "visible" : "hidden")">
 	<IconButton Icon="close" OnClick="@ClearChecks"/>
-	<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
+	<span>@SelectedIndexes.Count&nbsp;&nbsp;Selected</span>
 	
 	<div id="buttons">
 		<IconButton Icon="file_download" Title="Download Selected"/>
@@ -21,12 +21,15 @@ Items can be selected, and depending on the page, different options may be appli
 
 <div id="top-load-div"></div>
 <main>
-	@if (viewMode == ViewMode.None)
+@{
+	int index = 0;
+	if (viewMode == ViewMode.None)
 	{
 		<div class="ungrouped">
 			@foreach (MediaRow item in Content)
 			{
-				<Thumbnail @key="@item" Item="@item" Parent="@this"/>
+				<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+				index++;
 			}
 		</div>
 	}
@@ -39,12 +42,14 @@ Items can be selected, and depending on the page, different options may be appli
 				<div>
 					@foreach (MediaRow item in group)
 					{
-						<Thumbnail @key="@item" Item="@item" Parent="@this"/>
+						<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+						index++;
 					}
 				</div>
 			</div>
 		}
 	}
+}
 </main>
 <div id="bottom-load-div"></div>
 
@@ -56,7 +61,8 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	private List<MediaRow> Content { get; set; } = null!;
 	
-	public HashSet<Guid> SelectedItems { get; private set; } = null!;
+	public HashSet<int> SelectedIndexes { get; private set; } = null!;
+	private int lastCheckedIndex;
 
 	private ViewMode viewMode;
 	private ViewMode ViewMode
@@ -82,7 +88,7 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	protected override async Task OnInitializedAsync()
 	{
-		SelectedItems = new HashSet<Guid>();
+		SelectedIndexes = new HashSet<int>();
 		Content = C.LoadEntireMediaTable();
 		ViewMode = DefaultViewMode;
 	}
@@ -108,9 +114,25 @@ Items can be selected, and depending on the page, different options may be appli
 		return dateTaken.Value.ToString(formatString);
 	}
 
+	private void OnThumbnailClick(MouseEventArgs eventArgs, int index)
+	{
+		if (eventArgs.ShiftKey)
+		{
+			int increment = lastCheckedIndex < index ? 1 : -1;
+
+			for (int i = lastCheckedIndex; i != index + increment; i += increment)
+				SelectedIndexes.Add(i);
+		}
+		else
+		{
+			lastCheckedIndex = index;
+		}
+		StateHasChanged();
+	}
+	
 	private void ClearChecks()
 	{
-		SelectedItems.Clear();
+		SelectedIndexes.Clear();
 		StateHasChanged();
 	}
 }
