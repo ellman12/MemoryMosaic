@@ -38,8 +38,27 @@ Items can be selected, and depending on the page, different options may be appli
 		foreach (var group in Content.GroupBy(SortFunction))
 		{
 			<div class="group">
-				<span>@FormatDateTaken(group.First().dateTaken)</span>
-				<div>
+				@if (group.Count() > 1)
+				{
+					int start = index;
+					int end = start + group.Count() - 1;
+					bool selectThisGroup = false;
+
+					for (int i = start; i <= end; i++)
+					{
+						if (!SelectedIndexes.Contains(i))
+						{
+							selectThisGroup = true;
+							break;
+						}
+					}
+					<Checkbox OnChange="@(() => ChangeRangeState(start, end, selectThisGroup))" Input="@(!selectThisGroup)" Label="@FormatDateTaken(group.First().dateTaken)"/>
+				}
+				else
+				{
+					<span>@FormatDateTaken(group.First().dateTaken)</span>
+				}
+				<div class="thumbnails">
 					@foreach (MediaRow item in group)
 					{
 						<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
@@ -97,12 +116,15 @@ Items can be selected, and depending on the page, different options may be appli
 @functions {
 	public void Rerender() => StateHasChanged();
 
-	private void ChangeRangeState(int startIndex, int endIndex, bool state)
+	private void ChangeRangeState(int startIndex, int endIndex, bool select)
 	{
 		int increment = startIndex < endIndex ? 1 : -1;
 
 		for (int i = startIndex; i != endIndex + increment; i += increment)
-			SelectedIndexes.Add(i);
+		{
+			if (select) SelectedIndexes.Add(i);
+			else SelectedIndexes.Remove(i);
+		}
 
 		StateHasChanged();
 	}

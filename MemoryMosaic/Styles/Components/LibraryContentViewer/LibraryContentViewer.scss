@@ -31,12 +31,16 @@ main {
 		@include flex-col;
 		margin-right: 25px;
 
-		> span {
-			font-size: 16px;
-			margin-bottom: 4px;
+		> :first-child {
+			display: flex;
+			height: 24px;
+
+			> .material-icons-outlined { display: none; }
 		}
 
-		> div {
+		> .checkbox:hover > .material-icons-outlined { display: flex; }
+
+		> .thumbnails {
 			@include flex-row;
 			flex-wrap: wrap;
 			margin-bottom: 20px;
