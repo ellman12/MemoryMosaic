@@ -31,14 +31,16 @@ main {
 		@include flex-col;
 		margin-right: 25px;
 
-		> :first-child {
+		> :first-child { height: 24px; }
+
+		> .checkbox {
 			display: flex;
-			height: 24px;
 
-			> .material-icons-outlined { display: none; }
+			&.unchecked > .material-icons-outlined { display: none; }
+
+			&:hover > .material-icons-outlined,
+			&.checked > .material-icons-outlined { display: flex; }
 		}
-
-		> .checkbox:hover > .material-icons-outlined { display: flex; }
 
 		> .thumbnails {
 			@include flex-row;
