@@ -40,7 +40,19 @@ Items can be selected, and depending on the page, different options may be appli
 			<div class="group">
 				@if (group.Count() > 1)
 				{
-					<Checkbox Label="@FormatDateTaken(group.First().dateTaken)"/>
+					int start = index;
+					int end = start + group.Count() - 1;
+					bool selectThisGroup = false;
+
+					for (int i = start; i <= end; i++)
+					{
+						if (!SelectedIndexes.Contains(i))
+						{
+							selectThisGroup = true;
+							break;
+						}
+					}
+					<Checkbox OnChange="@(() => ChangeRangeState(start, end, selectThisGroup))" Input="@(!selectThisGroup)" Label="@FormatDateTaken(group.First().dateTaken)"/>
 				}
 				else
 				{

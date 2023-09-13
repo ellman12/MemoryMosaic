@@ -31,7 +31,7 @@ main {
 		@include flex-col;
 		margin-right: 25px;
 
-		> :first-child {
+		> .checkbox.unchecked {
 			display: flex;
 			height: 24px;
 
