@@ -104,12 +104,15 @@ Items can be selected, and depending on the page, different options may be appli
 @functions {
 	public void Rerender() => StateHasChanged();
 
-	private void ChangeRangeState(int startIndex, int endIndex, bool state)
+	private void ChangeRangeState(int startIndex, int endIndex, bool select)
 	{
 		int increment = startIndex < endIndex ? 1 : -1;
 
 		for (int i = startIndex; i != endIndex + increment; i += increment)
-			SelectedIndexes.Add(i);
+		{
+			if (select) SelectedIndexes.Add(i);
+			else SelectedIndexes.Remove(i);
+		}
 
 		StateHasChanged();
 	}
