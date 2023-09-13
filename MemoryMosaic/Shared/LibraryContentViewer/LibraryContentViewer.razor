@@ -96,6 +96,16 @@ Items can be selected, and depending on the page, different options may be appli
 
 @functions {
 	public void Rerender() => StateHasChanged();
+
+	private void ChangeRangeState(int startIndex, int endIndex, bool state)
+	{
+		int increment = startIndex < endIndex ? 1 : -1;
+
+		for (int i = startIndex; i != endIndex + increment; i += increment)
+			SelectedIndexes.Add(i);
+
+		StateHasChanged();
+	}
 	
 	private string FormatDateTaken(DateTime? dateTaken)
 	{
@@ -117,17 +127,9 @@ Items can be selected, and depending on the page, different options may be appli
 	private void OnThumbnailClick(MouseEventArgs eventArgs, int index)
 	{
 		if (eventArgs.ShiftKey)
-		{
-			int increment = lastCheckedIndex < index ? 1 : -1;
-
-			for (int i = lastCheckedIndex; i != index + increment; i += increment)
-				SelectedIndexes.Add(i);
-		}
+			ChangeRangeState(lastCheckedIndex, index, true);
 		else
-		{
 			lastCheckedIndex = index;
-		}
-		StateHasChanged();
 	}
 	
 	private void ClearChecks()
