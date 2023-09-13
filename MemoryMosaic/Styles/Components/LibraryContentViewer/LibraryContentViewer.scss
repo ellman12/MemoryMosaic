@@ -2,8 +2,6 @@
 
 header {
 	@include page-header(1px solid gray, 60px);
-	align-items: center;
-	background-color: black;
 
 	> span {
 		font-size: 18px;
