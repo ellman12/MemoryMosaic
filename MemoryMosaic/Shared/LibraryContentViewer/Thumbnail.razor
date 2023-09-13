@@ -1,11 +1,43 @@
-<div class="thumbnail">
+<div class="thumbnail" @onclick="@(eventArgs => OnClick.Invoke(eventArgs, Index))">
 	@if (Item.starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
 	@if (Item.video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
-	<Checkbox/>
-	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path"/>
+	<Checkbox Input="@Parent.SelectedIndexes.Contains(Index)" OnChange="@CheckClicked"/>
+	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path" @onclick="@ImgClicked"/>
 </div>
 
 @code {
 	[Parameter, EditorRequired]
 	public required MediaRow Item { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required LibraryContentViewer Parent { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required int Index { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required Action<MouseEventArgs, int> OnClick { get; set; }
+}
+
+@functions {
+	private void ToggleSelected()
+	{
+		if (Parent.SelectedIndexes.Contains(Index))
+			Parent.SelectedIndexes.Remove(Index);
+		else
+			Parent.SelectedIndexes.Add(Index);
+
+		Parent.Rerender();
+	}
+	
+	private void CheckClicked()
+	{
+		ToggleSelected();
+	}
+
+	private void ImgClicked(MouseEventArgs eventArgs)
+	{
+		if (Parent.SelectedIndexes.Count > 0 || eventArgs.CtrlKey)
+			CheckClicked();
+	}
 }

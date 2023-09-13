@@ -5,16 +5,31 @@ Items can be selected, and depending on the page, different options may be appli
 *@
 @inherits Component
 
-<KeyboardShortcuts CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
+<KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
+
+<header style="visibility: @(SelectedIndexes.Count > 0 ? "visible" : "hidden")">
+	<IconButton Icon="close" OnClick="@ClearChecks"/>
+	<span>@SelectedIndexes.Count&nbsp;&nbsp;Selected</span>
+	
+	<div id="buttons">
+		<IconButton Icon="file_download" Title="Download Selected"/>
+		<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
+		<IconButton Icon="star_outline" Title="Add or Remove Stars From Selected"/>
+		<IconButton Icon="trash" Title="Delete Selected"/>
+	</div>
+</header>
 
 <div id="top-load-div"></div>
 <main>
-	@if (viewMode == ViewMode.None)
+@{
+	int index = 0;
+	if (viewMode == ViewMode.None)
 	{
 		<div class="ungrouped">
 			@foreach (MediaRow item in Content)
 			{
-				<Thumbnail Item="@item"/>
+				<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+				index++;
 			}
 		</div>
 	}
@@ -23,27 +38,50 @@ Items can be selected, and depending on the page, different options may be appli
 		foreach (var group in Content.GroupBy(SortFunction))
 		{
 			<div class="group">
-				<span>@FormatDateTaken(group.First().dateTaken)</span>
-				<div>
+				@if (group.Count() > 1)
+				{
+					int start = index;
+					int end = start + group.Count() - 1;
+					bool selectThisGroup = false;
+
+					for (int i = start; i <= end; i++)
+					{
+						if (!SelectedIndexes.Contains(i))
+						{
+							selectThisGroup = true;
+							break;
+						}
+					}
+					<Checkbox OnChange="@(() => ChangeRangeState(start, end, selectThisGroup))" Input="@(!selectThisGroup)" Label="@FormatDateTaken(group.First().dateTaken)"/>
+				}
+				else
+				{
+					<span>@FormatDateTaken(group.First().dateTaken)</span>
+				}
+				<div class="thumbnails">
 					@foreach (MediaRow item in group)
 					{
-						<Thumbnail Item="@item"/>
+						<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+						index++;
 					}
 				</div>
 			</div>
 		}
 	}
+}
 </main>
 <div id="bottom-load-div"></div>
 
-@* Optional Parameters *@
 @code {
 	[Parameter]
-	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day; 
+	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
 }
 
 @code {
 	private List<MediaRow> Content { get; set; } = null!;
+	
+	public HashSet<int> SelectedIndexes { get; private set; } = null!;
+	private int lastCheckedIndex;
 
 	private ViewMode viewMode;
 	private ViewMode ViewMode
@@ -69,12 +107,28 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	protected override async Task OnInitializedAsync()
 	{
+		SelectedIndexes = new HashSet<int>();
 		Content = C.LoadEntireMediaTable();
 		ViewMode = DefaultViewMode;
 	}
 }
 
 @functions {
+	public void Rerender() => StateHasChanged();
+
+	private void ChangeRangeState(int startIndex, int endIndex, bool select)
+	{
+		int increment = startIndex < endIndex ? 1 : -1;
+
+		for (int i = startIndex; i != endIndex + increment; i += increment)
+		{
+			if (select) SelectedIndexes.Add(i);
+			else SelectedIndexes.Remove(i);
+		}
+
+		StateHasChanged();
+	}
+	
 	private string FormatDateTaken(DateTime? dateTaken)
 	{
 		if (dateTaken == null) return "No Date Taken";
@@ -90,5 +144,19 @@ Items can be selected, and depending on the page, different options may be appli
 		};
 
 		return dateTaken.Value.ToString(formatString);
+	}
+
+	private void OnThumbnailClick(MouseEventArgs eventArgs, int index)
+	{
+		if (eventArgs.ShiftKey)
+			ChangeRangeState(lastCheckedIndex, index, true);
+		else
+			lastCheckedIndex = index;
+	}
+	
+	private void ClearChecks()
+	{
+		SelectedIndexes.Clear();
+		StateHasChanged();
 	}
 }
