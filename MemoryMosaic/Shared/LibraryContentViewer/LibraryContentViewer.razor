@@ -14,7 +14,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<div id="buttons">
 		<IconButton Icon="file_download" Title="Download Selected"/>
 		<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
-		<IconButton Icon="star_outline" Title="Add or Remove Stars From Selected"/>
+		<IconButton Icon="star_outline" OnClick="@(() => StarPrompt.Enable())" Title="Add or Remove Stars From Selected"/>
 		<IconButton Icon="trash" Title="Delete Selected"/>
 	</div>
 </header>
@@ -72,6 +72,8 @@ Items can be selected, and depending on the page, different options may be appli
 </main>
 <div id="bottom-load-div"></div>
 
+<TwoChoiceInput @ref="@StarPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedIndexes.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+
 @code {
 	[Parameter]
 	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
@@ -84,6 +86,8 @@ Items can be selected, and depending on the page, different options may be appli
 	private int lastCheckedIndex;
 
 	private IEnumerable<Guid> SelectedIds => SelectedIndexes.Select(index => Content[index].uuid);
+
+	private TwoChoiceInput StarPrompt = null!;
 
 	private ViewMode viewMode;
 	private ViewMode ViewMode
@@ -160,5 +164,16 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		SelectedIndexes.Clear();
 		StateHasChanged();
+	}
+
+	public void UpdateStars(bool starred)
+	{
+		C.UpdateStarred(SelectedIds, starred);
+		StarPrompt.Disable();
+		
+		foreach (MediaRow item in Content.Where(item => SelectedIds.Contains(item.uuid)))
+			item.starred = starred;
+
+		ClearChecks();
 	}
 }
