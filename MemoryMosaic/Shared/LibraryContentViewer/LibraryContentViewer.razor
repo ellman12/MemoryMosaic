@@ -9,9 +9,9 @@ Items can be selected, and depending on the page, different options may be appli
 
 <KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
 
-<header style="visibility: @(SelectedIndexes.Count > 0 ? "visible" : "hidden")">
+<header style="visibility: @(SelectedItems.Count > 0 ? "visible" : "hidden")">
 	<IconButton Icon="close" OnClick="@ClearChecks"/>
-	<span>@SelectedIndexes.Count&nbsp;&nbsp;Selected</span>
+	<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
 	
 	<div id="buttons">
 		<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
@@ -48,7 +48,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 					for (int i = start; i <= end; i++)
 					{
-						if (!SelectedIndexes.Contains(i))
+						if (!SelectedItems.Contains(Content[i].uuid))
 						{
 							selectThisGroup = true;
 							break;
@@ -74,7 +74,7 @@ Items can be selected, and depending on the page, different options may be appli
 </main>
 <div id="bottom-load-div"></div>
 
-<TwoChoiceInput @ref="@StarPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedIndexes.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+<TwoChoiceInput @ref="@StarPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
@@ -86,10 +86,8 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	private List<MediaRow> Content { get; set; } = null!;
 	
-	public HashSet<int> SelectedIndexes { get; private set; } = null!;
+	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 	private int lastCheckedIndex;
-
-	private IEnumerable<Guid> SelectedIds => SelectedIndexes.Select(index => Content[index].uuid);
 
 	private TwoChoiceInput StarPrompt = null!;
 	
@@ -119,7 +117,7 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	protected override async Task OnInitializedAsync()
 	{
-		SelectedIndexes = new HashSet<int>();
+		SelectedItems = new HashSet<Guid>();
 		Content = C.LoadEntireMediaTable();
 		ViewMode = DefaultViewMode;
 	}
@@ -134,8 +132,10 @@ Items can be selected, and depending on the page, different options may be appli
 
 		for (int i = startIndex; i != endIndex + increment; i += increment)
 		{
-			if (select) SelectedIndexes.Add(i);
-			else SelectedIndexes.Remove(i);
+			if (select)
+                SelectedItems.Add(Content[i].uuid);
+			else
+                SelectedItems.Remove(Content[i].uuid);
 		}
 
 		StateHasChanged();
@@ -168,16 +168,16 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	private void ClearChecks()
 	{
-		SelectedIndexes.Clear();
+		SelectedItems.Clear();
 		StateHasChanged();
 	}
 
 	private void UpdateStars(bool starred)
 	{
-		C.UpdateStarred(SelectedIds, starred);
+		C.UpdateStarred(SelectedItems, starred);
 		StarPrompt.Disable();
 		
-		foreach (MediaRow item in Content.Where(item => SelectedIds.Contains(item.uuid)))
+		foreach (MediaRow item in Content.Where(item => SelectedItems.Contains(item.uuid)))
 			item.starred = starred;
 
 		ClearChecks();
@@ -185,7 +185,7 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	private async void DownloadButtonClick()
 	{
-		if (SelectedIndexes.Count == 0) return;
+		if (SelectedItems.Count == 0) return;
 
 		downloadPopUp.Enable();
 		await InvokeAsync(StateHasChanged);
@@ -195,13 +195,15 @@ Items can be selected, and depending on the page, different options may be appli
 		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}");
 		Directory.CreateDirectory(zipFolderPath);
 
-		foreach (string shortPath in from media in Content where SelectedIds.Contains(media.uuid) select media.path)
+		foreach (MediaRow media in Content)
 		{
+			if (!SelectedItems.Contains(media.uuid)) continue;
+			string shortPath = media.path;
 			string fullPath = Path.Combine(S.libFolderPath, shortPath);
 			string destPath = Path.Combine(zipFolderPath, Path.GetFileName(shortPath));
 			File.Copy(fullPath, destPath);
 		}
-		
+
 		ClearChecks();
 
 		string zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";

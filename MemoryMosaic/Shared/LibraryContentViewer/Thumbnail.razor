@@ -1,7 +1,7 @@
 <div class="thumbnail" @onclick="@(eventArgs => OnClick.Invoke(eventArgs, Index))">
 	@if (Item.starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
 	@if (Item.video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
-	<Checkbox Input="@Parent.SelectedIndexes.Contains(Index)" OnChange="@CheckClicked"/>
+	<Checkbox Input="@Parent.SelectedItems.Contains(Item.uuid)" OnChange="@CheckClicked"/>
 	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path" @onclick="@ImgClicked"/>
 </div>
 
@@ -22,10 +22,10 @@
 @functions {
 	private void ToggleSelected()
 	{
-		if (Parent.SelectedIndexes.Contains(Index))
-			Parent.SelectedIndexes.Remove(Index);
+		if (Parent.SelectedItems.Contains(Item.uuid))
+			Parent.SelectedItems.Remove(Item.uuid);
 		else
-			Parent.SelectedIndexes.Add(Index);
+			Parent.SelectedItems.Add(Item.uuid);
 
 		Parent.Rerender();
 	}
@@ -37,7 +37,7 @@
 
 	private void ImgClicked(MouseEventArgs eventArgs)
 	{
-		if (Parent.SelectedIndexes.Count > 0 || eventArgs.CtrlKey)
+		if (Parent.SelectedItems.Count > 0 || eventArgs.CtrlKey)
 			CheckClicked();
 	}
 }
