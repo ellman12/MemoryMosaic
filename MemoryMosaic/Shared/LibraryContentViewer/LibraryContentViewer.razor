@@ -4,6 +4,8 @@ Content is dynamically loaded in small chunks as they scroll up or down the page
 Items can be selected, and depending on the page, different options may be applied to them, such as (un)starring, deleting, changing what collection(s) they are a part of, etc.
 *@
 @inherits Component
+@inject NavigationManager navigationManager
+@using System.IO.Compression
 
 <KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
 
@@ -12,7 +14,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<span>@SelectedIndexes.Count&nbsp;&nbsp;Selected</span>
 	
 	<div id="buttons">
-		<IconButton Icon="file_download" Title="Download Selected"/>
+		<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
 		<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
 		<IconButton Icon="star_outline" OnClick="@(() => StarPrompt.Enable())" Title="Add or Remove Stars From Selected"/>
 		<IconButton Icon="trash" Title="Delete Selected"/>
@@ -74,6 +76,8 @@ Items can be selected, and depending on the page, different options may be appli
 
 <TwoChoiceInput @ref="@StarPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedIndexes.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
+<ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
+
 @code {
 	[Parameter]
 	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
@@ -88,6 +92,8 @@ Items can be selected, and depending on the page, different options may be appli
 	private IEnumerable<Guid> SelectedIds => SelectedIndexes.Select(index => Content[index].uuid);
 
 	private TwoChoiceInput StarPrompt = null!;
+	
+	private ProgressPopUp downloadPopUp = null!;
 
 	private ViewMode viewMode;
 	private ViewMode ViewMode
@@ -175,5 +181,38 @@ Items can be selected, and depending on the page, different options may be appli
 			item.starred = starred;
 
 		ClearChecks();
+	}
+	
+	private async void DownloadButtonClick()
+	{
+		if (SelectedIndexes.Count == 0) return;
+
+		downloadPopUp.Enable();
+		await InvokeAsync(StateHasChanged);
+		await Task.Delay(0);
+		await Task.Delay(1);
+
+		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}");
+		Directory.CreateDirectory(zipFolderPath);
+
+		foreach (string shortPath in from media in Content where SelectedIds.Contains(media.uuid) select media.path)
+		{
+			string fullPath = Path.Combine(S.libFolderPath, shortPath);
+			string destPath = Path.Combine(zipFolderPath, Path.GetFileName(shortPath));
+			File.Copy(fullPath, destPath);
+		}
+		
+		ClearChecks();
+
+		string zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
+		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
+		ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath, CompressionLevel.Fastest, false);
+
+		downloadPopUp.Disable();
+		await InvokeAsync(StateHasChanged);
+
+		Directory.Delete(zipFolderPath, true);//Not needed after it's zipped.
+
+		navigationManager.NavigateTo($"mm_tmp/{zipFilename}", true);
 	}
 }
