@@ -83,6 +83,8 @@ Items can be selected, and depending on the page, different options may be appli
 	public HashSet<int> SelectedIndexes { get; private set; } = null!;
 	private int lastCheckedIndex;
 
+	private IEnumerable<Guid> SelectedIds => SelectedIndexes.Select(index => Content[index].uuid);
+
 	private ViewMode viewMode;
 	private ViewMode ViewMode
 	{
