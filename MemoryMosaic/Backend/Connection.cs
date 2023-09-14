@@ -394,8 +394,8 @@ public static class Connection
         }
     }
     
-    ///<summary>Change a List of items from either starred (true) or not starred.</summary>
-    public static void UpdateStarred(HashSet<Guid> uuids, bool starred)
+    ///<summary>Change an IEnumerable of items from either starred (true) or not starred.</summary>
+    public static void UpdateStarred(IEnumerable<Guid> uuids, bool starred)
     {
         try
         {
