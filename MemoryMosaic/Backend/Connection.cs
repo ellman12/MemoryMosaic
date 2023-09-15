@@ -285,7 +285,7 @@ public static class Connection
     }
 
     ///PERMANENTLY remove an item from the database and DELETES the file from server.
-    public static void PermDeleteItem(Guid uuid)
+    public static void RemoveFromTrash(Guid uuid)
     {
         try
         {

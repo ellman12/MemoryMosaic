@@ -20,7 +20,7 @@
 	{
 		if (MediaRow.dateDeleted == null)
 			C.MoveToTrash(MediaRow.uuid);
-		C.PermDeleteItem(MediaRow.uuid);
+		C.RemoveFromTrash(MediaRow.uuid);
 		Import.OrganizeItems();
 		Rerender.Invoke();
 	}
