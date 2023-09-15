@@ -75,13 +75,16 @@ Items can be selected, and depending on the page, different options may be appli
 <div id="bottom-load-div"></div>
 
 <TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
-<TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@MoveSelectedToTrash" NoBtnClick="@deletePrompt.Disable" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
+<TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@deletePrompt.Disable" Message="@DeletePromptMessage"/>
 
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
 	[Parameter]
 	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
+
+	[Parameter]
+	public bool TrashPage { get; set; }
 }
 
 @code {
@@ -91,7 +94,36 @@ Items can be selected, and depending on the page, different options may be appli
 	private int lastCheckedIndex;
 
 	private TwoChoiceInput starPrompt = new(), deletePrompt = new();
-	
+
+	private string DeletePromptMessage
+	{
+		get
+		{
+			string message;
+
+			if (TrashPage)
+			{
+				if (SelectedItems.Count == 1)
+					message = "PERMANENTLY delete selected item?";
+				else if (SelectedItems.Count < Content.Count)
+					message = "PERMANENTLY delete selected items?";
+				else
+					message = "PERMANENTLY delete ALL items?";
+			}
+			else
+			{
+				if (SelectedItems.Count == 1)
+	                message = "Move selected item to Trash?";
+				else if (SelectedItems.Count < Content.Count)
+	                message = "Move selected items to Trash?";
+				else
+	                message = "Move ALL items to Trash?";
+			}
+
+			return message;
+		}
+	}
+
 	private ProgressPopUp downloadPopUp = null!;
 
 	private ViewMode viewMode;
@@ -189,18 +221,22 @@ Items can be selected, and depending on the page, different options may be appli
 		if (S.showPrompts)
 			deletePrompt.Enable();
 		else
-			MoveSelectedToTrash();
+			DeleteSelected();
 	}
 
-	private void MoveSelectedToTrash()
+	private void DeleteSelected()
 	{
-		C.MoveToTrash(SelectedItems);
+		if (TrashPage)
+			C.RemoveFromTrash(SelectedItems);
+		else
+			C.MoveToTrash(SelectedItems);
+		
 		Content.RemoveAll(item => SelectedItems.Contains(item.uuid));
-		SelectedItems.Clear();
 		deletePrompt.Disable();
+		SelectedItems.Clear();
 		StateHasChanged();
 	}
-	
+
 	private async void DownloadButtonClick()
 	{
 		if (SelectedItems.Count == 0) return;
