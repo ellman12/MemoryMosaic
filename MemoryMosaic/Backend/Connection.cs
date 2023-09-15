@@ -263,8 +263,7 @@ public static class Connection
 
     #region Trash
 
-    ///<summary>Mark an item in the media table as in the Trash.</summary>
-    ///<param name="uuid">The uuid of the item to move to Trash.</param>
+    ///Set this media item's date_deleted to the current date and time.
     public static void MoveToTrash(Guid uuid)
     {
         try
@@ -282,6 +281,13 @@ public static class Connection
         {
             Close();
         }
+    }
+
+    ///Set the date_deleted field of an IEnumerable&lt;Guid&gt; of items to the current date and time.
+    public static void MoveToTrash(IEnumerable<Guid> uuids)
+    {
+        foreach (Guid uuid in uuids)
+            MoveToTrash(uuid);
     }
 
     ///PERMANENTLY remove an item from the database and DELETES the file from server.
