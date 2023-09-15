@@ -17,7 +17,7 @@ Items can be selected, and depending on the page, different options may be appli
 		<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
 		<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
 		<IconButton Icon="star_outline" OnClick="@starPrompt.Enable" Title="Add or Remove Stars From Selected"/>
-		<IconButton Icon="trash" Title="Delete Selected"/>
+		<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="Delete Selected"/>
 	</div>
 </header>
 
@@ -75,6 +75,7 @@ Items can be selected, and depending on the page, different options may be appli
 <div id="bottom-load-div"></div>
 
 <TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+<TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@MoveSelectedToTrash" NoBtnClick="@deletePrompt.Disable" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
 
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
@@ -89,7 +90,7 @@ Items can be selected, and depending on the page, different options may be appli
 	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 	private int lastCheckedIndex;
 
-	private TwoChoiceInput starPrompt = null!;
+	private TwoChoiceInput starPrompt = new(), deletePrompt = new();
 	
 	private ProgressPopUp downloadPopUp = null!;
 
@@ -181,6 +182,23 @@ Items can be selected, and depending on the page, different options may be appli
 			item.starred = starred;
 
 		ClearChecks();
+	}
+
+	private void DeleteButtonClick()
+	{
+		if (S.showPrompts)
+			deletePrompt.Enable();
+		else
+			MoveSelectedToTrash();
+	}
+
+	private void MoveSelectedToTrash()
+	{
+		C.MoveToTrash(SelectedItems);
+		Content.RemoveAll(item => SelectedItems.Contains(item.uuid));
+		SelectedItems.Clear();
+		deletePrompt.Disable();
+		StateHasChanged();
 	}
 	
 	private async void DownloadButtonClick()
