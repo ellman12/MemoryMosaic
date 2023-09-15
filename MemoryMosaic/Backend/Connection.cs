@@ -290,7 +290,7 @@ public static class Connection
             MoveToTrash(uuid);
     }
 
-    ///PERMANENTLY remove an item from the database and DELETES the file from server.
+    ///PERMANENTLY remove an item from the database and DELETES the file from disk.
     public static void RemoveFromTrash(Guid uuid)
     {
         try
@@ -306,7 +306,6 @@ public static class Connection
         {
             Open();
 
-            //Copy item from media to trash
             using NpgsqlCommand cmd = new("DELETE FROM media WHERE uuid=@uuid AND date_deleted IS NOT NULL", connection);
             cmd.Parameters.AddWithValue("@uuid", uuid);
             cmd.ExecuteNonQuery();
@@ -322,6 +321,13 @@ public static class Connection
         {
             Close();
         }
+    }
+
+    ///PERMANENTLY removes an IEnumerable&lt;Guid&gt; of items from the database and DELETES the file from disk.
+    public static void RemoveFromTrash(IEnumerable<Guid> uuids)
+    {
+        foreach (Guid uuid in uuids)
+            MoveToTrash(uuid);
     }
     
     ///PERMANENTLY removes all items in Trash from server and database.
