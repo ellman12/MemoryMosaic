@@ -12,6 +12,11 @@ header {
 		@include flex-row;
 		position: absolute;
 		right: 55px;
+		
+		> div { //Trash's delete and restore buttons, which are always visible.
+			@include flex-row;			
+			visibility: visible;
+		}
 	}
 }
 

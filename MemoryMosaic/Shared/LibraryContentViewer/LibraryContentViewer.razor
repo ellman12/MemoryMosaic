@@ -9,15 +9,32 @@ Items can be selected, and depending on the page, different options may be appli
 
 <KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
 
-<header style="visibility: @(SelectedItems.Count > 0 ? "visible" : "hidden")">
-	<IconButton Icon="close" OnClick="@ClearChecks"/>
-	<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
-	
+<header>
+	@if (SelectedItems.Count > 0)
+	{
+		<IconButton Icon="close" OnClick="@ClearChecks"/>
+		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
+	}
+
 	<div id="buttons">
-		<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
-		<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
-		<IconButton Icon="star_outline" OnClick="@starPrompt.Enable" Title="Add or Remove Stars From Selected"/>
-		<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="Delete Selected"/>
+		@if (SelectedItems.Count > 0)
+		{
+			<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
+			<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
+			<IconButton Icon="star_outline" OnClick="@(() => starPrompt.Enable())" Title="Add or Remove Stars From Selected"/>
+		}
+
+		@if (TrashPage)
+		{
+			<div>
+				<IconButton Icon="restore" OnClick="@DeleteButtonClick" Title="@(SelectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")"/>
+				<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="@(SelectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")"/>
+			</div>
+		}
+		else
+		{
+			<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="Delete Selected"/>
+		}
 	</div>
 </header>
 
@@ -75,13 +92,16 @@ Items can be selected, and depending on the page, different options may be appli
 <div id="bottom-load-div"></div>
 
 <TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
-<TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@MoveSelectedToTrash" NoBtnClick="@deletePrompt.Disable" Message="@(SelectedItems.Count > 1 ? "Delete Selected Items?" : "Delete Selected Item?")"/>
+<TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => deletePrompt.Disable())" Message="@DeletePromptMessage"/>
 
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
 	[Parameter]
 	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
+
+	[Parameter]
+	public bool TrashPage { get; set; }
 }
 
 @code {
@@ -90,8 +110,37 @@ Items can be selected, and depending on the page, different options may be appli
 	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 	private int lastCheckedIndex;
 
-	private TwoChoiceInput starPrompt = new(), deletePrompt = new();
-	
+	private TwoChoiceInput starPrompt = null!, deletePrompt = null!;
+
+	private string DeletePromptMessage
+	{
+		get
+		{
+			string message;
+
+			if (TrashPage)
+			{
+				if (SelectedItems.Count == 1)
+					message = "PERMANENTLY delete selected item?";
+				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+					message = "PERMANENTLY delete selected items?";
+				else
+					message = "PERMANENTLY delete ALL items?";
+			}
+			else
+			{
+				if (SelectedItems.Count == 1)
+	                message = "Move selected item to Trash?";
+				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+	                message = "Move selected items to Trash?";
+				else
+	                message = "Move ALL items to Trash?";
+			}
+
+			return message;
+		}
+	}
+
 	private ProgressPopUp downloadPopUp = null!;
 
 	private ViewMode viewMode;
@@ -184,23 +233,36 @@ Items can be selected, and depending on the page, different options may be appli
 		ClearChecks();
 	}
 
+	#region Deletion
 	private void DeleteButtonClick()
 	{
 		if (S.showPrompts)
 			deletePrompt.Enable();
 		else
-			MoveSelectedToTrash();
+			DeleteSelected();
 	}
 
-	private void MoveSelectedToTrash()
+	private void DeleteSelected()
 	{
-		C.MoveToTrash(SelectedItems);
+		if (TrashPage)
+		{
+			if (SelectedItems.Count == 0)
+				C.EmptyTrash();
+			else
+				C.RemoveFromTrash(SelectedItems);
+		}
+		else
+		{
+			C.MoveToTrash(SelectedItems);
+		}
+		
 		Content.RemoveAll(item => SelectedItems.Contains(item.uuid));
 		SelectedItems.Clear();
 		deletePrompt.Disable();
 		StateHasChanged();
 	}
-	
+	#endregion
+
 	private async void DownloadButtonClick()
 	{
 		if (SelectedItems.Count == 0) return;
@@ -231,7 +293,7 @@ Items can be selected, and depending on the page, different options may be appli
 		downloadPopUp.Disable();
 		await InvokeAsync(StateHasChanged);
 
-		Directory.Delete(zipFolderPath, true);//Not needed after it's zipped.
+		Directory.Delete(zipFolderPath, true); //Not needed after it's zipped.
 
 		navigationManager.NavigateTo($"mm_tmp/{zipFilename}", true);
 	}

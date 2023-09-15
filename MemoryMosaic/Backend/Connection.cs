@@ -327,7 +327,7 @@ public static class Connection
     public static void RemoveFromTrash(IEnumerable<Guid> uuids)
     {
         foreach (Guid uuid in uuids)
-            MoveToTrash(uuid);
+            RemoveFromTrash(uuid);
     }
     
     ///PERMANENTLY removes all items in Trash from server and database.
