@@ -263,8 +263,7 @@ public static class Connection
 
     #region Trash
 
-    ///<summary>Mark an item in the media table as in the Trash.</summary>
-    ///<param name="uuid">The uuid of the item to move to Trash.</param>
+    ///Set this media item's date_deleted to the current date and time.
     public static void MoveToTrash(Guid uuid)
     {
         try
@@ -284,8 +283,15 @@ public static class Connection
         }
     }
 
-    ///PERMANENTLY remove an item from the database and DELETES the file from server.
-    public static void PermDeleteItem(Guid uuid)
+    ///Set the date_deleted field of an IEnumerable&lt;Guid&gt; of items to the current date and time.
+    public static void MoveToTrash(IEnumerable<Guid> uuids)
+    {
+        foreach (Guid uuid in uuids)
+            MoveToTrash(uuid);
+    }
+
+    ///PERMANENTLY remove an item from the database and DELETES the file from disk.
+    public static void RemoveFromTrash(Guid uuid)
     {
         try
         {
@@ -300,7 +306,6 @@ public static class Connection
         {
             Open();
 
-            //Copy item from media to trash
             using NpgsqlCommand cmd = new("DELETE FROM media WHERE uuid=@uuid AND date_deleted IS NOT NULL", connection);
             cmd.Parameters.AddWithValue("@uuid", uuid);
             cmd.ExecuteNonQuery();
@@ -316,6 +321,13 @@ public static class Connection
         {
             Close();
         }
+    }
+
+    ///PERMANENTLY removes an IEnumerable&lt;Guid&gt; of items from the database and DELETES the file from disk.
+    public static void RemoveFromTrash(IEnumerable<Guid> uuids)
+    {
+        foreach (Guid uuid in uuids)
+            MoveToTrash(uuid);
     }
     
     ///PERMANENTLY removes all items in Trash from server and database.
