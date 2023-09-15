@@ -16,7 +16,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<div id="buttons">
 		<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
 		<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
-		<IconButton Icon="star_outline" OnClick="@(() => StarPrompt.Enable())" Title="Add or Remove Stars From Selected"/>
+		<IconButton Icon="star_outline" OnClick="@(() => starPrompt.Enable())" Title="Add or Remove Stars From Selected"/>
 		<IconButton Icon="trash" Title="Delete Selected"/>
 	</div>
 </header>
@@ -74,7 +74,7 @@ Items can be selected, and depending on the page, different options may be appli
 </main>
 <div id="bottom-load-div"></div>
 
-<TwoChoiceInput @ref="@StarPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+<TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
@@ -89,7 +89,7 @@ Items can be selected, and depending on the page, different options may be appli
 	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 	private int lastCheckedIndex;
 
-	private TwoChoiceInput StarPrompt = null!;
+	private TwoChoiceInput starPrompt = null!;
 	
 	private ProgressPopUp downloadPopUp = null!;
 
@@ -175,7 +175,7 @@ Items can be selected, and depending on the page, different options may be appli
 	private void UpdateStars(bool starred)
 	{
 		C.UpdateStarred(SelectedItems, starred);
-		StarPrompt.Disable();
+		starPrompt.Disable();
 		
 		foreach (MediaRow item in Content.Where(item => SelectedItems.Contains(item.uuid)))
 			item.starred = starred;
