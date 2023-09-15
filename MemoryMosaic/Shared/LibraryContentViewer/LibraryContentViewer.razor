@@ -16,7 +16,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<div id="buttons">
 		<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
 		<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
-		<IconButton Icon="star_outline" OnClick="@(() => starPrompt.Enable())" Title="Add or Remove Stars From Selected"/>
+		<IconButton Icon="star_outline" OnClick="@starPrompt.Enable" Title="Add or Remove Stars From Selected"/>
 		<IconButton Icon="trash" Title="Delete Selected"/>
 	</div>
 </header>
