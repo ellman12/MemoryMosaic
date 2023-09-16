@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@RefreshData"/>
+        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@SelectNewCollection"/>
 
         <div id="collection-groups">
             <IconButton Icon="history" OnClick="@(() => PreviousSelectionBtnClick(false))" Title="Restore the last selection of collections."/>
@@ -107,7 +107,7 @@
         checkedFolderIndex = -1; //-1 = a folder isn't picked
     }
 
-    private async void RefreshData()
+    private async void SelectNewCollection()
     {
         albums = C.GetCollectionsTable(true, false, false);
         folders = C.GetCollectionsTable(false, true, false);
