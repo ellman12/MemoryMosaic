@@ -136,8 +136,7 @@
     {
         Disable();
         await JSRuntime.InvokeVoidAsync("enableBackgroundScrolling");
-        ClearAlbumChecks();
-        ClearFolderChecks();
+        ClearChecks();
     }
 
     private void ClearSelected()
@@ -147,14 +146,14 @@
         Header?.Disable();
     }
 
-    private static void ClearAlbumChecks()
-    {
-        for (int i = 0; i < checkedAlbums.Count; i++) checkedAlbums[i] = false;
-    }
+    private static void ClearAlbumChecks() => checkedAlbums = checkedAlbums.Select(_ => false).ToList();
 
-    private static void ClearFolderChecks()
+    private static void ClearFolderChecks() => checkedFolders = checkedFolders.Select(_ => false).ToList();
+
+    private static void ClearChecks()
     {
-        for (int i = 0; i < checkedFolders.Count; i++) checkedFolders[i] = false;
+        ClearAlbumChecks();
+        ClearFolderChecks();
     }
 
     //Add item(s) to album(s) or folder selected.
@@ -224,8 +223,7 @@
         {
             bool rewrite = false; //If it encountered an ID that no longer exists in DB and it should rewrite the tmp file to remove it/them.
             
-            ClearAlbumChecks();
-            ClearFolderChecks();
+            ClearChecks();
             
             string[] input = File.ReadAllLines(filePath);
             if (input[0] == "F")
@@ -252,8 +250,7 @@
         }
         else
         {
-            ClearAlbumChecks();
-            ClearFolderChecks();
+            ClearChecks();
         }
         StateHasChanged();
         return;
@@ -295,8 +292,7 @@
 
     private void FolderClicked(int index)
     {
-        ClearAlbumChecks();
-        ClearFolderChecks();
+        ClearChecks();
         checkedFolderIndex = index;
         checkedFolders[index] = true;
         StateHasChanged();
