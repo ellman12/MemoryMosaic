@@ -79,6 +79,7 @@
 <KeyboardShortcuts AltC="@Toggle"/>
 
 @code {
+    //TODO: I think this stuff wouldn't need to be marked static if we just make an instance of CS and then use that in Import and ImportFile...?
     public static List<Collection> albums = null!, folders = null!;
     public static List<bool> checkedAlbums = null!;
     private static List<bool> checkedFolders = null!;
@@ -132,7 +133,7 @@
     private void CloseBtnClick()
     {
         Disable();
-        ClearChecks();
+        ClearSelectedCollections();
     }
 
     private void ClearSelected()
@@ -146,7 +147,7 @@
 
     private static void ClearFolderChecks() => checkedFolders = checkedFolders.Select(_ => false).ToList();
 
-    private static void ClearChecks()
+    private static void ClearSelectedCollections()
     {
         ClearAlbumChecks();
         ClearFolderChecks();
@@ -219,7 +220,7 @@
         {
             bool rewrite = false; //If it encountered an ID that no longer exists in DB and it should rewrite the tmp file to remove it/them.
             
-            ClearChecks();
+            ClearSelectedCollections();
             
             string[] input = File.ReadAllLines(filePath);
             if (input[0] == "F")
@@ -246,7 +247,7 @@
         }
         else
         {
-            ClearChecks();
+            ClearSelectedCollections();
         }
         StateHasChanged();
         return;
@@ -287,7 +288,7 @@
 
     private void FolderClicked(int index)
     {
-        ClearChecks();
+        ClearSelectedCollections();
         checkedFolderIndex = index;
         checkedFolders[index] = true;
         StateHasChanged();
