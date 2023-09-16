@@ -280,7 +280,6 @@
     {
         ClearFolderChecks();
         checkedFolderIndex = -1;
-        StateHasChanged();
     }
 
     private void FolderClicked(int index)
@@ -288,6 +287,5 @@
         ClearSelectedCollections();
         checkedFolderIndex = index;
         checkedFolders[index] = true;
-        StateHasChanged();
     }
 }
