@@ -1,6 +1,5 @@
 @* Reusable component that allows user to choose album(s) or a folder to add selected item(s) to. *@
 @inherits ToggleableComponent
-@inject IJSRuntime JSRuntime
 
 <link href="css/Components/Modal/CollectionSelector.css" rel="stylesheet"/>
 
@@ -14,7 +13,7 @@
             </div>
         </div>
 
-        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@RefreshData"/>
+        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@SelectNewCollection"/>
 
         <div id="collection-groups">
             <IconButton Icon="history" OnClick="@(() => PreviousSelectionBtnClick(false))" Title="Restore the last selection of collections."/>
@@ -79,6 +78,7 @@
 <KeyboardShortcuts AltC="@Toggle"/>
 
 @code {
+    //TODO: I think this stuff wouldn't need to be marked static if we just make an instance of CS and then use that in Import and ImportFile...?
     public static List<Collection> albums = null!, folders = null!;
     public static List<bool> checkedAlbums = null!;
     private static List<bool> checkedFolders = null!;
@@ -92,28 +92,60 @@
 
     [Parameter] public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
     
-    [Parameter] public ElementVisibility? Header { get; set; } //The visibility of the header on the page, if one exists.
-    
     [Parameter] public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
-    [Parameter] public bool ClearChecksOnConfirm { get; set; } = true; //Used in Import.
+    [Parameter] public bool ClearSelectedOnConfirm { get; set; } = true; //Used in Import.
     
-    protected override void OnInitialized()
-    {
-        albums = C.GetCollectionsTable(true, false, false);
-        folders = C.GetCollectionsTable(false, true, false);
-        checkedAlbums = (from album in albums select new bool()).ToList();
-        checkedFolders = (from folder in folders select new bool()).ToList();
-        checkedFolderIndex = -1; //-1 = a folder isn't picked
-    }
+    protected override void OnInitialized() => RefreshData();
 
-    private async void RefreshData()
+    private void RefreshData()
     {
         albums = C.GetCollectionsTable(true, false, false);
         folders = C.GetCollectionsTable(false, true, false);
         checkedAlbums = (from album in albums select new bool()).ToList();
         checkedFolders = (from folder in folders select new bool()).ToList();
         checkedFolderIndex = -1;
+    }
+
+    private void CloseBtnClick()
+    {
+        Disable();
+        ClearSelectedCollections();
+    }
+
+    private void ClearSelected()
+    {
+        SelectedItems.Clear();
+        Disable();
+    }
+
+    private static void ClearAlbumChecks() => checkedAlbums = checkedAlbums.Select(_ => false).ToList();
+
+    private static void ClearFolderChecks() => checkedFolders = checkedFolders.Select(_ => false).ToList();
+
+    private static void ClearSelectedCollections()
+    {
+        ClearAlbumChecks();
+        ClearFolderChecks();
+    }
+    
+    private void AlbumClicked(int index)
+    {
+        ClearFolderChecks();
+        checkedFolderIndex = -1;
+    }
+
+    private void FolderClicked(int index)
+    {
+        ClearSelectedCollections();
+        checkedFolderIndex = index;
+        checkedFolders[index] = true;
+    }
+    
+    ///Selects the new collection that was just created.
+    private async void SelectNewCollection()
+    {
+        RefreshData();
 
         await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
 
@@ -131,35 +163,7 @@
         }
     }
 
-    //Closing the div for selecting album(s) to add selected items to.
-    private async void CloseBtnClick()
-    {
-        Disable();
-        await JSRuntime.InvokeVoidAsync("enableBackgroundScrolling");
-        ClearAlbumChecks();
-        ClearFolderChecks();
-    }
-
-    private async Task ClearChecks()
-    {
-        foreach (Guid item in SelectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", item);
-        SelectedItems.Clear();
-        Disable();
-        Header?.Disable();
-    }
-
-    private static void ClearAlbumChecks()
-    {
-        for (int i = 0; i < checkedAlbums.Count; i++) checkedAlbums[i] = false;
-    }
-
-    private static void ClearFolderChecks()
-    {
-        for (int i = 0; i < checkedFolders.Count; i++) checkedFolders[i] = false;
-    }
-
-    //Add item(s) to album(s) or folder selected.
+    ///Add item(s) to album(s) or folder selected.
     private async void ConfirmBtnClick()
     {
         if (OnCheckClicked != null)
@@ -204,8 +208,8 @@
 
         CloseBtnClick();
 
-        if (ClearChecksOnConfirm)
-            await ClearChecks();
+        if (ClearSelectedOnConfirm)
+            ClearSelected();
     }
 
     private void PreviousSelectionBtnClick(bool save)
@@ -226,8 +230,7 @@
         {
             bool rewrite = false; //If it encountered an ID that no longer exists in DB and it should rewrite the tmp file to remove it/them.
             
-            ClearAlbumChecks();
-            ClearFolderChecks();
+            ClearSelectedCollections();
             
             string[] input = File.ReadAllLines(filePath);
             if (input[0] == "F")
@@ -254,8 +257,7 @@
         }
         else
         {
-            ClearAlbumChecks();
-            ClearFolderChecks();
+            ClearSelectedCollections();
         }
         StateHasChanged();
         return;
@@ -285,22 +287,5 @@
             
             return -1;
         }
-    }
-
-    private void AlbumClicked(int index)
-    {
-        ClearFolderChecks();
-        checkedFolderIndex = -1;
-        checkedAlbums[index] = !checkedAlbums[index];
-        StateHasChanged();
-    }
-
-    private void FolderClicked(int index)
-    {
-        ClearAlbumChecks();
-        ClearFolderChecks();
-        checkedFolderIndex = index;
-        checkedFolders[index] = true;
-        StateHasChanged();
     }
 }
