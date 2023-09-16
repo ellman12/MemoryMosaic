@@ -96,7 +96,7 @@
     
     [Parameter] public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
-    [Parameter] public bool ClearChecksOnConfirm { get; set; } = true; //Used in Import.
+    [Parameter] public bool ClearSelectedOnConfirm { get; set; } = true; //Used in Import.
     
     protected override void OnInitialized()
     {
@@ -204,7 +204,7 @@
 
         CloseBtnClick();
 
-        if (ClearChecksOnConfirm)
+        if (ClearSelectedOnConfirm)
             await ClearChecks();
     }
 

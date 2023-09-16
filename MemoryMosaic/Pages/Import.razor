@@ -73,7 +73,7 @@
 		</div>
 	</header>
 
-	<CollectionSelector OnCheckClicked="@UpdateCollections" SelectedItems="@selectedItems" ClearChecksOnConfirm="false"/>
+	<CollectionSelector OnCheckClicked="@UpdateCollections" SelectedItems="@selectedItems" ClearSelectedOnConfirm="false"/>
 
 	<main>
 		@for (int i = 0; i < importFiles.Count; i++)
