@@ -140,10 +140,8 @@
         ClearFolderChecks();
     }
 
-    private async Task ClearChecks()
+    private void ClearSelected()
     {
-        foreach (Guid item in SelectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", item);
         SelectedItems.Clear();
         Disable();
         Header?.Disable();
@@ -205,7 +203,7 @@
         CloseBtnClick();
 
         if (ClearSelectedOnConfirm)
-            await ClearChecks();
+            ClearSelected();
     }
 
     private void PreviousSelectionBtnClick(bool save)
