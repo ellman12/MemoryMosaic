@@ -27,7 +27,7 @@ Items can be selected, and depending on the page, different options may be appli
 		@if (TrashPage)
 		{
 			<div>
-				<IconButton Icon="restore" OnClick="@DeleteButtonClick" Title="@(SelectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")"/>
+				<IconButton Icon="restore" OnClick="@RestoreButtonClick" Title="@(SelectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")"/>
 				<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="@(SelectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")"/>
 			</div>
 		}
@@ -95,6 +95,11 @@ Items can be selected, and depending on the page, different options may be appli
 <TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 <TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => deletePrompt.Disable())" Message="@DeletePromptMessage"/>
 
+@if (TrashPage)
+{
+	<TwoChoiceInput @ref="@restorePrompt" YesBtnClick="@RestoreSelected" NoBtnClick="@(() => restorePrompt.Disable())" Message="@RestorePromptMessage"/>
+}
+
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
@@ -111,7 +116,7 @@ Items can be selected, and depending on the page, different options may be appli
 	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 	private int lastCheckedIndex;
 
-	private TwoChoiceInput starPrompt = null!, deletePrompt = null!;
+	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
 
 	private string DeletePromptMessage
 	{
@@ -137,6 +142,23 @@ Items can be selected, and depending on the page, different options may be appli
 				else
 	                message = "Move ALL items to Trash?";
 			}
+
+			return message;
+		}
+	}
+
+	private string RestorePromptMessage
+	{
+		get
+		{
+			string message;
+
+			if (SelectedItems.Count == 1)
+				message = "Restore selected item?";
+			else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+				message = "Restore selected items?";
+			else
+				message = "Restore ALL items?";
 
 			return message;
 		}
@@ -233,6 +255,29 @@ Items can be selected, and depending on the page, different options may be appli
 
 		ClearChecks();
 	}
+
+	#region Restoring
+	private void RestoreButtonClick()
+	{
+		if (S.showPrompts)
+			restorePrompt.Enable();
+		else
+			RestoreSelected();
+	}
+
+	private void RestoreSelected()
+	{
+		if (SelectedItems.Count == 0)
+			C.RestoreTrash();
+		else
+			C.RestoreItems(SelectedItems);
+
+		Content.RemoveAll(item => SelectedItems.Contains(item.uuid));
+		SelectedItems.Clear();
+		restorePrompt.Disable();
+		StateHasChanged();
+	}
+	#endregion
 
 	#region Deletion
 	private void DeleteButtonClick()
