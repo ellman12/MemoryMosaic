@@ -98,22 +98,20 @@
 
     [Parameter] public bool ClearSelectedOnConfirm { get; set; } = true; //Used in Import.
     
-    protected override void OnInitialized()
-    {
-        albums = C.GetCollectionsTable(true, false, false);
-        folders = C.GetCollectionsTable(false, true, false);
-        checkedAlbums = (from album in albums select new bool()).ToList();
-        checkedFolders = (from folder in folders select new bool()).ToList();
-        checkedFolderIndex = -1; //-1 = a folder isn't picked
-    }
+    protected override void OnInitialized() => RefreshData();
 
-    private async void SelectNewCollection()
+    private void RefreshData()
     {
         albums = C.GetCollectionsTable(true, false, false);
         folders = C.GetCollectionsTable(false, true, false);
         checkedAlbums = (from album in albums select new bool()).ToList();
         checkedFolders = (from folder in folders select new bool()).ToList();
         checkedFolderIndex = -1;
+    }
+
+    private async void SelectNewCollection()
+    {
+        RefreshData();
 
         await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
 
