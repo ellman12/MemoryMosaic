@@ -131,11 +131,9 @@
         }
     }
 
-    //Closing the div for selecting album(s) to add selected items to.
-    private async void CloseBtnClick()
+    private void CloseBtnClick()
     {
         Disable();
-        await JSRuntime.InvokeVoidAsync("enableBackgroundScrolling");
         ClearChecks();
     }
 
