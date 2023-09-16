@@ -43,58 +43,60 @@ Items can be selected, and depending on the page, different options may be appli
 	</div>
 </header>
 
-<div id="top-load-div"></div>
 <main>
-@{
-	int index = 0;
-	if (viewMode == ViewMode.None)
-	{
-		<div class="ungrouped">
-			@foreach (MediaRow item in Content)
-			{
-				<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
-				index++;
-			}
-		</div>
-	}
-	else
-	{
-		foreach (var group in Content.GroupBy(SortFunction))
+	<div class="load-div"></div>
+	
+	@{
+		int index = 0;
+		if (viewMode == ViewMode.None)
 		{
-			<div class="group">
-				@if (group.Count() > 1)
+			<div class="ungrouped">
+				@foreach (MediaRow item in Content)
 				{
-					int start = index;
-					int end = start + group.Count() - 1;
-					bool selectThisGroup = false;
-
-					for (int i = start; i <= end; i++)
-					{
-						if (!SelectedItems.Contains(Content[i].uuid))
-						{
-							selectThisGroup = true;
-							break;
-						}
-					}
-					<Checkbox OnChange="@(() => ChangeRangeState(start, end, selectThisGroup))" Input="@(!selectThisGroup)" Label="@FormatDateTaken(group.First().dateTaken)"/>
+					<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+					index++;
 				}
-				else
-				{
-					<span>@FormatDateTaken(group.First().dateTaken)</span>
-				}
-				<div class="thumbnails">
-					@foreach (MediaRow item in group)
-					{
-						<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
-						index++;
-					}
-				</div>
 			</div>
 		}
+		else
+		{
+			foreach (var group in Content.GroupBy(SortFunction))
+			{
+				<div class="group">
+					@if (group.Count() > 1)
+					{
+						int start = index;
+						int end = start + group.Count() - 1;
+						bool selectThisGroup = false;
+
+						for (int i = start; i <= end; i++)
+						{
+							if (!SelectedItems.Contains(Content[i].uuid))
+							{
+								selectThisGroup = true;
+								break;
+							}
+						}
+						<Checkbox OnChange="@(() => ChangeRangeState(start, end, selectThisGroup))" Input="@(!selectThisGroup)" Label="@FormatDateTaken(group.First().dateTaken)"/>
+					}
+					else
+					{
+						<span>@FormatDateTaken(group.First().dateTaken)</span>
+					}
+					<div class="thumbnails">
+						@foreach (MediaRow item in group)
+						{
+							<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+							index++;
+						}
+					</div>
+				</div>
+			}
+		}
 	}
-}
+	
+	<div class="load-div"></div>
 </main>
-<div id="bottom-load-div"></div>
 
 <CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
 
@@ -198,7 +200,7 @@ Items can be selected, and depending on the page, different options may be appli
 		ViewMode.Year => row => row.dateTaken?.Year,
 		_ => throw new ArgumentOutOfRangeException()
 	};
-	
+
 	protected override async Task OnInitializedAsync()
 	{
 		SelectedItems = new HashSet<Guid>();

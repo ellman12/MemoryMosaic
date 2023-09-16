@@ -24,6 +24,24 @@ main {
 	@include flex-main(row, 60px);
 	flex-wrap: wrap;
 
+	> .load-div {
+		@include available-width;
+		position: absolute;
+		height: 300px;
+		z-index: 999;
+		left: -140px;
+
+		&:first-of-type {
+			top: -50px;
+			@if ($debug) { outline: 10px solid red; }
+		}
+
+		&:last-of-type {
+			bottom: 10px;
+			@if ($debug) { outline: 10px solid blue; }
+		}
+	}
+
 	> .ungrouped { //https://css-tricks.com/adaptive-photo-layout-with-flexbox/
 		display: flex;
 		align-items: center;
