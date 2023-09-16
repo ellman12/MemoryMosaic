@@ -353,7 +353,7 @@ public static class Connection
         finally { Close(); }
     }
 
-    ///Undoes a call to MoveToTrash(). Will restore collections it was in, as well as re-adding it to the media table.
+    ///Clears an item's date_deleted field, removing it from the Trash and restoring it back into the library. Also restores the collections it was previously in.
     public static void RestoreItem(Guid uuid)
     {
         try
@@ -366,6 +366,13 @@ public static class Connection
         }
         catch (NpgsqlException e) { L.LogException(e); }
         finally { Close(); }
+    }
+
+    ///Clears the date_deleted field for each item in the IEnumerable&lt;Guid&gt;, restoring it back into the library.
+    public static void RestoreItems(IEnumerable<Guid> uuids)
+    {
+        foreach (Guid uuid in uuids)
+            RestoreItem(uuid);
     }
 
     ///Restores EVERY item in the Trash back into library.
