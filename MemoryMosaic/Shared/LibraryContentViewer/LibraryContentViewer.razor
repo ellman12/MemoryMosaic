@@ -9,7 +9,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 <KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
 
-<header>
+<header style="visibility: @(SelectedItems.Count > 0 || TrashPage ? "visible" : "hidden")">
 	@if (SelectedItems.Count > 0)
 	{
 		<IconButton Icon="close" OnClick="@ClearChecks"/>
@@ -31,7 +31,8 @@ Items can be selected, and depending on the page, different options may be appli
 				<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="@(SelectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")"/>
 			</div>
 		}
-		else
+		
+		@if (SelectedItems.Count > 0)
 		{
 			<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="Delete Selected"/>
 		}
