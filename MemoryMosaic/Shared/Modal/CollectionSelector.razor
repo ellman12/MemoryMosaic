@@ -107,26 +107,6 @@
         checkedFolderIndex = -1;
     }
 
-    private async void SelectNewCollection()
-    {
-        RefreshData();
-
-        await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
-
-        int newestAlbumIndex = albums.FindIndex(a => a.name == collectionCreator.NewCollectionName);
-        if (newestAlbumIndex != -1)
-        {
-            checkedAlbums[newestAlbumIndex] = true;
-        }
-        else
-        {
-            int newestFolderIndex = folders.FindIndex(f => f.name == collectionCreator.NewCollectionName);
-            if (newestFolderIndex == -1) return;
-            checkedFolderIndex = newestFolderIndex;
-            checkedFolders[newestFolderIndex] = true;
-        }
-    }
-
     private void CloseBtnClick()
     {
         Disable();
@@ -148,8 +128,42 @@
         ClearAlbumChecks();
         ClearFolderChecks();
     }
+    
+    private void AlbumClicked(int index)
+    {
+        ClearFolderChecks();
+        checkedFolderIndex = -1;
+    }
 
-    //Add item(s) to album(s) or folder selected.
+    private void FolderClicked(int index)
+    {
+        ClearSelectedCollections();
+        checkedFolderIndex = index;
+        checkedFolders[index] = true;
+    }
+    
+    ///Selects the new collection that was just created.
+    private async void SelectNewCollection()
+    {
+        RefreshData();
+
+        await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
+
+        int newestAlbumIndex = albums.FindIndex(a => a.name == collectionCreator.NewCollectionName);
+        if (newestAlbumIndex != -1)
+        {
+            checkedAlbums[newestAlbumIndex] = true;
+        }
+        else
+        {
+            int newestFolderIndex = folders.FindIndex(f => f.name == collectionCreator.NewCollectionName);
+            if (newestFolderIndex == -1) return;
+            checkedFolderIndex = newestFolderIndex;
+            checkedFolders[newestFolderIndex] = true;
+        }
+    }
+
+    ///Add item(s) to album(s) or folder selected.
     private async void ConfirmBtnClick()
     {
         if (OnCheckClicked != null)
@@ -273,18 +287,5 @@
             
             return -1;
         }
-    }
-
-    private void AlbumClicked(int index)
-    {
-        ClearFolderChecks();
-        checkedFolderIndex = -1;
-    }
-
-    private void FolderClicked(int index)
-    {
-        ClearSelectedCollections();
-        checkedFolderIndex = index;
-        checkedFolders[index] = true;
     }
 }
