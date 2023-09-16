@@ -7,6 +7,12 @@ Items can be selected, and depending on the page, different options may be appli
 @inject NavigationManager navigationManager
 @using System.IO.Compression
 
+@if (Content.Count == 0)
+{
+	<h1>@NoItemsText</h1>
+	return;
+}
+
 <KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
 
 <header style="visibility: @(SelectedItems.Count > 0 || TrashPage ? "visible" : "hidden")">
@@ -105,6 +111,9 @@ Items can be selected, and depending on the page, different options may be appli
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
+	[Parameter, EditorRequired]
+	public string NoItemsText { get; set; } = null!;
+	
 	[Parameter]
 	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
 
