@@ -32,13 +32,11 @@ Items can be selected, and depending on the page, different options may be appli
 
 		@if (TrashPage)
 		{
-			<div>
-				<IconButton Icon="restore" OnClick="@RestoreButtonClick" Title="@(SelectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")"/>
-				<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="@(SelectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")"/>
-			</div>
+			<IconButton Icon="restore" OnClick="@RestoreButtonClick" Title="@(SelectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")"/>
+			<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="@(SelectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")"/>
 		}
 		
-		@if (SelectedItems.Count > 0)
+		@if (SelectedItems.Count > 0 && !TrashPage)
 		{
 			<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="Delete Selected"/>
 		}
