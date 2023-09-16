@@ -32,6 +32,8 @@ h1 {
 	text-align: center;
 }
 
+$debug: true;
+
 @mixin main($top, $left: 145px) {
 	top: $top;
 	left: $left;
