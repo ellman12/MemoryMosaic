@@ -20,7 +20,7 @@ Items can be selected, and depending on the page, different options may be appli
 		@if (SelectedItems.Count > 0)
 		{
 			<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
-			<IconButton Icon="collections" Title="Toggle CollectionSelector"/>
+			<IconButton Icon="collections" OnClick="@cs.Enable" Title="Toggle Collection Selector"/>
 			<IconButton Icon="star_outline" OnClick="@(() => starPrompt.Enable())" Title="Add or Remove Stars From Selected"/>
 		}
 
@@ -92,6 +92,8 @@ Items can be selected, and depending on the page, different options may be appli
 </main>
 <div id="bottom-load-div"></div>
 
+<CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
+
 <TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 <TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => deletePrompt.Disable())" Message="@DeletePromptMessage"/>
 
@@ -115,6 +117,8 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	public HashSet<Guid> SelectedItems { get; private set; } = null!;
 	private int lastCheckedIndex;
+
+	private CollectionSelector cs = null!;
 
 	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
 
