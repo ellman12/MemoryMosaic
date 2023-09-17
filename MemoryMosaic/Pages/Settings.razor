@@ -27,7 +27,6 @@
         </div>
 
         <Checkbox @bind-Input="@showPrompts" Label="Show Prompts?"/>
-        <Checkbox @bind-Input="@displayNoDTInCV" Label="Show Items with No Dt in Collections?"/>
 
         @{
             string color = logLevel switch
@@ -162,7 +161,6 @@
     private string importFolderPath = S.importFolderPath;
     private string libraryRootPath = S.libFolderPath;
     private bool showPrompts = S.showPrompts;
-    private bool displayNoDTInCV = S.displayNoDTInCV;
     private string backupFolderPath = S.backupFolderPath;
     private string tmpFolderPath = S.tmpFolderPath;
     private int thumbnailQuality = S.thumbnailQuality;
@@ -219,7 +217,6 @@
         S.importFolderPath = importFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
-        S.displayNoDTInCV = displayNoDTInCV;
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
         S.thumbnailQuality = thumbnailQuality;
@@ -233,7 +230,6 @@
         importFolderPath = S.importFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;
-        displayNoDTInCV = S.displayNoDTInCV;
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
         thumbnailQuality = S.thumbnailQuality;

@@ -20,9 +20,6 @@ public class Settings
     ///Should prompts be shown when doing things like deleting items and albums, etc.?
     [JsonProperty] public static bool showPrompts;
 
-    ///Should items without a Date Taken be shown in albums and folders?
-    [JsonProperty] public static bool displayNoDTInCV;
-
     ///Controls the quality of thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
     [JsonProperty] public static int thumbnailQuality;
 
@@ -63,7 +60,6 @@ public class Settings
         libFolderPath = $"{root}/mm_library";
         backupFolderPath = $"{root}/mm_backup";
         tmpFolderPath = $"{root}/mm_tmp";
-        showPrompts = displayNoDTInCV = true;
         thumbnailQuality = 7;
         logLevel = LogLevel.Error;
         File.WriteAllText(FilePath, JsonConvert.SerializeObject(new Settings()));
