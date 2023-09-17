@@ -111,73 +111,33 @@ Items can be selected, and depending on the page, different options may be appli
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
+	protected override async Task OnInitializedAsync()
+	{
+		ViewMode = DefaultViewMode;
+	}
+}
+
+@* Loading content *@
+@code {
+	private List<MediaRow> Content { get; set; } = new();
+
+	
+}
+
+@functions {
+	
+}
+
+@* Grouping and displaying data *@
+@code {
 	[Parameter, EditorRequired]
 	public string NoItemsText { get; set; } = null!;
 	
 	[Parameter]
 	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
-
+	
 	[Parameter]
 	public bool TrashPage { get; set; }
-}
-
-@code {
-	private List<MediaRow> Content { get; set; } = null!;
-	
-	public HashSet<Guid> SelectedItems { get; private set; } = null!;
-	private int lastCheckedIndex;
-
-	private CollectionSelector cs = null!;
-
-	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
-
-	private string DeletePromptMessage
-	{
-		get
-		{
-			string message;
-
-			if (TrashPage)
-			{
-				if (SelectedItems.Count == 1)
-					message = "PERMANENTLY delete selected item?";
-				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
-					message = "PERMANENTLY delete selected items?";
-				else
-					message = "PERMANENTLY delete ALL items?";
-			}
-			else
-			{
-				if (SelectedItems.Count == 1)
-	                message = "Move selected item to Trash?";
-				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
-	                message = "Move selected items to Trash?";
-				else
-	                message = "Move ALL items to Trash?";
-			}
-
-			return message;
-		}
-	}
-
-	private string RestorePromptMessage
-	{
-		get
-		{
-			string message;
-
-			if (SelectedItems.Count == 1)
-				message = "Restore selected item?";
-			else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
-				message = "Restore selected items?";
-			else
-				message = "Restore ALL items?";
-
-			return message;
-		}
-	}
-
-	private ProgressPopUp downloadPopUp = null!;
 
 	private ViewMode viewMode;
 	private ViewMode ViewMode
@@ -200,33 +160,9 @@ Items can be selected, and depending on the page, different options may be appli
 		ViewMode.Year => row => row.dateTaken?.Year,
 		_ => throw new ArgumentOutOfRangeException()
 	};
-
-	protected override async Task OnInitializedAsync()
-	{
-		SelectedItems = new HashSet<Guid>();
-		Content = C.LoadEntireMediaTable();
-		ViewMode = DefaultViewMode;
-	}
 }
 
 @functions {
-	public void Rerender() => StateHasChanged();
-
-	private void ChangeRangeState(int startIndex, int endIndex, bool select)
-	{
-		int increment = startIndex < endIndex ? 1 : -1;
-
-		for (int i = startIndex; i != endIndex + increment; i += increment)
-		{
-			if (select)
-                SelectedItems.Add(Content[i].uuid);
-			else
-                SelectedItems.Remove(Content[i].uuid);
-		}
-
-		StateHasChanged();
-	}
-	
 	private string FormatDateTaken(DateTime? dateTaken)
 	{
 		if (dateTaken == null) return "No Date Taken";
@@ -243,7 +179,84 @@ Items can be selected, and depending on the page, different options may be appli
 
 		return dateTaken.Value.ToString(formatString);
 	}
+}
 
+@* Selecting items and manipulating them. *@
+@code {
+	public HashSet<Guid> SelectedItems { get; private set; } = new();
+	private int lastCheckedIndex;
+	
+	private CollectionSelector cs = null!;
+	
+	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
+	
+	private ProgressPopUp downloadPopUp = null!;
+	
+	private string DeletePromptMessage
+	{
+		get
+		{
+			string message;
+
+			if (TrashPage)
+			{
+				if (SelectedItems.Count == 1)
+					message = "PERMANENTLY delete selected item?";
+				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+					message = "PERMANENTLY delete selected items?";
+				else
+					message = "PERMANENTLY delete ALL items?";
+			}
+			else
+			{
+				if (SelectedItems.Count == 1)
+					message = "Move selected item to Trash?";
+				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+					message = "Move selected items to Trash?";
+				else
+					message = "Move ALL items to Trash?";
+			}
+
+			return message;
+		}
+	}
+
+	private string RestorePromptMessage
+	{
+		get
+		{
+			string message;
+
+			if (SelectedItems.Count == 1)
+				message = "Restore selected item?";
+			else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+				message = "Restore selected items?";
+			else
+				message = "Restore ALL items?";
+
+			return message;
+		}
+	}
+}
+
+@functions {
+	public void Rerender() => StateHasChanged();
+
+	private void ChangeRangeState(int startIndex, int endIndex, bool select)
+	{
+		int increment = startIndex < endIndex ? 1 : -1;
+
+		for (int i = startIndex; i != endIndex + increment; i += increment)
+		{
+			if (select)
+				SelectedItems.Add(Content[i].uuid);
+			else
+				SelectedItems.Remove(Content[i].uuid);
+		}
+
+		StateHasChanged();
+	}
+	
 	private void OnThumbnailClick(MouseEventArgs eventArgs, int index)
 	{
 		if (eventArgs.ShiftKey)
@@ -269,7 +282,6 @@ Items can be selected, and depending on the page, different options may be appli
 		ClearChecks();
 	}
 
-	#region Restoring
 	private void RestoreButtonClick()
 	{
 		if (S.showPrompts)
@@ -290,9 +302,7 @@ Items can be selected, and depending on the page, different options may be appli
 		restorePrompt.Disable();
 		StateHasChanged();
 	}
-	#endregion
 
-	#region Deletion
 	private void DeleteButtonClick()
 	{
 		if (S.showPrompts)
@@ -320,7 +330,6 @@ Items can be selected, and depending on the page, different options may be appli
 		deletePrompt.Disable();
 		StateHasChanged();
 	}
-	#endregion
 
 	private async void DownloadButtonClick()
 	{
