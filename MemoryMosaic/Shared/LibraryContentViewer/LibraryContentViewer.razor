@@ -166,11 +166,11 @@ Items can be selected, and depending on the page, different options may be appli
 	private string FormatDateTaken(DateTime? dateTaken)
 	{
 		if (dateTaken == null) return "No Date Taken";
-		if (ViewMode == ViewMode.None) return "";
 
 		bool thisYear = dateTaken.Value.Year == DateTime.Now.Year;
 		string formatString = ViewMode switch
 		{
+			ViewMode.None => "",
 			ViewMode.Day => thisYear ? "ddd, MMM d" : "ddd, MMM d, yyyy",
 			ViewMode.Month => thisYear ? "MMMM" : "MMMM yyyy",
 			ViewMode.Year => "yyyy",
