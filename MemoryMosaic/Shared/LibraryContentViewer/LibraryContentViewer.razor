@@ -119,9 +119,24 @@ Items can be selected, and depending on the page, different options may be appli
 
 @* Loading content *@
 @code {
-	private List<MediaRow> Content { get; set; } = new();
+	///Must resemble this order: path, date_taken, date_added, starred, uuid, thumbnail, description
+	[Parameter]
+	public required string Columns { get; set; } = "path, date_taken, date_added, starred, uuid, thumbnail, description";
 
+	[Parameter]
+	public required string Table { get; set; } = "media";
 	
+	[Parameter]
+	public required string Where { get; set; }
+	
+	[Parameter]
+	public required string OrderBy { get; set; } = "date_taken DESC, date_added DESC";
+	
+	public List<MediaRow> Content { get; private set; } = new(600);
+	
+	public DateTime StartDate { get; set; }
+
+	private ContentLoader bottomLoader;
 }
 
 @functions {
