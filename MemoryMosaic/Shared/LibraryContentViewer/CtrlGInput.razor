@@ -7,9 +7,9 @@
 		<span>Pick New Starting Date Taken</span>
 		
 		<div>
-			<input type="date" @bind="@NewStartDate"/>
-			<IconButton Icon="check" OnClick="@(() => { Disable(); StartDateChanged.Invoke(); })"/>
-			<IconButton Icon="close" OnClick="@(() => { Disable(); NewStartDate = null; })"/>
+			<input type="date" @bind="@NewStartDate" @onkeydown="@(args => { if (args.Key == "Enter") ConfirmClicked(); })"/>
+			<IconButton Icon="check" OnClick="@ConfirmClicked"/>
+			<IconButton Icon="close" OnClick="@CloseClicked"/>
 		</div>
 	</div>
 </ModalBackground>
@@ -21,4 +21,16 @@
 	public Action StartDateChanged { get; set; } = null!;
 	
 	public DateTime? NewStartDate { get; private set; }
+
+	private void ConfirmClicked()
+	{
+		Disable();
+		StartDateChanged.Invoke();
+	}
+
+	private void CloseClicked()
+	{
+		Disable();
+		NewStartDate = null;
+	}
 }
