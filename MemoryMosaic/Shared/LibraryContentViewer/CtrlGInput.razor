@@ -7,20 +7,22 @@
 		<span>Pick New Starting Date Taken</span>
 		
 		<div>
-			<input type="date" @bind="@NewStartDate" @onkeydown="@OnKeyDownDatePicker"/>
+			<input @ref="@datePicker" type="date" @bind="@NewStartDate" @onkeydown="@OnKeyDownDatePicker"/>
 			<IconButton Icon="check" OnClick="@ConfirmClicked"/>
 			<IconButton Icon="close" OnClick="@CloseClicked"/>
 		</div>
 	</div>
 </ModalBackground>
 
-<KeyboardShortcuts CtrlG="@(() => { NewStartDate = DateTime.Now; Enable(); })"/>
+<KeyboardShortcuts CtrlG="@Show"/>
 
 @code {
 	[Parameter, EditorRequired]
 	public Action StartDateChanged { get; set; } = null!;
 	
 	public DateTime? NewStartDate { get; private set; }
+
+	private ElementReference datePicker;
 
 	private void OnKeyDownDatePicker(KeyboardEventArgs args)
 	{
@@ -40,5 +42,12 @@
 	{
 		Disable();
 		NewStartDate = null;
+	}
+
+	private void Show()
+	{
+		NewStartDate = DateTime.Now;
+		Enable();
+		datePicker.FocusAsync();
 	}
 }
