@@ -4,6 +4,8 @@ public sealed class ContentLoader
 {
 	private readonly LibraryContentViewer LCV;
 
+	private readonly bool Bottom;
+	
 	private readonly NpgsqlConnection conn = C.CreateLocalConnection();
 
 	private readonly NpgsqlDataReader reader;
@@ -12,9 +14,10 @@ public sealed class ContentLoader
 
 	private const int ReadLimit = 100;
 
-	public ContentLoader(LibraryContentViewer lcv, bool initializer)
+	public ContentLoader(LibraryContentViewer lcv, bool bottom, bool initializer)
 	{
 		LCV = lcv;
+		Bottom = bottom;
 
 		using NpgsqlCommand cmd = new(Query, conn);
 		reader = cmd.ExecuteReader();

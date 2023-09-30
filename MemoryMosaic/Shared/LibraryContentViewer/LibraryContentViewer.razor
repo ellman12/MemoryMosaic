@@ -113,7 +113,7 @@ Items can be selected, and depending on the page, different options may be appli
 	protected override async Task OnInitializedAsync()
 	{
 		GroupBy = DefaultGroupBy;
-		bottomLoader = new ContentLoader(this, true);
+		bottomLoader = new ContentLoader(this, true, true);
 	}
 }
 
