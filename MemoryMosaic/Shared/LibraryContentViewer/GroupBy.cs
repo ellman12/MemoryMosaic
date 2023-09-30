@@ -1,7 +1,7 @@
 namespace MemoryMosaic.Shared.LibraryContentViewer;
 
 ///Controls how LCV displays and groups items.
-public enum ViewMode
+public enum GroupBy
 {
 	None,
 	Day,

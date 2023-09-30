@@ -13,7 +13,7 @@ Items can be selected, and depending on the page, different options may be appli
 	return;
 }
 
-<KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => ViewMode++)" CtrlShiftPlus="@(() => ViewMode--)"/>
+<KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
 
 <header style="visibility: @(SelectedItems.Count > 0 || TrashPage ? "visible" : "hidden")">
 	@if (SelectedItems.Count > 0)
@@ -48,7 +48,7 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	@{
 		int index = 0;
-		if (viewMode == ViewMode.None)
+		if (GroupBy == GroupBy.None)
 		{
 			<div class="ungrouped">
 				@foreach (MediaRow item in Content)
@@ -113,7 +113,7 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	protected override async Task OnInitializedAsync()
 	{
-		ViewMode = DefaultViewMode;
+		GroupBy = DefaultGroupBy;
 	}
 }
 
@@ -134,30 +134,30 @@ Items can be selected, and depending on the page, different options may be appli
 	public string NoItemsText { get; set; } = null!;
 	
 	[Parameter]
-	public ViewMode DefaultViewMode { get; set; } = ViewMode.Day;
+	public GroupBy DefaultGroupBy { get; set; } = GroupBy.Day;
 	
 	[Parameter]
 	public bool TrashPage { get; set; }
 
-	private ViewMode viewMode;
-	private ViewMode ViewMode
+	private GroupBy groupBy;
+	private GroupBy GroupBy
 	{
-		get => viewMode;
+		get => groupBy;
 		set
 		{
 			int intValue = (int) value;
 			if (intValue is < 0 or > 3) return;
-			viewMode = value;
+			groupBy = value;
 			StateHasChanged();
 		}
 	}
 	
-	private Func<MediaRow, dynamic?> SortFunction => ViewMode switch 
+	private Func<MediaRow, dynamic?> SortFunction => GroupBy switch 
 	{
-		ViewMode.None => row => row.dateTaken?.Date,
-		ViewMode.Day => row => row.dateTaken?.Date,
-		ViewMode.Month => row => new {row.dateTaken?.Month, row.dateTaken?.Year},
-		ViewMode.Year => row => row.dateTaken?.Year,
+		GroupBy.None => row => row.dateTaken?.Date,
+		GroupBy.Day => row => row.dateTaken?.Date,
+		GroupBy.Month => row => new {row.dateTaken?.Month, row.dateTaken?.Year},
+		GroupBy.Year => row => row.dateTaken?.Year,
 		_ => throw new ArgumentOutOfRangeException()
 	};
 }
@@ -168,12 +168,12 @@ Items can be selected, and depending on the page, different options may be appli
 		if (dateTaken == null) return "No Date Taken";
 
 		bool thisYear = dateTaken.Value.Year == DateTime.Now.Year;
-		string formatString = ViewMode switch
+		string formatString = GroupBy switch
 		{
-			ViewMode.None => "",
-			ViewMode.Day => thisYear ? "ddd, MMM d" : "ddd, MMM d, yyyy",
-			ViewMode.Month => thisYear ? "MMMM" : "MMMM yyyy",
-			ViewMode.Year => "yyyy",
+			GroupBy.None => "",
+			GroupBy.Day => thisYear ? "ddd, MMM d" : "ddd, MMM d, yyyy",
+			GroupBy.Month => thisYear ? "MMMM" : "MMMM yyyy",
+			GroupBy.Year => "yyyy",
 			_ => ""
 		};
 
