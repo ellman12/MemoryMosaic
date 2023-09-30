@@ -10,7 +10,21 @@ public sealed class ContentLoader
 
 	private readonly NpgsqlDataReader reader;
 
-	private string Query => $"SELECT {LCV.Columns} FROM {LCV.Table} {(String.IsNullOrWhiteSpace(LCV.Where) ? "" : $"WHERE {LCV.Where}")} ORDER BY {LCV.OrderBy}";
+	private string Query
+	{
+		get
+		{
+			List<string> filters = new();
+			
+			if (LCV.CtrlGInput.NewStartDate != null)
+				filters.Add($"{LCV.OrderByField} {(Bottom ? "<=" : ">=")} '{LCV.CtrlGInput.NewStartDate?.ToString("yyyy-MM-dd HH:mm:ss")}'");
+			
+			if (!String.IsNullOrWhiteSpace(LCV.Where))
+				filters.Add(LCV.Where);
+			
+			return $"SELECT {LCV.Columns} FROM {LCV.Table} {(filters.Count > 0 ? $"WHERE {String.Join(" AND ", filters.ToArray())}" : "")} ORDER BY {LCV.OrderBy}";
+		}
+	}
 
 	private const int ReadLimit = 100;
 
