@@ -9,16 +9,16 @@
 		<div>
 			<input type="date" @bind="@NewStartDate"/>
 			<IconButton Icon="check" OnClick="@(() => { Disable(); StartDateChanged.Invoke(); })"/>
-			<IconButton Icon="close" OnClick="@Disable"/>
+			<IconButton Icon="close" OnClick="@(() => { Disable(); NewStartDate = null; })"/>
 		</div>
 	</div>
 </ModalBackground>
 
-<KeyboardShortcuts CtrlG="@Enable"/>
+<KeyboardShortcuts CtrlG="@(() => { NewStartDate = DateTime.Now; Enable(); })"/>
 
 @code {
 	[Parameter, EditorRequired]
 	public Action StartDateChanged { get; set; } = null!;
 	
-	public DateTime NewStartDate { get; private set; } = DateTime.Today;
+	public DateTime? NewStartDate { get; private set; }
 }
