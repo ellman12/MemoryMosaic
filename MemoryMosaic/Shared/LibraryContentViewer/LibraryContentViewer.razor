@@ -60,7 +60,7 @@ Items can be selected, and depending on the page, different options may be appli
 		}
 		else
 		{
-			foreach (var group in Content.GroupBy(SortFunction))
+			foreach (var group in Content.GroupBy(GroupByFunction))
 			{
 				<div class="group">
 					@if (group.Count() > 1)
@@ -151,8 +151,8 @@ Items can be selected, and depending on the page, different options may be appli
 			StateHasChanged();
 		}
 	}
-	
-	private Func<MediaRow, dynamic?> SortFunction => GroupBy switch 
+
+	private Func<MediaRow, dynamic?> GroupByFunction => GroupBy switch
 	{
 		GroupBy.None => row => row.dateTaken?.Date,
 		GroupBy.Day => row => row.dateTaken?.Date,
