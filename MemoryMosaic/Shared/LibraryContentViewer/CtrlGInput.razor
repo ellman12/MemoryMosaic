@@ -7,7 +7,7 @@
 		<span>Pick New Starting Date Taken</span>
 		
 		<div>
-			<input type="date" @bind="@NewStartDate" @onkeydown="@(args => { if (args.Key == "Enter") ConfirmClicked(); })"/>
+			<input type="date" @bind="@NewStartDate" @onkeydown="@OnKeyDownDatePicker"/>
 			<IconButton Icon="check" OnClick="@ConfirmClicked"/>
 			<IconButton Icon="close" OnClick="@CloseClicked"/>
 		</div>
@@ -21,6 +21,14 @@
 	public Action StartDateChanged { get; set; } = null!;
 	
 	public DateTime? NewStartDate { get; private set; }
+
+	private void OnKeyDownDatePicker(KeyboardEventArgs args)
+	{
+		if (args.Key == "Enter")
+			ConfirmClicked();
+		else if (args.Key == "Escape")
+			CloseClicked();
+	}
 
 	private void ConfirmClicked()
 	{
