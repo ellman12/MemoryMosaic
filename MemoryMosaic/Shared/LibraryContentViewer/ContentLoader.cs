@@ -1,6 +1,6 @@
-﻿namespace MemoryMosaic.Shared.LibraryContentViewer;
+namespace MemoryMosaic.Shared.LibraryContentViewer;
 
-public sealed class ContentLoader : IDisposable
+public sealed class ContentLoader
 {
 	private readonly LibraryContentViewer LCV;
 
@@ -33,15 +33,5 @@ public sealed class ContentLoader : IDisposable
 			rowsAdded++;
 		}
 		LCV.Rerender();
-	}
-	
-	~ContentLoader() => Dispose();
-
-	public void Dispose()
-	{
-		conn.Close();
-		conn.Dispose();
-		reader.Close();
-		reader.Dispose();
 	}
 }
