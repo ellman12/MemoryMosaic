@@ -94,7 +94,7 @@ Items can be selected, and depending on the page, different options may be appli
 			}
 		}
 	}
-	<div class="load-div" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
+	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
 
 <CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
@@ -115,7 +115,7 @@ Items can be selected, and depending on the page, different options may be appli
 	protected override async Task OnInitializedAsync()
 	{
 		GroupBy = DefaultGroupBy;
-		bottomLoader = new ContentLoader(this, true, true);
+		bottomLoader = new ContentLoader(this, true, true, true);
 	}
 }
 
@@ -148,7 +148,7 @@ Items can be selected, and depending on the page, different options may be appli
 	private void StartDateChanged()
 	{
 		Content.Clear();
-		bottomLoader = new ContentLoader(this, true, true);
+		bottomLoader = new ContentLoader(this, true, true, true);
 	}
 }
 

@@ -5,6 +5,8 @@ public sealed class ContentLoader
 	private readonly LibraryContentViewer LCV;
 
 	private readonly bool Bottom;
+
+	public ElementVisibility Visibility { get; } = new();
 	
 	private readonly NpgsqlConnection conn = C.CreateLocalConnection();
 
@@ -28,9 +30,10 @@ public sealed class ContentLoader
 
 	private const int ReadLimit = 100;
 
-	public ContentLoader(LibraryContentViewer lcv, bool bottom, bool initializer)
+	public ContentLoader(LibraryContentViewer lcv, bool startingState, bool bottom, bool initializer)
 	{
 		LCV = lcv;
+		Visibility.Visible = startingState;
 		Bottom = bottom;
 
 		using NpgsqlCommand cmd = new(Query, conn);
@@ -49,6 +52,10 @@ public sealed class ContentLoader
 			LCV.Content.Add(new MediaRow(reader.GetString(0), reader.IsDBNull(1) ? null : reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4), reader.GetString(5), reader.IsDBNull(6) ? null : reader.GetString(6)));
 			rowsAdded++;
 		}
+		
+		if (rowsAdded < ReadLimit)
+			Visibility.Disable();
+		
 		LCV.Rerender();
 	}
 }
