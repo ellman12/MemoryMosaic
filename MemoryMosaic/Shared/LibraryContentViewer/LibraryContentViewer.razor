@@ -44,7 +44,7 @@ Items can be selected, and depending on the page, different options may be appli
 </header>
 
 <main>
-	<div class="load-div"></div>
+	<div class="load-div" style="@topLoader.Visibility.Style" @onmouseover="@topLoader.AddContent" @onscroll="@topLoader.AddContent"></div>
 	
 	@{
 		int index = 0;
@@ -115,6 +115,7 @@ Items can be selected, and depending on the page, different options may be appli
 	protected override async Task OnInitializedAsync()
 	{
 		GroupBy = DefaultGroupBy;
+		topLoader = new ContentLoader(this, false, false, false);
 		bottomLoader = new ContentLoader(this, true, true, true);
 	}
 }
@@ -136,7 +137,7 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	public List<MediaRow> Content { get; private set; } = new(600);
 	
-	private ContentLoader bottomLoader = null!;
+	private ContentLoader topLoader = null!, bottomLoader = null!;
 
 	public CtrlGInput CtrlGInput { get; private set; } = new();
 }
@@ -145,6 +146,7 @@ Items can be selected, and depending on the page, different options may be appli
 	private void StartDateChanged()
 	{
 		Content.Clear();
+		topLoader = new ContentLoader(this, true, false, false);
 		bottomLoader = new ContentLoader(this, true, true, true);
 	}
 }
