@@ -62,6 +62,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			foreach (var group in Content.GroupBy(GroupByFunction))
 			{
+				string date = FormatDateTaken(OrderByFields.First() == "date_taken" ? group.First().dateTaken : group.First().dateAdded);
 				<div class="group">
 					@if (group.Count() > 1)
 					{
@@ -77,11 +78,11 @@ Items can be selected, and depending on the page, different options may be appli
 								break;
 							}
 						}
-						<Checkbox OnChange="@(() => ChangeRangeState(start, end, selectThisGroup))" Input="@(!selectThisGroup)" Label="@FormatDateTaken(group.First().dateTaken)"/>
+						<Checkbox OnChange="@(() => ChangeRangeState(start, end, selectThisGroup))" Input="@(!selectThisGroup)" Label="@date"/>
 					}
 					else
 					{
-						<span>@FormatDateTaken(group.First().dateTaken)</span>
+						<span>@date</span>
 					}
 					<div class="thumbnails">
 						@foreach (MediaRow item in group)
@@ -175,12 +176,16 @@ Items can be selected, and depending on the page, different options may be appli
 		}
 	}
 
-	private Func<MediaRow, dynamic?> GroupByFunction => GroupBy switch
+	private Func<MediaRow, dynamic?> GroupByFunction => (GroupBy, OrderByFields.First()) switch
 	{
-		GroupBy.None => row => row.dateTaken?.Date,
-		GroupBy.Day => row => row.dateTaken?.Date,
-		GroupBy.Month => row => new {row.dateTaken?.Month, row.dateTaken?.Year},
-		GroupBy.Year => row => row.dateTaken?.Year,
+		(GroupBy.None, "date_taken") => row => row.dateTaken?.Date,
+		(GroupBy.None, "date_added") => row => row.dateAdded.Date,
+		(GroupBy.Day, "date_taken") => row => row.dateTaken?.Date,
+		(GroupBy.Day, "date_added") => row => row.dateAdded.Date,
+		(GroupBy.Month, "date_taken") => row => new {row.dateTaken?.Month, row.dateTaken?.Year},
+		(GroupBy.Month, "date_added") => row => new {row.dateAdded.Month, row.dateAdded.Year},
+		(GroupBy.Year, "date_taken") => row => row.dateTaken?.Year,
+		(GroupBy.Year, "date_added") => row => row.dateAdded.Year,
 		_ => throw new ArgumentOutOfRangeException()
 	};
 }
