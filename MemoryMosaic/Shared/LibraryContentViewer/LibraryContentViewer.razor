@@ -44,7 +44,7 @@ Items can be selected, and depending on the page, different options may be appli
 </header>
 
 <main>
-	<div class="load-div"></div>
+	<div class="load-div" style="@topLoader.Visibility.Style" @onmouseover="@topLoader.AddContent" @onscroll="@topLoader.AddContent"></div>
 	
 	@{
 		int index = 0;
@@ -94,10 +94,12 @@ Items can be selected, and depending on the page, different options may be appli
 			}
 		}
 	}
-	<div class="load-div" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
+	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
 
 <CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
+
+<CtrlGInput @ref="@CtrlGInput" StartDateChanged="@StartDateChanged"/>
 
 <TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 <TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => deletePrompt.Disable())" Message="@DeletePromptMessage"/>
@@ -113,7 +115,8 @@ Items can be selected, and depending on the page, different options may be appli
 	protected override async Task OnInitializedAsync()
 	{
 		GroupBy = DefaultGroupBy;
-		bottomLoader = new ContentLoader(this, true);
+		topLoader = new ContentLoader(this, false, false, false);
+		bottomLoader = new ContentLoader(this, true, true, true);
 	}
 }
 
@@ -127,20 +130,25 @@ Items can be selected, and depending on the page, different options may be appli
 	public required string Table { get; set; } = "media";
 	
 	[Parameter]
-	public required string Where { get; set; }
-	
+	public string? Where { get; set; }
+
 	[Parameter]
-	public required string OrderBy { get; set; } = "date_taken DESC, date_added DESC";
+	public required string[] OrderByFields { get; set; } = {"date_taken", "date_added"};
 	
 	public List<MediaRow> Content { get; private set; } = new(600);
 	
-	public DateTime StartDate { get; set; }
+	private ContentLoader topLoader = null!, bottomLoader = null!;
 
-	private ContentLoader bottomLoader = null!;
+	public CtrlGInput CtrlGInput { get; private set; } = new();
 }
 
 @functions {
-	
+	private void StartDateChanged()
+	{
+		Content.Clear();
+		topLoader = new ContentLoader(this, true, false, false);
+		bottomLoader = new ContentLoader(this, true, true, true);
+	}
 }
 
 @* Grouping and displaying data *@

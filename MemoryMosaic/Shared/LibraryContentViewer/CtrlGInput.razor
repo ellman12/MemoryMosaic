@@ -1,0 +1,53 @@
+@* Re-usable component for allowing user to choose the date taken they want LCV to start at. *@
+@inherits ToggleableComponent
+<link href="css/Components/LibraryContentViewer/CtrlGInput.css" rel="stylesheet"/>
+
+<ModalBackground Visibility="@Visibility">
+	<div id="ctrlGInput">
+		<span>Pick New Starting Date Taken</span>
+		
+		<div>
+			<input @ref="@datePicker" type="date" @bind="@NewStartDate" @onkeydown="@OnKeyDownDatePicker"/>
+			<IconButton Icon="check" OnClick="@ConfirmClicked"/>
+			<IconButton Icon="close" OnClick="@CloseClicked"/>
+		</div>
+	</div>
+</ModalBackground>
+
+<KeyboardShortcuts CtrlG="@Show"/>
+
+@code {
+	[Parameter, EditorRequired]
+	public Action StartDateChanged { get; set; } = null!;
+	
+	public DateTime? NewStartDate { get; private set; }
+
+	private ElementReference datePicker;
+
+	private void OnKeyDownDatePicker(KeyboardEventArgs args)
+	{
+		if (args.Key == "Enter")
+			ConfirmClicked();
+		else if (args.Key == "Escape")
+			CloseClicked();
+	}
+
+	private void ConfirmClicked()
+	{
+		Disable();
+		StartDateChanged.Invoke();
+	}
+
+	private void CloseClicked()
+	{
+		Disable();
+		NewStartDate = null;
+	}
+
+	private void Show()
+	{
+		NewStartDate = DateTime.Now;
+		Enable();
+		datePicker.FocusAsync();
+	}
+}
