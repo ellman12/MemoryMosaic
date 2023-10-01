@@ -130,7 +130,7 @@ Items can be selected, and depending on the page, different options may be appli
 	public required string Table { get; set; } = "media";
 	
 	[Parameter]
-	public required string Where { get; set; }
+	public string? Where { get; set; }
 
 	[Parameter]
 	public required string[] OrderByFields { get; set; } = {"date_taken", "date_added"};
