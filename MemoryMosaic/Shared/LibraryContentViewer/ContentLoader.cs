@@ -57,12 +57,23 @@ public sealed class ContentLoader
 
 		while (rowsAdded < ReadLimit && reader.Read())
 		{
-			LCV.Content.Add(new MediaRow(reader.GetString(0), reader.IsDBNull(1) ? null : reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4), reader.GetString(5), reader.IsDBNull(6) ? null : reader.GetString(6)));
+			MediaRow newRow = new(reader.GetString(0), reader.IsDBNull(1) ? null : reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4), reader.GetString(5), reader.IsDBNull(6) ? null : reader.GetString(6));
+			
+			if (Bottom)
+                LCV.Content.Add(newRow);
+			else
+                LCV.Content.Insert(0, newRow);
+			
 			rowsAdded++;
 		}
 		
 		if (rowsAdded < ReadLimit)
 			Visibility.Disable();
+		
+		#if DEBUG
+		L.LogLine($"Added {rowsAdded} items in CL marked Bottom = {Bottom}", LogLevel.Debug);
+		L.LogLine($"LCV.Content.Count = {LCV.Content.Count}", LogLevel.Debug);
+		#endif
 		
 		LCV.Rerender();
 	}
