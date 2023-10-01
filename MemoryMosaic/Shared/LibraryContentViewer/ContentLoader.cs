@@ -27,7 +27,7 @@ public sealed class ContentLoader
 			string sortOrder = Bottom ? "DESC" : "ASC";
 			string orderBy = $"{String.Join($" {sortOrder}, ", LCV.OrderByFields)}";
 			
-			string query = $"SELECT {LCV.Columns} FROM {LCV.Table} {(filters.Count > 0 ? $"WHERE {String.Join(" AND ", filters.ToArray())}" : "")} ORDER BY {orderBy}";
+			string query = $"SELECT {LCV.Columns} FROM {LCV.Table} {(filters.Count > 0 ? $"WHERE {String.Join(" AND ", filters)}" : "")} ORDER BY {orderBy}";
 
 			#if DEBUG
 			L.LogLine($"Query for CL marked Bottom = {Bottom}: {query}", LogLevel.Debug);
