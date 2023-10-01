@@ -19,12 +19,20 @@ public sealed class ContentLoader
 			List<string> filters = new();
 			
 			if (LCV.CtrlGInput.NewStartDate != null)
-				filters.Add($"{LCV.OrderByField} {(Bottom ? "<=" : ">=")} '{LCV.CtrlGInput.NewStartDate?.ToString("yyyy-MM-dd HH:mm:ss")}'");
+				filters.Add($"{LCV.OrderByFields.First()} {(Bottom ? "<=" : ">=")} '{LCV.CtrlGInput.NewStartDate?.ToString("yyyy-MM-dd HH:mm:ss")}'");
 			
 			if (!String.IsNullOrWhiteSpace(LCV.Where))
 				filters.Add(LCV.Where);
+
+			string sortOrder = Bottom ? "DESC" : "ASC";
+			string orderBy = $"{String.Join($" {sortOrder}, ", LCV.OrderByFields)}";
 			
-			return $"SELECT {LCV.Columns} FROM {LCV.Table} {(filters.Count > 0 ? $"WHERE {String.Join(" AND ", filters.ToArray())}" : "")} ORDER BY {LCV.OrderBy}";
+			string query = $"SELECT {LCV.Columns} FROM {LCV.Table} {(filters.Count > 0 ? $"WHERE {String.Join(" AND ", filters.ToArray())}" : "")} ORDER BY {orderBy}";
+
+			#if DEBUG
+			L.LogLine($"Query for CL marked Bottom = {Bottom}: {query}", LogLevel.Debug);
+			#endif
+			return query;
 		}
 	}
 

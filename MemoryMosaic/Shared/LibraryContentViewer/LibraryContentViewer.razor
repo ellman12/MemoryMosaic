@@ -132,10 +132,7 @@ Items can be selected, and depending on the page, different options may be appli
 	public required string Where { get; set; }
 
 	[Parameter]
-	public required string OrderByField { get; set; } = "date_taken";
-	
-	[Parameter]
-	public required string OrderBy { get; set; } = "date_taken DESC, date_added DESC";
+	public required string[] OrderByFields { get; set; } = {"date_taken", "date_added"};
 	
 	public List<MediaRow> Content { get; private set; } = new(600);
 	
