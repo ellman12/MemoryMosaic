@@ -25,7 +25,7 @@ public sealed class ContentLoader
 				filters.Add(LCV.Where);
 
 			string sortOrder = Bottom ? "DESC" : "ASC";
-			string orderBy = $"{String.Join($" {sortOrder}, ", LCV.OrderByFields)}";
+			string orderBy = $"{String.Join($" {sortOrder}, ", LCV.OrderByFields)} {sortOrder}";
 			
 			string query = $"SELECT {LCV.Columns} FROM {LCV.Table} {(filters.Count > 0 ? $"WHERE {String.Join(" AND ", filters)}" : "")} ORDER BY {orderBy}";
 
