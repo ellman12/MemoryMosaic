@@ -4,7 +4,7 @@
 
 <ModalBackground Visibility="@Visibility">
 	<div id="ctrlGInput">
-		<span>Pick New Starting Date Taken</span>
+		<span>Pick New Starting Date @(LCV.OrderByFields.First() == "date_taken" ? "Taken" : "Added")</span>
 		
 		<div>
 			<input @ref="@datePicker" type="date" @bind="@NewStartDate" @onkeydown="@OnKeyDownDatePicker"/>
@@ -17,6 +17,9 @@
 <KeyboardShortcuts CtrlG="@Show"/>
 
 @code {
+	[Parameter, EditorRequired]
+	public LibraryContentViewer LCV { get; set; } = null!;
+	
 	[Parameter, EditorRequired]
 	public Action StartDateChanged { get; set; } = null!;
 	
