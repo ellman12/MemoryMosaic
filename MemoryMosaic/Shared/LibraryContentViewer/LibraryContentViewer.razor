@@ -181,10 +181,8 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private Func<MediaRow, dynamic?> GroupByFunction => (GroupBy, OrderByFields.First()) switch
 	{
-		(GroupBy.None, "date_taken") => row => row.dateTaken?.Date,
-		(GroupBy.None, "date_added") => row => row.dateAdded.Date,
-		(GroupBy.Day, "date_taken") => row => row.dateTaken?.Date,
-		(GroupBy.Day, "date_added") => row => row.dateAdded.Date,
+		(GroupBy.None or GroupBy.Day, "date_taken") => row => row.dateTaken?.Date,
+		(GroupBy.None or GroupBy.Day, "date_added") => row => row.dateAdded.Date,
 		(GroupBy.Month, "date_taken") => row => new {row.dateTaken?.Month, row.dateTaken?.Year},
 		(GroupBy.Month, "date_added") => row => new {row.dateAdded.Month, row.dateAdded.Year},
 		(GroupBy.Year, "date_taken") => row => row.dateTaken?.Year,
