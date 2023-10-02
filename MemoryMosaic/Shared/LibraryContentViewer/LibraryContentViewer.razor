@@ -135,6 +135,9 @@ Items can be selected, and depending on the page, different options may be appli
 
 	[Parameter]
 	public required string[] OrderByFields { get; set; } = {"date_taken", "date_added"};
+
+	[Parameter]
+	public bool SortDesc { get; set; } = true;
 	
 	public List<MediaRow> Content { get; private set; } = new(600);
 	

@@ -17,14 +17,19 @@ public sealed class ContentLoader
 		get
 		{
 			List<string> filters = new();
+
+			(string comparisonOperator, string sortOrder) = (LCV.SortDesc, Bottom) switch
+			{
+				(true, true) or (false, false) => ("<=", "DESC"),
+				(true, false) or (false, true) => (">=", "ASC")
+			};
 			
 			if (LCV.CtrlGInput.NewStartDate != null)
-				filters.Add($"{LCV.OrderByFields.First()} {(Bottom ? "<=" : ">=")} '{LCV.CtrlGInput.NewStartDate?.ToString("yyyy-MM-dd HH:mm:ss")}'");
+				filters.Add($"{LCV.OrderByFields.First()} {comparisonOperator} '{LCV.CtrlGInput.NewStartDate?.ToString("yyyy-MM-dd HH:mm:ss")}'");
 			
 			if (!String.IsNullOrWhiteSpace(LCV.Where))
 				filters.Add(LCV.Where);
 
-			string sortOrder = Bottom ? "DESC" : "ASC";
 			string orderBy = $"{String.Join($" {sortOrder}, ", LCV.OrderByFields)} {sortOrder}";
 			
 			string query = $"SELECT {LCV.Columns} FROM {LCV.Table} {(filters.Count > 0 ? $"WHERE {String.Join(" AND ", filters)}" : "")} ORDER BY {orderBy}";
