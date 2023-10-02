@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Backend.Records;
+﻿namespace MemoryMosaic.Models;
 
 ///Represents a row from the Collections table.
 public record Collection

@@ -1,7 +1,7 @@
 using System.Reflection;
 using MemoryMosaic.Shared.Modal;
 
-namespace MemoryMosaic.Backend;
+namespace MemoryMosaic.Models;
 
 ///Represents an item that is pending importing in Import.razor.
 public class ImportFile

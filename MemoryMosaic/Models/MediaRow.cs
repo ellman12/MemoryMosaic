@@ -1,4 +1,4 @@
-namespace MemoryMosaic.Backend.Records;
+namespace MemoryMosaic.Models;
 
 ///Represents a row in the media table.
 public record MediaRow
