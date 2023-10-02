@@ -10,6 +10,14 @@ public static class Connection
     #endif
     
     public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
+    
+    ///Creates, opens, and returns a new connection object.
+    public static NpgsqlConnection CreateLocalConnection()
+    {
+        NpgsqlConnection localConn = new(CONNECTION_STRING);
+        localConn.Open();
+        return localConn;
+    }
 
     ///Asynchronously creates, opens, and returns a new connection object.
     public static async Task<NpgsqlConnection> CreateLocalConnectionAsync()

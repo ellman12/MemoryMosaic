@@ -2,7 +2,7 @@
 	@if (Item.starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
 	@if (Item.video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
 	<Checkbox Input="@Parent.SelectedItems.Contains(Item.uuid)" OnChange="@CheckClicked"/>
-	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path" @onclick="@ImgClicked"/>
+	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path" @onclick="@ImgClicked" loading="lazy"/>
 </div>
 
 @code {
