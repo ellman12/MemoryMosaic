@@ -1,7 +1,7 @@
 namespace MemoryMosaic.Models;
 
 ///Represents a row in the media table.
-public record MediaRow
+public class MediaRow
 {
     public string path;
     public DateTime? dateTaken;

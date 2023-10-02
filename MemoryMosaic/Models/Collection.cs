@@ -1,7 +1,7 @@
 ﻿namespace MemoryMosaic.Models;
 
 ///Represents a row from the Collections table.
-public record Collection
+public class Collection
 {
 	public readonly int id;
 	public readonly string name;
