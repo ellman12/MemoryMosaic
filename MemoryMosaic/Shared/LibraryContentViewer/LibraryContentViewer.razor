@@ -13,7 +13,7 @@ Items can be selected, and depending on the page, different options may be appli
 	return;
 }
 
-<KeyboardShortcuts Esc="@ClearChecks" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
+<KeyboardShortcuts Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
 
 <header style="visibility: @(SelectedItems.Count > 0 || TrashPage ? "visible" : "hidden")">
 	@if (SelectedItems.Count > 0)
@@ -286,6 +286,21 @@ Items can be selected, and depending on the page, different options may be appli
 		}
 
 		StateHasChanged();
+	}
+
+	private void SelectAllLoadedItems()
+	{
+		foreach (MediaRow row in Content)
+			SelectedItems.Add(row.uuid);
+		StateHasChanged();
+	}
+
+	private void LoadAndSelectAll()
+	{
+		if (CtrlGInput.NewStartDate != null)
+			topLoader.AddContent(Int32.MaxValue);
+		bottomLoader.AddContent(Int32.MaxValue);
+		SelectAllLoadedItems();
 	}
 	
 	private void OnThumbnailClick(MouseEventArgs eventArgs, int index)
