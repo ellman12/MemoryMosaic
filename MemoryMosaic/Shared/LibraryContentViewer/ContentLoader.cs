@@ -36,8 +36,6 @@ public sealed class ContentLoader
 		}
 	}
 
-	private const int ReadLimit = 100;
-
 	public ContentLoader(LibraryContentViewer lcv, bool startingState, bool bottom, bool initializer)
 	{
 		LCV = lcv;
@@ -50,12 +48,14 @@ public sealed class ContentLoader
 		if (initializer)
 			AddContent();
 	}
-	
-	public void AddContent()
+
+	public void AddContent() => AddContent(100);
+
+	public void AddContent(int readLimit)
 	{
 		int rowsAdded = 0;
 
-		while (rowsAdded < ReadLimit && reader.Read())
+		while (rowsAdded < readLimit && reader.Read())
 		{
 			MediaRow newRow = new(reader.GetString(0), reader.IsDBNull(1) ? null : reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4), reader.GetString(5), reader.IsDBNull(6) ? null : reader.GetString(6));
 			
@@ -67,9 +67,8 @@ public sealed class ContentLoader
 			rowsAdded++;
 		}
 		
-		if (rowsAdded < ReadLimit)
+		if (rowsAdded < readLimit)
 			Visibility.Disable();
-		
 		LCV.Rerender();
 	}
 }
