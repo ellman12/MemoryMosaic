@@ -4,12 +4,12 @@
 public class ImportItem : Media
 {
 	///The original filename of this item, without the extension.
-	public required string OriginalFilename { get; init; } 
+	public string OriginalFilename { get; init; } = null!; 
 
 	///What the file has been renamed to, if applicable, without the extension.
-	public required string NewFilename { get; set; } 
+	public string NewFilename { get; set; } = null!; 
 
-	public required string Extension { get; init; }
+	public string Extension { get; init; } = null!;
 
 	public string AbsolutePath => System.IO.Path.Join(S.importFolderPath, Path);
 
