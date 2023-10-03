@@ -95,7 +95,7 @@
 						@* { *@
 							@* foreach (MediaRow mediaRow in sameName) *@
 							@* { *@
-								@* <LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/> *@
+								@* <LibraryItemDisplay MediaRow="@mediaRow" Rerender="@StateHasChanged"/> *@
 							@* } *@
 						@* } *@
 					@* </div> *@
@@ -104,7 +104,7 @@
 	                    @* { *@
 							@* foreach (MediaRow mediaRow in similarName) *@
                     		@* { *@
-                    			@* <LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/> *@
+                    			@* <LibraryItemDisplay MediaRow="@mediaRow" Rerender="@StateHasChanged"/> *@
                     		@* } *@
 	                    @* } *@
 					@* </div> *@
@@ -131,7 +131,7 @@
 
 							@* foreach (MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename]) *@
 							@* { *@
-								@* <LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/> *@
+								@* <LibraryItemDisplay MediaRow="@mediaRow" Rerender="@StateHasChanged"/> *@
 							@* } *@
 						@* } *@
 					@* </div> *@
@@ -145,7 +145,7 @@
 
 							@* foreach (MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename]) *@
 							@* { *@
-								@* <LibraryItem MediaRow="@mediaRow" Rerender="@StateHasChanged"/> *@
+								@* <LibraryItemDisplay MediaRow="@mediaRow" Rerender="@StateHasChanged"/> *@
 							@* } *@
 						@* } *@
 					@* </div> *@

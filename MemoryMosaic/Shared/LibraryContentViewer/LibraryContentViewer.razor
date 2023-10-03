@@ -51,7 +51,7 @@ Items can be selected, and depending on the page, different options may be appli
 		if (GroupBy == GroupBy.None)
 		{
 			<div class="ungrouped">
-				@foreach (Models.LibraryItem item in Content)
+				@foreach (LibraryItem item in Content)
 				{
 					<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
 					index++;
@@ -85,7 +85,7 @@ Items can be selected, and depending on the page, different options may be appli
 						<span>@date</span>
 					}
 					<div class="thumbnails">
-						@foreach (Models.LibraryItem item in group)
+						@foreach (LibraryItem item in group)
 						{
 							<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
 							index++;
@@ -139,8 +139,7 @@ Items can be selected, and depending on the page, different options may be appli
 	[Parameter]
 	public bool SortDesc { get; set; } = true;
 	
-	//TODO: adjust these after Models.LibraryItem.razor is updated and renamed.
-	public List<Models.LibraryItem> Content { get; private set; } = new(600);
+	public List<LibraryItem> Content { get; private set; } = new(600);
 	
 	public CtrlGInput CtrlGInput { get; private set; } = new();
 
@@ -180,7 +179,7 @@ Items can be selected, and depending on the page, different options may be appli
 		}
 	}
 
-	private Func<Models.LibraryItem, dynamic?> GroupByFunction => (GroupBy, OrderByFields.First()) switch
+	private Func<LibraryItem, dynamic?> GroupByFunction => (GroupBy, OrderByFields.First()) switch
 	{
 		(GroupBy.None or GroupBy.Day, "date_taken") => row => row.DateTaken?.Date,
 		(GroupBy.None or GroupBy.Day, "date_added") => row => row.DateAdded.Date,
@@ -289,7 +288,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private void SelectAllLoadedItems()
 	{
-		foreach (Models.LibraryItem row in Content)
+		foreach (LibraryItem row in Content)
 			SelectedItems.Add(row.Id);
 		StateHasChanged();
 	}
@@ -321,7 +320,7 @@ Items can be selected, and depending on the page, different options may be appli
 		C.UpdateStarred(SelectedItems, starred);
 		starPrompt.Disable();
 		
-		foreach (Models.LibraryItem item in Content.Where(item => SelectedItems.Contains(item.Id)))
+		foreach (LibraryItem item in Content.Where(item => SelectedItems.Contains(item.Id)))
 			item.Starred = starred;
 
 		ClearChecks();
@@ -388,7 +387,7 @@ Items can be selected, and depending on the page, different options may be appli
 		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}");
 		Directory.CreateDirectory(zipFolderPath);
 
-		foreach (Models.LibraryItem media in Content)
+		foreach (LibraryItem media in Content)
 		{
 			if (!SelectedItems.Contains(media.Id)) continue;
 			string shortPath = media.Path;
