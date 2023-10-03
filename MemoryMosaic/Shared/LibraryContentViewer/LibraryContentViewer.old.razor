@@ -25,7 +25,7 @@
 @* *@
 @* 	    @if (Collection is {readOnly: false } && !MediaList[viewIndex].video) *@
 @* 	    { *@
-@* 	        <IconButton Icon="collections" OnClick="@(() => C.UpdateCollectionCover(Collection.id, MediaList[viewIndex].path))" Title="Use As Collection Cover"/> *@
+@* 	        <IconButton Icon="collections" OnClick="@(() => C.UpdateCollectionCover(Collection.Id, MediaList[viewIndex].path))" Title="Use As Collection Cover"/> *@
 @* 	    } *@
 @* 	</div> *@
 @* *@
@@ -58,12 +58,12 @@
 @* 				<div id="collectionsIn"> *@
 @* 					@foreach (Collection collection in collectionsIn) *@
 @* 					{ *@
-@* 						<a href="/collection-view/@collection.id"> *@
+@* 						<a href="/collection-view/@collection.Id"> *@
 @* 							<div class="collection"> *@
 @* 								<div class="coverDiv"> *@
-@* 									<img class="cover" src="mm_library/@collection.cover" alt=""> *@
+@* 									<img class="cover" src="mm_library/@collection.Cover" alt=""> *@
 @* 								</div> *@
-@* 								<span title="@collection.name">@collection.name</span> *@
+@* 								<span title="@collection.Name">@collection.Name</span> *@
 @* 							</div> *@
 @* 						</a> *@
 @* 					} *@

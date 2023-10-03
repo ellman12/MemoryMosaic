@@ -553,7 +553,7 @@ public static class Connection
         
         try
         {
-            await using NpgsqlCommand cmd = new($"UPDATE collections SET readonly = {!collection.readOnly} WHERE id = {collection.id}", localConn);
+            await using NpgsqlCommand cmd = new($"UPDATE collections SET readonly = {!collection.ReadOnly} WHERE id = {collection.Id}", localConn);
             await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)

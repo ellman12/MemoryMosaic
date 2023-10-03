@@ -3,34 +3,34 @@
 ///Represents a row from the Collections table.
 public class Collection
 {
-	public readonly int id;
-	public readonly string name;
-	public readonly string? cover;
-	public readonly DateTime dateUpdated;
-	public bool folder;
-	public bool readOnly;
+	public int Id { get; init; }
+	public string Name { get; set; }
+	public string? Cover { get; set; }
+	public DateTime DateUpdated { get; set; }
+	public bool Folder { get; set; }
+	public bool ReadOnly { get; set; }
 
 	public Collection(int id, string name, string cover)
 	{
-		this.id = id;
-		this.name = name;
-		this.cover = cover;
+		Id = id;
+		Name = name;
+		Cover = cover;
 	}
             
 	public Collection(int id, string name, string cover, DateTime dateUpdated)
 	{
-		this.id = id;
-		this.name = name;
-		this.cover = cover;
-		this.dateUpdated = dateUpdated;
+		Id = id;
+		Name = name;
+		Cover = cover;
+		DateUpdated = dateUpdated;
 	}
 
 	public Collection(int id, string name, DateTime dateUpdated, bool folder, bool readOnly)
 	{
-		this.id = id;
-		this.name = name;
-		this.dateUpdated = dateUpdated;
-		this.folder = folder;
-		this.readOnly = readOnly;
+		Id = id;
+		Name = name;
+		DateUpdated = dateUpdated;
+		Folder = folder;
+		ReadOnly = readOnly;
 	}
 }

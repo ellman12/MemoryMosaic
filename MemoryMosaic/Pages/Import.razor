@@ -335,7 +335,7 @@
 
 			if (file.collections != null)
 				foreach (Collection collection in file.collections)
-					await C.AddToCollectionAsync(file.uuid, collection.id);
+					await C.AddToCollectionAsync(file.uuid, collection.Id);
 		});
 
 		if (selectedItems.Count > 0)

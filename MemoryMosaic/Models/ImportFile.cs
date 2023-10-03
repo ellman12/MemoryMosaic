@@ -75,7 +75,7 @@ public class ImportFile
 			result += $"{fields[i].GetValue(this)}\t";
 
 		if (collections?.Count > 0)
-			result += $"{String.Join(' ', collections.Select(c => c.id))}";
+			result += $"{String.Join(' ', collections.Select(c => c.Id))}";
 
 		return result;
 	}
@@ -102,8 +102,8 @@ public class ImportFile
 			if (Int32.TryParse(s, out int n))
 				intIDs.Add(n);
 
-		collections = CollectionSelector.albums.Where(album => intIDs.Contains(album.id)).ToHashSet();
-		if (collections.Count == 0) collections = CollectionSelector.folders.Where(folder => intIDs.Contains(folder.id)).ToHashSet();
+		collections = CollectionSelector.albums.Where(album => intIDs.Contains(album.Id)).ToHashSet();
+		if (collections.Count == 0) collections = CollectionSelector.folders.Where(folder => intIDs.Contains(folder.Id)).ToHashSet();
 	}
 
 	public static ImportFile ParseTabDelimitedString(string tabDelimitedString) => new(tabDelimitedString.Split('\t'));
