@@ -8,25 +8,24 @@
 </header>
 
 <main>
-    @foreach (MediaRow row in mediaMissingItems)
+    @foreach (Models.LibraryItem item in mediaMissingItems)
     {
         <div class="missingItem">
-            <div class="thumbnail"><img src="data:image/jpg;base64,@row.thumbnail" alt=""></div>
+            <div class="thumbnail"><img src="data:image/jpg;base64,@item.Thumbnail" alt=""></div>
             <div class="info">
-                <span>@row.path</span>
-                <span>DT: @row.dateTaken</span>
-                <span>DA: @row.dateAdded</span>
-                <span>Star: @row.starred</span>
-                <span>@row.uuid</span>
-                <span>Separate: @row.separate</span>
-                <span>Description: @row.description</span>
+                <span>@item.Path</span>
+                <span>DT: @item.DateTaken</span>
+                <span>DA: @item.DateAdded</span>
+                <span>Star: @item.Starred</span>
+                <span>@item.Id</span>
+                <span>Description: @item.Description</span>
             </div>
         </div>
     }
 </main>
 
 @code {
-    private readonly List<MediaRow> mediaMissingItems = M.GetMediaMissingFiles();
+    private readonly List<Models.LibraryItem> mediaMissingItems = M.GetMediaMissingFiles();
 
     private void DeleteMissingPaths()
     {

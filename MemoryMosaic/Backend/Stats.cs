@@ -75,20 +75,20 @@ public static class Stats
         }
     }
 
-    private static async Task<MediaRow?> FindItemAsync(string query)
+    private static async Task<LibraryItem?> FindItemAsync(string filter)
     {
-        MediaRow? item = null;
+        LibraryItem? item = null;
         
         try
         {
             await using NpgsqlConnection conn = await C.CreateLocalConnectionAsync();
-            NpgsqlCommand cmd = new(query, conn);
+            NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, uuid, thumbnail FROM media {filter}", conn);
             NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 
             if (r.HasRows)
             {
                 await r.ReadAsync();
-                item = new MediaRow(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), r.GetGuid(3), r.GetString(4));
+                item = new LibraryItem(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), false, r.GetGuid(3), r.GetString(4), null);
                 await r.CloseAsync();
             }
         }
@@ -100,8 +100,8 @@ public static class Stats
         return item;
     }
 
-    public static async Task<MediaRow?> FindItemWithOldestDateTakenAsync() => await FindItemAsync("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL ORDER BY date_taken ASC");
-    public static async Task<MediaRow?> FindItemWithNewestDateTakenAsync() => await FindItemAsync("SELECT path, date_taken, date_added, uuid, thumbnail FROM media WHERE date_taken IS NOT NULL ORDER BY date_taken DESC");
-    public static async Task<MediaRow?> FindItemWithOldestDateAddedAsync() => await FindItemAsync("SELECT path, date_taken, date_added, uuid, thumbnail FROM media ORDER BY date_added ASC");
-    public static async Task<MediaRow?> FindItemWithNewestDateAddedAsync() => await FindItemAsync("SELECT path, date_taken, date_added, uuid, thumbnail FROM media ORDER BY date_added DESC");
+    public static async Task<LibraryItem?> FindItemWithOldestDateTakenAsync() => await FindItemAsync("WHERE date_taken IS NOT NULL ORDER BY date_taken ASC");
+    public static async Task<LibraryItem?> FindItemWithNewestDateTakenAsync() => await FindItemAsync("WHERE date_taken IS NOT NULL ORDER BY date_taken DESC");
+    public static async Task<LibraryItem?> FindItemWithOldestDateAddedAsync() => await FindItemAsync("ORDER BY date_added ASC");
+    public static async Task<LibraryItem?> FindItemWithNewestDateAddedAsync() => await FindItemAsync("ORDER BY date_added DESC");
 }
