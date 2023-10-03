@@ -57,12 +57,12 @@ public sealed class ContentLoader
 
 		while (rowsAdded < readLimit && reader.Read())
 		{
-			MediaRow newRow = new(reader.GetString(0), reader.IsDBNull(1) ? null : reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4), reader.GetString(5), reader.IsDBNull(6) ? null : reader.GetString(6));
+			LibraryItem newItem = new(reader.GetString(0), reader.IsDBNull(1) ? null : reader.GetDateTime(1), reader.GetDateTime(2), reader.GetBoolean(3), reader.GetGuid(4), reader.GetString(5), reader.IsDBNull(6) ? null : reader.GetString(6));
 			
 			if (Bottom)
-                LCV.Content.Add(newRow);
+                LCV.Content.Add(newItem);
 			else
-                LCV.Content.Insert(0, newRow);
+                LCV.Content.Insert(0, newItem);
 			
 			rowsAdded++;
 		}
