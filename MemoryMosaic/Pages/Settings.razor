@@ -125,19 +125,19 @@
             
             if (oldestDTItem != null)
             {
-                <a target="_blank" href="mm_library/@oldestDTItem.path">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+                <a target="_blank" href="mm_library/@oldestDTItem.Path">Item with Oldest Date Taken, Taken on @oldestDTItem.DateTaken</a> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
             }
             if (newestDTItem != null)
             {
-                <a target="_blank" href="mm_library/@newestDTItem.path">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a>
+                <a target="_blank" href="mm_library/@newestDTItem.Path">Item with Newest Date Taken, Taken on @newestDTItem.DateTaken</a>
             }
             if (oldestDAItem != null)
             {
-                <a target="_blank" href="mm_library/@oldestDAItem.path">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a>
+                <a target="_blank" href="mm_library/@oldestDAItem.Path">Item with Oldest Date Added, Added on @oldestDAItem.DateAdded</a>
             }
             if (newestDAItem != null)
             {
-                <a style="margin-bottom: 14px" target="_blank" href="mm_library/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a>
+                <a style="margin-bottom: 14px" target="_blank" href="mm_library/@newestDAItem.Path">Item with Newest Date Added, Added on @newestDAItem.DateAdded</a>
             }
             <span>Server went online at @whenWentOnline</span>
             <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>
@@ -179,7 +179,7 @@
     private List<string>? emptyFolders;
     
     //Missing files
-    private List<MediaRow>? mediaMissingFiles;
+    private List<LibraryItem>? mediaMissingFiles;
     
     //Stats
     private bool statsLoaded;
@@ -187,7 +187,7 @@
     private long totalUsableDriveSize; //How much space the drive mm_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
     private long freeDriveSpace; //Bytes
     private long librarySize; //Bytes
-    private MediaRow? oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
+    private LibraryItem? oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
     public static DateTime whenWentOnline;
     
     //Debug
@@ -256,15 +256,15 @@
         amountUpdated = amountToUpdate = 0;
         thumbnailProgress.Enable();
 
-        List<MediaRow> allItems = C.LoadEntireMediaTable();
+        List<LibraryItem> allItems = C.LoadEntireMediaTable();
         amountToUpdate = allItems.Count;
 
         await Parallel.ForEachAsync(allItems, async (item, _) =>
         {
             await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
             await using NpgsqlCommand cmd = new("UPDATE media SET thumbnail = @newThumbnail WHERE path = @path", localConn);
-            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, item.path)));
-            cmd.Parameters.AddWithValue("@path", item.path);
+            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, item.Path)));
+            cmd.Parameters.AddWithValue("@path", item.Path);
             await cmd.ExecuteNonQueryAsync(_);
             amountUpdated++;
             await InvokeAsync(StateHasChanged);

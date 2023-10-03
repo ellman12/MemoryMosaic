@@ -3,7 +3,7 @@
 
 @* @if (collection == null) { return; } *@
 
-@* <title>@collection.name - MemoryMosaic</title> *@
+@* <title>@collection.Name - MemoryMosaic</title> *@
 @* <link href="css/Pages/CollectionView.css" rel="stylesheet"/> *@
 @* <link href="css/Pages/LibraryContentPage.css" rel="stylesheet"/> *@
 
@@ -15,9 +15,9 @@
 @*     } *@
 @* *@
 @*     <div id="collectionRenameDiv"> *@
-@*         <TextInput @bind-Input="@NewCollectionName" Placeholder="Enter new collection name" FontSize="20" Width="600px" Disabled="@collection.readOnly"/> *@
+@*         <TextInput @bind-Input="@NewCollectionName" Placeholder="Enter new collection name" FontSize="20" Width="600px" Disabled="@collection.ReadOnly"/> *@
 @* *@
-@*         <MaterialIcon Icon="@(collection.readOnly ? "lock" : "")" Title="@(collection.readOnly ? "Readonly" : "")"/> *@
+@*         <MaterialIcon Icon="@(collection.ReadOnly ? "lock" : "")" Title="@(collection.ReadOnly ? "Readonly" : "")"/> *@
 @* *@
 @*         @if (buttons.Visible) *@
 @*         { *@
@@ -33,7 +33,7 @@
 @*             <IconButton Icon="library_add" OnClick="@lcv.cs.Toggle" Title="Add Selected to Collection"/> *@
 @*             <IconButton Icon="star_outline" OnClick="@lcv.StarPrompt.Toggle"/> *@
 @* *@
-@*             if (!collection.readOnly) *@
+@*             if (!collection.ReadOnly) *@
 @*             { *@
 @*                 <IconButton Icon="remove" OnClick="@RemoveBtnClick" Title="Remove Selected"/> *@
 @*             } *@
@@ -50,22 +50,22 @@
 @*     <DropdownButton Icon="check" Text="Oldest Added First" OnClick="@(() => ChangeOrder(CVSortMode.OldestAdded))" IconStyle="@(sortMode == CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.OldestAdded ? "#1a73e8" : "white")"/> *@
 @*     <DropdownButton Icon="check" Text="Newest Added First" OnClick="@(() => ChangeOrder(CVSortMode.NewestAdded))" IconStyle="@(sortMode == CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.NewestAdded ? "#1a73e8" : "white")"/> *@
 @* *@
-@*     <DropdownButton Icon="@(collection.readOnly ? "lock_open" : "lock")" Text="@($"{(collection.readOnly ? "Remove" : "Make")} Readonly)")" OnClick="@ToggleReadonly"/> *@
+@*     <DropdownButton Icon="@(collection.ReadOnly ? "lock_open" : "lock")" Text="@($"{(collection.ReadOnly ? "Remove" : "Make")} Readonly)")" OnClick="@ToggleReadonly"/> *@
 @* *@
-@*     @if (!collection.readOnly) *@
+@*     @if (!collection.ReadOnly) *@
 @*     { *@
-@*         <DropdownButton Icon="@(collection.folder ? "perm_media" : "collections")" Text="@(collection.folder ? "Change to Album" : "Change to Folder")" OnClick="@ChangeCollectionType"/> *@
-@*         <DropdownButton Icon="trash" Text="@(collection.folder ? "Delete Folder" : "Delete Album")" OnClick="@DeleteCollectionBtnClick"/> *@
+@*         <DropdownButton Icon="@(collection.Folder ? "perm_media" : "collections")" Text="@(collection.Folder ? "Change to Album" : "Change to Folder")" OnClick="@ChangeCollectionType"/> *@
+@*         <DropdownButton Icon="trash" Text="@(collection.Folder ? "Delete Folder" : "Delete Album")" OnClick="@DeleteCollectionBtnClick"/> *@
 @*     } *@
 @* </Dropdown> *@
 @* *@
 @* @{ UpdateQueries(); } *@
 @* *@
 @* $1$ Loads every item with NULL Date Taken first, then items with Date Taken. #1# *@
-@* <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="@($"{(collection.folder ? "Folder" : "Album")} is Empty")" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" Collection="@collection"/> *@
+@* <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="@($"{(collection.Folder ? "Folder" : "Album")} is Empty")" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" Collection="@collection"/> *@
 @* *@
-@* <TwoChoiceInput @ref="@delPrompt" Message=@($"PERMANENTLY Delete {(collection.folder ? "Folder" : "Album")} \"{collection.name}\"?") *@
-@*     YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.id); })" NoBtnClick="@delPrompt.Disable"/> *@
+@* <TwoChoiceInput @ref="@delPrompt" Message=@($"PERMANENTLY Delete {(collection.Folder ? "Folder" : "Album")} \"{collection.Name}\"?") *@
+@*     YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.Id); })" NoBtnClick="@delPrompt.Disable"/> *@
 @* *@
 @* @code { *@
 @*     [Parameter] *@
@@ -86,11 +86,11 @@
 @*         get => _newCollectionName; *@
 @*         set *@
 @*         { *@
-@*             if (value == collection!.name) //Same so don't need to reapply *@
+@*             if (value == collection!.Name) //Same so don't need to reapply *@
 @*             { *@
 @*                 buttons.Disable(); *@
 @*             } *@
-@*             else if (value != collection.name) *@
+@*             else if (value != collection.Name) *@
 @*             { *@
 @*                 _newCollectionName = value; *@
 @*                 buttons.Enable(); *@
@@ -104,7 +104,7 @@
 @*     { *@
 @*         collection = await C.GetCollectionDetailsAsync(CollectionID) ?? throw new InvalidOperationException(); *@
 @*         sortMode = CVSortMode.NewestDateTaken; *@
-@*         _newCollectionName = collection.name; *@
+@*         _newCollectionName = collection.Name; *@
 @*         ElementVisibility.ChangeStates(false, delPrompt.Visibility, buttons); *@
 @*     } *@
 @* *@
@@ -132,7 +132,7 @@
 @*                 throw new ArgumentOutOfRangeException(); *@
 @*         } *@
 @*      *@
-@*         string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={collection!.id} AND date_deleted IS NULL AND separate={collection.folder}"; *@
+@*         string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={collection!.Id} AND date_deleted IS NULL AND separate={collection.Folder}"; *@
 @*         topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100"; *@
 @*         bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100"; *@
 @*      *@
@@ -155,21 +155,21 @@
 @*     private async void ToggleReadonly() *@
 @*     { *@
 @*         await C.ToggleReadonlyAsync(collection ?? throw new InvalidOperationException()); *@
-@*         collection.readOnly = !collection.readOnly; *@
+@*         collection.ReadOnly = !collection.ReadOnly; *@
 @*         await InvokeAsync(StateHasChanged); *@
 @*     } *@
 @* *@
 @*     private void ChangeCollectionType() *@
 @*     { *@
-@*         C.ChangeCollectionType(collection!.id, !collection.folder); *@
-@*         collection.folder = !collection.folder; *@
+@*         C.ChangeCollectionType(collection!.Id, !collection.Folder); *@
+@*         collection.Folder = !collection.Folder; *@
 @*         StateHasChanged(); *@
 @*     } *@
 @* *@
 @*     //Remove selected from the collection *@
 @*     private void RemoveBtnClick() *@
 @*     { *@
-@*         foreach (Guid uuid in lcv.SelectedItems) C.RemoveFromCollection(uuid, collection!.id); *@
+@*         foreach (Guid uuid in lcv.SelectedItems) C.RemoveFromCollection(uuid, collection!.Id); *@
 @*         lcv.Reset(); *@
 @*         StateHasChanged(); *@
 @*     } *@
@@ -188,21 +188,21 @@
 @*     private void DeleteCollection() *@
 @*     { *@
 @*         navigationManager.NavigateTo("/collections"); *@
-@*         C.DeleteCollection(collection!.id); *@
+@*         C.DeleteCollection(collection!.Id); *@
 @*     } *@
 @*      *@
 @*     //Functions for collection stuff *@
 @*     private void CancelBtnClick() *@
 @*     { *@
 @*         buttons.Disable(); *@
-@*         NewCollectionName = collection!.name; //Reset to OG *@
+@*         NewCollectionName = collection!.Name; //Reset to OG *@
 @*     } *@
 @* *@
 @*     private void ConfirmBtnClick() *@
 @*     { *@
 @*         buttons.Disable(); *@
 @*         if (NewCollectionName != "") *@
-@*             C.RenameCollection(NewCollectionName, collection!.id); *@
+@*             C.RenameCollection(NewCollectionName, collection!.Id); *@
 @*         else *@
 @*             NewCollectionName = "Please enter a name"; *@
 @*     } *@

@@ -21,11 +21,11 @@
 @* 	<div id="buttons"> *@
 @* 	    <IconButton Icon="info" OnClick="@info.Toggle"/> *@
 @* 		<IconButton Icon="trash" OnClick="@DeleteBtnClick"/> *@
-@* 		<IconButton Icon="@(MediaList[viewIndex].starred ? "star" : "star_outline")" OnClick="@StarBtnClick" Title="@(MediaList[viewIndex].starred ? "Remove Star" : "Add Star")"/> *@
+@* 		<IconButton Icon="@(MediaList[viewIndex].Starred ? "star" : "star_outline")" OnClick="@StarBtnClick" Title="@(MediaList[viewIndex].Starred ? "Remove Star" : "Add Star")"/> *@
 @* *@
-@* 	    @if (Collection is {readOnly: false } && !MediaList[viewIndex].video) *@
+@* 	    @if (Collection is {readOnly: false } && !MediaList[viewIndex].Video) *@
 @* 	    { *@
-@* 	        <IconButton Icon="collections" OnClick="@(() => C.UpdateCollectionCover(Collection.id, MediaList[viewIndex].path))" Title="Use As Collection Cover"/> *@
+@* 	        <IconButton Icon="collections" OnClick="@(() => C.UpdateCollectionCover(Collection.Id, MediaList[viewIndex].Path))" Title="Use As Collection Cover"/> *@
 @* 	    } *@
 @* 	</div> *@
 @* *@
@@ -44,7 +44,7 @@
 @* *@
 @* 			<div class="dataDiv"> *@
 @* 				<svg width="24px" height="24px" class="v1262d JUQOtc Y0p3Ue" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"></path></svg> *@
-@* 				<span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].path)</span> *@
+@* 				<span id="filenameInput">@Path.GetFileName(MediaList[viewIndex].Path)</span> *@
 @* 				<IconButton Icon="edit" OnClick="@editFilename.Enable"/> *@
 @* 			</div> *@
 @* *@
@@ -58,12 +58,12 @@
 @* 				<div id="collectionsIn"> *@
 @* 					@foreach (Collection collection in collectionsIn) *@
 @* 					{ *@
-@* 						<a href="/collection-view/@collection.id"> *@
+@* 						<a href="/collection-view/@collection.Id"> *@
 @* 							<div class="collection"> *@
 @* 								<div class="coverDiv"> *@
-@* 									<img class="cover" src="mm_library/@collection.cover" alt=""> *@
+@* 									<img class="cover" src="mm_library/@collection.Cover" alt=""> *@
 @* 								</div> *@
-@* 								<span title="@collection.name">@collection.name</span> *@
+@* 								<span title="@collection.Name">@collection.Name</span> *@
 @* 							</div> *@
 @* 						</a> *@
 @* 					} *@
@@ -103,13 +103,13 @@
 @* 	    </div> *@
 @* 	} *@
 @* *@
-@* 	@if (!MediaList[viewIndex].video) *@
+@* 	@if (!MediaList[viewIndex].Video) *@
 @* 	{ *@
-@* 	    <div tabindex="0" id="itemDiv"><img src="mm_library/@MediaList[viewIndex].path" alt=""/></div> *@
+@* 	    <div tabindex="0" id="itemDiv"><img src="mm_library/@MediaList[viewIndex].Path" alt=""/></div> *@
 @* 	} *@
 @* 	else *@
 @* 	{ *@
-@* 	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine("mm_library", MediaList[viewIndex].path))" loop autofocus controls autoplay></video></div> *@
+@* 	    <div id="itemDiv"><video src="@(SelectedItem == Guid.Empty ? "" : Path.Combine("mm_library", MediaList[viewIndex].Path))" loop autofocus controls autoplay></video></div> *@
 @* 	} *@
 @* *@
 @* 	$1$ Last item in the List so far so try adding more. If no more content can be added, don't show next button. #1# *@
@@ -135,10 +135,10 @@
 @* 					{ *@
 @* 						int ii = i; *@
 @* 						<div class="thumbnail"> *@
-@* 							@if (MediaList[ii].starred) { <MaterialIcon Icon="star" Class="star-icon"/> } *@
-@*                             @if (MediaList[ii].video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> } *@
-@* 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span> *@
-@* 							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/> *@
+@* 							@if (MediaList[ii].Starred) { <MaterialIcon Icon="star" Class="star-icon"/> } *@
+@*                             @if (MediaList[ii].Video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> } *@
+@* 							<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].Id, mouseEventArgs))" itemid="@i" id="@MediaList[ii].Id" class="material-icons checkbox unchecked">check_circle</span> *@
+@* 							<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].Id, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].Thumbnail" alt="mm_library/@MediaList[ii].Path" loading="lazy"/> *@
 @* 						</div> *@
 @* 						i++; *@
 @* 					} while (i < MediaList.Count && MediaList[i].dateTaken == null); *@
@@ -156,10 +156,10 @@
 @* 						{ *@
 @* 							int ii = i; *@
 @* 							<div class="thumbnail"> *@
-@* 								@if (MediaList[ii].starred) { <MaterialIcon Icon="star" Class="star-icon"/> } *@
-@*                                 @if (MediaList[ii].video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> } *@
-@* 								<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].uuid, mouseEventArgs))" itemid="@i" id="@MediaList[ii].uuid" class="material-icons checkbox unchecked">check_circle</span> *@
-@* 								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].uuid, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].thumbnail" alt="mm_library/@MediaList[ii].path" loading="lazy"/> *@
+@* 								@if (MediaList[ii].Starred) { <MaterialIcon Icon="star" Class="star-icon"/> } *@
+@*                                 @if (MediaList[ii].Video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> } *@
+@* 								<span @onclick="@(mouseEventArgs => CheckClicked(MediaList[ii].Id, mouseEventArgs))" itemid="@i" id="@MediaList[ii].Id" class="material-icons checkbox unchecked">check_circle</span> *@
+@* 								<img @onclick="@(mouseEventArgs => ImgClicked(MediaList[ii].Id, ii, mouseEventArgs))" src="data:image/jpg;base64,@MediaList[ii].Thumbnail" alt="mm_library/@MediaList[ii].Path" loading="lazy"/> *@
 @* 							</div> *@
 @* 							if (i == MediaList.Count) *@
 @* 							{previousDay = UseDateAdded ? MediaList[i - 1].dateAdded.Day : MediaList[i - 1].dateTaken!.Value.Day; *@
@@ -188,7 +188,7 @@
 @* $1$Hotkeys exclusive to viewing a single item.#1# *@
 @* @if (SelectedItem != Guid.Empty) *@
 @* { *@
-@* 	if (!MediaList[viewIndex].video) *@
+@* 	if (!MediaList[viewIndex].Video) *@
 @* 	{ *@
 @* 		<KeyboardShortcuts Left="@ChangeItemLeft" Right="@ChangeItemRight"/> *@
 @* 	} *@
@@ -281,7 +281,7 @@
 @* 			else *@
 @* 			{ *@
 @* 				newDateTaken = MediaList[viewIndex].dateTaken; *@
-@* 				newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].path); *@
+@* 				newFilename = Path.GetFileNameWithoutExtension(MediaList[viewIndex].Path); *@
 @* 				collectionsIn = C.GetCollectionsContaining(SelectedItem); *@
 @* 				itemDescription = MediaList[viewIndex].description; *@
 @* 			} *@
@@ -408,7 +408,7 @@
 @* 		{ *@
 @* 			for (int i = startIndex; i <= endIndex; i++) *@
 @* 			{ *@
-@* 				Guid currentID = MediaList[i].uuid; *@
+@* 				Guid currentID = MediaList[i].Id; *@
 @* 				if (SelectedItems.Contains(currentID)) continue; *@
 @* 				await ToggleCheck(currentID); *@
 @* 			} *@
@@ -452,8 +452,8 @@
 @* *@
 @* 	private void StarBtnClick() *@
 @* 	{ *@
-@* 		MediaList[viewIndex].starred = !MediaList[viewIndex].starred; *@
-@* 		C.UpdateStarred(MediaList[viewIndex].uuid, MediaList[viewIndex].starred); *@
+@* 		MediaList[viewIndex].Starred = !MediaList[viewIndex].Starred; *@
+@* 		C.UpdateStarred(MediaList[viewIndex].Id, MediaList[viewIndex].Starred); *@
 @* 	} *@
 @* *@
 @* 	///Called when description textarea's focus is lost. Updates the item's description, if it's been updated. *@
@@ -471,7 +471,7 @@
 @* 	{ *@
 @* 		if (SelectedItem != Guid.Empty) *@
 @* 		{ *@
-@* 			SelectedItem = MediaList.Count > 0 ? MediaList[viewIndex].uuid : Guid.Empty; *@
+@* 			SelectedItem = MediaList.Count > 0 ? MediaList[viewIndex].Id : Guid.Empty; *@
 @* 			C.MoveToTrash(SelectedItem); *@
 @* 			MediaList.RemoveAt(viewIndex); *@
 @* 		} *@
@@ -480,7 +480,7 @@
 @* 			foreach (Guid item in SelectedItems) *@
 @* 			{ *@
 @* 				C.MoveToTrash(item); *@
-@* 				MediaList.RemoveAll(u => u.uuid == item); *@
+@* 				MediaList.RemoveAll(u => u.Id == item); *@
 @* 			} *@
 @* 		} *@
 @* *@
@@ -499,8 +499,8 @@
 @* 		} *@
 @* 		else if (SelectedItem != Guid.Empty) *@
 @* 		{ *@
-@* 			C.UpdateStarred(SelectedItem, !MediaList[viewIndex].starred); *@
-@* 			MediaList[viewIndex].starred = !MediaList[viewIndex].starred; *@
+@* 			C.UpdateStarred(SelectedItem, !MediaList[viewIndex].Starred); *@
+@* 			MediaList[viewIndex].Starred = !MediaList[viewIndex].Starred; *@
 @* 			StateHasChanged(); *@
 @* 		} *@
 @* 	} *@
@@ -512,8 +512,8 @@
 @* 		StarPrompt.Disable(); *@
 @* *@
 @* 		foreach (MediaRow item in MediaList) *@
-@* 			if (SelectedItems.Contains(item.uuid)) *@
-@* 				item.starred = starred; *@
+@* 			if (SelectedItems.Contains(item.Id)) *@
+@* 				item.Starred = starred; *@
 @* *@
 @* 		ClearChecks(); *@
 @* 	} *@
@@ -532,7 +532,7 @@
 @* 		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}"); *@
 @* 		Directory.CreateDirectory(zipFolderPath); *@
 @* *@
-@* 		foreach (string shortPath in from media in MediaList where SelectedItems.Contains(media.uuid) select media.path) *@
+@* 		foreach (string shortPath in from media in MediaList where SelectedItems.Contains(media.Id) select media.Path) *@
 @* 		{ *@
 @* 			string fullPath = Path.Combine(S.libFolderPath, shortPath); *@
 @* 			string destPath = Path.Combine(zipFolderPath, Path.GetFileName(shortPath)); *@
@@ -586,7 +586,7 @@
 @* @functions { *@
 @* 	private void UpdateDateTaken() *@
 @* 	{ *@
-@* 		if (C.UpdateDateTaken(MediaList[viewIndex].path, newDateTaken)) *@
+@* 		if (C.UpdateDateTaken(MediaList[viewIndex].Path, newDateTaken)) *@
 @* 		{ *@
 @* 			dateEdit.Disable(); *@
 @* 			MediaList[viewIndex].dateTaken = newDateTaken; *@
@@ -601,7 +601,7 @@
 @* 	{ *@
 @* 		GC.Collect(); //Those damn videos always stirring up trouble. *@
 @* 		GC.WaitForPendingFinalizers(); *@
-@* 		string? result = C.RenameFile(MediaList[viewIndex].path, newFilename, Path.GetExtension(MediaList[viewIndex].path), MediaList[viewIndex].dateTaken); *@
+@* 		string? result = C.RenameFile(MediaList[viewIndex].Path, newFilename, Path.GetExtension(MediaList[viewIndex].Path), MediaList[viewIndex].dateTaken); *@
 @* 		if (result == null) *@
 @* 		{ *@
 @* 			filenameError.Enable(); *@
@@ -609,7 +609,7 @@
 @* 		else *@
 @* 		{ *@
 @* 			editFilename.Disable(); *@
-@* 			MediaList[viewIndex].path = result; *@
+@* 			MediaList[viewIndex].Path = result; *@
 @* 		} *@
 @* 	} *@
 @* *@
@@ -622,7 +622,7 @@
 @* 			if (viewIndex == 0) return; *@
 @* 		} *@
 @* 		else viewIndex--; *@
-@* 		SelectedItem = MediaList[viewIndex].uuid; *@
+@* 		SelectedItem = MediaList[viewIndex].Id; *@
 @* 	} *@
 @* *@
 @* 	private void ChangeItemRight() *@
@@ -633,7 +633,7 @@
 @* 			if (AddContentBottom() == 0) return; *@
 @* 		} *@
 @* 		viewIndex++; *@
-@* 		SelectedItem = MediaList[viewIndex].uuid; *@
+@* 		SelectedItem = MediaList[viewIndex].Id; *@
 @* 	} *@
 @* *@
 @* 	///Used with Ctrl G to set the new start date for LCV. Resets LCV to that date. *@

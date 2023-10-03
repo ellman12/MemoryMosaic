@@ -1,13 +1,13 @@
 <div class="thumbnail" @onclick="@(eventArgs => OnClick.Invoke(eventArgs, Index))">
-	@if (Item.starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
-	@if (Item.video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
-	<Checkbox Input="@Parent.SelectedItems.Contains(Item.uuid)" OnChange="@CheckClicked"/>
-	<img src="data:image/jpg;base64,@Item.thumbnail" alt="@Item.path" @onclick="@ImgClicked" loading="lazy"/>
+	@if (Item.Starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
+	@if (Item.Video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
+	<Checkbox Input="@Parent.SelectedItems.Contains(Item.Id)" OnChange="@CheckClicked"/>
+	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="@Item.Path" @onclick="@ImgClicked" loading="lazy"/>
 </div>
 
 @code {
 	[Parameter, EditorRequired]
-	public required MediaRow Item { get; set; }
+	public required LibraryItem Item { get; set; }
 	
 	[Parameter, EditorRequired]
 	public required LibraryContentViewer Parent { get; set; }
@@ -22,10 +22,10 @@
 @functions {
 	private void ToggleSelected()
 	{
-		if (Parent.SelectedItems.Contains(Item.uuid))
-			Parent.SelectedItems.Remove(Item.uuid);
+		if (Parent.SelectedItems.Contains(Item.Id))
+			Parent.SelectedItems.Remove(Item.Id);
 		else
-			Parent.SelectedItems.Add(Item.uuid);
+			Parent.SelectedItems.Add(Item.Id);
 
 		Parent.Rerender();
 	}

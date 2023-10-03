@@ -10,7 +10,7 @@ global using System.Collections.Generic;
 global using System.Threading.Tasks;
 global using MemoryMosaic.Backend;
 global using MemoryMosaic.Backend.Enums;
-global using MemoryMosaic.Backend.Records;
+global using MemoryMosaic.Models;
 global using Microsoft.VisualBasic.FileIO;
 global using C = MemoryMosaic.Backend.Connection;
 global using D = DateTakenExtractor.DateTakenExtractor;

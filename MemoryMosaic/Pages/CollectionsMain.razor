@@ -27,14 +27,14 @@
 <main>
     @foreach (Collection collection in collections)
     {
-        <a href="/collection-view/@collection.id">
+        <a href="/collection-view/@collection.Id">
             <div>
-                @if (!String.IsNullOrWhiteSpace(collection.cover))
+                @if (!String.IsNullOrWhiteSpace(collection.Cover))
                 {
-                    <img src="mm_library/@collection.cover" alt=""/>
+                    <img src="mm_library/@collection.Cover" alt=""/>
                 }
             </div>
-            <span>@collection.name</span>
+            <span>@collection.Name</span>
         </a>
     }
 </main>

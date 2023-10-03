@@ -186,16 +186,16 @@ public static class Connection
     }
 
     ///<summary>Loads every row in the media table, even if has no DT, in a folder, in the trash, etc. Sorted by date_taken descending (NULL and newest DT first).</summary>
-    ///<returns>List&lt;MediaRow&gt; of EVERY row in the media table.</returns>
-    public static List<MediaRow> LoadEntireMediaTable()
+    ///<returns>List&lt;LibraryItem&gt; of EVERY row in the media table.</returns>
+    public static List<LibraryItem> LoadEntireMediaTable()
     {
-        List<MediaRow> media = new();
+        List<LibraryItem> media = new();
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, separate, uuid, thumbnail, description FROM media ORDER BY date_taken DESC", connection);
+            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media ORDER BY date_taken DESC", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) media.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetBoolean(4), r.GetGuid(5), r.GetString(6), r.IsDBNull(7) ? null : r.GetString(7)));
+            while (r.Read()) media.Add(new LibraryItem(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6)));
             r.Close();
         }
         catch (NpgsqlException e)
@@ -213,10 +213,10 @@ public static class Connection
     // ///<summary>Loads every item in media that was taken on this month and day, sorted so newest items appear first.</summary>
     // ///<param name="monthName">The name of the month, automatically converted to a number by LoadMemories().</param>
     // ///<param name="day">The day of the month.</param>
-    // ///<returns>List&lt;MediaRow&gt; of items taken on this month and day.</returns>
-    // public static List<MediaRow> LoadMemories(string monthName, int day)
+    // ///<returns>List&lt;LibraryItem&gt; of items taken on this month and day.</returns>
+    // public static List<LibraryItem> LoadMemories(string monthName, int day)
     // {
-    //     List<MediaRow> memories = new();
+    //     List<LibraryItem> memories = new();
     //     int month = DateTime.ParseExact(monthName, "MMMM", System.Globalization.CultureInfo.CurrentCulture).Month;
     //     string dd = day < 10 ? $"0{day}" : day.ToString();
     //
@@ -225,7 +225,7 @@ public static class Connection
     //         Open();
     //         using NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media WHERE CAST(date_taken as TEXT) LIKE '%{month}-{dd}%' ORDER BY date_taken DESC", connection);
     //         using NpgsqlDataReader r = cmd.ExecuteReader();
-    //         while (r.Read()) memories.Add(new MediaRow(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6)));
+    //         while (r.Read()) memories.Add(new LibraryItem(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6)));
     //     }
     //     catch (NpgsqlException e)
     //     {
@@ -553,7 +553,7 @@ public static class Connection
         
         try
         {
-            await using NpgsqlCommand cmd = new($"UPDATE collections SET readonly = {!collection.readOnly} WHERE id = {collection.id}", localConn);
+            await using NpgsqlCommand cmd = new($"UPDATE collections SET readonly = {!collection.ReadOnly} WHERE id = {collection.Id}", localConn);
             await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)
