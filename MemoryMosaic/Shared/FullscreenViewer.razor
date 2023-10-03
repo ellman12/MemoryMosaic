@@ -1,0 +1,35 @@
+﻿@inherits ToggleableComponent
+
+<div id="fullscreen-viewer">
+	<div id="content">
+		
+		<div class="sideButton">
+			<IconButton Icon="arrow_back_ios"/>
+		</div>
+
+		<div id="item">
+			<img src="mm_library/427520_20230320000602_1.png" alt=""/>
+		</div>
+
+		<div class="sideButton">
+			<IconButton Icon="arrow_forward_ios"/>
+		</div>
+	</div>
+	
+	<div id="info" class="@(infoVisibility.Visible ? "visible" : "hidden")">
+		
+	</div>
+</div>
+
+<KeyboardShortcuts I="@infoVisibility.Toggle"/>
+
+@code {
+
+	private ElementVisibility infoVisibility = new();
+
+	protected override void OnInitialized()
+	{
+		infoVisibility.Rerender = StateHasChanged;
+	}
+
+}
