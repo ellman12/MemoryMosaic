@@ -86,7 +86,7 @@
 					@* <div class="errorDiv"> *@
 						@* @do *@
 						@* { *@
-							@* <ImportItem Index="i" ImportFile="@importFiles[i]"/> *@
+							@* <ImportItemDisplay Index="i" ImportItem="@importFiles[i]"/> *@
 							@* i++; *@
 						@* } while (i < importFiles.Count && importFiles[i - 1].originalFilename == importFiles[i].originalFilename); *@
 						@* @{ i--; } $1$ Kind of stupid but fixes a problem where some items could be skipped. #1# *@
@@ -118,7 +118,7 @@
 
 				@* if (!hasErrors && !hasWarnings) *@
 				@* { *@
-					@* <ImportItem Index="i" ImportFile="@importFiles[i]"/> *@
+					@* <ImportItemDisplay Index="i" ImportItem="@importFiles[i]"/> *@
 					@* continue; *@
 				@* } *@
 
@@ -127,7 +127,7 @@
 						@* @if (hasErrors) *@
 						@* { *@
 							@* hasRendered = true; *@
-							@* <ImportItem Index="i" ImportFile="@importFiles[i]"/> *@
+							@* <ImportItemDisplay Index="i" ImportItem="@importFiles[i]"/> *@
 
 							@* foreach (MediaRow mediaRow in libFilesWithSameName[importFiles[i].originalFilename]) *@
 							@* { *@
@@ -140,7 +140,7 @@
 						@* { *@
 							@* if (!hasRendered) *@
 							@* { *@
-								@* <ImportItem Index="i" ImportFile="@importFiles[i]"/> *@
+								@* <ImportItemDisplay Index="i" ImportItem="@importFiles[i]"/> *@
 							@* } *@
 
 							@* foreach (MediaRow mediaRow in libFilesWithSimilarName[importFiles[i].originalFilename]) *@
@@ -182,7 +182,7 @@
 	@* private static List<string> allAbsPaths = null!; *@
 
 	@* ///List of data about each supported file in mm_import. *@
-	@* public static List<ImportFile> importFiles = null!; *@
+	@* public static List<ImportItem> importFiles = null!; *@
 
 	@* private static readonly LazyDictionary<string, List<MediaRow>> libFilesWithSameName = new(), libFilesWithSimilarName = new(); *@
 
@@ -209,7 +209,7 @@
 		@* L.LogLine($"Begin Import {nameof(OnInitialized)}", LogLevel.Info); *@
 
 		@* allAbsPaths = F.GetSupportedFiles(S.importFolderPath); *@
-		@* importFiles = new List<ImportFile>(allAbsPaths.Count); *@
+		@* importFiles = new List<ImportItem>(allAbsPaths.Count); *@
 		@* libFilesWithSameName.Clear(); *@
 		@* libFilesWithSimilarName.Clear(); *@
 		@* searchResults.Clear(); *@
@@ -218,7 +218,7 @@
 
 		@* Parallel.ForEach(allAbsPaths, (absPath, _) => *@
 		@* { *@
-			@* ImportFile importFile = new(absPath); *@
+			@* ImportItem importFile = new(absPath); *@
 			@* importFiles.Add(importFile); *@
 		@* }); *@
 
@@ -235,7 +235,7 @@
 		@* L.LogLine($"Begin Import {nameof(OrganizeItems)}", LogLevel.Debug); *@
 
 		@* errorAmount = 0; *@
-		@* List<ImportFile> errors = new(), good = new(); *@
+		@* List<ImportItem> errors = new(), good = new(); *@
 		@* libFilesWithSameName.Clear(); *@
 		@* libFilesWithSimilarName.Clear(); *@
 
@@ -310,7 +310,7 @@
 		@* popUp.Enable(); *@
 		@* await InvokeAsync(StateHasChanged); *@
 
-		@* List<ImportFile> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count *@
+		@* List<ImportItem> filesToAdd = selectedItems.Count == 0  || selectedItems.Count == importFiles.Count *@
 			@* ? importFiles : importFiles.Where(file => selectedItems.Contains(file.Id)).ToList(); *@
 
 		@* await Parallel.ForEachAsync(filesToAdd, async (file, _) => *@
@@ -358,7 +358,7 @@
 		@* searchResults.Clear(); *@
 		@* if (String.IsNullOrWhiteSpace(searchText)) return; *@
 
-		@* foreach (ImportFile file in importFiles) *@
+		@* foreach (ImportItem file in importFiles) *@
 		@* { *@
 			@* if (file.renamedFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1 || file.originalFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1) *@
 				@* searchResults.Add(file.Id); *@
@@ -385,7 +385,7 @@
 		@* StateHasChanged(); *@
 	@* } *@
 
-	@* ///Either adds all search results to selectedItems, or adds every ImportFile to selectedItems. *@
+	@* ///Either adds all search results to selectedItems, or adds every ImportItem to selectedItems. *@
 	@* private void SelectAll() *@
 	@* { *@
 		@* if (searchResults.Count > 0) *@
@@ -395,7 +395,7 @@
 		@* } *@
 		@* else *@
 		@* { *@
-			@* foreach (ImportFile file in importFiles) *@
+			@* foreach (ImportItem file in importFiles) *@
 				@* selectedItems.Add(file.Id); *@
 		@* } *@
 		@* StateHasChanged(); *@
@@ -404,10 +404,10 @@
 	@* ///Updates the starred field of the selected items. If all have a star, removes stars from all. If some do and don't have a star, adds stars to the ones that don't. If none have a star, adds stars to all of them. *@
 	@* private void ToggleStars() *@
 	@* { *@
-		@* List<ImportFile> selectedFiles = importFiles.Where(file => selectedItems.Contains(file.Id)).ToList(); *@
+		@* List<ImportItem> selectedFiles = importFiles.Where(file => selectedItems.Contains(file.Id)).ToList(); *@
 		@* bool allStarred = selectedFiles.All(file => file.starred); *@
 
-		@* foreach (ImportFile importFile in selectedFiles) *@
+		@* foreach (ImportItem importFile in selectedFiles) *@
 			@* importFile.starred = !allStarred; *@
 
 		@* StateHasChanged(); *@
@@ -418,7 +418,7 @@
 	@* { *@
 		@* L.LogLine($"Begin {nameof(DeleteSelected)}", LogLevel.Info); *@
 
-		@* foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.Id)).ToList()) *@
+		@* foreach (ImportItem file in importFiles.Where(file => selectedItems.Contains(file.Id)).ToList()) *@
 		@* { *@
 			@* FileSystem.DeleteFile(file.absolutePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); *@
 			@* importFiles.RemoveAll(f => selectedItems.Contains(f.Id)); *@
@@ -433,7 +433,7 @@
 	@* ///Updates the collections field of each selected ImportItem. *@
 	@* private void UpdateCollections() *@
 	@* { *@
-		@* foreach (ImportFile file in importFiles.Where(file => selectedItems.Contains(file.Id))) *@
+		@* foreach (ImportItem file in importFiles.Where(file => selectedItems.Contains(file.Id))) *@
 		@* { *@
 			@* file.collections ??= new HashSet<Collection>(); *@
 
@@ -468,7 +468,7 @@
 		@* StringBuilder fileOutput = new(); *@
 		@* string filePath = Path.Join(S.tmpFolderPath, "Import Items.tmp"); *@
 
-		@* foreach (ImportFile file in importFiles) *@
+		@* foreach (ImportItem file in importFiles) *@
 			@* fileOutput.AppendLine(file.ToTabDelimitedString()); *@
 
 		@* File.WriteAllText(filePath, fileOutput.ToString()); *@
@@ -503,7 +503,7 @@
 		@* StateHasChanged(); //IDK why but this is necessary otherwise the code below doesn't work. *@
 		@* foreach (string line in lines) *@
 		@* { *@
-			@* ImportFile newFile = ImportFile.ParseTabDelimitedString(line); *@
+			@* ImportItem newFile = ImportItem.ParseTabDelimitedString(line); *@
 			@* if (newFile.Id != Guid.Empty) *@
 				@* importFiles.Add(newFile); *@
 		@* } *@
