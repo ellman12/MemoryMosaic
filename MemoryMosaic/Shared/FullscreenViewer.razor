@@ -2,7 +2,7 @@
 
 <div id="fullscreen-viewer">
 	<div id="content">
-		
+
 		<div class="sideButton">
 			<IconButton Icon="arrow_back_ios"/>
 		</div>
@@ -15,15 +15,25 @@
 			<IconButton Icon="arrow_forward_ios"/>
 		</div>
 	</div>
-	
+
 	<div id="info" class="@(infoVisibility.Visible ? "visible" : "hidden")">
-		<div id="infoHeader">
-			<IconButton Icon="close"/>
-			<span>Info</span>
+		<span>Info</span>
+
+		<div title="Date Taken">
+			<MaterialIcon Icon="photo_camera"/>
+			<span>@DateTime.Now</span>
 		</div>
-	
+
+		<div title="Date Added">
+			<MaterialIcon Icon="cloud_upload"/>
+			<span>@DateTime.Now</span>
+		</div>
 		
-		
+		<div title="Date Added">
+        	<MaterialIcon Icon="image"/>
+        	<span>text</span>
+        </div>
+
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description"></textarea>
 	</div>
 </div>
