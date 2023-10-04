@@ -11,10 +11,8 @@
 	background-color: black;
 
 	> #content {
+		@include available-width;
 		position: relative;
-		flex-grow: 2;
-		width: 85%;
-		max-width: 100%;
 		height: 100%;
 		background-color: red;
 
@@ -76,19 +74,49 @@
 	}
 
 	> #info {
-		background-color: #0080ff;
+		@include flex-col;
 		height: 100%;
 		border-left: 2px solid white;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		
 		&.visible {
 			opacity: 1;
-			width: 15%;
+			width: 400px;
 		}
 		
 		&.hidden {
 			opacity: 0;
 			width: 0;
+		}
+		
+		> #infoHeader {
+			@include flex-row;
+			margin-left: 4px;
+			margin-top: 4px;
+			
+			> span {
+				font-size: 18px;
+				margin-left: 4px;
+			}
+		}
+		
+		
+		
+		> textarea {
+			@include available-width;
+			border: 1px solid white;
+			margin: 20px 8px 8px;
+			background-color: black;
+			font-size: 16px;
+			min-height: 1.2em;
+			height: 3em;
+			max-height: 10em;
+			resize: vertical;
+			
+			&:focus {
+				border: 1px solid #0080ff;
+				outline: 1px solid #0080ff;
+			}
 		}
 	}
 }

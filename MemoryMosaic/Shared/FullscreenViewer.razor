@@ -1,4 +1,4 @@
-﻿@inherits ToggleableComponent
+@inherits ToggleableComponent
 
 <div id="fullscreen-viewer">
 	<div id="content">
@@ -8,7 +8,7 @@
 		</div>
 
 		<div id="item">
-			<img src="mm_library/427520_20230320000602_1.png" alt=""/>
+			<img src="mm_library/IMG_20230705_180622.jpg" alt=""/>
 		</div>
 
 		<div class="sideButton">
@@ -17,7 +17,14 @@
 	</div>
 	
 	<div id="info" class="@(infoVisibility.Visible ? "visible" : "hidden")">
+		<div id="infoHeader">
+			<IconButton Icon="close"/>
+			<span>Info</span>
+		</div>
+	
 		
+		
+		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description"></textarea>
 	</div>
 </div>
 
@@ -25,7 +32,7 @@
 
 @code {
 
-	private ElementVisibility infoVisibility = new();
+	private ElementVisibility infoVisibility = new(true);
 
 	protected override void OnInitialized()
 	{
