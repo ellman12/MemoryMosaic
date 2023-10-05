@@ -14,7 +14,6 @@
 		@include available-width;
 		position: relative;
 		height: 100%;
-		background-color: red;
 
 		> .sideButton {
 			position: absolute;
@@ -76,22 +75,17 @@
 	> #info {
 		@include flex-col;
 		height: 100%;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+		width: 400px;
+		padding: 8px;
+		border-left: 2px solid white;
 
 		&.visible {
-			opacity: 1;
-			width: 400px;
-			margin: 0;
-			border-left: 2px solid white;
-			padding: 8px;
+			margin-right: 0;
 		}
 
 		&.hidden {
-			opacity: 0;
-			width: 0;
-			margin: 0;
-			border: 0;
-			padding: 0;
+			margin-right: -418px; //Width of sidebar + (padding * 2) + border-left
 		}
 
 		> span {
