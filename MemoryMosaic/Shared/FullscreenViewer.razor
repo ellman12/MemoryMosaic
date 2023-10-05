@@ -4,51 +4,93 @@
 	<div id="content">
 
 		<div class="sideButton">
-			<IconButton Icon="arrow_back_ios"/>
+			<IconButton Icon="arrow_back_ios" OnClick="@MoveLeft"/>
 		</div>
 
 		<div id="item">
-			<img src="mm_library/427520_20230320000602_1.png" alt=""/>
+			@if (Current.Video)
+			{
+				<video src="mm_library/@Current.Path" loop autofocus controls autoplay preload="auto"></video>
+			}
+			else
+			{
+				<img src="mm_library/@Current.Path" alt=""/>
+			}
 		</div>
 
 		<div class="sideButton">
-			<IconButton Icon="arrow_forward_ios"/>
+			<IconButton Icon="arrow_forward_ios" OnClick="@MoveRight"/>
 		</div>
 	</div>
 
 	<div id="info" class="@(infoVisibility.Visible ? "visible" : "hidden")">
 		<span>Info</span>
 
-		<div title="Date Taken">
-			<MaterialIcon Icon="photo_camera"/>
-			<span>@DateTime.Now</span>
-			<IconButton Icon="edit"/>
-		</div>
+		@if (Current is LibraryItem current)
+		{
+			<div title="Date Taken">
+				<MaterialIcon Icon="photo_camera"/>
+				<span>@FormatDateTaken(current.DateTaken)</span>
+				<IconButton Icon="edit"/>
+			</div>
 
-		<div title="Date Added">
-			<MaterialIcon Icon="cloud_upload"/>
-			<span>@DateTime.Now</span>
-		</div>
+			<div title="Date Added">
+				<MaterialIcon Icon="cloud_upload"/>
+				<span>@FormatDateTaken(current.DateAdded)</span>
+			</div>
+		}
 		
-		<div>
-        	<MaterialIcon Icon="image"/>
-			<span>text</span>
+		<div title="@Path.GetFileName(Current.Path)">
+			<MaterialIcon Icon="image"/>
+			<span>@Path.GetFileName(Current.Path)</span>
 			<IconButton Icon="edit"/>
-        </div>
+		</div>
 
-		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description"></textarea>
+		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description">@Current.Description</textarea>
 	</div>
 </div>
 
-<KeyboardShortcuts I="@infoVisibility.Toggle"/>
+<KeyboardShortcuts I="@infoVisibility.Toggle" Left="@MoveLeft" Right="@MoveRight"/>
 
 @code {
+	[Parameter, EditorRequired]
+	public IReadOnlyList<Media> Content { get; set; } = null!;
+	
+	private List<Media> Casted { get; set; } = null!;
+
+	private Media Current => Casted[Index];
 
 	private ElementVisibility infoVisibility = new(true);
+	
+	private int index = 0;
+	private int Index
+	{
+		get => index;
+		set
+		{
+			if (value < 0 || value > Content.Count) return;
+			index = value;
+			StateHasChanged();
+		}
+	}
 
 	protected override void OnInitialized()
 	{
 		infoVisibility.Rerender = StateHasChanged;
+		Casted = Content.ToList();
+	}
+}
+
+@functions {
+	private string FormatDateTaken(DateTime? dateTaken) => dateTaken == null ? "No Date Taken" : dateTaken.Value.ToString("ddd, MMM d, yyyy hh:mm:ss tt");
+
+	private void MoveLeft()
+	{
+		Index--;
 	}
 
+	private void MoveRight()
+	{
+		Index++;
+	}
 }
