@@ -96,9 +96,10 @@
 
 		> div {
 			@include flex-row;
-			margin-bottom: 24px;
+			height: 50px;
+			margin-bottom: 4px;
 
-			> .material-icons-outlined {
+			> span {
 				margin-right: 12px;
 			}
 		}
