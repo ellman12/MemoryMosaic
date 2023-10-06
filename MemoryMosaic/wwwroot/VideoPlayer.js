@@ -10,6 +10,13 @@ let video; //HTMLVideoElement
 window.onload = async () => {
     await delay(40);
     video = document.getElementsByTagName("video")[0];
-    
-    video.addEventListener('contextmenu', e => e.preventDefault());
+
+    video.addEventListener("contextmenu", e => e.preventDefault());
+
+    video.addEventListener("click", () => {
+        if (video.paused)
+            video.play();
+        else
+            video.pause();
+    });
 }
