@@ -6,16 +6,17 @@ function delay(ms) {
 }
 
 let video; //HTMLVideoElement
+let slider; //HTMLInputElement
+let interval;
 
 window.onload = async () => {
-	await delay(40);
-	video = document.getElementsByTagName("video")[0];
+	await delay(400);
+	video = document.querySelector("video");
+	slider = document.querySelector("input[type='range']");
 
-	video.oncontextmenu = e => e.preventDefault()
+	video.oncontextmenu = e => e.preventDefault();
 
-	video.onclick = () => {
-		togglePlaying()
-	}
+	video.onclick = () => togglePlaying();
 
 	video.onkeydown = e => {
 		console.log(e.key)
@@ -25,7 +26,7 @@ window.onload = async () => {
 			case "k":
 				togglePlaying();
 				break;
-			
+
 			case "ArrowLeft":
 				video.currentTime -= 5;
 				break;
@@ -35,6 +36,17 @@ window.onload = async () => {
 				break;
 		}
 	}
+
+	//Another dumb hack
+	await delay(440);
+	slider.max = video.duration;
+
+	slider.oninput = () => video.currentTime = slider.value;
+
+	video.addEventListener('play', () => interval = setInterval(syncSlider, 50));
+	function syncSlider() { slider.value = video.currentTime; }
+
+	video.addEventListener('pause', () => clearInterval(interval));
 }
 
 function togglePlaying() {
