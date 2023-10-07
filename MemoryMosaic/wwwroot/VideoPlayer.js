@@ -7,12 +7,16 @@ function delay(ms) {
 
 let video; //HTMLVideoElement
 let slider; //HTMLInputElement
+let controls;
+let playButtonIcon;
 let interval;
 
 window.onload = async () => {
 	await delay(400);
 	video = document.querySelector("video");
 	slider = document.querySelector("input[type='range']");
+	controls = document.getElementById("controls");
+	playButtonIcon = controls.firstElementChild.firstElementChild;
 
 	video.oncontextmenu = e => e.preventDefault();
 
@@ -42,16 +46,17 @@ window.onload = async () => {
 	slider.max = video.duration;
 
 	slider.oninput = () => video.currentTime = slider.value;
-
-	video.addEventListener('play', () => interval = setInterval(syncSlider, 50));
-	function syncSlider() { slider.value = video.currentTime; }
-
-	video.addEventListener('pause', () => clearInterval(interval));
 }
 
 function togglePlaying() {
-	if (video.paused)
+	if (video.paused) {
 		video.play();
-	else
+		playButtonIcon.innerHTML = "pause"
+		interval = setInterval(() => slider.value = video.currentTime, 50);
+	}
+	else {
 		video.pause();
+		playButtonIcon.innerHTML = "play_arrow"
+		clearInterval(interval);
+	}
 }

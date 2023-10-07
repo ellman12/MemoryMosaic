@@ -1,10 +1,13 @@
-﻿
+@inject IJSRuntime JSRuntime
+
 <div id="video-player">
 	<video id="video" src="mm_library/VID_20230706_095038.mp4" tabindex="0"></video>
 	
 	<div id="controls">
-		<IconButton Icon="play_arrow"/>
-		<input type="range" min="0" value="0" step="any"/>
+		<IconButton OnClick="@(() => JSRuntime.InvokeVoidAsync("togglePlaying"))" Icon="play_arrow"/>
+		<input type="range" min="0" value="0" step="any" tabindex="-1"/>
+		<IconButton Icon="volume_up"/>
+		<IconButton Icon="fullscreen"/>
 	</div>
 </div>
 

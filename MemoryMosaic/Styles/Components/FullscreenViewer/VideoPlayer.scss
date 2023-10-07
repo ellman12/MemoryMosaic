@@ -9,7 +9,7 @@
 	height: 100%;
 	justify-content: center;
 	align-items: center;
-	background-color: #0080ff;
+	background-color: black;
 
 	video {
 		width: 100%;
@@ -23,5 +23,22 @@
 		//Hide spinning loading icon in Chrome. https://stackoverflow.com/a/62786714
 		&::-webkit-media-controls { visibility: hidden; }
 		&::-webkit-media-controls-enclosure { visibility: visible; }
+	}
+	
+	> #controls {
+		@include flex-row;
+		width: 100%;
+		position: absolute;
+		bottom: 0;
+		background: none;
+		
+		> input[type="range"] {
+			flex-grow: 1;
+		}
+		
+		> * {
+			margin-left: 4px;
+			margin-right: 4px;
+		}
 	}
 }
