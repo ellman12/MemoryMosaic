@@ -10,6 +10,10 @@ let seekSlider; //HTMLInputElement
 let controls;
 let playButtonIcon;
 let fullscreenButtonIcon;
+let volumeIcon;
+let volume = 1;
+let muted = false;
+let volumeSlider;
 let interval;
 
 window.onload = async () => {
@@ -19,6 +23,8 @@ window.onload = async () => {
 	controls = document.getElementById("controls");
 	playButtonIcon = controls.firstElementChild.firstElementChild;
 	fullscreenButtonIcon = controls.lastElementChild.firstElementChild;
+	volumeIcon = document.getElementById("mute-btn").firstElementChild;
+	volumeSlider = document.getElementById("volume-slider");
 
 	video.oncontextmenu = e => e.preventDefault();
 
@@ -44,6 +50,10 @@ window.onload = async () => {
 			case "f":
 				toggleFullscreen();
 				break;
+			
+			case "m":
+				toggleMute();
+				break;
 		}
 	}
 
@@ -52,6 +62,12 @@ window.onload = async () => {
 	seekSlider.max = video.duration;
 
 	seekSlider.oninput = () => video.currentTime = seekSlider.value;
+	
+	volumeSlider.oninput = () => {
+		video.volume = volume = volumeSlider.value;
+		muted = volumeSlider.value <= 0;
+		setVolumeIcon();
+	}
 }
 
 function togglePlaying() {
@@ -87,10 +103,30 @@ function exitFullscreen() {
 }
 
 function toggleFullscreen() {
-	const elem = document.documentElement;
-
 	const isInFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
 	
 	if (isInFullscreen)	exitFullscreen();
 	else enterFullscreen();
+}
+
+function setVolumeIcon() {
+	if (volumeSlider.value <= 0)
+		volumeIcon.innerHTML = "volume_off";
+	else if (volumeSlider.value <= 0.45)
+		volumeIcon.innerHTML = "volume_down";
+	else
+		volumeIcon.innerHTML = "volume_up";
+}
+
+function toggleMute() {
+	muted = !muted;
+	
+	if (muted)
+		video.volume = volumeSlider.value = 0;
+	else if (volume <= 0)
+		video.volume = volume = volumeSlider.value = 1;
+	else
+		video.volume = volumeSlider.value = volume;
+	
+	setVolumeIcon();
 }
