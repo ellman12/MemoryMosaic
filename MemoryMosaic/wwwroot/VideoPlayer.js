@@ -46,6 +46,14 @@ window.onload = async () => {
 			case "ArrowRight":
 				video.currentTime += 5;
 				break;
+				
+			case "j":
+				video.currentTime -= 10;
+				break;
+			
+			case "l":
+				video.currentTime += 10;
+				break;
 
 			case "f":
 				toggleFullscreen();
