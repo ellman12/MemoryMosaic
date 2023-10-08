@@ -54,6 +54,16 @@ window.onload = async () => {
 			case "l":
 				video.currentTime += 10;
 				break;
+			
+			case "ArrowUp":
+				volumeSlider.value = parseFloat(volumeSlider.value) + 0.1;
+				video.volume = volume = volumeSlider.value;
+				break;
+
+			case "ArrowDown":
+				volumeSlider.value = parseFloat(volumeSlider.value) - 0.1;
+				video.volume = volume = volumeSlider.value;
+				break;
 
 			case "f":
 				toggleFullscreen();
