@@ -1,4 +1,4 @@
-﻿//TODO: find a not dumb way to only include this file in VideoPlayer, or LCV/Import.
+//TODO: find a not dumb way to only include this file in VideoPlayer, or LCV/Import.
 
 //Dumb hack to ensure getElementsByTagName() actually finds the video element.
 function delay(ms) {
@@ -9,6 +9,7 @@ let video; //HTMLVideoElement
 let slider; //HTMLInputElement
 let controls;
 let playButtonIcon;
+let fullscreenButtonIcon;
 let interval;
 
 window.onload = async () => {
@@ -17,6 +18,7 @@ window.onload = async () => {
 	slider = document.querySelector("input[type='range']");
 	controls = document.getElementById("controls");
 	playButtonIcon = controls.firstElementChild.firstElementChild;
+	fullscreenButtonIcon = controls.lastElementChild.firstElementChild;
 
 	video.oncontextmenu = e => e.preventDefault();
 
@@ -38,6 +40,10 @@ window.onload = async () => {
 			case "ArrowRight":
 				video.currentTime += 5;
 				break;
+
+			case "f":
+				toggleFullscreen();
+				break;
 		}
 	}
 
@@ -53,10 +59,38 @@ function togglePlaying() {
 		video.play();
 		playButtonIcon.innerHTML = "pause"
 		interval = setInterval(() => slider.value = video.currentTime, 50);
-	}
-	else {
+	} else {
 		video.pause();
 		playButtonIcon.innerHTML = "play_arrow"
 		clearInterval(interval);
 	}
+}
+
+function enterFullscreen() {
+	const elem = document.documentElement;
+
+	if (elem.requestFullscreen)	elem.requestFullscreen();
+	else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+	else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
+	else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+
+	fullscreenButtonIcon.innerHTML = "fullscreen_exit";
+}
+
+function exitFullscreen() {
+	if (document.exitFullscreen) document.exitFullscreen();
+	else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+	else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+	else if (document.msExitFullscreen) document.msExitFullscreen();
+
+	fullscreenButtonIcon.innerHTML = "fullscreen";
+}
+
+function toggleFullscreen() {
+	const elem = document.documentElement;
+
+	const isInFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+	
+	if (isInFullscreen)	exitFullscreen();
+	else enterFullscreen();
 }

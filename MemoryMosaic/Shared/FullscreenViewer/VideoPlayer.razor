@@ -7,7 +7,7 @@
 		<IconButton OnClick="@(() => JSRuntime.InvokeVoidAsync("togglePlaying"))" Icon="play_arrow"/>
 		<input type="range" min="0" value="0" step="any" tabindex="-1"/>
 		<IconButton Icon="volume_up"/>
-		<IconButton Icon="fullscreen"/>
+		<IconButton OnClick="@(() => JSRuntime.InvokeVoidAsync("toggleFullscreen"))" Icon="fullscreen"/>
 	</div>
 </div>
 
