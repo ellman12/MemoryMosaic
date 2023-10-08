@@ -11,10 +11,10 @@
 	align-items: center;
 	background-color: black;
 
-	video {
+	> video {
 		width: 100%;
 		height: 100%;
-		
+
 		&:focus {
 			border: none;
 			outline: none;
@@ -24,21 +24,34 @@
 		&::-webkit-media-controls { visibility: hidden; }
 		&::-webkit-media-controls-enclosure { visibility: visible; }
 	}
-	
+
 	> #controls {
 		@include flex-row;
 		width: 100%;
 		position: absolute;
 		bottom: 0;
 		background: none;
-		
-		> input[type="range"] {
+
+		> #seek-slider {
 			flex-grow: 1;
 		}
-		
+
 		> * {
 			margin-left: 4px;
 			margin-right: 4px;
+		}
+
+		> div {
+			@include flex-row;
+
+			&:hover > #volume-slider {
+				display: inline;
+			}
+
+			> #volume-slider {
+				display: none;
+				width: 100px;
+			}
 		}
 	}
 }

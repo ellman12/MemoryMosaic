@@ -5,8 +5,13 @@
 	
 	<div id="controls">
 		<IconButton OnClick="@(() => JSRuntime.InvokeVoidAsync("togglePlaying"))" Icon="play_arrow"/>
-		<input type="range" min="0" value="0" step="any" tabindex="-1"/>
-		<IconButton Icon="volume_up"/>
+		<input id="seek-slider" type="range" min="0" value="0" step="any" tabindex="-1"/>
+		
+		<div>
+			<IconButton ID="mute-btn" Icon="volume_up"/>
+			<input id="volume-slider" type="range" min="0" max="1" value="1" step="any" tabindex="-1"/>
+		</div>
+		
 		<IconButton OnClick="@(() => JSRuntime.InvokeVoidAsync("toggleFullscreen"))" Icon="fullscreen"/>
 	</div>
 </div>

@@ -6,7 +6,7 @@ function delay(ms) {
 }
 
 let video; //HTMLVideoElement
-let slider; //HTMLInputElement
+let seekSlider; //HTMLInputElement
 let controls;
 let playButtonIcon;
 let fullscreenButtonIcon;
@@ -15,7 +15,7 @@ let interval;
 window.onload = async () => {
 	await delay(400);
 	video = document.querySelector("video");
-	slider = document.querySelector("input[type='range']");
+	seekSlider = document.querySelector("input[type='range']");
 	controls = document.getElementById("controls");
 	playButtonIcon = controls.firstElementChild.firstElementChild;
 	fullscreenButtonIcon = controls.lastElementChild.firstElementChild;
@@ -49,16 +49,16 @@ window.onload = async () => {
 
 	//Another dumb hack
 	await delay(440);
-	slider.max = video.duration;
+	seekSlider.max = video.duration;
 
-	slider.oninput = () => video.currentTime = slider.value;
+	seekSlider.oninput = () => video.currentTime = seekSlider.value;
 }
 
 function togglePlaying() {
 	if (video.paused) {
 		video.play();
 		playButtonIcon.innerHTML = "pause"
-		interval = setInterval(() => slider.value = video.currentTime, 50);
+		interval = setInterval(() => seekSlider.value = video.currentTime, 50);
 	} else {
 		video.pause();
 		playButtonIcon.innerHTML = "play_arrow"
