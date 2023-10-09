@@ -15,6 +15,7 @@ let volume = 1;
 let muted = false;
 let volumeSlider;
 let interval;
+let timeout;
 
 window.onload = async () => {
 	await delay(400);
@@ -99,18 +100,34 @@ window.onload = async () => {
 		muted = volumeSlider.value <= 0;
 		setVolumeIcon();
 	}
+
+	document.onmousemove = () => {
+		showControls();
+		delayHideControls();
+	}
+}
+
+function showControls() {
+	clearTimeout(timeout);
+	controls.style.display = "flex";
+}
+
+function delayHideControls() {
+	timeout = setTimeout(() => controls.style.display = "none", 1500)
 }
 
 function play() {
 	video.play();
 	playButtonIcon.innerHTML = "pause"
 	interval = setInterval(() => seekSlider.value = video.currentTime, 50);
+	delayHideControls();
 }
 
 function pause() {
 	video.pause();
 	playButtonIcon.innerHTML = "play_arrow"
 	clearInterval(interval);
+	showControls();
 }
 
 function togglePlaying() {
