@@ -34,8 +34,6 @@ window.onload = async () => {
 	video.ondblclick = () => toggleFullscreen();
 	
 	video.onkeydown = e => {
-		console.log(e.key)
-
 		switch (e.key) {
 			case " ":
 			case "k":
@@ -77,11 +75,13 @@ window.onload = async () => {
 				break;
 			
 			case "Home":
+				showControls();
 				play();
 				setCurrentTime(0);
 				break;
 				
 			case "End":
+				showControls();
 				pause();
 				setCurrentTime(video.duration);
 				break;
