@@ -40,19 +40,19 @@ window.onload = async () => {
 				break;
 
 			case "ArrowLeft":
-				video.currentTime -= 5;
+				setCurrentTime(video.currentTime -= 5);
 				break;
 
 			case "ArrowRight":
-				video.currentTime += 5;
+				setCurrentTime(video.currentTime += 5);
 				break;
 				
 			case "j":
-				video.currentTime -= 10;
+				setCurrentTime(video.currentTime -= 10);
 				break;
 			
 			case "l":
-				video.currentTime += 10;
+				setCurrentTime(video.currentTime += 10);
 				break;
 			
 			case "ArrowUp":
@@ -72,6 +72,17 @@ window.onload = async () => {
 			case "m":
 				toggleMute();
 				break;
+			
+			case "Home":
+				play();
+				setCurrentTime(0);
+				break;
+				
+			case "End":
+				pause();
+				setCurrentTime(video.duration);
+				break;
+				
 		}
 	}
 
@@ -88,17 +99,26 @@ window.onload = async () => {
 	}
 }
 
-function togglePlaying() {
-	if (video.paused) {
-		video.play();
-		playButtonIcon.innerHTML = "pause"
-		interval = setInterval(() => seekSlider.value = video.currentTime, 50);
-	} else {
-		video.pause();
-		playButtonIcon.innerHTML = "play_arrow"
-		clearInterval(interval);
-	}
+function play() {
+	video.play();
+	playButtonIcon.innerHTML = "pause"
+	interval = setInterval(() => seekSlider.value = video.currentTime, 50);
 }
+
+function pause() {
+	video.pause();
+	playButtonIcon.innerHTML = "play_arrow"
+	clearInterval(interval);
+}
+
+function togglePlaying() {
+	if (video.paused)
+		play();
+	else
+		pause();
+}
+
+function setCurrentTime(value) { seekSlider.value = video.currentTime = value; }
 
 function enterFullscreen() {
 	const elem = document.documentElement;
