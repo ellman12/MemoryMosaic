@@ -1,15 +1,8 @@
 @import "../../Shared";
 
 #video-player {
-	position: absolute;
-	display: flex;
-	left: 0;
-	top: 0;
 	width: 100%;
 	height: 100%;
-	justify-content: center;
-	align-items: center;
-	background-color: black;
 
 	> video {
 		width: 100%;
@@ -31,6 +24,7 @@
 		position: absolute;
 		bottom: 0;
 		background: none;
+		z-index: 999999;
 
 		> #seek-slider {
 			flex-grow: 1;
