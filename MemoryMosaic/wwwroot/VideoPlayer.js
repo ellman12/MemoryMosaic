@@ -78,7 +78,6 @@ window.onload = async () => {
 				pause();
 				setCurrentTime(video.duration);
 				break;
-				
 		}
 	}
 
