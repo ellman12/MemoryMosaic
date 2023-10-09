@@ -30,6 +30,8 @@ window.onload = async () => {
 
 	video.onclick = () => togglePlaying();
 
+	video.ondblclick = () => toggleFullscreen();
+	
 	video.onkeydown = e => {
 		console.log(e.key)
 
