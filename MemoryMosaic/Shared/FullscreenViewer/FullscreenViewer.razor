@@ -4,8 +4,8 @@
 <div id="fullscreen-viewer">
 	<div id="content">
 
-		<div class="sideButton">
-			<IconButton Icon="arrow_back_ios" OnClick="@MoveLeft"/>
+		<div class="sideButton" @onclick="@MoveLeft">
+			<IconButton Icon="arrow_back_ios"/>
 		</div>
 
 		<div id="item">
@@ -20,8 +20,8 @@
 			}
 		</div>
 
-		<div class="sideButton">
-			<IconButton Icon="arrow_forward_ios" OnClick="@MoveRight"/>
+		<div class="sideButton" @onclick="@MoveRight">
+			<IconButton Icon="arrow_forward_ios"/>
 		</div>
 	</div>
 
