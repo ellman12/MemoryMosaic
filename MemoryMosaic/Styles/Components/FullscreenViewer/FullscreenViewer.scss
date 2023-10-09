@@ -17,9 +17,9 @@
 
 		> .sideButton {
 			position: absolute;
-			width: 25%;
-			height: 100%;
-			top: 0;
+			width: 20%;
+			top: 80px;
+			bottom: 80px;
 			z-index: 99999;
 
 			&:hover {
