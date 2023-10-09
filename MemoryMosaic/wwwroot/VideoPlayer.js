@@ -27,6 +27,10 @@ async function initializeVideo() {
 
 	seekSlider.max = video.duration;
 
+	initializeEvents();
+}
+
+function initializeEvents() {
 	video.onplaying = () => playButtonIcon.innerHTML = "pause";
 	video.onpause = () => playButtonIcon.innerHTML = "play_arrow";
 
@@ -35,7 +39,7 @@ async function initializeVideo() {
 	video.onclick = () => togglePlaying();
 
 	video.ondblclick = () => toggleFullscreen();
-	
+
 	video.onkeydown = e => {
 		switch (e.key) {
 			case " ":
@@ -50,15 +54,15 @@ async function initializeVideo() {
 			case "ArrowRight":
 				setCurrentTime(video.currentTime += 5);
 				break;
-				
+
 			case "j":
 				setCurrentTime(video.currentTime -= 10);
 				break;
-			
+
 			case "l":
 				setCurrentTime(video.currentTime += 10);
 				break;
-			
+
 			case "ArrowUp":
 				volumeSlider.value = parseFloat(volumeSlider.value) + 0.1;
 				video.volume = volume = volumeSlider.value;
@@ -72,17 +76,17 @@ async function initializeVideo() {
 			case "f":
 				toggleFullscreen();
 				break;
-			
+
 			case "m":
 				toggleMute();
 				break;
-			
+
 			case "Home":
 				showControls();
 				play();
 				setCurrentTime(0);
 				break;
-				
+
 			case "End":
 				showControls();
 				pause();
@@ -92,7 +96,7 @@ async function initializeVideo() {
 	}
 
 	seekSlider.oninput = () => video.currentTime = seekSlider.value;
-	
+
 	volumeSlider.oninput = () => {
 		video.volume = volume = volumeSlider.value;
 		muted = volumeSlider.value <= 0;
