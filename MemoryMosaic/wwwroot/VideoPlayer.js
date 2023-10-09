@@ -10,8 +10,9 @@ let volumeSlider;
 let interval;
 let timeout;
 
-window.onload = async () => {
-	await delay(400);
+async function initializeVideo() {
+	await delay(500);
+	
 	video = document.querySelector("video");
 	seekSlider = document.querySelector("input[type='range']");
 	controls = document.getElementById("controls");
@@ -19,6 +20,15 @@ window.onload = async () => {
 	fullscreenButtonIcon = controls.lastElementChild.firstElementChild;
 	volumeIcon = document.getElementById("mute-btn").firstElementChild;
 	volumeSlider = document.getElementById("volume-slider");
+	
+	playButtonIcon.innerHTML = "pause";
+	clearInterval(interval);
+	interval = setInterval(() => seekSlider.value = video.currentTime, 5);
+
+	seekSlider.max = video.duration;
+
+	video.onplaying = () => playButtonIcon.innerHTML = "pause";
+	video.onpause = () => playButtonIcon.innerHTML = "play_arrow";
 
 	video.oncontextmenu = e => e.preventDefault();
 
@@ -81,10 +91,6 @@ window.onload = async () => {
 		}
 	}
 
-	//Another dumb hack
-	await delay(440);
-	seekSlider.max = video.duration;
-
 	seekSlider.oninput = () => video.currentTime = seekSlider.value;
 	
 	volumeSlider.oninput = () => {
@@ -104,6 +110,15 @@ function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function pathChanged() {
+	seekSlider.value = 0;
+	video.currentTime = 0;
+	seekSlider.max = parseFloat(video.duration);
+	await delay(400);
+	seekSlider.max = parseFloat(video.duration);
+	play();
+}
+
 function showControls() {
 	clearTimeout(timeout);
 	controls.style.display = "flex";
@@ -116,7 +131,6 @@ function delayHideControls() {
 function play() {
 	video.play();
 	playButtonIcon.innerHTML = "pause"
-	interval = setInterval(() => seekSlider.value = video.currentTime, 50);
 	delayHideControls();
 }
 

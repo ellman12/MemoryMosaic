@@ -1,3 +1,4 @@
+@inject IJSRuntime JSRuntime
 @inherits ToggleableComponent
 
 <div id="fullscreen-viewer">
@@ -10,7 +11,8 @@
 		<div id="item">
 			@if (Current.Video)
 			{
-				<video src="mm_library/@Current.Path" loop autofocus controls autoplay preload="auto"></video>
+				string path = $"{(Current is LibraryItem ? "mm_library/" : "mm_import/")}{Current.Path}";
+				<VideoPlayer Path="@path"/>
 			}
 			else
 			{
@@ -50,7 +52,12 @@
 	</div>
 </div>
 
-<KeyboardShortcuts I="@infoVisibility.Toggle" Left="@MoveLeft" Right="@MoveRight"/>
+@if (!Current.Video)
+{
+	<KeyboardShortcuts Left="@MoveLeft" Right="@MoveRight"/>
+}
+
+<KeyboardShortcuts I="@infoVisibility.Toggle"/>
 
 @code {
 	[Parameter, EditorRequired]
@@ -60,9 +67,9 @@
 
 	private Media Current => Casted[Index];
 
-	private ElementVisibility infoVisibility = new(true);
+	private ElementVisibility infoVisibility = new();
 	
-	private int index = 0;
+	private int index;
 	private int Index
 	{
 		get => index;
@@ -71,6 +78,12 @@
 			if (value < 0 || value > Content.Count) return;
 			index = value;
 			StateHasChanged();
+
+			if (Current.Video)
+			{
+				JSRuntime.InvokeVoidAsync("initializeVideo");
+				JSRuntime.InvokeVoidAsync("pathChanged");
+			}
 		}
 	}
 
@@ -78,6 +91,7 @@
 	{
 		infoVisibility.Rerender = StateHasChanged;
 		Casted = Content.ToList();
+		Index = 0;
 	}
 }
 

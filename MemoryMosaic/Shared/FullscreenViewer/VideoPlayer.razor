@@ -1,10 +1,10 @@
 @inject IJSRuntime JSRuntime
 
 <div id="video-player">
-	<video id="video" src="@Path" tabindex="0"></video>
+	<video id="video" src="@Path" tabindex="0" loop autoplay></video>
 	
 	<div id="controls">
-		<IconButton OnClick="@(() => JSRuntime.InvokeVoidAsync("togglePlaying"))" Icon="play_arrow"/>
+		<IconButton OnClick="@(() => JSRuntime.InvokeVoidAsync("togglePlaying"))" Icon="pause"/>
 		<input id="seek-slider" type="range" min="0" value="0" step="any" tabindex="-1"/>
 		
 		<div>
