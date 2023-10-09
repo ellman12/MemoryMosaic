@@ -1,10 +1,3 @@
-//TODO: find a not dumb way to only include this file in VideoPlayer, or LCV/Import.
-
-//Dumb hack to ensure getElementsByTagName() actually finds the video element.
-function delay(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 let video; //HTMLVideoElement
 let seekSlider; //HTMLInputElement
 let controls;
@@ -105,6 +98,11 @@ window.onload = async () => {
 		showControls();
 		delayHideControls();
 	}
+}
+
+//Dumb hack to ensure getElementsByTagName() actually finds the video element.
+function delay(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function showControls() {
