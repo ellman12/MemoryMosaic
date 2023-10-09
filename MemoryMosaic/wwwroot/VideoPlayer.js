@@ -7,8 +7,8 @@ let volumeIcon;
 let volume = 1;
 let muted = false;
 let volumeSlider;
-let interval;
-let timeout;
+let seekSliderInterval;
+let hideControlsTimeout;
 
 async function initializeVideo() {
 	await delay(500);
@@ -22,8 +22,8 @@ async function initializeVideo() {
 	volumeSlider = document.getElementById("volume-slider");
 	
 	playButtonIcon.innerHTML = "pause";
-	clearInterval(interval);
-	interval = setInterval(() => seekSlider.value = video.currentTime, 5);
+	clearInterval(seekSliderInterval);
+	seekSliderInterval = setInterval(() => seekSlider.value = video.currentTime, 5);
 
 	seekSlider.max = video.duration;
 
@@ -115,12 +115,12 @@ function delay(ms) {
 }
 
 function showControls() {
-	clearTimeout(timeout);
+	clearTimeout(hideControlsTimeout);
 	controls.style.display = "flex";
 }
 
 function delayHideControls() {
-	timeout = setTimeout(() => controls.style.display = "none", 1500)
+	hideControlsTimeout = setTimeout(() => controls.style.display = "none", 1500)
 }
 
 function play() {
@@ -132,7 +132,7 @@ function play() {
 function pause() {
 	video.pause();
 	playButtonIcon.innerHTML = "play_arrow"
-	clearInterval(interval);
+	clearInterval(seekSliderInterval);
 	showControls();
 }
 
