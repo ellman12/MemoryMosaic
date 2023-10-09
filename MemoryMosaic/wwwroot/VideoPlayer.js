@@ -114,15 +114,6 @@ function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function pathChanged() {
-	seekSlider.value = 0;
-	video.currentTime = 0;
-	seekSlider.max = parseFloat(video.duration);
-	await delay(400);
-	seekSlider.max = parseFloat(video.duration);
-	play();
-}
-
 function showControls() {
 	clearTimeout(timeout);
 	controls.style.display = "flex";
