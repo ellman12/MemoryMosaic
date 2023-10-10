@@ -34,10 +34,23 @@
 			margin-left: 4px;
 			margin-right: 4px;
 		}
-
+		
 		> div {
 			@include flex-row;
+		}
+		
+		> #time {
+			margin-left: 0;
+			margin-right: 0;
+			
+			> span { text-align: center; }
+			
+			> span:nth-of-type(2) { margin: 0; }
+			
+			> #currentTime, > #duration { width: 40px; }
+		}
 
+		> #volume {
 			&:hover > #volume-slider {
 				display: inline;
 			}

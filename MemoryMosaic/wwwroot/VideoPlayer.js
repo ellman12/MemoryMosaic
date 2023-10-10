@@ -7,6 +7,7 @@ let volumeIcon;
 let volume = 1;
 let muted = false;
 let volumeSlider;
+let currentTimeSpan, durationSpan;
 let info, previousInfoDisplay;
 let seekSliderInterval;
 let hideControlsTimeout;
@@ -22,18 +23,24 @@ async function initializeVideo() {
 	volumeIcon = document.getElementById("mute-btn").firstElementChild;
 	volumeSlider = document.getElementById("volume-slider");
 	info = document.getElementById("info");
+	currentTimeSpan = document.getElementById("currentTime");
+	durationSpan = document.getElementById("duration");
 	previousInfoDisplay = "";
 	
 	playButtonIcon.innerHTML = "pause";
-	clearInterval(seekSliderInterval);
-	seekSliderInterval = setInterval(() => seekSlider.value = video.currentTime, 5);
 
 	seekSlider.max = video.duration;
+	
+	currentTimeSpan.innerHTML = formatSeconds(0);
+	durationSpan.innerHTML = formatSeconds(video.duration);
 
 	initializeEvents();
 }
 
 function initializeEvents() {
+	clearInterval(seekSliderInterval);
+	seekSliderInterval = setInterval(() => { seekSlider.value = video.currentTime; currentTimeSpan.innerHTML = formatSeconds(video.currentTime); }, 5);
+	
 	video.onplaying = () => playButtonIcon.innerHTML = "pause";
 	video.onpause = () => playButtonIcon.innerHTML = "play_arrow";
 
@@ -122,6 +129,16 @@ function initializeEvents() {
 //Dumb hack to ensure getElementsByTagName() actually finds the video element.
 function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function formatSeconds(seconds) {
+	let minutes = Math.floor(seconds / 60);
+	let remainingSeconds = Math.round(seconds % 60);
+
+	let formattedMinutes = String(minutes).padStart(1, '0');
+	let formattedSeconds = String(remainingSeconds).padStart(2, '0');
+
+	return `${formattedMinutes}:${formattedSeconds}`;
 }
 
 function showControls() {
