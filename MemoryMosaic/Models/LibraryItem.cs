@@ -20,4 +20,6 @@ public class LibraryItem : Media
 		Description = description;
 		Video = F.SupportedVideoExts.Contains(System.IO.Path.GetExtension(Path).ToLower());
 	}
+
+	public override string RequestPath => "mm_library";
 }

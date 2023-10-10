@@ -11,12 +11,12 @@
 		<div id="item">
 			@if (Current.Video)
 			{
-				string path = $"{(Current is LibraryItem ? "mm_library/" : "mm_import/")}{Current.Path}";
+				string path = $"{Current.RequestPath}/{Current.Path}";
 				<VideoPlayer Path="@path"/>
 			}
 			else
 			{
-				<img src="mm_library/@Current.Path" alt=""/>
+				<img src="@Current.RequestPath/@Current.Path" alt=""/>
 			}
 		</div>
 
