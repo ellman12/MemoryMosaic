@@ -30,7 +30,7 @@
 			flex-grow: 1;
 		}
 
-		> * {
+		*:not(div) {
 			margin-left: 4px;
 			margin-right: 4px;
 		}
