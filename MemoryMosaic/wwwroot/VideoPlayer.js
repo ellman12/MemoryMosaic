@@ -7,6 +7,7 @@ let volumeIcon;
 let volume = 1;
 let muted = false;
 let volumeSlider;
+let info, previousInfoDisplay;
 let seekSliderInterval;
 let hideControlsTimeout;
 
@@ -20,6 +21,8 @@ async function initializeVideo() {
 	fullscreenButtonIcon = controls.lastElementChild.firstElementChild;
 	volumeIcon = document.getElementById("mute-btn").firstElementChild;
 	volumeSlider = document.getElementById("volume-slider");
+	info = document.getElementById("info");
+	previousInfoDisplay = "";
 	
 	playButtonIcon.innerHTML = "pause";
 	clearInterval(seekSliderInterval);
@@ -147,6 +150,9 @@ function setCurrentTime(value) { seekSlider.value = video.currentTime = value; }
 
 function enterFullscreen() {
 	const elem = document.documentElement;
+	
+	previousInfoDisplay = info.style.display;
+	info.style.display = "none";
 
 	if (elem.requestFullscreen)	elem.requestFullscreen();
 	else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
@@ -157,6 +163,9 @@ function enterFullscreen() {
 }
 
 function exitFullscreen() {
+
+	info.style.display = previousInfoDisplay;
+	
 	if (document.exitFullscreen) document.exitFullscreen();
 	else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
 	else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
