@@ -43,6 +43,13 @@ function initializeEvents() {
 
 	video.ondblclick = () => toggleFullscreen();
 
+	document.onfullscreenchange = () => {
+		if (document.fullscreenElement)
+			fullscreenButtonIcon.innerHTML = "fullscreen_exit";
+		else
+			fullscreenButtonIcon.innerHTML = "fullscreen";
+	};
+
 	video.onkeydown = e => {
 		switch (e.key) {
 			case " ":
@@ -158,8 +165,6 @@ function enterFullscreen() {
 	else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
 	else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
 	else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
-
-	fullscreenButtonIcon.innerHTML = "fullscreen_exit";
 }
 
 function exitFullscreen() {
@@ -170,8 +175,6 @@ function exitFullscreen() {
 	else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
 	else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
 	else if (document.msExitFullscreen) document.msExitFullscreen();
-
-	fullscreenButtonIcon.innerHTML = "fullscreen";
 }
 
 function toggleFullscreen() {
