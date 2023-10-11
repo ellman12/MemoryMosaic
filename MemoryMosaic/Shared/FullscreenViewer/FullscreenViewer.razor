@@ -6,7 +6,7 @@
 		<div id="buttons">
 			<IconButton Icon="info" OnClick="@infoVisibility.Toggle"/>
 			<IconButton Icon="collections"/>
-			<IconButton Icon="star"/>
+			<IconButton Icon="@(Current.Starred ? "star" : "star_outline")" OnClick="@UpdateStarred"/>
 			<IconButton Icon="edit"/>
 			<IconButton Icon="restore"/>
 			<IconButton Icon="trash"/>
@@ -111,5 +111,12 @@
 	private void MoveRight()
 	{
 		Index++;
+	}
+
+	private void UpdateStarred()
+	{
+		C.UpdateStarred(Current.Id, !Current.Starred);
+		Current.Starred = !Current.Starred;
+		StateHasChanged();
 	}
 }
