@@ -1,5 +1,6 @@
 @inject IJSRuntime JSRuntime
 @inherits ToggleableComponent
+@typeparam T where T : Media
 
 <div id="fullscreen-viewer">
 	<div id="content">
@@ -69,11 +70,9 @@
 
 @code {
 	[Parameter, EditorRequired]
-	public IReadOnlyList<Media> Content { get; set; } = null!;
+	public List<T> Content { get; set; } = null!;
 	
-	private List<Media> Casted { get; set; } = null!;
-
-	private Media Current => Casted[Index];
+	private T Current => Content[Index];
 
 	private ElementVisibility infoVisibility = new();
 	
@@ -95,7 +94,6 @@
 	protected override void OnInitialized()
 	{
 		infoVisibility.Rerender = StateHasChanged;
-		Casted = Content.ToList();
 		Index = 0;
 	}
 }

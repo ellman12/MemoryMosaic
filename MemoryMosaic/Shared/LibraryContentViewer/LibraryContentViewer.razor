@@ -99,7 +99,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
 
-<FullscreenViewer @ref="@fv" Content="@Content"/>
+<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content"/>
 
 <CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
 
@@ -220,7 +220,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private CollectionSelector cs = null!;
 
-	private FullscreenViewer fv = null!;
+	private FullscreenViewer<LibraryItem> fv = null!;
 	
 	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
 	
