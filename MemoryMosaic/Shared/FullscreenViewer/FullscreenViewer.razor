@@ -3,7 +3,15 @@
 
 <div id="fullscreen-viewer">
 	<div id="content">
-
+		<div id="buttons">
+			<IconButton Icon="info" OnClick="@infoVisibility.Toggle"/>
+			<IconButton Icon="collections"/>
+			<IconButton Icon="star"/>
+			<IconButton Icon="edit"/>
+			<IconButton Icon="restore"/>
+			<IconButton Icon="trash"/>
+		</div>
+		
 		<div class="sideButton" @onclick="@MoveLeft">
 			<IconButton Icon="arrow_back_ios"/>
 		</div>

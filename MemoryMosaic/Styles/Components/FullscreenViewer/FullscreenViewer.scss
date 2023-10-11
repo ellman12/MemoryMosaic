@@ -14,7 +14,16 @@
 		@include available-width;
 		position: relative;
 		height: 100%;
-
+		
+		> #buttons {
+			@include flex-row;
+			position: absolute;
+			top: 4px;
+			right: 20px;
+			gap: 4px;
+			z-index: 99999;
+		}
+		
 		> .sideButton {
 			position: absolute;
 			width: 20%;
