@@ -44,8 +44,6 @@ Items can be selected, and depending on the page, different options may be appli
 	</div>
 </header>
 
-<FullscreenViewer Content="@Content"/>
-
 <main>
 	<div class="load-div" style="@topLoader.Visibility.Style" @onmouseover="@topLoader.AddContent" @onscroll="@topLoader.AddContent"></div>
 	
@@ -100,6 +98,8 @@ Items can be selected, and depending on the page, different options may be appli
 	}
 	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
+
+<FullscreenViewer @ref="@fv" Content="@Content"/>
 
 <CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
 
@@ -217,8 +217,10 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	public HashSet<Guid> SelectedItems { get; private set; } = new();
 	private int lastCheckedIndex;
-	
+
 	private CollectionSelector cs = null!;
+
+	private FullscreenViewer fv = null!;
 	
 	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
 	
