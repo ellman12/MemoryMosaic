@@ -71,6 +71,9 @@
 @code {
 	[Parameter, EditorRequired]
 	public List<T> Content { get; set; } = null!;
+
+	[Parameter] public ContentLoader? TopLoader { get; set; }
+	[Parameter] public ContentLoader? BottomLoader { get; set; }
 	
 	private T Current => Content[Index];
 
@@ -94,7 +97,6 @@
 	protected override void OnInitialized()
 	{
 		infoVisibility.Rerender = StateHasChanged;
-		Index = 0;
 	}
 }
 
@@ -103,11 +105,17 @@
 
 	private void MoveLeft()
 	{
+		if (Index == 0 && (bool) TopLoader?.HasMoreRows)
+			TopLoader.AddContent();
+		
 		Index--;
 	}
 
 	private void MoveRight()
 	{
+		if (Index == Content.Count - 1 && (bool) BottomLoader?.HasMoreRows)
+			BottomLoader.AddContent();
+
 		Index++;
 	}
 
