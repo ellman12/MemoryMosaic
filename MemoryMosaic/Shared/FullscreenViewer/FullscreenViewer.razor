@@ -2,7 +2,7 @@
 @inherits ToggleableComponent
 @typeparam T where T : Media
 
-<div id="fullscreen-viewer">
+<div id="fullscreen-viewer" style="display: @(Visibility.Visible ? "flex" : "none")">
 	<div id="content">
 		<div id="buttons">
 			<IconButton Icon="info" OnClick="@infoVisibility.Toggle"/>
@@ -66,7 +66,7 @@
 	<KeyboardShortcuts Left="@MoveLeft" Right="@MoveRight"/>
 }
 
-<KeyboardShortcuts I="@infoVisibility.Toggle"/>
+<KeyboardShortcuts Esc="@Disable" I="@infoVisibility.Toggle"/>
 
 @code {
 	[Parameter, EditorRequired]
