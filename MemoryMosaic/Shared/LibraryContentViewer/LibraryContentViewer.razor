@@ -310,8 +310,13 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		if (eventArgs.ShiftKey)
 			ChangeRangeState(lastCheckedIndex, index, true);
-		else
+		else if (SelectedItems.Count > 0)
 			lastCheckedIndex = index;
+		else
+		{
+			fv.Index = index;
+			fv.Enable();
+		}
 	}
 	
 	private void ClearChecks()
