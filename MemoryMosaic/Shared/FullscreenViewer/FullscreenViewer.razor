@@ -13,9 +13,10 @@
 			<IconButton Icon="trash"/>
 		</div>
 		
-		<div class="sideButton" @onclick="@MoveLeft">
-			<IconButton Icon="arrow_back_ios"/>
-		</div>
+		@if (Index > 0 || (bool) TopLoader?.HasMoreRows)
+		{
+			<div class="sideButton" @onclick="@MoveLeft"><IconButton Icon="arrow_back_ios"/></div>
+		}
 
 		<div id="item">
 			@if (Current.Video)
@@ -107,7 +108,7 @@
 	private void MoveLeft()
 	{
 		if (Index == 0 && (bool) TopLoader?.HasMoreRows)
-			TopLoader.AddContent();
+			Index += TopLoader.AddContent(100);
 		
 		Index--;
 	}
