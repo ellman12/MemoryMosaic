@@ -29,9 +29,10 @@
 			}
 		</div>
 
-		<div class="sideButton" @onclick="@MoveRight">
-			<IconButton Icon="arrow_forward_ios"/>
-		</div>
+		@if (Index < Content.Count - 1)
+		{
+			<div class="sideButton" @onclick="@MoveRight"><IconButton Icon="arrow_forward_ios"/></div>
+		}
 	</div>
 
 	<div id="info" class="@(infoVisibility.Visible ? "visible" : "hidden")">

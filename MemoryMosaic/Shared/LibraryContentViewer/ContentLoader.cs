@@ -72,7 +72,7 @@ public sealed class ContentLoader
 			rowsAdded++;
 		}
 
-		if (rowsAdded < readLimit)
+		if (!reader.IsOnRow)
 		{
 			HasMoreRows = false;
 			Visibility.Disable();
