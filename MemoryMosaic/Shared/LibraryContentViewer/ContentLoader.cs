@@ -54,9 +54,9 @@ public sealed class ContentLoader
 
 	public void AddContent() => AddContent(100);
 
-	public void AddContent(int readLimit)
+	public int AddContent(int readLimit)
 	{
-		if (!HasMoreRows) return;
+		if (!HasMoreRows) return 0;
 		
 		int rowsAdded = 0;
 
@@ -78,5 +78,6 @@ public sealed class ContentLoader
 			Visibility.Disable();
 		}
 		LCV.Rerender();
+		return rowsAdded;
 	}
 }
