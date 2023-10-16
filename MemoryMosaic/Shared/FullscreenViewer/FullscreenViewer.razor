@@ -103,7 +103,7 @@
 }
 
 @functions {
-	private string FormatDateTaken(DateTime? dateTaken) => dateTaken == null ? "No Date Taken" : dateTaken.Value.ToString("ddd, MMM d, yyyy hh:mm:ss tt");
+	private static string FormatDateTaken(DateTime? dateTaken) => dateTaken == null ? "No Date Taken" : dateTaken.Value.ToString("ddd, MMM d, yyyy hh:mm:ss tt");
 
 	private void MoveLeft()
 	{
