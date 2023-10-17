@@ -11,7 +11,12 @@
 			<IconButton Icon="collections"/>
 			<IconButton Icon="@(Current.Starred ? "star" : "star_outline")" OnClick="@UpdateStarred"/>
 			<IconButton Icon="edit"/>
-			<IconButton Icon="restore"/>
+			
+			@if (TrashPage)
+			{
+				<IconButton Icon="restore"/>
+			}
+			
 			<IconButton Icon="trash"/>
 		</div>
 
@@ -78,6 +83,8 @@
 
 	[Parameter] public ContentLoader? TopLoader { get; set; }
 	[Parameter] public ContentLoader? BottomLoader { get; set; }
+	
+	[Parameter] public bool TrashPage { get; set; }
 	
 	private T Current => Content[Index];
 

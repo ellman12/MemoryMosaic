@@ -99,7 +99,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
 
-<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" TopLoader="@topLoader" BottomLoader="@bottomLoader"/>
+<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" TopLoader="@topLoader" BottomLoader="@bottomLoader" TrashPage="@TrashPage"/>
 
 <CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
 
