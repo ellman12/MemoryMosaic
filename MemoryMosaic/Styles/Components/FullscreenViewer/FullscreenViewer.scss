@@ -17,9 +17,13 @@
 		
 		> #backButton {
 			position: absolute;
+			opacity: 0;
 			top: 4px;
 			left: 10px;
 			z-index: 99999;
+			transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+			
+			&:hover { opacity: 1; }
 		}
 		
 		> #buttons {
