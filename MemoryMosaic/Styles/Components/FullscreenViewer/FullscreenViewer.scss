@@ -15,6 +15,13 @@
 		position: relative;
 		height: 100%;
 		
+		> #backButton {
+			position: absolute;
+			top: 4px;
+			left: 10px;
+			z-index: 99999;
+		}
+		
 		> #buttons {
 			@include flex-row;
 			position: absolute;

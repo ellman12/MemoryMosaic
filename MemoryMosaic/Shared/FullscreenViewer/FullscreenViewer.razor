@@ -4,6 +4,8 @@
 
 <div id="fullscreen-viewer" style="display: @(Visibility.Visible ? "flex" : "none")">
 	<div id="content">
+		<IconButton ID="backButton" Icon="arrow_back" OnClick="@Disable"/>
+		
 		<div id="buttons">
 			<IconButton Icon="info" OnClick="@infoVisibility.Toggle"/>
 			<IconButton Icon="collections"/>
@@ -12,7 +14,7 @@
 			<IconButton Icon="restore"/>
 			<IconButton Icon="trash"/>
 		</div>
-		
+
 		@if (Index > 0 || (bool) TopLoader?.HasMoreRows)
 		{
 			<div class="sideButton" @onclick="@MoveLeft"><IconButton Icon="arrow_back_ios"/></div>
