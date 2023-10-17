@@ -12,6 +12,25 @@ let info, previousInfoDisplay;
 let seekSliderInterval;
 let hideControlsTimeout;
 
+function cleanupVideo() {
+	video.src = "";
+	video.muted = true;
+	video.disable();
+
+	clearInterval(seekSliderInterval);
+
+	video.onplaying = null;
+	video.onpause = null;
+	video.oncontextmenu = null;
+	video.onclick = null;
+	video.ondblclick = null;
+	document.onfullscreenchange = null;
+	video.onkeydown = null;
+	seekSlider.oninput = null;
+	volumeSlider.oninput = null;
+	document.onmousemove = null;
+}
+
 async function initializeVideo() {
 	await delay(500);
 	

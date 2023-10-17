@@ -2,7 +2,7 @@
 @inherits ToggleableComponent
 @typeparam T where T : Media
 
-<div id="fullscreen-viewer" style="display: @(Visibility.Visible ? "flex" : "none")">
+<div id="fullscreen-viewer" style="@Visibility.Style">
 	<div id="content">
 		<IconButton ID="backButton" Icon="arrow_back" OnClick="@Disable"/>
 		
@@ -21,7 +21,7 @@
 		}
 
 		<div id="item">
-			@if (Current.Video)
+			@if (Current.Video && Visibility.Visible)
 			{
 				string path = $"{Current.RequestPath}/{Current.Path}";
 				<VideoPlayer Path="@path"/>
@@ -93,8 +93,7 @@
 			index = value;
 			StateHasChanged();
 
-			if (Current.Video)
-				JSRuntime.InvokeVoidAsync("initializeVideo");
+			JSRuntime.InvokeVoidAsync(Current.Video ? "initializeVideo" : "cleanupVideo");
 		}
 	}
 
