@@ -44,6 +44,11 @@
 
 	<div id="info" class="@(infoVisibility.Visible ? "visible" : "hidden")">
 		<span>Info</span>
+		
+		@if (DisplayType)
+		{
+			<span>@Current.GetType().Name</span>
+		}
 
 		@if (Current is LibraryItem current)
 		{
@@ -93,6 +98,7 @@
 	[Parameter] public Action? DeleteButtonClick { get; set; }
 	
 	[Parameter] public bool TrashPage { get; set; }
+	[Parameter] public bool DisplayType { get; set; }
 	
 	public T Current => Content[Index];
 
