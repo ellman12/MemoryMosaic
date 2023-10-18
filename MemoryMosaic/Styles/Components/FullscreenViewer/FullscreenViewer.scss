@@ -113,7 +113,7 @@
 			font-size: 18px;
 		}
 		
-		> div {
+		> .field {
 			@include flex-row;
 			height: 50px;
 			margin-bottom: 4px;

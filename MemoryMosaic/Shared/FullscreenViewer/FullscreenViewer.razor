@@ -52,19 +52,19 @@
 
 		@if (Current is LibraryItem current)
 		{
-			<div title="Date Taken">
+			<div class="field" title="Date Taken">
 				<MaterialIcon Icon="photo_camera"/>
 				<span>@FormatDateTaken(current.DateTaken)</span>
 				<IconButton Icon="edit"/>
 			</div>
 
-			<div title="Date Added">
+			<div class="field" title="Date Added">
 				<MaterialIcon Icon="cloud_upload"/>
 				<span>@FormatDateTaken(current.DateAdded)</span>
 			</div>
 		}
 		
-		<div title="@Path.GetFileName(Current.Path)">
+		<div class="field" title="@Path.GetFileName(Current.Path)">
 			<MaterialIcon Icon="image"/>
 			<span>@Path.GetFileName(Current.Path)</span>
 			<IconButton Icon="edit"/>
