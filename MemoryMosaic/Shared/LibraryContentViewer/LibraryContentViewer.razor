@@ -99,9 +99,9 @@ Items can be selected, and depending on the page, different options may be appli
 	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
 
-<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" TopLoader="@topLoader" BottomLoader="@bottomLoader" RestoreButtonClick="@RestoreButtonClick" DeleteButtonClick="@DeleteButtonClick" TrashPage="@TrashPage"/>
+<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" CollectionSelector="@cs" TopLoader="@topLoader" BottomLoader="@bottomLoader" RestoreButtonClick="@RestoreButtonClick" DeleteButtonClick="@DeleteButtonClick" TrashPage="@TrashPage"/>
 
-<CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
+<CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" Rerender="@StateHasChanged"/>
 
 <CtrlGInput @ref="@CtrlGInput" LCV="@this" StartDateChanged="@StartDateChanged"/>
 
@@ -316,6 +316,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			fv.Index = index;
 			fv.Enable();
+			cs.SelectedItem = fv.Current.Id;
 			StateHasChanged();
 		}
 	}
