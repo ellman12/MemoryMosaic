@@ -99,7 +99,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
 
-<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" TopLoader="@topLoader" BottomLoader="@bottomLoader" TrashPage="@TrashPage"/>
+<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" TopLoader="@topLoader" BottomLoader="@bottomLoader" RestoreButtonClick="@RestoreButtonClick" DeleteButtonClick="@DeleteButtonClick" TrashPage="@TrashPage"/>
 
 <CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
 
@@ -220,7 +220,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private CollectionSelector cs = null!;
 
-	private FullscreenViewer<LibraryItem> fv = null!;
+	private FullscreenViewer<LibraryItem> fv = new();
 	
 	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
 	
@@ -231,10 +231,10 @@ Items can be selected, and depending on the page, different options may be appli
 		get
 		{
 			string message;
-
+			
 			if (TrashPage)
 			{
-				if (SelectedItems.Count == 1)
+				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 					message = "PERMANENTLY delete selected item?";
 				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
 					message = "PERMANENTLY delete selected items?";
@@ -243,7 +243,7 @@ Items can be selected, and depending on the page, different options may be appli
 			}
 			else
 			{
-				if (SelectedItems.Count == 1)
+				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 					message = "Move selected item to Trash?";
 				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
 					message = "Move selected items to Trash?";
@@ -261,7 +261,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			string message;
 
-			if (SelectedItems.Count == 1)
+			if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 				message = "Restore selected item?";
 			else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
 				message = "Restore selected items?";
@@ -316,6 +316,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			fv.Index = index;
 			fv.Enable();
+			StateHasChanged();
 		}
 	}
 	
@@ -348,6 +349,8 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		if (SelectedItems.Count == 0)
 			C.RestoreTrash();
+		else if (fv.Visibility.Visible)
+			C.RestoreItem(fv.Current.Id);
 		else
 			C.RestoreItems(SelectedItems);
 
@@ -371,12 +374,17 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			if (SelectedItems.Count == 0)
 				C.EmptyTrash();
+			else if (fv.Visibility.Visible)
+				C.RemoveFromTrash(fv.Current.Id);
 			else
 				C.RemoveFromTrash(SelectedItems);
 		}
 		else
 		{
-			C.MoveToTrash(SelectedItems);
+			if (fv.Visibility.Visible)
+				C.MoveToTrash(fv.Current.Id);
+			else
+				C.MoveToTrash(SelectedItems);
 		}
 		
 		Content.RemoveAll(item => SelectedItems.Contains(item.Id));
