@@ -69,12 +69,15 @@
 	</div>
 </div>
 
-@if (!Current.Video)
+@if (Visibility.Visible)
 {
-	<KeyboardShortcuts Left="@MoveLeft" Right="@MoveRight"/>
-}
+	if (!Current.Video)
+	{
+		<KeyboardShortcuts Left="@MoveLeft" Right="@MoveRight"/>
+	}
 
-<KeyboardShortcuts AltLeft="@Disable" Esc="@Disable" I="@infoVisibility.Toggle"/>
+	<KeyboardShortcuts AltLeft="@Disable" Esc="@Disable" I="@infoVisibility.Toggle"/>
+}
 
 @code {
 	[Parameter, EditorRequired]
