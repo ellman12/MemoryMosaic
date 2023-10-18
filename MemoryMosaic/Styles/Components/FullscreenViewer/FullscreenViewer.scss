@@ -147,5 +147,40 @@
 				outline: 1px solid #0080ff;
 			}
 		}
+		
+		> #collectionsContaining {
+			@include flex-col;
+			margin-top: 24px;
+			
+			> span { margin-bottom: 8px; }
+			
+			> div {
+				@include flex-col;
+				border: 1px solid white;
+				gap: 12px;
+				padding: 6px 0 6px 6px;
+				max-height: 220px;
+				overflow-y: scroll;
+
+				> a {
+					@include flex-row;
+					
+					> .cover {
+						@include flex-justify-center;
+						width: 60px;
+						height: 60px;
+						overflow: hidden;
+						background-color: #212121;
+						
+						> img {
+							width: 100%;
+							height: 100%;
+						}
+					}
+					
+					> span { margin-left: 8px; }
+				}
+			}
+		}
 	}
 }

@@ -71,6 +71,29 @@
 		</div>
 
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
+
+		@if (collectionsContaining?.Count > 0)
+		{
+			<div id="collectionsContaining">
+				<span>Collections Containing</span>
+				
+				<div>
+					@foreach (Collection c in collectionsContaining)
+					{
+						<a href="/collection-view/@c.Id">
+							<div class="cover">
+								@if (!String.IsNullOrWhiteSpace(c.Cover))
+								{
+									<img src="mm_library/@c.Cover" alt=""/>
+								}
+							</div>
+
+							<span>@c.Name</span>
+						</a>
+					}
+				</div>
+			</div>
+		}
 	</div>
 </div>
 
@@ -102,6 +125,8 @@
 	
 	public T Current => Content[Index];
 
+	private List<Collection>? collectionsContaining;
+
 	private ElementVisibility infoVisibility = new();
 	
 	private int index;
@@ -112,6 +137,8 @@
 		{
 			if (value < 0 || value > Content.Count) return;
 			index = value;
+			collectionsContaining = C.GetCollectionsContaining(Current.Id);
+			
 			StateHasChanged();
 
 			JSRuntime.InvokeVoidAsync(Current.Video ? "initializeVideo" : "cleanupVideo");
