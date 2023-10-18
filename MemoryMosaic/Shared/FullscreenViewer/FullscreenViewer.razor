@@ -28,8 +28,7 @@
 		<div id="item">
 			@if (Current.Video && Visibility.Visible)
 			{
-				string path = $"{Current.RequestPath}/{Current.Path}";
-				<VideoPlayer Path="@path"/>
+				<VideoPlayer Path="@($"{Current.RequestPath}/{Current.Path}")"/>
 			}
 			else
 			{
