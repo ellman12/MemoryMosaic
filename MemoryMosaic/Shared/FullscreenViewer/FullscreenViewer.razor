@@ -22,7 +22,7 @@
 
 		@if (Index > 0 || (bool) TopLoader?.HasMoreRows)
 		{
-			<div class="sideButton" @onclick="@MoveLeft"><IconButton Icon="arrow_back_ios"/></div>
+			<div class="sideButton" id="leftBtn" @onclick="@MoveLeft"><IconButton Icon="arrow_back_ios"/></div>
 		}
 
 		<div id="item">
@@ -39,7 +39,7 @@
 
 		@if (Index < Content.Count - 1)
 		{
-			<div class="sideButton" @onclick="@MoveRight"><IconButton Icon="arrow_forward_ios"/></div>
+			<div class="sideButton" id="rightBtn" @onclick="@MoveRight"><IconButton Icon="arrow_forward_ios"/></div>
 		}
 	</div>
 
