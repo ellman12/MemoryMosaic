@@ -70,7 +70,7 @@
 			<IconButton Icon="edit"/>
 		</div>
 
-		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description">@Current.Description</textarea>
+		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
 	</div>
 </div>
 
@@ -126,6 +126,8 @@
 
 @functions {
 	private static string FormatDateTaken(DateTime? dateTaken) => dateTaken == null ? "No Date Taken" : dateTaken.Value.ToString("ddd, MMM d, yyyy hh:mm:ss tt");
+
+	private void UpdateDescription() => C.UpdateDescription(Current.Id, Current.Description);
 
 	private void MoveLeft()
 	{
