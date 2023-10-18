@@ -86,7 +86,7 @@
 	
 	[Parameter] public bool TrashPage { get; set; }
 	
-	private T Current => Content[Index];
+	public T Current => Content[Index];
 
 	private ElementVisibility infoVisibility = new();
 	
