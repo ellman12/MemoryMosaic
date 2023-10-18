@@ -14,10 +14,10 @@
 			
 			@if (TrashPage)
 			{
-				<IconButton Icon="restore"/>
+				<IconButton Icon="restore" OnClick="@RestoreButtonClick"/>
 			}
 			
-			<IconButton Icon="trash"/>
+			<IconButton Icon="trash" OnClick="@DeleteButtonClick"/>
 		</div>
 
 		@if (Index > 0 || (bool) TopLoader?.HasMoreRows)
@@ -83,6 +83,9 @@
 
 	[Parameter] public ContentLoader? TopLoader { get; set; }
 	[Parameter] public ContentLoader? BottomLoader { get; set; }
+	
+	[Parameter] public Action? RestoreButtonClick { get; set; }
+	[Parameter] public Action? DeleteButtonClick { get; set; }
 	
 	[Parameter] public bool TrashPage { get; set; }
 	
