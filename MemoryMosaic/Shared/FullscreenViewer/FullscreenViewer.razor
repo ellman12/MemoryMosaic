@@ -8,7 +8,7 @@
 		
 		<div id="buttons">
 			<IconButton Icon="info" OnClick="@infoVisibility.Toggle"/>
-			<IconButton Icon="collections"/>
+			<IconButton Icon="collections" OnClick="@(() => CollectionSelector.Enable())"/>
 			<IconButton Icon="@(Current.Starred ? "star" : "star_outline")" OnClick="@UpdateStarred"/>
 			<IconButton Icon="edit"/>
 			
@@ -79,6 +79,9 @@
 @code {
 	[Parameter, EditorRequired]
 	public List<T> Content { get; set; } = null!;
+
+	[Parameter, EditorRequired]
+	public CollectionSelector CollectionSelector { get; set; } = null!;
 
 	[Parameter] public ContentLoader? TopLoader { get; set; }
 	[Parameter] public ContentLoader? BottomLoader { get; set; }
