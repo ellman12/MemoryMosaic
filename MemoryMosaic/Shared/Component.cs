@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace MemoryMosaic.Shared;
 
@@ -12,4 +13,14 @@ public abstract class Component : ComponentBase
 	[Parameter] public string? Title { get; set; }
 
 	[Parameter] public string? Style { get; set; }
+	
+	[Parameter] public Action? OnClick { get; set; }
+
+	[Parameter] public Action<MouseEventArgs>? EventArgsOnClick { get; set; }
+
+	protected void HandleClick(MouseEventArgs e)
+	{
+		OnClick?.Invoke();
+		EventArgsOnClick?.Invoke(e);
+	}
 }
