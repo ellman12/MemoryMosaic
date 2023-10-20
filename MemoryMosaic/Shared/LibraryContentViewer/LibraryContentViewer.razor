@@ -54,7 +54,7 @@ Items can be selected, and depending on the page, different options may be appli
 			<div class="ungrouped">
 				@foreach (LibraryItem item in Content)
 				{
-					<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+					<Thumbnail @key="@item" Item="@item" LCV="@this" Index="@index"/>
 					index++;
 				}
 			</div>
@@ -88,7 +88,7 @@ Items can be selected, and depending on the page, different options may be appli
 					<div class="thumbnails">
 						@foreach (LibraryItem item in group)
 						{
-							<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+							<Thumbnail @key="@item" Item="@item" LCV="@this" Index="@index"/>
 							index++;
 						}
 					</div>
@@ -216,7 +216,7 @@ Items can be selected, and depending on the page, different options may be appli
 @* Selecting items and manipulating them. *@
 @code {
 	public HashSet<Guid> SelectedItems { get; private set; } = new();
-	private int lastCheckedIndex;
+	public int LastSelectedIndex;
 
 	private CollectionSelector cs = null!;
 
@@ -276,7 +276,7 @@ Items can be selected, and depending on the page, different options may be appli
 @functions {
 	public void Rerender() => StateHasChanged();
 
-	private void ChangeRangeState(int startIndex, int endIndex, bool select)
+	public void ChangeRangeState(int startIndex, int endIndex, bool select)
 	{
 		int increment = startIndex < endIndex ? 1 : -1;
 
@@ -306,19 +306,12 @@ Items can be selected, and depending on the page, different options may be appli
 		SelectAllLoadedItems();
 	}
 	
-	private void OnThumbnailClick(MouseEventArgs eventArgs, int index)
+	public void SetFullscreenItem(int index)
 	{
-		if (eventArgs.ShiftKey)
-			ChangeRangeState(lastCheckedIndex, index, true);
-		else if (SelectedItems.Count > 0)
-			lastCheckedIndex = index;
-		else
-		{
-			fv.Index = index;
-			fv.Enable();
-			cs.SelectedItem = fv.Current.Id;
-			StateHasChanged();
-		}
+		fv.Index = index;
+		fv.Enable();
+		cs.SelectedItem = fv.Current.Id;
+		StateHasChanged();
 	}
 	
 	private void ClearChecks()
