@@ -114,6 +114,9 @@
 	[Parameter, EditorRequired]
 	public CollectionSelector CollectionSelector { get; set; } = null!;
 
+	[Parameter, EditorRequired]
+	public Action RerenderParent { get; set; } = null!;
+
 	[Parameter] public ContentLoader? TopLoader { get; set; }
 	[Parameter] public ContentLoader? BottomLoader { get; set; }
 	
@@ -148,6 +151,7 @@
 	protected override void OnInitialized()
 	{
 		infoVisibility.Rerender = StateHasChanged;
+		Visibility.Rerender = RerenderParent;
 	}
 }
 
