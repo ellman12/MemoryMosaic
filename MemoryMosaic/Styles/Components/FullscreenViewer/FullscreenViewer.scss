@@ -225,4 +225,29 @@
 			}
 		}
 	}
+	
+	> .modalBackground > #fileRename {
+		@include flex-col;
+		border: 2px solid white;
+		border-radius: 4px;
+		padding: 8px;
+		width: 250px;
+		height: auto;
+		
+		> input[type="text"] {
+			margin-top: 8px;
+			margin-bottom: 8px;
+		}
+		
+		> div {
+			@include flex-row;
+			align-self: flex-end;
+			margin-top: 8px;
+
+			> .iconBtn {
+				margin-left: 2px;
+				margin-right: 2px;
+			}
+		}
+	}
 }

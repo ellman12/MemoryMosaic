@@ -67,7 +67,7 @@
 		<div class="field" title="@Path.GetFileName(Current.Path)">
 			<MaterialIcon Icon="image"/>
 			<span>@Path.GetFileName(Current.Path)</span>
-			<IconButton Icon="edit"/>
+			<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
 		</div>
 
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
@@ -116,6 +116,18 @@
 			</div>
 		</div>
 	</ModalBackground>
+	
+	<ModalBackground Visibility="@fileRename">
+		<div id="fileRename">
+			<span>Enter new filename:</span>
+			<TextInput @bind-Input="@newFilename" Width="available"/>
+			<span style="color: red; display: @(filenameError.Visible ? "inline" : "none")">A file with the same Date Taken and/or name already exists.</span>
+			<div>
+				<IconButton Icon="check" OnClick="@RenameFile"/>
+				<IconButton Icon="close" OnClick="@(() => { fileRename.Disable(); filenameError.Disable(); newFilename = ""; })"/>
+			</div>
+		</div>
+	</ModalBackground>
 </div>
 
 @if (Visibility.Visible)
@@ -151,9 +163,12 @@
 
 	private List<Collection>? collectionsContaining;
 
-	private ElementVisibility infoVisibility = new(), dtPickerVis = new();
+	private ElementVisibility infoVisibility = new(), dtPickerVis = new(), fileRename = new(), filenameError = new();
 
 	private DateTime? newDateTaken;
+
+	private string? newFilename;
+	private string ext = null!;
 	
 	private int index;
 	public int Index
@@ -167,6 +182,9 @@
 
 			if (Current is LibraryItem li)
 				newDateTaken = li.DateTaken;
+
+			newFilename = Path.GetFileNameWithoutExtension(Current.Path);
+			ext = Path.GetExtension(Current.Path);
 			
 			StateHasChanged();
 
@@ -179,13 +197,32 @@
 		infoVisibility.Rerender = StateHasChanged;
 		Visibility.Rerender = RerenderParent;
 		dtPickerVis.Rerender = StateHasChanged;
+		fileRename.Rerender = StateHasChanged;
 	}
 }
 
 @functions {
 	private static string FormatDateTaken(DateTime? dateTaken) => dateTaken == null ? "No Date Taken" : dateTaken.Value.ToString("ddd, MMM d, yyyy hh:mm:ss tt");
 
-	public void UpdateDescription() => C.UpdateDescription(Current.Id, Current.Description);
+	private void UpdateDescription() => C.UpdateDescription(Current.Id, Current.Description);
+
+	private void RenameFile()
+	{
+		if (String.IsNullOrWhiteSpace(newFilename)) return;
+
+		string? newShortPath = C.RenameFile(Current.Path, newFilename, ext, (Current as LibraryItem)?.DateTaken);
+		if (newShortPath == null)
+		{
+			fileRename.Enable();
+			filenameError.Enable();
+		}
+		else
+		{
+			fileRename.Disable();
+			filenameError.Disable();
+			Current.Path = newShortPath;
+		}
+	}
 
 	private void MoveLeft()
 	{
