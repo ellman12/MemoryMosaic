@@ -372,14 +372,20 @@ Items can be selected, and depending on the page, different options may be appli
 			if (SelectedItems.Count == 0)
 				C.EmptyTrash();
 			else if (fv.Visibility.Visible)
+			{
 				C.RemoveFromTrash(fv.Current.Id);
+				fv.Index++;
+			}
 			else
 				C.RemoveFromTrash(SelectedItems);
 		}
 		else
 		{
 			if (fv.Visibility.Visible)
+			{
 				C.MoveToTrash(fv.Current.Id);
+				fv.Index++;
+			}
 			else
 				C.MoveToTrash(SelectedItems);
 		}
