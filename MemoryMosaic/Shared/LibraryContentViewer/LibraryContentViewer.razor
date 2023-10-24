@@ -106,7 +106,10 @@ Items can be selected, and depending on the page, different options may be appli
 
 <CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" Rerender="@StateHasChanged"/>
 
-<CtrlGInput @ref="@CtrlGInput" LCV="@this" StartDateChanged="@StartDateChanged"/>
+@if (!fv.Visibility.Visible)
+{
+	<CtrlGInput @ref="@CtrlGInput" LCV="@this" StartDateChanged="@StartDateChanged"/>
+}
 
 <TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 <TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => deletePrompt.Disable())" Message="@DeletePromptMessage"/>
