@@ -3,7 +3,7 @@
 ///Represents a row in the media table.
 public class LibraryItem : Media
 {
-	public DateTime? DateTaken { get; init; }
+	public DateTime? DateTaken { get; set; }
 
 	public DateTime DateAdded { get; init; }
 
