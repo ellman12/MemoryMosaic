@@ -47,7 +47,10 @@ void VerifyPathAndCreateFolder(ref string path, string mmFolder)
 		path = path.Substring(0, path.Length - 1);
 
 	if (!path.EndsWith(mmFolder))
+	{
 		path = Path.Join(path, mmFolder);
+		path = path.Replace('\\', '/');
+	}
 
 	if (Directory.Exists(path) && Input.GetYN($"{path} exists and has {Directory.EnumerateFiles(path).Count()} files. Overwrite?", true) && Input.GetYN("Are you sure?", true))
 		FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
