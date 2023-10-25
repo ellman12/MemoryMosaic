@@ -9,7 +9,7 @@ public class LibraryItem : Media
 
 	public DateTime? DateDeleted { get; init; }
 
-	public LibraryItem(string path, DateTime? dateTaken, DateTime dateAdded, bool starred, Guid id, string thumbnail, string? description)
+	public LibraryItem(string path, DateTime? dateTaken, DateTime dateAdded, bool starred, Guid id, string thumbnail, string? description, DateTime? dateDeleted)
 	{
 		Path = path;
 		DateTaken = dateTaken;
@@ -18,6 +18,7 @@ public class LibraryItem : Media
 		Id = id;
 		Thumbnail = thumbnail;
 		Description = description;
+		DateDeleted = dateDeleted;
 		Video = F.SupportedVideoExts.Contains(System.IO.Path.GetExtension(Path).ToLower());
 	}
 
