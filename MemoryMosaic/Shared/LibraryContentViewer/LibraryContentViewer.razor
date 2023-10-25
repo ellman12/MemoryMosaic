@@ -190,8 +190,8 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private Func<LibraryItem, dynamic?> GroupByFunction => (GroupBy, OrderByFields.First()) switch
 	{
-		(GroupBy.None or GroupBy.Day, "date_taken") => row => row.DateTaken?.Date,
-		(GroupBy.None or GroupBy.Day, "date_added") => row => row.DateAdded.Date,
+		(GroupBy.Day, "date_taken") => row => row.DateTaken?.Date,
+		(GroupBy.Day, "date_added") => row => row.DateAdded.Date,
 		(GroupBy.Month, "date_taken") => row => new {row.DateTaken?.Month, row.DateTaken?.Year},
 		(GroupBy.Month, "date_added") => row => new {row.DateAdded.Month, row.DateAdded.Year},
 		(GroupBy.Year, "date_taken") => row => row.DateTaken?.Year,
