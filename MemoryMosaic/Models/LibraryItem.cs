@@ -3,14 +3,12 @@
 ///Represents a row in the media table.
 public class LibraryItem : Media
 {
-	public DateTime? DateTaken { get; init; }
+	public DateTime? DateTaken { get; set; }
 
 	public DateTime DateAdded { get; init; }
 
 	public DateTime? DateDeleted { get; init; }
 
-	public bool Video { get; init; }
-	
 	public LibraryItem(string path, DateTime? dateTaken, DateTime dateAdded, bool starred, Guid id, string thumbnail, string? description)
 	{
 		Path = path;
@@ -20,5 +18,8 @@ public class LibraryItem : Media
 		Id = id;
 		Thumbnail = thumbnail;
 		Description = description;
+		Video = F.SupportedVideoExts.Contains(System.IO.Path.GetExtension(Path).ToLower());
 	}
+
+	public override string RequestPath => "mm_library";
 }

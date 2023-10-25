@@ -24,4 +24,6 @@ public class ImportItem : Media
 
 	///The album(s) or folder to add this item to.
 	public HashSet<int>? Collections { get; set; }
+	
+	public override string RequestPath => "mm_import";
 }

@@ -14,4 +14,8 @@ public abstract class Media
 	public string Thumbnail { get; init; } = null!;
 	
 	public string? Description { get; set; }
+	
+	public bool Video { get; protected init; }
+
+	public abstract string RequestPath { get; }
 }

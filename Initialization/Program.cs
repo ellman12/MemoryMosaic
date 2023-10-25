@@ -36,6 +36,18 @@ VerifyPathAndCreateFolder(ref testTmpPath, "mm_tmp");
 string testBackupPath = Input.GetFolderPath("Enter path to mm_backup, where backups should be stored: ");
 VerifyPathAndCreateFolder(ref testBackupPath, "mm_backup");
 
+#if DEBUG
+	string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaicTest");
+	string filePath = Path.Combine(folderPath, "mm_debug_settings.json");
+#else
+	string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaic");
+	string filePath = Path.Combine(folderPath, "mm_settings.json");
+#endif
+
+string settingsJson = $"{{\"importFolderPath\":\"{testImportPath}\",\"libFolderPath\":\"{testLibPath}\",\"backupFolderPath\":\"{testBackupPath}\",\"tmpFolderPath\":\"{testTmpPath}\",\"showPrompts\":true,\"thumbnailQuality\":7,\"logLevel\":4}}";
+Directory.CreateDirectory(folderPath);
+File.WriteAllText(filePath, settingsJson);
+
 Output.WriteLine("MemoryMosaic is now ready to use.", ConsoleColor.Green);
 
 return;
@@ -47,7 +59,10 @@ void VerifyPathAndCreateFolder(ref string path, string mmFolder)
 		path = path.Substring(0, path.Length - 1);
 
 	if (!path.EndsWith(mmFolder))
+	{
 		path = Path.Join(path, mmFolder);
+		path = path.Replace('\\', '/');
+	}
 
 	if (Directory.Exists(path) && Input.GetYN($"{path} exists and has {Directory.EnumerateFiles(path).Count()} files. Overwrite?", true) && Input.GetYN("Are you sure?", true))
 		FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);

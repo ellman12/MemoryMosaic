@@ -27,5 +27,6 @@
 
 	<ItemGroup>
 		<None Include="wwwroot\MM.js"/>
+		<None Include="wwwroot\VideoPlayer.js"/>
 	</ItemGroup>
 </Project>

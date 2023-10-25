@@ -6,6 +6,7 @@ Items can be selected, and depending on the page, different options may be appli
 @inherits Component
 @inject NavigationManager navigationManager
 @using System.IO.Compression
+@namespace MemoryMosaic.Shared.LibraryContentViewer
 
 @if (Content.Count == 0)
 {
@@ -13,7 +14,10 @@ Items can be selected, and depending on the page, different options may be appli
 	return;
 }
 
-<KeyboardShortcuts Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
+@if (!fv.Visibility.Visible)
+{
+	<KeyboardShortcuts Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
+}
 
 <header style="visibility: @(SelectedItems.Count > 0 || TrashPage ? "visible" : "hidden")">
 	@if (SelectedItems.Count > 0)
@@ -53,7 +57,7 @@ Items can be selected, and depending on the page, different options may be appli
 			<div class="ungrouped">
 				@foreach (LibraryItem item in Content)
 				{
-					<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+					<Thumbnail @key="@item" Item="@item" LCV="@this" Index="@index"/>
 					index++;
 				}
 			</div>
@@ -87,7 +91,7 @@ Items can be selected, and depending on the page, different options may be appli
 					<div class="thumbnails">
 						@foreach (LibraryItem item in group)
 						{
-							<Thumbnail @key="@item" Item="@item" Parent="@this" Index="@index" OnClick="@OnThumbnailClick"/>
+							<Thumbnail @key="@item" Item="@item" LCV="@this" Index="@index"/>
 							index++;
 						}
 					</div>
@@ -98,9 +102,14 @@ Items can be selected, and depending on the page, different options may be appli
 	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
 
-<CollectionSelector @ref="@cs" SelectedItems="SelectedItems" Rerender="@StateHasChanged"/>
+<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" CollectionSelector="@cs" RerenderParent="@StateHasChanged" TopLoader="@topLoader" BottomLoader="@bottomLoader" RestoreButtonClick="@RestoreButtonClick" DeleteButtonClick="@DeleteButtonClick" TrashPage="@TrashPage"/>
 
-<CtrlGInput @ref="@CtrlGInput" LCV="@this" StartDateChanged="@StartDateChanged"/>
+<CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" Rerender="@StateHasChanged"/>
+
+@if (!fv.Visibility.Visible)
+{
+	<CtrlGInput @ref="@CtrlGInput" LCV="@this" StartDateChanged="@StartDateChanged"/>
+}
 
 <TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
 <TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => deletePrompt.Disable())" Message="@DeletePromptMessage"/>
@@ -150,7 +159,7 @@ Items can be selected, and depending on the page, different options may be appli
 	private void StartDateChanged()
 	{
 		Content.Clear();
-		topLoader = new ContentLoader(this, true, false, false);
+		topLoader = new ContentLoader(this, true, false, true);
 		bottomLoader = new ContentLoader(this, true, true, true);
 	}
 }
@@ -213,9 +222,11 @@ Items can be selected, and depending on the page, different options may be appli
 @* Selecting items and manipulating them. *@
 @code {
 	public HashSet<Guid> SelectedItems { get; private set; } = new();
-	private int lastCheckedIndex;
-	
+	public int LastSelectedIndex;
+
 	private CollectionSelector cs = null!;
+
+	private FullscreenViewer<LibraryItem> fv = new();
 	
 	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
 	
@@ -226,10 +237,10 @@ Items can be selected, and depending on the page, different options may be appli
 		get
 		{
 			string message;
-
+			
 			if (TrashPage)
 			{
-				if (SelectedItems.Count == 1)
+				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 					message = "PERMANENTLY delete selected item?";
 				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
 					message = "PERMANENTLY delete selected items?";
@@ -238,7 +249,7 @@ Items can be selected, and depending on the page, different options may be appli
 			}
 			else
 			{
-				if (SelectedItems.Count == 1)
+				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 					message = "Move selected item to Trash?";
 				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
 					message = "Move selected items to Trash?";
@@ -256,7 +267,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			string message;
 
-			if (SelectedItems.Count == 1)
+			if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 				message = "Restore selected item?";
 			else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
 				message = "Restore selected items?";
@@ -271,7 +282,7 @@ Items can be selected, and depending on the page, different options may be appli
 @functions {
 	public void Rerender() => StateHasChanged();
 
-	private void ChangeRangeState(int startIndex, int endIndex, bool select)
+	public void ChangeRangeState(int startIndex, int endIndex, bool select)
 	{
 		int increment = startIndex < endIndex ? 1 : -1;
 
@@ -301,12 +312,12 @@ Items can be selected, and depending on the page, different options may be appli
 		SelectAllLoadedItems();
 	}
 	
-	private void OnThumbnailClick(MouseEventArgs eventArgs, int index)
+	public void SetFullscreenItem(int index)
 	{
-		if (eventArgs.ShiftKey)
-			ChangeRangeState(lastCheckedIndex, index, true);
-		else
-			lastCheckedIndex = index;
+		fv.Index = index;
+		fv.Enable();
+		cs.SelectedItem = fv.Current.Id;
+		StateHasChanged();
 	}
 	
 	private void ClearChecks()
@@ -338,6 +349,8 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		if (SelectedItems.Count == 0)
 			C.RestoreTrash();
+		else if (fv.Visibility.Visible)
+			C.RestoreItem(fv.Current.Id);
 		else
 			C.RestoreItems(SelectedItems);
 
@@ -361,12 +374,23 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			if (SelectedItems.Count == 0)
 				C.EmptyTrash();
+			else if (fv.Visibility.Visible)
+			{
+				C.RemoveFromTrash(fv.Current.Id);
+				fv.Index++;
+			}
 			else
 				C.RemoveFromTrash(SelectedItems);
 		}
 		else
 		{
-			C.MoveToTrash(SelectedItems);
+			if (fv.Visibility.Visible)
+			{
+				C.MoveToTrash(fv.Current.Id);
+				fv.Index++;
+			}
+			else
+				C.MoveToTrash(SelectedItems);
 		}
 		
 		Content.RemoveAll(item => SelectedItems.Contains(item.Id));

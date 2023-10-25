@@ -8,6 +8,8 @@ public sealed class ContentLoader
 
 	public ElementVisibility Visibility { get; } = new();
 	
+	public bool HasMoreRows { get; private set; }
+	
 	private readonly NpgsqlConnection conn = C.CreateLocalConnection();
 
 	private readonly NpgsqlDataReader reader;
@@ -45,14 +47,17 @@ public sealed class ContentLoader
 		using NpgsqlCommand cmd = new(Query, conn);
 		reader = cmd.ExecuteReader();
 
+		HasMoreRows = initializer;
 		if (initializer)
 			AddContent();
 	}
 
 	public void AddContent() => AddContent(100);
 
-	public void AddContent(int readLimit)
+	public int AddContent(int readLimit)
 	{
+		if (!HasMoreRows) return 0;
+		
 		int rowsAdded = 0;
 
 		while (rowsAdded < readLimit && reader.Read())
@@ -66,9 +71,13 @@ public sealed class ContentLoader
 			
 			rowsAdded++;
 		}
-		
-		if (rowsAdded < readLimit)
+
+		if (!reader.IsOnRow)
+		{
+			HasMoreRows = false;
 			Visibility.Disable();
+		}
 		LCV.Rerender();
+		return rowsAdded;
 	}
 }

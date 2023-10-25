@@ -152,7 +152,7 @@ public static class Connection
         return path;
     }
     
-    ///<summary>Used in ViewItem for renaming the current item's file.</summary>
+    ///<summary>Used in FullscreenViewer for renaming the current item's file.</summary>
     ///<param name="oldShortPath">The original short path of the item.</param>
     ///<param name="newFilename">The new filename of the item.</param>
     ///<param name="ext">The file extension.</param>
@@ -165,7 +165,11 @@ public static class Connection
             string originalFullPath = Path.Combine(S.libFolderPath, oldShortPath);
             string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
             string newFullPath = Path.Combine(S.libFolderPath, newShortPath);
-            File.Move(originalFullPath, newFullPath);
+
+            if (File.Exists(newFullPath))
+                return null;
+            else
+                File.Move(originalFullPath, newFullPath);
             
             Open();
             using NpgsqlCommand cmd = new("UPDATE media SET path = @newShortPath WHERE path = @oldShortPath", connection);

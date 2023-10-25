@@ -1,0 +1,249 @@
+@inject IJSRuntime JSRuntime
+@inherits ToggleableComponent
+@typeparam T where T : Media
+
+<div id="fullscreen-viewer" style="@Visibility.Style">
+	<div id="content">
+		<IconButton ID="backButton" Icon="arrow_back" OnClick="@Disable"/>
+		
+		<div id="buttons">
+			<IconButton Icon="info" OnClick="@infoVisibility.Toggle"/>
+			<IconButton Icon="collections" OnClick="@(() => CollectionSelector.Enable())"/>
+			<IconButton Icon="@(Current.Starred ? "star" : "star_outline")" OnClick="@UpdateStarred"/>
+			
+			@if (TrashPage)
+			{
+				<IconButton Icon="restore" OnClick="@RestoreButtonClick"/>
+			}
+			
+			<IconButton Icon="trash" OnClick="@DeleteButtonClick"/>
+		</div>
+
+		
+		@if (Index > 0 || TopLoader is {HasMoreRows: true})
+		{
+			<div class="sideButton" id="leftBtn" @onclick="@MoveLeft"><IconButton Icon="arrow_back_ios"/></div>
+		}
+
+		<div id="item">
+			@if (Current.Video && Visibility.Visible)
+			{
+				<VideoPlayer Path="@($"{Current.RequestPath}/{Current.Path}")"/>
+			}
+			else
+			{
+				<img src="@Current.RequestPath/@Current.Path" alt=""/>
+			}
+		</div>
+
+		@if (Index < Content.Count - 1)
+		{
+			<div class="sideButton" id="rightBtn" @onclick="@MoveRight"><IconButton Icon="arrow_forward_ios"/></div>
+		}
+	</div>
+
+	<div id="info" class="@(infoVisibility.Visible ? "visible" : "hidden")">
+		<span>Info</span>
+		
+		@if (DisplayType)
+		{
+			<span>@Current.GetType().Name</span>
+		}
+
+		@if (Current is LibraryItem current)
+		{
+			<div class="field" title="Date Taken">
+				<MaterialIcon Icon="photo_camera"/>
+				<span>@FormatDateTaken(current.DateTaken)</span>
+				<IconButton Icon="edit" OnClick="@dtPickerVis.Enable"/>
+			</div>
+
+			<div class="field" title="Date Added">
+				<MaterialIcon Icon="cloud_upload"/>
+				<span>@FormatDateTaken(current.DateAdded)</span>
+			</div>
+		}
+		
+		<div class="field" title="@Path.GetFileName(Current.Path)">
+			<MaterialIcon Icon="image"/>
+			<span>@Path.GetFileName(Current.Path)</span>
+			<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
+		</div>
+
+		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
+
+		@if (collectionsContaining?.Count > 0)
+		{
+			<div id="collectionsContaining">
+				<span>Collections Containing</span>
+				
+				<div>
+					@foreach (Collection c in collectionsContaining)
+					{
+						<a href="/collection-view/@c.Id">
+							<div class="cover">
+								@if (!String.IsNullOrWhiteSpace(c.Cover))
+								{
+									<img src="mm_library/@c.Cover" alt=""/>
+								}
+							</div>
+
+							<span>@c.Name</span>
+						</a>
+					}
+				</div>
+			</div>
+		}
+	</div>
+	
+	<ModalBackground Visibility="@dtPickerVis">
+		<div id="dt-picker">
+			<span>Pick New Date Taken</span>
+
+			<div>
+				@if (Current is LibraryItem li)
+				{
+					<input type="datetime-local" @bind="@newDateTaken" step="1"/>
+					<IconButton Icon="check" OnClick="@(() => { li.DateTaken = newDateTaken; dtPickerVis.Disable(); C.UpdateDateTaken(Current.Path, newDateTaken); })"/>
+				}
+				else if (Current is ImportItem ii)
+				{
+					<input type="datetime-local" @bind="@ii.CustomDateTaken" step="1"/>
+					<IconButton Icon="check" OnClick="@dtPickerVis.Disable"/>
+				}
+
+				<IconButton Icon="close" OnClick="@dtPickerVis.Disable"/>
+			</div>
+		</div>
+	</ModalBackground>
+	
+	<ModalBackground Visibility="@fileRename">
+		<div id="fileRename">
+			<span>Enter new filename:</span>
+			<TextInput @bind-Input="@newFilename" Width="available"/>
+			<span style="color: red; display: @(filenameError.Visible ? "inline" : "none")">A file with the same Date Taken and/or name already exists.</span>
+			<div>
+				<IconButton Icon="check" OnClick="@RenameFile"/>
+				<IconButton Icon="close" OnClick="@(() => { fileRename.Disable(); filenameError.Disable(); newFilename = ""; })"/>
+			</div>
+		</div>
+	</ModalBackground>
+</div>
+
+@if (Visibility.Visible)
+{
+	if (!Current.Video)
+	{
+		<KeyboardShortcuts Left="@MoveLeft" Right="@MoveRight"/>
+	}
+
+	<KeyboardShortcuts AltLeft="@Disable" CtrlLeft="@MoveLeft" CtrlRight="@MoveRight" Esc="@Disable" I="@infoVisibility.Toggle"/>
+}
+
+@code {
+	[Parameter, EditorRequired]
+	public List<T> Content { get; set; } = null!;
+
+	[Parameter, EditorRequired]
+	public CollectionSelector CollectionSelector { get; set; } = null!;
+
+	[Parameter, EditorRequired]
+	public Action RerenderParent { get; set; } = null!;
+
+	[Parameter] public ContentLoader? TopLoader { get; set; }
+	[Parameter] public ContentLoader? BottomLoader { get; set; }
+	
+	[Parameter] public Action? RestoreButtonClick { get; set; }
+	[Parameter] public Action? DeleteButtonClick { get; set; }
+	
+	[Parameter] public bool TrashPage { get; set; }
+	[Parameter] public bool DisplayType { get; set; }
+	
+	public T Current => Content[Index];
+
+	private List<Collection>? collectionsContaining;
+
+	private ElementVisibility infoVisibility = new(), dtPickerVis = new(), fileRename = new(), filenameError = new();
+
+	private DateTime? newDateTaken;
+
+	private string? newFilename;
+	private string ext = null!;
+	
+	private int index;
+	public int Index
+	{
+		get => index;
+		set
+		{
+			if (value < 0 || value > Content.Count) return;
+			index = value;
+			collectionsContaining = C.GetCollectionsContaining(Current.Id);
+
+			if (Current is LibraryItem li)
+				newDateTaken = li.DateTaken;
+
+			newFilename = Path.GetFileNameWithoutExtension(Current.Path);
+			ext = Path.GetExtension(Current.Path);
+			
+			StateHasChanged();
+
+			JSRuntime.InvokeVoidAsync(Current.Video ? "initializeVideo" : "cleanupVideo");
+		}
+	}
+
+	protected override void OnInitialized()
+	{
+		infoVisibility.Rerender = StateHasChanged;
+		Visibility.Rerender = RerenderParent;
+		dtPickerVis.Rerender = StateHasChanged;
+		fileRename.Rerender = StateHasChanged;
+	}
+}
+
+@functions {
+	private static string FormatDateTaken(DateTime? dateTaken) => dateTaken == null ? "No Date Taken" : dateTaken.Value.ToString("ddd, MMM d, yyyy hh:mm:ss tt");
+
+	private void UpdateDescription() => C.UpdateDescription(Current.Id, Current.Description);
+
+	private void RenameFile()
+	{
+		if (String.IsNullOrWhiteSpace(newFilename)) return;
+
+		string? newShortPath = C.RenameFile(Current.Path, newFilename, ext, (Current as LibraryItem)?.DateTaken);
+		if (newShortPath == null)
+		{
+			fileRename.Enable();
+			filenameError.Enable();
+		}
+		else
+		{
+			fileRename.Disable();
+			filenameError.Disable();
+			Current.Path = newShortPath;
+		}
+	}
+
+	private void MoveLeft()
+	{
+		if (Index == 0 && TopLoader is {HasMoreRows: true})
+			Index += TopLoader.AddContent(100);
+		
+		Index--;
+	}
+
+	private void MoveRight()
+	{
+		if (Index == Content.Count - 1 && BottomLoader is {HasMoreRows: true})
+			BottomLoader.AddContent();
+
+		Index++;
+	}
+
+	private void UpdateStarred()
+	{
+		C.UpdateStarred(Current.Id, !Current.Starred);
+		Current.Starred = !Current.Starred;
+		StateHasChanged();
+	}
+}
