@@ -5,6 +5,8 @@ public enum TrashSortMode
 {
 	NewestDateDeleted, //Default
 	NewestDateTaken,
+	NewestDateAdded,
 	OldestDateDeleted,
-	OldestDateTaken
+	OldestDateTaken,
+	OldestDateAdded
 }
