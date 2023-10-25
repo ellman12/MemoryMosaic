@@ -137,7 +137,7 @@ Items can be selected, and depending on the page, different options may be appli
 	public required string Columns { get; set; } = "path, date_taken, date_added, starred, uuid, thumbnail, description";
 
 	[Parameter]
-	public required string Table { get; set; } = "media";
+	public required string Table { get; set; } = "library";
 	
 	[Parameter]
 	public string? Where { get; set; }
@@ -411,10 +411,10 @@ Items can be selected, and depending on the page, different options may be appli
 		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}");
 		Directory.CreateDirectory(zipFolderPath);
 
-		foreach (LibraryItem media in Content)
+		foreach (LibraryItem item in Content)
 		{
-			if (!SelectedItems.Contains(media.Id)) continue;
-			string shortPath = media.Path;
+			if (!SelectedItems.Contains(item.Id)) continue;
+			string shortPath = item.Path;
 			string fullPath = Path.Combine(S.libFolderPath, shortPath);
 			string destPath = Path.Combine(zipFolderPath, Path.GetFileName(shortPath));
 			File.Copy(fullPath, destPath);

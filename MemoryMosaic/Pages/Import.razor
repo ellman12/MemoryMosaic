@@ -269,7 +269,7 @@
 	@* private static void FindLibraryFilesWithSameOrSimilarName(string filenameNoExt) *@
 	@* { *@
 		@* C.Open(); *@
-		@* using NpgsqlCommand cmd = new($"SELECT path, date_taken, uuid, thumbnail, date_deleted FROM media WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection); *@
+		@* using NpgsqlCommand cmd = new($"SELECT path, date_taken, uuid, thumbnail, date_deleted FROM library WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection); *@
 		@* using NpgsqlDataReader r = cmd.ExecuteReader(); *@
 		@* if (!r.HasRows) *@
 		@* { *@

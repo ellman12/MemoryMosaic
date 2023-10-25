@@ -11,14 +11,14 @@ public static class Stats
         try
         {
             C.Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NULL", C.connection);
+            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE date_deleted IS NULL", C.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) rows++;
             return rows;
         }
         catch (Exception e)
         {
-            Console.WriteLine("Counting media rows error. " + e.Message);
+            Console.WriteLine("Counting library rows error. " + e.Message);
             return -1;
         }
         finally
@@ -35,7 +35,7 @@ public static class Stats
         try
         {
             C.Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM media WHERE date_deleted IS NOT NULL", C.connection);
+            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE date_deleted IS NOT NULL", C.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) rows++;
             return rows;
@@ -82,7 +82,7 @@ public static class Stats
         try
         {
             await using NpgsqlConnection conn = await C.CreateLocalConnectionAsync();
-            NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, uuid, thumbnail FROM media {filter}", conn);
+            NpgsqlCommand cmd = new($"SELECT path, date_taken, date_added, uuid, thumbnail FROM library {filter}", conn);
             NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 
             if (r.HasRows)

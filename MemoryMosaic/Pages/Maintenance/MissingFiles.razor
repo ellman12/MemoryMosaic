@@ -8,7 +8,7 @@
 </header>
 
 <main>
-    @foreach (LibraryItem item in mediaMissingItems)
+    @foreach (LibraryItem item in missingItems)
     {
         <div class="missingItem">
             <div class="thumbnail"><img src="data:image/jpg;base64,@item.Thumbnail" alt=""></div>
@@ -25,11 +25,11 @@
 </main>
 
 @code {
-    private readonly List<LibraryItem> mediaMissingItems = M.GetMediaMissingFiles();
+    private readonly List<LibraryItem> missingItems = M.GetMissingFiles();
 
     private void DeleteMissingPaths()
     {
-        M.RemoveMediaMissingFiles(mediaMissingItems);
-        mediaMissingItems.Clear();
+        M.RemoveMissingFiles(missingItems);
+        missingItems.Clear();
     }
 }

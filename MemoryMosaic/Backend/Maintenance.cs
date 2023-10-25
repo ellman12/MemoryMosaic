@@ -11,31 +11,31 @@ public static class Maintenance
     ///<returns>True if empty, false otherwise.</returns>
     public static bool IsFolderEmpty(string path) => Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
 
-    ///Search mm_library and if an item is not in the media table, add it to the List of full paths that is returned. 
-    public static List<string> GetUntrackedLibFiles()
+    ///Search mm_library and if an item is not in the library table, add it to the List of full paths that is returned. 
+    public static List<string> GetUntrackedFiles()
     {
         List<string> untrackedPaths = new(); //Tracks items in mm_library but not in database
-        HashSet<string> mediaPaths = C.LoadEntireMediaTable().Select(media => media.Path).ToHashSet();
+        HashSet<string> libraryPaths = C.LoadEntireLibraryTable().Select(item => item.Path).ToHashSet();
 
         foreach (string fullPath in Directory.GetFiles(S.libFolderPath, "*", SearchOption.AllDirectories))
         {
             string shortPath = fullPath.Replace(S.libFolderPath, null).Replace('\\', '/');
             if (shortPath.StartsWith('/')) shortPath = shortPath[1..]; //Database short paths don't ever start with '/'.
                 
-            if (!mediaPaths.Contains(shortPath))
+            if (!libraryPaths.Contains(shortPath))
                 untrackedPaths.Add(fullPath);
         }
         return untrackedPaths;
     }
 
-    ///Returns a List&lt;LibraryItem&gt; of all rows and columns from the media table that don't have existing files in mm_library.
-    public static List<LibraryItem> GetMediaMissingFiles()
+    ///Returns a List&lt;LibraryItem&gt; of all rows and columns from the library table that don't have existing files in mm_library.
+    public static List<LibraryItem> GetMissingFiles()
     {
         List<LibraryItem> missingFiles = new();
         try
         {
             C.Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM media", C.connection);
+            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM library", C.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
             while (r.Read())
@@ -59,16 +59,16 @@ public static class Maintenance
         return missingFiles;
     }
 
-    ///<summary>Delete these items from media table that are in the DB but don't exist as files.</summary>
-    ///<param name="rows">List&lt;LibraryItem&gt; retrieved with GetMediaMissingFiles()</param>
-    public static void RemoveMediaMissingFiles(List<LibraryItem> rows)
+    ///<summary>Delete these items FROM library table that are in the DB but don't exist as files.</summary>
+    ///<param name="rows">List&lt;LibraryItem&gt; retrieved with GetMissingFiles()</param>
+    public static void RemoveMissingFiles(List<LibraryItem> rows)
     {
         try
         {
             C.Open();
             foreach (LibraryItem row in rows)
             {
-                using NpgsqlCommand cmd = new("DELETE FROM media WHERE path=@path", C.connection);
+                using NpgsqlCommand cmd = new("DELETE FROM library WHERE path=@path", C.connection);
                 cmd.Parameters.AddWithValue("@path", row.Path);
                 cmd.ExecuteNonQuery();
             }

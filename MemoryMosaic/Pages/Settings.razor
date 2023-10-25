@@ -94,7 +94,7 @@
         @if (maintenanceLoaded)
         {
             <LinkButton Icon="insert_drive_file" Text="@($"Untracked Files ({untrackedPaths?.Count})")" Href="maintenance/untracked-files" Title="Items in Library Folder but NOT in Database"/>
-            <LinkButton Icon="find_in_page" Text="@($"Missing Files ({mediaMissingFiles?.Count})")" Href="maintenance/missing-files" Title="Items in Database but the Files Don't Exist"/>
+            <LinkButton Icon="find_in_page" Text="@($"Missing Files ({missingFiles?.Count})")" Href="maintenance/missing-files" Title="Items in Database but the Files Don't Exist"/>
             <IconTextButton Icon="folder" Text="@($"Empty Folders ({emptyFolders?.Count})")" OnClick="@EmptyFoldersBtnClick" Title="Click to Delete All Empty Folders From Library and Import"/>
         }
     </div>
@@ -108,7 +108,7 @@
 
         @if (statsLoaded)
         {
-            <span>@($"{mediaRowCount} {(mediaRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
+            <span>@($"{libraryRowCount} {(libraryRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
             <span>@($"{trashRowCount} {(trashRowCount == 1 ? "Item In Trash" : "Items In Trash")}")</span>
             <span>@($"{collectionsCount} {(collectionsCount == 1 ? "Collection" : "Collections")}")</span>
             
@@ -179,11 +179,11 @@
     private List<string>? emptyFolders;
     
     //Missing files
-    private List<LibraryItem>? mediaMissingFiles;
+    private List<LibraryItem>? missingFiles;
     
     //Stats
     private bool statsLoaded;
-    private long mediaRowCount, trashRowCount, collectionsCount;
+    private long libraryRowCount, trashRowCount, collectionsCount;
     private long totalUsableDriveSize; //How much space the drive mm_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
     private long freeDriveSpace; //Bytes
     private long librarySize; //Bytes
@@ -196,7 +196,7 @@
     protected override void OnInitialized()
     {
         statsLoaded = false;
-        mediaRowCount = trashRowCount = 0;
+        libraryRowCount = trashRowCount = 0;
         collectionsCount = 0;
         totalUsableDriveSize = 0;
         freeDriveSpace = 0;
@@ -256,13 +256,13 @@
         amountUpdated = amountToUpdate = 0;
         thumbnailProgress.Enable();
 
-        List<LibraryItem> allItems = C.LoadEntireMediaTable();
+        List<LibraryItem> allItems = C.LoadEntireLibraryTable();
         amountToUpdate = allItems.Count;
 
         await Parallel.ForEachAsync(allItems, async (item, _) =>
         {
             await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
-            await using NpgsqlCommand cmd = new("UPDATE media SET thumbnail = @newThumbnail WHERE path = @path", localConn);
+            await using NpgsqlCommand cmd = new("UPDATE library SET thumbnail = @newThumbnail WHERE path = @path", localConn);
             cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, item.Path)));
             cmd.Parameters.AddWithValue("@path", item.Path);
             await cmd.ExecuteNonQueryAsync(_);
@@ -286,8 +286,8 @@
     {
         maintenanceLoaded = true;
         emptyFolders = new List<string>();
-        untrackedPaths = M.GetUntrackedLibFiles();
-        mediaMissingFiles = M.GetMediaMissingFiles();
+        untrackedPaths = M.GetUntrackedFiles();
+        missingFiles = M.GetMissingFiles();
 
         folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
@@ -300,7 +300,7 @@
     private async void GetStats()
     {
         statsLoaded = true;
-        mediaRowCount = Stats.GetNumItemsInLibrary();
+        libraryRowCount = Stats.GetNumItemsInLibrary();
         trashRowCount = Stats.GetNumItemsInTrash();
         collectionsCount = Stats.CountCollections();
         
