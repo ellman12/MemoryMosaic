@@ -1,13 +1,8 @@
 @import "../Shared";
 
-header {
-	@include page-header(0, 60px);
-
-	> div {
-		@include flex-row;
-		position: absolute;
-		right: 20px;
-
-		> .iconTextBtn { margin-left: 10px; }
-	}
+#sortBtn {
+	position: fixed;
+	top: 6px;
+	right: 400px;
+	z-index: 9999;
 }

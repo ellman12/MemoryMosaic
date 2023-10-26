@@ -197,9 +197,9 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM library ORDER BY date_taken DESC", connection);
+            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted FROM library ORDER BY date_taken DESC", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) library.Add(new LibraryItem(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6)));
+            while (r.Read()) library.Add(new LibraryItem(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6), r.IsDBNull(7) ? null : r.GetDateTime(7)));
             r.Close();
         }
         catch (NpgsqlException e)

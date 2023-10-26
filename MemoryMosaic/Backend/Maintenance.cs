@@ -35,7 +35,7 @@ public static class Maintenance
         try
         {
             C.Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description FROM library", C.connection);
+            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted FROM library", C.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
             while (r.Read())
@@ -43,7 +43,7 @@ public static class Maintenance
                 string shortPath = r.GetString(0);
                 string fullPath = Path.Combine(S.libFolderPath, shortPath);
                 if (!File.Exists(fullPath))
-                    missingFiles.Add(new LibraryItem(shortPath, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6)));
+                    missingFiles.Add(new LibraryItem(shortPath, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6), r.IsDBNull(7) ? null : r.GetDateTime(7)));
             }
             r.Close();
         }

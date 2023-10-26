@@ -122,6 +122,14 @@ Items can be selected, and depending on the page, different options may be appli
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
+	///Call this when the sort order and/or order by have changed.
+	public void Reset()
+	{
+		Content.Clear();
+		topLoader = new ContentLoader(this, false, false, false);
+		bottomLoader = new ContentLoader(this, true, true, true);
+	}
+	
 	protected override async Task OnInitializedAsync()
 	{
 		GroupBy = DefaultGroupBy;
@@ -134,7 +142,7 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	///Must resemble this order: path, date_taken, date_added, starred, uuid, thumbnail, description
 	[Parameter]
-	public required string Columns { get; set; } = "path, date_taken, date_added, starred, uuid, thumbnail, description";
+	public required string Columns { get; set; } = "path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted";
 
 	[Parameter]
 	public required string Table { get; set; } = "library";
@@ -192,10 +200,13 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		(GroupBy.Day, "date_taken") => row => row.DateTaken?.Date,
 		(GroupBy.Day, "date_added") => row => row.DateAdded.Date,
+		(GroupBy.Day, "date_deleted") => row => row.DateDeleted?.Date,
 		(GroupBy.Month, "date_taken") => row => new {row.DateTaken?.Month, row.DateTaken?.Year},
 		(GroupBy.Month, "date_added") => row => new {row.DateAdded.Month, row.DateAdded.Year},
+		(GroupBy.Month, "date_deleted") => row => new {row.DateDeleted?.Month, row.DateDeleted?.Year},
 		(GroupBy.Year, "date_taken") => row => row.DateTaken?.Year,
 		(GroupBy.Year, "date_added") => row => row.DateAdded.Year,
+		(GroupBy.Year, "date_deleted") => row => row.DateDeleted?.Year,
 		_ => throw new ArgumentOutOfRangeException()
 	};
 }
@@ -347,14 +358,25 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private void RestoreSelected()
 	{
-		if (SelectedItems.Count == 0)
-			C.RestoreTrash();
-		else if (fv.Visibility.Visible)
+		if (fv.Visibility.Visible)
+		{
 			C.RestoreItem(fv.Current.Id);
+			Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+			
+			if (fv.Index == Content.Count)
+				fv.Index--;
+		}
+		else if (SelectedItems.Count == 0)
+		{
+			C.RestoreTrash();
+			Content.Clear();
+		}
 		else
+		{
 			C.RestoreItems(SelectedItems);
+			Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+		}
 
-		Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 		SelectedItems.Clear();
 		restorePrompt.Disable();
 		StateHasChanged();
@@ -372,28 +394,42 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		if (TrashPage)
 		{
-			if (SelectedItems.Count == 0)
-				C.EmptyTrash();
-			else if (fv.Visibility.Visible)
+			if (fv.Visibility.Visible)
 			{
 				C.RemoveFromTrash(fv.Current.Id);
-				fv.Index++;
+				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+				
+				if (fv.Index == Content.Count)
+					fv.Index--;
+			}
+			else if (SelectedItems.Count == 0)
+			{
+				C.EmptyTrash();
+				Content.Clear();
 			}
 			else
+			{
 				C.RemoveFromTrash(SelectedItems);
+				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+			}
 		}
 		else
 		{
 			if (fv.Visibility.Visible)
 			{
 				C.MoveToTrash(fv.Current.Id);
-				fv.Index++;
+				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+				
+				if (fv.Index == Content.Count)
+					fv.Index--;
 			}
 			else
+			{
 				C.MoveToTrash(SelectedItems);
+				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+			}
 		}
 		
-		Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 		SelectedItems.Clear();
 		deletePrompt.Disable();
 		StateHasChanged();
