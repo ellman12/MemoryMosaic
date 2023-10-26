@@ -234,7 +234,7 @@
 
 	private void MoveLeft()
 	{
-		if (Index == 0 && TopLoader is {HasMoreRows: true})
+		if (Index == 0 && TopLoader!.HasMoreRows)
 			Index += TopLoader.AddContent(100);
 		
 		Index--;
@@ -242,7 +242,7 @@
 
 	private void MoveRight()
 	{
-		if (Index == Content.Count - 1 && BottomLoader is {HasMoreRows: true})
+		if (Index == Content.Count - 1 && BottomLoader!.HasMoreRows)
 			BottomLoader.AddContent();
 
 		Index++;
