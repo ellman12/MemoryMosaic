@@ -358,14 +358,25 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private void RestoreSelected()
 	{
-		if (SelectedItems.Count == 0)
-			C.RestoreTrash();
-		else if (fv.Visibility.Visible)
+		if (fv.Visibility.Visible)
+		{
 			C.RestoreItem(fv.Current.Id);
+			Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+			
+			if (fv.Index == Content.Count)
+				fv.Index--;
+		}
+		else if (SelectedItems.Count == 0)
+		{
+			C.RestoreTrash();
+			Content.Clear();
+		}
 		else
+		{
 			C.RestoreItems(SelectedItems);
+			Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+		}
 
-		Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 		SelectedItems.Clear();
 		restorePrompt.Disable();
 		StateHasChanged();
@@ -383,28 +394,42 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		if (TrashPage)
 		{
-			if (SelectedItems.Count == 0)
-				C.EmptyTrash();
-			else if (fv.Visibility.Visible)
+			if (fv.Visibility.Visible)
 			{
 				C.RemoveFromTrash(fv.Current.Id);
-				fv.Index++;
+				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+				
+				if (fv.Index == Content.Count)
+					fv.Index--;
+			}
+			else if (SelectedItems.Count == 0)
+			{
+				C.EmptyTrash();
+				Content.Clear();
 			}
 			else
+			{
 				C.RemoveFromTrash(SelectedItems);
+				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+			}
 		}
 		else
 		{
 			if (fv.Visibility.Visible)
 			{
 				C.MoveToTrash(fv.Current.Id);
-				fv.Index++;
+				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+				
+				if (fv.Index == Content.Count)
+					fv.Index--;
 			}
 			else
+			{
 				C.MoveToTrash(SelectedItems);
+				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+			}
 		}
 		
-		Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 		SelectedItems.Clear();
 		deletePrompt.Disable();
 		StateHasChanged();

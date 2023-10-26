@@ -176,7 +176,7 @@
 		get => index;
 		set
 		{
-			if (value < 0 || value > Content.Count) return;
+			if (value < 0 || value >= Content.Count) return;
 			index = value;
 			collectionsContaining = C.GetCollectionsContaining(Current.Id);
 
