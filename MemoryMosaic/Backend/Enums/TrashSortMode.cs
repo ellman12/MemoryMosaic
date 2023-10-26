@@ -3,10 +3,10 @@
 ///How items in Trash should be sorted.
 public enum TrashSortMode
 {
-	NewestDateDeleted, //Default
-	NewestDateTaken,
-	NewestDateAdded,
+	NewestDateDeleted,
 	OldestDateDeleted,
+	NewestDateTaken,
 	OldestDateTaken,
+	NewestDateAdded,
 	OldestDateAdded
 }
