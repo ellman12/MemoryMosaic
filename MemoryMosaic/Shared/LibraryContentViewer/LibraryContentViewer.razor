@@ -192,10 +192,13 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		(GroupBy.Day, "date_taken") => row => row.DateTaken?.Date,
 		(GroupBy.Day, "date_added") => row => row.DateAdded.Date,
+		(GroupBy.Day, "date_deleted") => row => row.DateDeleted?.Date,
 		(GroupBy.Month, "date_taken") => row => new {row.DateTaken?.Month, row.DateTaken?.Year},
 		(GroupBy.Month, "date_added") => row => new {row.DateAdded.Month, row.DateAdded.Year},
+		(GroupBy.Month, "date_deleted") => row => new {row.DateDeleted?.Month, row.DateDeleted?.Year},
 		(GroupBy.Year, "date_taken") => row => row.DateTaken?.Year,
 		(GroupBy.Year, "date_added") => row => row.DateAdded.Year,
+		(GroupBy.Year, "date_deleted") => row => row.DateDeleted?.Year,
 		_ => throw new ArgumentOutOfRangeException()
 	};
 }
