@@ -49,6 +49,12 @@
 		{
 			<span>@Current.GetType().Name</span>
 		}
+		
+		<div class="field" title="@Path.GetFileName(Current.Path)">
+        	<MaterialIcon Icon="image"/>
+        	<span>@Path.GetFileName(Current.Path)</span>
+        	<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
+        </div>
 
 		@if (Current is LibraryItem current)
 		{
@@ -71,12 +77,6 @@
 				</div>
 			}
 		}
-		
-		<div class="field" title="@Path.GetFileName(Current.Path)">
-			<MaterialIcon Icon="image"/>
-			<span>@Path.GetFileName(Current.Path)</span>
-			<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
-		</div>
 
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
 
