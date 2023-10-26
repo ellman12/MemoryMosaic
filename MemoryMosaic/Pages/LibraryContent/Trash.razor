@@ -14,7 +14,7 @@
 	<DropdownButton Icon="check" Text="Oldest Date Added First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateAdded))" IconStyle="@(sortMode == TrashSortMode.OldestDateAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateAdded ? "#1a73e8" : "white")"/>
 </Dropdown>
 
-<LibraryContentViewer @ref="@lcv" NoItemsText="No Items in Trash" Where="date_deleted IS NOT NULL" OrderByFields="@orderBy" SortDesc="@sortDesc" TrashPage="@true"/>
+<LibraryContentViewer @ref="@lcv" NoItemsText="No Items in Trash" OrderByFields="@orderBy" SortDesc="@sortDesc" TrashPage="@true"/>
 
 @code {
 	private LibraryContentViewer lcv = null!;

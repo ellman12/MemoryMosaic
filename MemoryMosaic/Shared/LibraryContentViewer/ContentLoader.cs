@@ -18,7 +18,7 @@ public sealed class ContentLoader
 	{
 		get
 		{
-			List<string> filters = new();
+			List<string> filters = new() {$"date_deleted IS {(LCV.TrashPage ? "NOT" : "")} NULL"};
 
 			(string comparisonOperator, string sortOrder) = (LCV.SortDesc, Bottom) switch
 			{
@@ -34,7 +34,7 @@ public sealed class ContentLoader
 
 			string orderBy = $"{String.Join($" {sortOrder}, ", LCV.OrderByFields)} {sortOrder}";
 			
-			return $"SELECT {LCV.Columns} FROM {LCV.Table} {(filters.Count > 0 ? $"WHERE {String.Join(" AND ", filters)}" : "")} ORDER BY {orderBy}";
+			return $"SELECT {LCV.Columns} FROM {LCV.Table} WHERE {String.Join(" AND ", filters)} ORDER BY {orderBy}";
 		}
 	}
 
