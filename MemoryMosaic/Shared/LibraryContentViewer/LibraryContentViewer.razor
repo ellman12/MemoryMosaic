@@ -16,7 +16,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 @if (!fv.Visibility.Visible)
 {
-	<KeyboardShortcuts Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
+	<KeyboardShortcuts CtrlD="@DeleteButtonClick" Del="@DeleteButtonClick" Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
 }
 
 <header style="visibility: @(SelectedItems.Count > 0 || TrashPage ? "visible" : "hidden")">
