@@ -19,7 +19,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<KeyboardShortcuts CtrlD="@DeleteButtonClick" Del="@DeleteButtonClick" Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
 }
 
-<header style="visibility: @(SelectedItems.Count > 0 || TrashPage ? "visible" : "hidden")">
+<header style="visibility: @(SelectedItems.Count > 0 || PersistentHeader || TrashPage ? "visible" : "hidden")">
 	@if (SelectedItems.Count > 0)
 	{
 		<IconButton Icon="close" OnClick="@ClearChecks"/>
@@ -132,7 +132,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 @* Loading content *@
 @code {
-	///Must resemble this order: path, date_taken, date_added, starred, uuid, thumbnail, description
+	///Must resemble this order: path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted
 	[Parameter]
 	public required string Columns { get; set; } = "path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted";
 
@@ -179,6 +179,9 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	[Parameter]
 	public GroupBy DefaultGroupBy { get; set; } = GroupBy.Day;
+	
+	[Parameter]
+	public bool PersistentHeader { get; set; }
 	
 	[Parameter]
 	public bool TrashPage { get; set; }
