@@ -3,7 +3,7 @@
 <title>Trash - MemoryMosaic</title>
 <link href="css/Pages/Trash.css" rel="stylesheet"/>
 
-<IconTextButton Icon="sort" Text="@sortBtnText" OnClick="@(() => { dropdown.Toggle(); StateHasChanged(); })"/>
+<IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@(() => { dropdown.Toggle(); StateHasChanged(); })"/>
 
 <Dropdown @ref="@dropdown" Positioning="top: 55px; right: 400px">
 	<DropdownButton Icon="check" Text="Newest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")"/>
