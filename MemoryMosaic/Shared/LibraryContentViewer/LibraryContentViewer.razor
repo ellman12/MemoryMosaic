@@ -122,14 +122,6 @@ Items can be selected, and depending on the page, different options may be appli
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
-	///Call this when the sort order and/or order by have changed.
-	public void Reset()
-	{
-		Content.Clear();
-		topLoader = new ContentLoader(this, false, false, false);
-		bottomLoader = new ContentLoader(this, true, true, true);
-	}
-	
 	protected override async Task OnInitializedAsync()
 	{
 		GroupBy = DefaultGroupBy;
@@ -164,6 +156,14 @@ Items can be selected, and depending on the page, different options may be appli
 }
 
 @functions {
+	///Call this when the sort order and/or order by have changed.
+	public void Reset()
+	{
+		Content.Clear();
+		topLoader = new ContentLoader(this, false, false, false);
+		bottomLoader = new ContentLoader(this, true, true, true);
+	}
+	
 	private void StartDateChanged()
 	{
 		Content.Clear();
