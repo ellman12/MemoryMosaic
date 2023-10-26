@@ -62,6 +62,14 @@
 				<MaterialIcon Icon="cloud_upload"/>
 				<span>@FormatDateTaken(current.DateAdded)</span>
 			</div>
+			
+			if (current.DateDeleted != null)
+			{
+				<div class="field" title="Date Deleted">
+					<MaterialIcon Icon="trash"/>
+					<span>@FormatDateTaken(current.DateDeleted)</span>
+				</div>
+			}
 		}
 		
 		<div class="field" title="@Path.GetFileName(Current.Path)">

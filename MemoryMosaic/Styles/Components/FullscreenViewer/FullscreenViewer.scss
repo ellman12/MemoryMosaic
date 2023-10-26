@@ -118,15 +118,15 @@
 			height: 50px;
 			margin-bottom: 4px;
 
-			> span {
+			> * {
 				margin-right: 12px;
-				
-				&:last-of-type {
-					width: 250px;
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
-				}
+			}
+			
+			> span:last-of-type {
+				width: 250px;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 		}
 
