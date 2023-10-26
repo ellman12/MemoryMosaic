@@ -125,8 +125,8 @@ Items can be selected, and depending on the page, different options may be appli
 	protected override async Task OnInitializedAsync()
 	{
 		GroupBy = DefaultGroupBy;
-		topLoader = new ContentLoader(this, false, false, false);
-		bottomLoader = new ContentLoader(this, true, true, true);
+		topLoader = new ContentLoader(this, false, false);
+		bottomLoader = new ContentLoader(this, true, true);
 	}
 }
 
@@ -160,15 +160,15 @@ Items can be selected, and depending on the page, different options may be appli
 	public void Reset()
 	{
 		Content.Clear();
-		topLoader = new ContentLoader(this, false, false, false);
-		bottomLoader = new ContentLoader(this, true, true, true);
+		topLoader = new ContentLoader(this, false, false);
+		bottomLoader = new ContentLoader(this, true, true);
 	}
 	
 	private void StartDateChanged()
 	{
 		Content.Clear();
-		topLoader = new ContentLoader(this, true, false, true);
-		bottomLoader = new ContentLoader(this, true, true, true);
+		topLoader = new ContentLoader(this, false, true);
+		bottomLoader = new ContentLoader(this, true, true);
 	}
 }
 

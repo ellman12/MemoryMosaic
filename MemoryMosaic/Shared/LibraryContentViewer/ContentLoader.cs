@@ -38,10 +38,10 @@ public sealed class ContentLoader
 		}
 	}
 
-	public ContentLoader(LibraryContentViewer lcv, bool startingState, bool bottom, bool initializer)
+	public ContentLoader(LibraryContentViewer lcv, bool bottom, bool initializer)
 	{
 		LCV = lcv;
-		Visibility.Visible = startingState;
+		Visibility.Visible = initializer;
 		Bottom = bottom;
 
 		using NpgsqlCommand cmd = new(Query, conn);
