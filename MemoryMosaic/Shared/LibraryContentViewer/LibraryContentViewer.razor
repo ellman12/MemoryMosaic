@@ -122,11 +122,10 @@ Items can be selected, and depending on the page, different options may be appli
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
-	protected override async Task OnInitializedAsync()
+	protected override void OnInitialized()
 	{
 		GroupBy = DefaultGroupBy;
-		topLoader = new ContentLoader(this, false, false);
-		bottomLoader = new ContentLoader(this, true, true);
+		Reset();
 	}
 }
 

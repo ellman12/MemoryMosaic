@@ -1,0 +1,112 @@
+@page "/memories"
+
+<title>Memories - MM</title>
+<link href="css/Pages/Memories.css" rel="stylesheet"/>
+
+<div id="date-picker">
+	<span>Memories From</span>
+
+	<select name="months" id="months" @bind="@SelectedMonth" @bind:event="oninput" @bind:after="@DateChanged">
+		@foreach (string month in months)
+		{
+			<option value="@month">@month</option>
+		}
+	</select>
+
+	<IntInput @bind-Input="@SelectedDay" Width="40px"/>
+
+	<IconButton ID="randomBtn" Icon="shuffle" OnClick="@PickRandomDate" Title="Pick Random Date"/>
+</div>
+
+<LibraryContentViewer @ref="@lcv" NoItemsText="No Items Taken on This Date" DefaultGroupBy="GroupBy.Year" Where="@($"date_taken IS NOT NULL AND EXTRACT(month FROM date_taken) = {months.IndexOf(SelectedMonth) + 1} AND EXTRACT(day FROM date_taken) = {SelectedDay}")" PersistentHeader="true"/>
+
+@code {
+	private static readonly List<string> months = new() {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
+	private LibraryContentViewer? lcv;
+	private int monthIndex, maxDay, selectedDay;
+	private int MonthIndex
+	{
+		get => monthIndex;
+		set
+		{
+			if (value < 0)
+				monthIndex = 11;
+			else if (value > 11)
+				monthIndex = 0;
+			else
+				monthIndex = value;
+			
+			SelectedMonth = months[monthIndex];
+		}
+	}
+	
+	private string selectedMonth = "";
+	private string SelectedMonth
+	{
+		get => selectedMonth;
+		set
+		{
+			selectedMonth = value;
+
+			maxDay = value switch
+			{
+				"April" or "June" or "September" or "November" => 30,
+				"February" => 29,
+				_ => 31
+			};
+
+			if (selectedDay > maxDay)
+				selectedDay = maxDay;
+
+			monthIndex = months.IndexOf(value);
+		}
+	}
+
+	private int SelectedDay
+	{
+		get => selectedDay;
+		set
+		{
+			if (value <= 0)
+			{
+				MonthIndex--;
+				selectedDay = maxDay;
+			}
+			else if (value > maxDay)
+			{
+				MonthIndex++;
+				selectedDay = 1;
+			}
+			else
+				selectedDay = value;
+			
+			DateChanged();
+		}
+	}
+}
+
+@functions {
+	protected override void OnInitialized()
+	{
+		SelectedMonth = DateTime.Today.ToString("MMMM");
+		SelectedDay = DateTime.Today.Day;
+	}
+
+	private void DateChanged()
+	{
+		if (lcv == null) return;
+		lcv.Where = $"date_taken IS NOT NULL AND EXTRACT(month FROM date_taken) = {months.IndexOf(SelectedMonth) + 1} AND EXTRACT(day FROM date_taken) = {SelectedDay}";
+		lcv.Reset();
+		StateHasChanged();
+	}
+
+	private void PickRandomDate()
+	{
+		do
+		{
+			SelectedMonth = months[Random.Shared.Next(months.Count)];
+			SelectedDay = Random.Shared.Next(32);
+		} while (lcv!.Content.Count == 0);
+	}
+}
