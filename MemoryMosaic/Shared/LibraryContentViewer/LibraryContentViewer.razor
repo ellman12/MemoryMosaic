@@ -44,6 +44,8 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="Delete Selected"/>
 		}
+		
+		@AdditionalButtons
 	</div>
 </header>
 
@@ -122,6 +124,9 @@ Items can be selected, and depending on the page, different options may be appli
 <ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
 
 @code {
+	[Parameter]
+	public RenderFragment? AdditionalButtons { get; set; }
+	
 	protected override void OnInitialized()
 	{
 		GroupBy = DefaultGroupBy;
