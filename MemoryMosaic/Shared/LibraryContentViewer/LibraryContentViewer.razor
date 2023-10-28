@@ -19,7 +19,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<KeyboardShortcuts CtrlD="@DeleteButtonClick" Del="@DeleteButtonClick" Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
 }
 
-<header style="visibility: @(SelectedItems.Count > 0 || PersistentHeader || TrashPage ? "visible" : "hidden")">
+<header style="visibility: @(SelectedItems.Count > 0 || PersistentHeader || TrashPage || MemoriesPage ? "visible" : "hidden")">
 	@if (SelectedItems.Count > 0)
 	{
 		<IconButton Icon="close" OnClick="@ClearChecks"/>
@@ -106,7 +106,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 <CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" Rerender="@StateHasChanged"/>
 
-@if (!fv.Visibility.Visible)
+@if (!fv.Visibility.Visible && !MemoriesPage)
 {
 	<CtrlGInput @ref="@CtrlGInput" LCV="@this" StartDateChanged="@StartDateChanged"/>
 }
@@ -183,8 +183,11 @@ Items can be selected, and depending on the page, different options may be appli
 	public bool PersistentHeader { get; set; }
 	
 	[Parameter]
-	public bool TrashPage { get; set; }
+	public bool MemoriesPage { get; set; }
 
+	[Parameter]
+	public bool TrashPage { get; set; }
+	
 	private GroupBy groupBy;
 	private GroupBy GroupBy
 	{

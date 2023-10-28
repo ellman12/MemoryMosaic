@@ -18,7 +18,7 @@
 	<IconButton ID="randomBtn" Icon="shuffle" OnClick="@PickRandomDate" Title="Pick Random Date"/>
 </div>
 
-<LibraryContentViewer @ref="@lcv" NoItemsText="No Items Taken on This Date" DefaultGroupBy="GroupBy.Year" Where="@($"date_taken IS NOT NULL AND EXTRACT(month FROM date_taken) = {months.IndexOf(SelectedMonth) + 1} AND EXTRACT(day FROM date_taken) = {SelectedDay}")" PersistentHeader="true"/>
+<LibraryContentViewer @ref="@lcv" NoItemsText="No Items Taken on This Date" DefaultGroupBy="GroupBy.Year" Where="@($"date_taken IS NOT NULL AND EXTRACT(month FROM date_taken) = {months.IndexOf(SelectedMonth) + 1} AND EXTRACT(day FROM date_taken) = {SelectedDay}")" MemoriesPage="true"/>
 
 @code {
 	private static readonly List<string> months = new() {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
