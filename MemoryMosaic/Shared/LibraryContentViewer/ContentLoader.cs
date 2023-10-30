@@ -34,7 +34,7 @@ public sealed class ContentLoader
 
 			string orderBy = $"{String.Join($" {sortOrder}, ", LCV.OrderByFields)} {sortOrder}";
 			
-			return $"SELECT {LCV.Columns} FROM {LCV.Table} WHERE {String.Join(" AND ", filters)} ORDER BY {orderBy}";
+			return $"SELECT {LCV.Columns} FROM {LCV.Table} {(String.IsNullOrWhiteSpace(LCV.Join) ? "" : $"INNER JOIN {LCV.Join}")} WHERE {String.Join(" AND ", filters)} ORDER BY {orderBy}";
 		}
 	}
 

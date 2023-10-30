@@ -138,10 +138,13 @@ Items can be selected, and depending on the page, different options may be appli
 @code {
 	///Must resemble this order: path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted
 	[Parameter]
-	public required string Columns { get; set; } = "path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted";
+	public required string Columns { get; set; } = "l.path, l.date_taken, l.date_added, l.starred, l.uuid, l.thumbnail, l.description, l.date_deleted";
 
 	[Parameter]
-	public required string Table { get; set; } = "library";
+	public required string Table { get; set; } = "library AS l";
+
+	[Parameter]
+	public string Join { get; set; } = "";
 	
 	[Parameter]
 	public string? Where { get; set; }
@@ -209,14 +212,17 @@ Items can be selected, and depending on the page, different options may be appli
 	private Func<LibraryItem, dynamic?> GroupByFunction => (GroupBy, OrderByFields.First()) switch
 	{
 		(GroupBy.Day, "date_taken") => row => row.DateTaken?.Date,
-		(GroupBy.Day, "date_added") => row => row.DateAdded.Date,
+		(GroupBy.Day, "date_added" or "date_added_to_collection") => row => row.DateAdded.Date,
 		(GroupBy.Day, "date_deleted") => row => row.DateDeleted?.Date,
+		
 		(GroupBy.Month, "date_taken") => row => new {row.DateTaken?.Month, row.DateTaken?.Year},
-		(GroupBy.Month, "date_added") => row => new {row.DateAdded.Month, row.DateAdded.Year},
+		(GroupBy.Month, "date_added" or "date_added_to_collection") => row => new {row.DateAdded.Month, row.DateAdded.Year},
 		(GroupBy.Month, "date_deleted") => row => new {row.DateDeleted?.Month, row.DateDeleted?.Year},
+		
 		(GroupBy.Year, "date_taken") => row => row.DateTaken?.Year,
-		(GroupBy.Year, "date_added") => row => row.DateAdded.Year,
+		(GroupBy.Year, "date_added" or "date_added_to_collection") => row => row.DateAdded.Year,
 		(GroupBy.Year, "date_deleted") => row => row.DateDeleted?.Year,
+		
 		_ => throw new ArgumentOutOfRangeException()
 	};
 }
