@@ -30,7 +30,7 @@
 
 	@if (!collection.ReadOnly)
 	{
-		<DropdownButton Icon="@(collection.Folder ? "perm_media" : "collections")" Text="@(collection.Folder ? "Change to Album" : "Change to Folder")" OnClick="@ChangeCollectionType"/>
+		<DropdownButton Icon="@(collection.Folder ? "collections" : "perm_media")" Text="@(collection.Folder ? "Change to Album" : "Change to Folder")" OnClick="@ChangeCollectionType"/>
 		<DropdownButton Icon="trash" Text="@(collection.Folder ? "Delete Folder" : "Delete Album")" OnClick="@DeleteCollectionBtnClick"/>
 	}
 </Dropdown>
