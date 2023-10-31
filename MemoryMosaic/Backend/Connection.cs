@@ -507,6 +507,9 @@ public static class Connection
         {
             await using NpgsqlCommand cmd = new($"SELECT name, last_updated, folder, readonly FROM collections WHERE id = {collectionID}", localConn);
             await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
+
+            if (!r.HasRows) return null;
+            
             await r.ReadAsync();
             return new Collection(Int32.Parse(collectionID), r.GetString(0), r.GetDateTime(1), r.GetBoolean(2), r.GetBoolean(3));
         }
