@@ -1,209 +1,172 @@
 @page "/collection-view/{CollectionID}"
 @inject NavigationManager navigationManager
 
-@* @if (collection == null) { return; } *@
+@if (collection == null) { return; }
 
-@* <title>@collection.Name - MemoryMosaic</title> *@
-@* <link href="css/Pages/CollectionView.css" rel="stylesheet"/> *@
-@* <link href="css/Pages/LibraryContentPage.css" rel="stylesheet"/> *@
+<title>@collection.Name - MemoryMosaic</title>
+<link href="css/Pages/CollectionView.css" rel="stylesheet"/>
 
-@* <header> *@
-@*     @if (lcv.Header.Visible) *@
-@*     { *@
-@*         <IconButton Icon="close" OnClick="@lcv.ClearChecks" ID="clearBtn"/> *@
-@*         <span>@lcv.SelectedItemsCount&nbsp;&nbsp;Selected</span> *@
-@*     } *@
-@* *@
-@*     <div id="collectionRenameDiv"> *@
-@*         <TextInput @bind-Input="@NewCollectionName" Placeholder="Enter new collection name" FontSize="20" Width="600px" Disabled="@collection.ReadOnly"/> *@
-@* *@
-@*         <MaterialIcon Icon="@(collection.ReadOnly ? "lock" : "")" Title="@(collection.ReadOnly ? "Readonly" : "")"/> *@
-@* *@
-@*         @if (buttons.Visible) *@
-@*         { *@
-@*             <IconButton Icon="close" OnClick="@CancelBtnClick"/> *@
-@*             <IconButton Icon="check" OnClick="@ConfirmBtnClick"/> *@
-@*         } *@
-@*     </div> *@
-@* *@
-@*     <div id="buttons"> *@
-@*         @if (lcv.Header.Visible) *@
-@*         { *@
-@*             <IconButton Icon="file_download" OnClick="@lcv.DownloadSelected"/> *@
-@*             <IconButton Icon="library_add" OnClick="@lcv.cs.Toggle" Title="Add Selected to Collection"/> *@
-@*             <IconButton Icon="star_outline" OnClick="@lcv.StarPrompt.Toggle"/> *@
-@* *@
-@*             if (!collection.ReadOnly) *@
-@*             { *@
-@*                 <IconButton Icon="remove" OnClick="@RemoveBtnClick" Title="Remove Selected"/> *@
-@*             } *@
-@* *@
-@*             <IconButton Icon="trash" OnClick="@lcv.DeleteBtnClick"/> *@
-@*         } *@
-@*         <IconButton Icon="more_vert" OnClick="@moreOptions.Toggle" Title="More Options"/> *@
-@*     </div> *@
-@* </header> *@
-@* *@
-@* <Dropdown @ref="@moreOptions" Positioning="top: 58px; right: 58px"> *@
-@*     <DropdownButton Icon="check" Text="Oldest Date Taken First" OnClick="@(() => ChangeOrder(CVSortMode.OldestDateTaken))" IconStyle="@(sortMode == CVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.OldestDateTaken ? "#1a73e8" : "white")"/> *@
-@*     <DropdownButton Icon="check" Text="Newest Date Taken First" OnClick="@(() => ChangeOrder(CVSortMode.NewestDateTaken))" IconStyle="@(sortMode == CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.NewestDateTaken ? "#1a73e8" : "white")"/> *@
-@*     <DropdownButton Icon="check" Text="Oldest Added First" OnClick="@(() => ChangeOrder(CVSortMode.OldestAdded))" IconStyle="@(sortMode == CVSortMode.OldestAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.OldestAdded ? "#1a73e8" : "white")"/> *@
-@*     <DropdownButton Icon="check" Text="Newest Added First" OnClick="@(() => ChangeOrder(CVSortMode.NewestAdded))" IconStyle="@(sortMode == CVSortMode.NewestAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.NewestAdded ? "#1a73e8" : "white")"/> *@
-@* *@
-@*     <DropdownButton Icon="@(collection.ReadOnly ? "lock_open" : "lock")" Text="@($"{(collection.ReadOnly ? "Remove" : "Make")} Readonly)")" OnClick="@ToggleReadonly"/> *@
-@* *@
-@*     @if (!collection.ReadOnly) *@
-@*     { *@
-@*         <DropdownButton Icon="@(collection.Folder ? "perm_media" : "collections")" Text="@(collection.Folder ? "Change to Album" : "Change to Folder")" OnClick="@ChangeCollectionType"/> *@
-@*         <DropdownButton Icon="trash" Text="@(collection.Folder ? "Delete Folder" : "Delete Album")" OnClick="@DeleteCollectionBtnClick"/> *@
-@*     } *@
-@* </Dropdown> *@
-@* *@
-@* @{ UpdateQueries(); } *@
-@* *@
-@* $1$ Loads every item with NULL Date Taken first, then items with Date Taken. #1# *@
-@* <LibraryContentViewer @ref="@lcv" FirstQuery="@firstQuery" NotNullDTQueryTop="@topQuery" NotNullDTQueryBottom="@bottomQuery" NoItemsText="@($"{(collection.Folder ? "Folder" : "Album")} is Empty")" Rerender="@StateHasChanged" UseDateAdded="@(sortMode is CVSortMode.OldestAdded or CVSortMode.NewestAdded)" Collection="@collection"/> *@
-@* *@
-@* <TwoChoiceInput @ref="@delPrompt" Message=@($"PERMANENTLY Delete {(collection.Folder ? "Folder" : "Album")} \"{collection.Name}\"?") *@
-@*     YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.Id); })" NoBtnClick="@delPrompt.Disable"/> *@
-@* *@
-@* @code { *@
-@*     [Parameter] *@
-@*     public string CollectionID { get; set; } = null!; *@
-@* *@
-@*     private Collection? collection; *@
-@*      *@
-@*     private CVSortMode sortMode; *@
-@*     private string orderBy = null!, sortColumn = null!, topQuery = null!, bottomQuery = null!, firstQuery = null!; *@
-@* *@
-@*     private TwoChoiceInput delPrompt = new(); *@
-@*     private LibraryContentViewer lcv = new(); *@
-@*     private Dropdown moreOptions = new(); *@
-@*     private readonly ElementVisibility buttons = new(); *@
-@*     private string _newCollectionName = null!; *@
-@*     private string NewCollectionName *@
-@*     { *@
-@*         get => _newCollectionName; *@
-@*         set *@
-@*         { *@
-@*             if (value == collection!.Name) //Same so don't need to reapply *@
-@*             { *@
-@*                 buttons.Disable(); *@
-@*             } *@
-@*             else if (value != collection.Name) *@
-@*             { *@
-@*                 _newCollectionName = value; *@
-@*                 buttons.Enable(); *@
-@*             } *@
-@*         } *@
-@*     } *@
-@* } *@
-@* *@
-@* @functions { *@
-@*     protected override async Task OnInitializedAsync() *@
-@*     { *@
-@*         collection = await C.GetCollectionDetailsAsync(CollectionID) ?? throw new InvalidOperationException(); *@
-@*         sortMode = CVSortMode.NewestDateTaken; *@
-@*         _newCollectionName = collection.Name; *@
-@*         ElementVisibility.ChangeStates(false, delPrompt.Visibility, buttons); *@
-@*     } *@
-@* *@
-@*     private void UpdateQueries() *@
-@*     { *@
-@*         switch (sortMode) *@
-@*         { *@
-@*             case CVSortMode.OldestDateTaken: *@
-@*                 orderBy = "date_taken ASC"; *@
-@*                 sortColumn = "date_taken"; *@
-@*                 break; *@
-@*             case CVSortMode.NewestDateTaken: *@
-@*                 orderBy = "date_taken DESC"; *@
-@*                 sortColumn = "date_taken"; *@
-@*                 break; *@
-@*             case CVSortMode.OldestAdded: *@
-@*                 orderBy = "date_added_to_collection ASC"; *@
-@*                 sortColumn = "date_added_to_collection"; *@
-@*                 break; *@
-@*             case CVSortMode.NewestAdded: *@
-@*                 orderBy = "date_added_to_collection DESC"; *@
-@*                 sortColumn = "date_added_to_collection"; *@
-@*                 break; *@
-@*             default: *@
-@*                 throw new ArgumentOutOfRangeException(); *@
-@*         } *@
-@*      *@
-@*         string shared = $"SELECT m.path, m.date_taken, a.date_added_to_collection, m.starred, m.uuid, m.thumbnail, m.description FROM media AS m INNER JOIN collection_entries AS a ON m.uuid=a.uuid WHERE collection_id={collection!.Id} AND date_deleted IS NULL AND separate={collection.Folder}"; *@
-@*         topQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '>' : '<')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100"; *@
-@*         bottomQuery = $"{shared} AND {sortColumn} {(orderBy.Contains("DESC") ? '<' : '>')} @oldestOrNewestDT ORDER BY {orderBy} LIMIT 100"; *@
-@*      *@
-@*         //Loads every item with NULL Date Taken first, then items with a Date Taken. *@
-@*         firstQuery = ""; *@
-@*         if (S.displayNoDTInCV) firstQuery = $"({shared} AND date_taken IS NULL ORDER BY {orderBy}) UNION "; *@
-@*         firstQuery += $"({shared} AND date_taken IS NOT NULL ORDER BY {orderBy} LIMIT 100)"; *@
-@*         if (S.displayNoDTInCV) firstQuery += $" ORDER BY {orderBy}"; *@
-@*     } *@
-@*      *@
-@*     private void ChangeOrder(CVSortMode newMode) *@
-@*     { *@
-@*         sortMode = newMode; *@
-@*         moreOptions.Disable(); *@
-@*         lcv.Reset(); *@
-@*         UpdateQueries(); *@
-@*         StateHasChanged(); *@
-@*     } *@
-@* *@
-@*     private async void ToggleReadonly() *@
-@*     { *@
-@*         await C.ToggleReadonlyAsync(collection ?? throw new InvalidOperationException()); *@
-@*         collection.ReadOnly = !collection.ReadOnly; *@
-@*         await InvokeAsync(StateHasChanged); *@
-@*     } *@
-@* *@
-@*     private void ChangeCollectionType() *@
-@*     { *@
-@*         C.ChangeCollectionType(collection!.Id, !collection.Folder); *@
-@*         collection.Folder = !collection.Folder; *@
-@*         StateHasChanged(); *@
-@*     } *@
-@* *@
-@*     //Remove selected from the collection *@
-@*     private void RemoveBtnClick() *@
-@*     { *@
-@*         foreach (Guid uuid in lcv.SelectedItems) C.RemoveFromCollection(uuid, collection!.Id); *@
-@*         lcv.Reset(); *@
-@*         StateHasChanged(); *@
-@*     } *@
-@*      *@
-@*     private void DeleteCollectionBtnClick() *@
-@*     { *@
-@*         if (S.showPrompts == false) *@
-@*         { *@
-@*             DeleteCollection(); *@
-@*             return; *@
-@*         } *@
-@* *@
-@*         delPrompt.Enable(); *@
-@*     } *@
-@*      *@
-@*     private void DeleteCollection() *@
-@*     { *@
-@*         navigationManager.NavigateTo("/collections"); *@
-@*         C.DeleteCollection(collection!.Id); *@
-@*     } *@
-@*      *@
-@*     //Functions for collection stuff *@
-@*     private void CancelBtnClick() *@
-@*     { *@
-@*         buttons.Disable(); *@
-@*         NewCollectionName = collection!.Name; //Reset to OG *@
-@*     } *@
-@* *@
-@*     private void ConfirmBtnClick() *@
-@*     { *@
-@*         buttons.Disable(); *@
-@*         if (NewCollectionName != "") *@
-@*             C.RenameCollection(NewCollectionName, collection!.Id); *@
-@*         else *@
-@*             NewCollectionName = "Please enter a name"; *@
-@*     } *@
-@* } *@
+<div id="header">
+	<TextInput @bind-Input="@NewCollectionName" Placeholder="Enter new collection name" FontSize="20" Width="450px" Disabled="@collection.ReadOnly"/>
+
+	<MaterialIcon Icon="@(collection.ReadOnly ? "lock" : "")" Title="@(collection.ReadOnly ? "Readonly" : "")"/>
+
+	@if (buttons.Visible)
+	{
+		<IconButton Icon="close" OnClick="@CancelBtnClick"/>
+		<IconButton Icon="check" OnClick="@ConfirmBtnClick"/>
+	}
+</div>
+
+<Dropdown @ref="@moreOptions" Positioning="top: 55px; right: 25px">
+	<DropdownButton Icon="check" Text="Newest Date Taken First" OnClick="@(() => ChangeOrder(CVSortMode.NewestDateTaken))" IconStyle="@(sortMode == CVSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.NewestDateTaken ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Oldest Date Taken First" OnClick="@(() => ChangeOrder(CVSortMode.OldestDateTaken))" IconStyle="@(sortMode == CVSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.OldestDateTaken ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Newest Added to Library First" OnClick="@(() => ChangeOrder(CVSortMode.NewestDateAddedToLibrary))" IconStyle="@(sortMode == CVSortMode.NewestDateAddedToLibrary ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.NewestDateAddedToLibrary ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Oldest Added to Library First" OnClick="@(() => ChangeOrder(CVSortMode.OldestDateAddedToLibrary))" IconStyle="@(sortMode == CVSortMode.OldestDateAddedToLibrary ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.OldestDateAddedToLibrary ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Newest Added to Collection First" OnClick="@(() => ChangeOrder(CVSortMode.NewestDateAddedToCollection))" IconStyle="@(sortMode == CVSortMode.NewestDateAddedToCollection ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.NewestDateAddedToCollection ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Oldest Added to Collection First" OnClick="@(() => ChangeOrder(CVSortMode.OldestDateAddedToCollection))" IconStyle="@(sortMode == CVSortMode.OldestDateAddedToCollection ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CVSortMode.OldestDateAddedToCollection ? "#1a73e8" : "white")"/>
+
+	<DropdownButton Icon="@(collection.ReadOnly ? "lock_open" : "lock")" Text="@($"{(collection.ReadOnly ? "Remove" : "Make")} Readonly")" OnClick="@ToggleReadonly"/>
+
+	@if (!collection.ReadOnly)
+	{
+		<DropdownButton Icon="@(collection.Folder ? "perm_media" : "collections")" Text="@(collection.Folder ? "Change to Album" : "Change to Folder")" OnClick="@ChangeCollectionType"/>
+		<DropdownButton Icon="trash" Text="@(collection.Folder ? "Delete Folder" : "Delete Album")" OnClick="@DeleteCollectionBtnClick"/>
+	}
+</Dropdown>
+
+<LibraryContentViewer @ref="@lcv" Columns="@Columns" Join="collection_entries AS ce ON l.uuid=ce.uuid" Where="@($"collection_id={collection.Id} AND separate={collection.Folder}")" OrderByFields="@OrderBy" SortDesc="@((int) sortMode % 2 == 0)" NoItemsText="@($"{(collection.Folder ? "Folder" : "Album")} is Empty")" PersistentHeader="true">
+	<AdditionalButtons>
+		@if (!collection.ReadOnly && lcv.SelectedItems.Count > 0)
+		{
+			<IconButton Icon="remove" OnClick="@RemoveBtnClick" Title="Remove Selected"/>
+		}
+		<IconButton Icon="more_vert" OnClick="@(() => moreOptions.Toggle())" Title="More Options"/>
+	</AdditionalButtons>
+</LibraryContentViewer>
+
+<TwoChoiceInput @ref="@delPrompt" Message=@($"PERMANENTLY Delete {(collection.Folder ? "Folder" : "Album")} \"{collection.Name}\"?") YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.Id); })" NoBtnClick="@(() => delPrompt.Disable())"/>
+
+@code {
+	[Parameter]
+	public string CollectionID { get; set; } = null!;
+	private Collection? collection;
+
+	private LibraryContentViewer lcv = null!;
+	private TwoChoiceInput delPrompt = null!;
+	private Dropdown moreOptions = null!;
+	private readonly ElementVisibility buttons = new();
+	
+	private string Columns => $"l.path, l.date_taken, {((int) sortMode >= 4 ? "ce.date_added_to_collection" : "l.date_added")}, l.starred, l.uuid, l.thumbnail, l.description, l.date_deleted";
+
+	private string[] OrderBy => sortMode switch
+	{
+		CVSortMode.NewestDateTaken or CVSortMode.OldestDateTaken => new[] {"date_taken"},
+		CVSortMode.NewestDateAddedToLibrary or CVSortMode.OldestDateAddedToLibrary => new[] {"date_added"},
+		CVSortMode.NewestDateAddedToCollection or CVSortMode.OldestDateAddedToCollection => new[] {"date_added_to_collection"},
+		_ => throw new ArgumentOutOfRangeException()
+	};
+
+	private CVSortMode sortMode;
+	private string newCollectionName = "";
+	private string NewCollectionName
+	{
+		get => newCollectionName;
+		set
+		{
+			newCollectionName = value;
+
+			if (value == collection!.Name)
+				buttons.Disable();
+			else
+				buttons.Enable();
+		}
+	}
+}
+
+@functions {
+	protected override async Task OnInitializedAsync()
+	{
+		collection = await C.GetCollectionDetailsAsync(CollectionID);
+
+		if (collection == null)
+		{
+			navigationManager.NavigateTo("/collections");
+			return;
+		}
+		
+		sortMode = CVSortMode.NewestDateTaken;
+		newCollectionName = collection.Name;
+		buttons.Rerender = StateHasChanged;
+	}
+	
+	private async void ChangeOrder(CVSortMode newMode)
+	{
+		sortMode = newMode;
+		moreOptions.Disable();
+		StateHasChanged();
+		await Task.Delay(1);
+		lcv.Reset();
+	}
+
+	private async void ToggleReadonly()
+	{
+		await C.ToggleReadonlyAsync(collection ?? throw new InvalidOperationException());
+		collection.ReadOnly = !collection.ReadOnly;
+		await InvokeAsync(StateHasChanged);
+	}
+
+	private void ChangeCollectionType()
+	{
+		C.ChangeCollectionType(collection!.Id, !collection.Folder);
+		collection.Folder = !collection.Folder;
+		StateHasChanged();
+	}
+
+	//Remove selected from the collection
+	private void RemoveBtnClick()
+	{
+		foreach (Guid uuid in lcv.SelectedItems)
+			C.RemoveFromCollection(uuid, collection!.Id);
+		
+		lcv.Reset();
+		StateHasChanged();
+	}
+
+	private void DeleteCollectionBtnClick()
+	{
+		if (S.showPrompts == false)
+		{
+			DeleteCollection();
+			return;
+		}
+
+		delPrompt.Enable();
+	}
+
+	private void DeleteCollection()
+	{
+		C.DeleteCollection(collection!.Id);
+		navigationManager.NavigateTo("/collections");
+	}
+
+	//Functions for collection stuff
+	private void CancelBtnClick()
+	{
+		NewCollectionName = collection!.Name;
+		buttons.Disable();
+		StateHasChanged();
+	}
+
+	private void ConfirmBtnClick()
+	{
+		if (!String.IsNullOrWhiteSpace(NewCollectionName))
+		{
+			C.RenameCollection(NewCollectionName, collection!.Id);
+			collection.Name = NewCollectionName;
+			buttons.Disable();
+		}
+		else
+			NewCollectionName = "Please enter a name";
+	}
+}
