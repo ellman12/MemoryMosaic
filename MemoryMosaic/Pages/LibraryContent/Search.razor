@@ -1,7 +1,7 @@
 ﻿@page "/search"
 
 <title>Search - MM</title>
-<link href="css/Pages/Search.css" rel="stylesheet"/>
+<link href="css/Pages/LCV/Search.css" rel="stylesheet"/>
 
 <div id="searchInput">
 	<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchLibrary(); })" OnFocusOut="@SearchLibrary" Placeholder="Search filenames"/>
