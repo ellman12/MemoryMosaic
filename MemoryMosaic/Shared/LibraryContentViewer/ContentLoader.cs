@@ -9,10 +9,10 @@ public sealed class ContentLoader
 	public ElementVisibility Visibility { get; } = new();
 	
 	public bool HasMoreRows { get; private set; }
-	
-	private readonly NpgsqlConnection conn = C.CreateLocalConnection();
 
-	private readonly NpgsqlDataReader reader;
+	private readonly NpgsqlConnection? conn;
+	
+	private readonly NpgsqlDataReader? reader;
 
 	private string Query
 	{
@@ -43,20 +43,21 @@ public sealed class ContentLoader
 		LCV = lcv;
 		Visibility.Visible = initializer;
 		Bottom = bottom;
+		HasMoreRows = initializer;
 
+		if (!initializer) return;
+		
+		conn = C.CreateLocalConnection();
 		using NpgsqlCommand cmd = new(Query, conn);
 		reader = cmd.ExecuteReader();
-
-		HasMoreRows = initializer;
-		if (initializer)
-			AddContent();
+		AddContent();
 	}
 
 	public void AddContent() => AddContent(100);
 
 	public int AddContent(int readLimit)
 	{
-		if (!HasMoreRows) return 0;
+		if (!HasMoreRows || reader == null) return 0;
 		
 		int rowsAdded = 0;
 
