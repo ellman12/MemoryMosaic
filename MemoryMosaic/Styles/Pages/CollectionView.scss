@@ -1,14 +1,17 @@
-header > #collectionRenameDiv {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	position: absolute;
+@import "../Shared";
+
+#header {
+	@include flex-row;
+	position: fixed;
 	width: auto;
-	left: 20%;
+	height: 50px;
+	left: 400px;
+	top: 6px;
+	z-index: 9999;
 
 	> .material-icons-outlined { margin-left: 20px; }
 
-	> input[type=text] {
+	> input[type="text"] {
 		border: none;
 		border-bottom: 2px solid black;
 		border-radius: 0;
