@@ -103,10 +103,7 @@
 
 	private void PickRandomDate()
 	{
-		do
-		{
-			SelectedMonth = months[Random.Shared.Next(months.Count)];
-			SelectedDay = Random.Shared.Next(32);
-		} while (lcv!.Content.Count == 0);
+		SelectedMonth = months[Random.Shared.Next(months.Count)];
+		SelectedDay = Random.Shared.Next(32);
 	}
 }
