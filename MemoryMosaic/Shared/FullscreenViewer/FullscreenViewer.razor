@@ -140,12 +140,7 @@
 
 @if (Visibility.Visible)
 {
-	if (!Current.Video)
-	{
-		<KeyboardShortcuts Left="@MoveLeft" Right="@MoveRight"/>
-	}
-
-	<KeyboardShortcuts AltLeft="@Disable" CtrlD="@DeleteButtonClick" Del="@DeleteButtonClick" CtrlLeft="@MoveLeft" CtrlRight="@MoveRight" Esc="@Disable" I="@infoVisibility.Toggle"/>
+	<KeyboardShortcuts AltLeft="@Disable" CtrlD="@DeleteButtonClick" Del="@DeleteButtonClick" CtrlLeft="@MoveLeft" CtrlRight="@MoveRight" Esc="@Disable" I="@infoVisibility.Toggle" Left="@TryMoveLeft" Right="@TryMoveRight"/>
 }
 
 @code {
@@ -246,6 +241,18 @@
 			BottomLoader.AddContent();
 
 		Index++;
+	}
+
+	private void TryMoveLeft()
+	{
+		if (!Current.Video)
+			MoveLeft();
+	}
+
+	private void TryMoveRight()
+	{
+		if (!Current.Video)
+			MoveRight();
 	}
 
 	private void UpdateStarred()
