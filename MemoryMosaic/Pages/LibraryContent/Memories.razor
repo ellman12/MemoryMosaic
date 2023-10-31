@@ -23,7 +23,7 @@
 @code {
 	private static readonly List<string> months = new() {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
-	private LibraryContentViewer? lcv;
+	private LibraryContentViewer lcv = null!;
 	private int monthIndex, maxDay, selectedDay;
 	private int MonthIndex
 	{
@@ -93,12 +93,11 @@
 		SelectedDay = DateTime.Today.Day;
 	}
 
-	private void DateChanged()
+	private async void DateChanged()
 	{
-		if (lcv == null) return;
-		lcv.Where = $"date_taken IS NOT NULL AND EXTRACT(month FROM date_taken) = {months.IndexOf(SelectedMonth) + 1} AND EXTRACT(day FROM date_taken) = {SelectedDay}";
-		lcv.Reset();
 		StateHasChanged();
+		await Task.Delay(1);
+		lcv.Reset();
 	}
 
 	private void PickRandomDate()
