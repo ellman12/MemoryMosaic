@@ -1,12 +1,12 @@
-﻿@page "/search"
+@page "/search"
 
 <title>Search - MM</title>
 
 <TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchLibrary(); })" OnFocusOut="@SearchLibrary" Placeholder="Search filenames" Style="width: 250px; position: fixed; left: 45%; top: 18px; z-index: 9999"/>
 
-<LibraryContentViewer @ref="@lcv" NoItemsText="No Items Found" Where="@(String.IsNullOrWhiteSpace(searchText) ? "" : $"path ILIKE '%{searchText}%'")" PersistentHeader="true"/>
-
 <KeyboardShortcuts Slash="@(() => searchInput.Focus())"/>
+
+<LibraryContentViewer @ref="@lcv" NoItemsText="No Items Found" Where="@($"path ILIKE '{(String.IsNullOrWhiteSpace(searchText) ? "" : $"%{searchText}%")}'")" PersistentHeader="true"/>
 
 @code {
      private LibraryContentViewer lcv = null!;
@@ -15,7 +15,7 @@
 
      private void SearchLibrary()
      {
-         lcv.Reset();
          StateHasChanged();
+         lcv.Reset();
      }
 }
