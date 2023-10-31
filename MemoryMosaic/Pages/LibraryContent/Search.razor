@@ -1,8 +1,11 @@
-@page "/search"
+﻿@page "/search"
 
 <title>Search - MM</title>
+<link href="css/Pages/Search.css" rel="stylesheet"/>
 
-<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchLibrary(); })" OnFocusOut="@SearchLibrary" Placeholder="Search filenames" Style="width: 250px; position: fixed; left: 45%; top: 18px; z-index: 9999"/>
+<div id="searchInput">
+	<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchLibrary(); })" OnFocusOut="@SearchLibrary" Placeholder="Search filenames"/>
+</div>
 
 <KeyboardShortcuts Slash="@(() => searchInput.Focus())"/>
 
