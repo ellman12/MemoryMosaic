@@ -1,0 +1,72 @@
+@import "../../Shared";
+
+header {
+	@include page-header(1px solid gray, 60px);
+
+	> span {
+		font-size: 18px;
+		margin-left: 8px;
+	}
+
+	> #buttons {
+		@include flex-row;
+		position: absolute;
+		right: 55px;
+		
+		> * {
+			margin-left: 2px;
+			margin-right: 2px;
+		}
+	}
+}
+
+main {
+	@include flex-main(row, 60px);
+	flex-wrap: wrap;
+
+	> .load-div {
+		@include available-width;
+		position: absolute;
+		height: 1200px;
+		z-index: 999;
+		left: -140px;
+
+		&:first-of-type {
+			top: -50px;
+			@if ($debug) { outline: 10px solid red; }
+		}
+
+		&:last-of-type {
+			bottom: 10px;
+			@if ($debug) { outline: 10px solid blue; }
+		}
+	}
+
+	> .ungrouped { //https://css-tricks.com/adaptive-photo-layout-with-flexbox/
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	> .group {
+		@include flex-col;
+		margin-right: 25px;
+
+		> :first-child { height: 24px; }
+
+		> .checkbox {
+			display: flex;
+
+			&.unchecked > .material-icons-outlined { display: none; }
+
+			&:hover > .material-icons-outlined,
+			&.checked > .material-icons-outlined { display: flex; }
+		}
+
+		> .thumbnails {
+			@include flex-row;
+			flex-wrap: wrap;
+			margin-bottom: 20px;
+		}
+	}
+}

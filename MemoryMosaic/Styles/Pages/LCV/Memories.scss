@@ -1,0 +1,27 @@
+@import "../../Shared";
+
+#date-picker {
+	@include flex-row;
+	position: fixed;
+	left: 40%;
+	top: 5px;
+	z-index: 9999;
+
+	> span {
+		font-size: 20px;
+		margin-right: 10px;
+	}
+
+	> select {
+		margin-right: 10px;
+		background-color: black;
+		outline: 2px solid white;
+		border: none;
+	}
+
+	> #randomBtn {
+		margin-left: 10px;
+	}
+}
+
+main > .group > .checkbox > span:last-of-type { font-size: 24px !important; }

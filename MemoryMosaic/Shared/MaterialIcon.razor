@@ -2,15 +2,21 @@
 
 @if (Icon == "trash")
 {
-    <svg id="@ID" width="24px" height="24px" class="@IconClass @Class" fill="white" viewBox="0 0 24 24" title="@Title"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg>
+    <svg id="@ID" width="@(Size)px" height="@(Size)px" class="@IconClass @Class" fill="white" viewBox="0 0 24 24" style="@IconStyle" title="@Title"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13zM9 8h2v9H9zm4 0h2v9h-2z"></path></svg>
+}
+else if (Icon == "calendar")
+{
+	<svg id="@ID" width="@(Size)px" height="@(Size)px" class="@IconClass @Class" fill="white" viewBox="0 0 24 24" style="@IconStyle" title="@Title"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 9.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>
 }
 else
 {
-    <span id="@ID" class="@IconClass @Class" style="@IconStyle" title="@Title">@Icon</span>
+    <span id="@ID" class="@IconClass @Class" style="font-size: @(Size)px; @IconStyle" title="@Title">@Icon</span>
 }
 
 @code {
 	[Parameter, EditorRequired] public string Icon { get; set; } = null!;
+
+	[Parameter] public int Size { get; set; } = 24;
 
 	[Parameter] public string? IconStyle { get; set; }
 

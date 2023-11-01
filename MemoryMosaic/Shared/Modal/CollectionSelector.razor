@@ -1,6 +1,5 @@
 @* Reusable component that allows user to choose album(s) or a folder to add selected item(s) to. *@
 @inherits ToggleableComponent
-@inject IJSRuntime JSRuntime
 
 <link href="css/Components/Modal/CollectionSelector.css" rel="stylesheet"/>
 
@@ -14,7 +13,7 @@
             </div>
         </div>
 
-        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@RefreshData"/>
+        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@SelectNewCollection"/>
 
         <div id="collection-groups">
             <IconButton Icon="history" OnClick="@(() => PreviousSelectionBtnClick(false))" Title="Restore the last selection of collections."/>
@@ -38,17 +37,17 @@
             <div>
                 @for (int i = 0; i < albums.Count; i++)
                 {
-                    if (!String.IsNullOrWhiteSpace(searchText) && albums[i].name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
+                    if (!String.IsNullOrWhiteSpace(searchText) && albums[i].Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
 
                     int ii = i;
                     <div class="collection" @onclick="@(() => AlbumClicked(ii))">
                         <div class="cover">
-                            @if (!String.IsNullOrWhiteSpace(albums[i].cover))
+                            @if (!String.IsNullOrWhiteSpace(albums[i].Cover))
                             {
-                                <img src="mm_library/@albums[i].cover" alt=""/>
+                                <img src="mm_library/@albums[i].Cover" alt=""/>
                             }
                         </div>
-                        <Checkbox @bind-Input="@checkedAlbums[ii]" Label="@albums[i].name"/>
+                        <Checkbox @bind-Input="@checkedAlbums[ii]" Label="@albums[i].Name"/>
                     </div>
                 }
             </div>
@@ -57,18 +56,18 @@
             <div>
                 @for (int i = 0; i < folders.Count; i++)
                 {
-                    if (!String.IsNullOrWhiteSpace(searchText) && folders[i].name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
+                    if (!String.IsNullOrWhiteSpace(searchText) && folders[i].Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
 
                     int ii = i;
                     <div class="collection" @onclick="@(() => FolderClicked(ii))">
                         <div class="cover">
-                            @if (!String.IsNullOrWhiteSpace(folders[i].cover))
+                            @if (!String.IsNullOrWhiteSpace(folders[i].Cover))
                             {
-                                <img src="mm_library/@folders[i].cover" alt=""/>
+                                <img src="mm_library/@folders[i].Cover" alt=""/>
                             }
                         </div>
 
-                        <Checkbox @bind-Input="@checkedFolders[ii]" Label="@folders[i].name"/>
+                        <Checkbox @bind-Input="@checkedFolders[ii]" Label="@folders[i].Name"/>
                     </div>
                 }
             </div>
@@ -79,6 +78,7 @@
 <KeyboardShortcuts AltC="@Toggle"/>
 
 @code {
+    //TODO: I think this stuff wouldn't need to be marked static if we just make an instance of CS and then use that in Import and ImportFile...?
     public static List<Collection> albums = null!, folders = null!;
     public static List<bool> checkedAlbums = null!;
     private static List<bool> checkedFolders = null!;
@@ -89,77 +89,84 @@
     private CollectionCreator collectionCreator = null!;
 
     [Parameter, EditorRequired] public HashSet<Guid> SelectedItems { get; set; } = null!;
-
-    [Parameter] public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
     
-    [Parameter] public ElementVisibility? Header { get; set; } //The visibility of the header on the page, if one exists.
+    [Parameter] public Action? Rerender { get; set; } //Used to rerender LCV after adding items.
     
     [Parameter] public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
-    [Parameter] public bool ClearChecksOnConfirm { get; set; } = true; //Used in Import.
+    [Parameter] public bool ClearSelectedOnConfirm { get; set; } = true; //Used in Import.
     
-    protected override void OnInitialized()
-    {
-        albums = C.GetCollectionsTable(true, false, false);
-        folders = C.GetCollectionsTable(false, true, false);
-        checkedAlbums = (from album in albums select new bool()).ToList();
-        checkedFolders = (from folder in folders select new bool()).ToList();
-        checkedFolderIndex = -1; //-1 = a folder isn't picked
-    }
+    public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
+    
+    protected override void OnInitialized() => RefreshData();
 
-    private async void RefreshData()
+    private void RefreshData()
     {
         albums = C.GetCollectionsTable(true, false, false);
         folders = C.GetCollectionsTable(false, true, false);
         checkedAlbums = (from album in albums select new bool()).ToList();
         checkedFolders = (from folder in folders select new bool()).ToList();
         checkedFolderIndex = -1;
+    }
+
+    private void CloseBtnClick()
+    {
+        Disable();
+        ClearSelectedCollections();
+    }
+
+    private void ClearSelected()
+    {
+        SelectedItems.Clear();
+        Disable();
+        Rerender?.Invoke();
+    }
+
+    private static void ClearAlbumChecks() => checkedAlbums = checkedAlbums.Select(_ => false).ToList();
+
+    private static void ClearFolderChecks() => checkedFolders = checkedFolders.Select(_ => false).ToList();
+
+    private static void ClearSelectedCollections()
+    {
+        ClearAlbumChecks();
+        ClearFolderChecks();
+    }
+    
+    private void AlbumClicked(int index)
+    {
+        ClearFolderChecks();
+        checkedFolderIndex = -1;
+    }
+
+    private void FolderClicked(int index)
+    {
+        ClearSelectedCollections();
+        checkedFolderIndex = index;
+        checkedFolders[index] = true;
+    }
+    
+    ///Selects the new collection that was just created.
+    private async void SelectNewCollection()
+    {
+        RefreshData();
 
         await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
 
-        int newestAlbumIndex = albums.FindIndex(a => a.name == collectionCreator.NewCollectionName);
+        int newestAlbumIndex = albums.FindIndex(a => a.Name == collectionCreator.NewCollectionName);
         if (newestAlbumIndex != -1)
         {
             checkedAlbums[newestAlbumIndex] = true;
         }
         else
         {
-            int newestFolderIndex = folders.FindIndex(f => f.name == collectionCreator.NewCollectionName);
+            int newestFolderIndex = folders.FindIndex(f => f.Name == collectionCreator.NewCollectionName);
             if (newestFolderIndex == -1) return;
             checkedFolderIndex = newestFolderIndex;
             checkedFolders[newestFolderIndex] = true;
         }
     }
 
-    //Closing the div for selecting album(s) to add selected items to.
-    private async void CloseBtnClick()
-    {
-        Disable();
-        await JSRuntime.InvokeVoidAsync("enableBackgroundScrolling");
-        ClearAlbumChecks();
-        ClearFolderChecks();
-    }
-
-    private async Task ClearChecks()
-    {
-        foreach (Guid item in SelectedItems)
-            await JSRuntime.InvokeAsync<string>("removeCheck", item);
-        SelectedItems.Clear();
-        Disable();
-        Header?.Disable();
-    }
-
-    private static void ClearAlbumChecks()
-    {
-        for (int i = 0; i < checkedAlbums.Count; i++) checkedAlbums[i] = false;
-    }
-
-    private static void ClearFolderChecks()
-    {
-        for (int i = 0; i < checkedFolders.Count; i++) checkedFolders[i] = false;
-    }
-
-    //Add item(s) to album(s) or folder selected.
+    ///Add item(s) to album(s) or folder selected.
     private async void ConfirmBtnClick()
     {
         if (OnCheckClicked != null)
@@ -172,12 +179,12 @@
             {
                 if (SelectedItem != Guid.Empty)
                 {
-                    await C.AddToCollectionAsync(SelectedItem, folders[checkedFolderIndex].id);
+                    await C.AddToCollectionAsync(SelectedItem, folders[checkedFolderIndex].Id);
                 }
                 else
                 {
                     foreach (Guid item in SelectedItems)
-                        await C.AddToCollectionAsync(item, folders[checkedFolderIndex].id);
+                        await C.AddToCollectionAsync(item, folders[checkedFolderIndex].Id);
                 }
             }
             else //Adding to album(s).
@@ -188,12 +195,12 @@
 
                     if (SelectedItem != Guid.Empty)
                     {
-                        await C.AddToCollectionAsync(SelectedItem, albums[c].id);
+                        await C.AddToCollectionAsync(SelectedItem, albums[c].Id);
                     }
                     else
                     {
                         foreach (Guid item in SelectedItems)
-                            await C.AddToCollectionAsync(item, albums[c].id);
+                            await C.AddToCollectionAsync(item, albums[c].Id);
                     }
                 }
             }
@@ -204,8 +211,8 @@
 
         CloseBtnClick();
 
-        if (ClearChecksOnConfirm)
-            await ClearChecks();
+        if (ClearSelectedOnConfirm)
+            ClearSelected();
     }
 
     private void PreviousSelectionBtnClick(bool save)
@@ -226,8 +233,7 @@
         {
             bool rewrite = false; //If it encountered an ID that no longer exists in DB and it should rewrite the tmp file to remove it/them.
             
-            ClearAlbumChecks();
-            ClearFolderChecks();
+            ClearSelectedCollections();
             
             string[] input = File.ReadAllLines(filePath);
             if (input[0] == "F")
@@ -254,8 +260,7 @@
         }
         else
         {
-            ClearAlbumChecks();
-            ClearFolderChecks();
+            ClearSelectedCollections();
         }
         StateHasChanged();
         return;
@@ -263,14 +268,14 @@
         void SaveSelectionToDisk()
         {
             if (checkedFolders.Any(b => b))
-                File.WriteAllText(filePath, $"F\n{folders[checkedFolderIndex].id}");
+                File.WriteAllText(filePath, $"F\n{folders[checkedFolderIndex].Id}");
             else
             {
                 File.WriteAllText(filePath, "A\n");
                 for (int i = 0; i < checkedAlbums.Count; i++)
                 {
                     if (checkedAlbums[i])
-                        File.AppendAllText(filePath, $"{albums[i].id}\n");
+                        File.AppendAllText(filePath, $"{albums[i].Id}\n");
                 }
             }
         }
@@ -280,27 +285,10 @@
         {
             int parsedID = Int32.Parse(albumID);
             for (int i = 0; i < checkedList.Count; i++)
-                if (collections[i].id == parsedID)
+                if (collections[i].Id == parsedID)
                     return i;
             
             return -1;
         }
-    }
-
-    private void AlbumClicked(int index)
-    {
-        ClearFolderChecks();
-        checkedFolderIndex = -1;
-        checkedAlbums[index] = !checkedAlbums[index];
-        StateHasChanged();
-    }
-
-    private void FolderClicked(int index)
-    {
-        ClearAlbumChecks();
-        ClearFolderChecks();
-        checkedFolderIndex = index;
-        checkedFolders[index] = true;
-        StateHasChanged();
     }
 }

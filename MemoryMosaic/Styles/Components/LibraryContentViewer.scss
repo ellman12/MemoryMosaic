@@ -1,7 +1,0 @@
-@import "../Shared";
-
-main {
-    @include flex-main(row, 60px);
-    flex-wrap: wrap;
-}
-

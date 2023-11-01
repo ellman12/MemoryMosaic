@@ -1,16 +1,10 @@
-@inherits Button
+@inherits IconTextButton
 
-<link href="css/Components/Buttons/IconTextButton.css" rel="stylesheet"/>
-
-<a id="@ID" class="iconTextBtn @Class" href="@Href" title="@Title">
+<a id="@ID" class="iconTextBtn @Class" href="@Href" @onclick="@HandleClick" title="@Title">
 	<MaterialIcon Icon="@Icon" IconStyle="@IconStyle"/>
 	<span style="@TextStyle">@Text</span>
 </a>
 
 @code {
-	[Parameter, EditorRequired] public string Text { get; set; } = null!;
-
 	[Parameter, EditorRequired] public string Href { get; set; } = null!;
-
-	[Parameter] public string? TextStyle { get; set; }
 }

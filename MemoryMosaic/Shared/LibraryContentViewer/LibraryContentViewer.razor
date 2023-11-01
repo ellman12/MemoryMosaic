@@ -4,4 +4,509 @@ Content is dynamically loaded in small chunks as they scroll up or down the page
 Items can be selected, and depending on the page, different options may be applied to them, such as (un)starring, deleting, changing what collection(s) they are a part of, etc.
 *@
 @inherits Component
+@implements IDisposable
+@inject NavigationManager navigationManager
+@using System.IO.Compression
+@namespace MemoryMosaic.Shared.LibraryContentViewer
 
+@if (Content.Count == 0)
+{
+	<h1>@NoItemsText</h1>
+	return;
+}
+
+@if (!fv.Visibility.Visible)
+{
+	<KeyboardShortcuts AltS="@(() => starPrompt.Toggle())" Del="@DeleteButtonClick" Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)" Slash="@(() => navigationManager.NavigateTo("/search"))"/>
+	<ShortcutsReference Shortcuts="@shortcuts"/>
+}
+
+<header style="visibility: @(SelectedItems.Count > 0 || PersistentHeader || TrashPage || MemoriesPage ? "visible" : "hidden")">
+	@if (SelectedItems.Count > 0)
+	{
+		<IconButton Icon="close" OnClick="@ClearChecks"/>
+		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
+	}
+
+	<div id="buttons">
+		@if (SelectedItems.Count > 0)
+		{
+			<IconButton Icon="file_download" OnClick="@DownloadButtonClick" Title="Download Selected"/>
+			<IconButton Icon="collections" OnClick="@cs.Enable" Title="Toggle Collection Selector"/>
+			<IconButton Icon="star_outline" OnClick="@(() => starPrompt.Enable())" Title="Add or Remove Stars From Selected"/>
+		}
+
+		@if (TrashPage)
+		{
+			<IconButton Icon="restore" OnClick="@RestoreButtonClick" Title="@(SelectedItems.Count == 0 ? "Restore ALL" : "Restore Selected")"/>
+			<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="@(SelectedItems.Count == 0 ? "Delete ALL" : "Delete Selected")"/>
+		}
+		
+		@if (SelectedItems.Count > 0 && !TrashPage)
+		{
+			<IconButton Icon="trash" OnClick="@DeleteButtonClick" Title="Delete Selected"/>
+		}
+		
+		@AdditionalButtons
+	</div>
+</header>
+
+<main>
+	<div class="load-div" style="@topLoader.Visibility.Style" @onmouseover="@topLoader.AddContent" @onscroll="@topLoader.AddContent"></div>
+	
+	@{
+		int index = 0;
+		if (GroupBy == GroupBy.None)
+		{
+			<div class="ungrouped">
+				@foreach (LibraryItem item in Content)
+				{
+					<Thumbnail @key="@item" Item="@item" LCV="@this" Index="@index"/>
+					index++;
+				}
+			</div>
+		}
+		else
+		{
+			foreach (var group in Content.GroupBy(GroupByFunction))
+			{
+				string date = FormatDateTaken(OrderByFields.First() == "date_taken" ? group.First().DateTaken : group.First().DateAdded);
+				<div class="group">
+					@if (group.Count() > 1)
+					{
+						int start = index;
+						int end = start + group.Count() - 1;
+						bool selectThisGroup = false;
+
+						for (int i = start; i <= end; i++)
+						{
+							if (!SelectedItems.Contains(Content[i].Id))
+							{
+								selectThisGroup = true;
+								break;
+							}
+						}
+						<Checkbox OnChange="@(() => ChangeRangeState(start, end, selectThisGroup))" Input="@(!selectThisGroup)" Label="@date"/>
+					}
+					else
+					{
+						<span>@date</span>
+					}
+					<div class="thumbnails">
+						@foreach (LibraryItem item in group)
+						{
+							<Thumbnail @key="@item" Item="@item" LCV="@this" Index="@index"/>
+							index++;
+						}
+					</div>
+				</div>
+			}
+		}
+	}
+	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
+</main>
+
+<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" CollectionSelector="@cs" RerenderParent="@StateHasChanged" TopLoader="@topLoader" BottomLoader="@bottomLoader" RestoreButtonClick="@RestoreButtonClick" DeleteButtonClick="@DeleteButtonClick" TrashPage="@TrashPage"/>
+
+<CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" Rerender="@StateHasChanged"/>
+
+@if (!fv.Visibility.Visible && !MemoriesPage)
+{
+	<CtrlGInput @ref="@CtrlGInput" LCV="@this" StartDateChanged="@StartDateChanged"/>
+}
+
+<TwoChoiceInput @ref="@starPrompt" YesBtnIcon="star" YesBtnText="Add" NoBtnIcon="star_outline" NoBtnText="Remove" YesBtnClick="@(() => UpdateStars(true))" NoBtnClick="@(() => UpdateStars(false))" Message="@(SelectedItems.Count > 1 ? "Add or remove stars for selected items?" : "Add or remove star for selected item?")"/>
+<TwoChoiceInput @ref="@deletePrompt" YesBtnClick="@DeleteSelected" NoBtnClick="@(() => deletePrompt.Disable())" Message="@DeletePromptMessage"/>
+
+@if (TrashPage)
+{
+	<TwoChoiceInput @ref="@restorePrompt" YesBtnClick="@RestoreSelected" NoBtnClick="@(() => restorePrompt.Disable())" Message="@RestorePromptMessage"/>
+}
+
+<ProgressPopUp @ref="@downloadPopUp" Message="Preparing Zip..."/>
+
+@code {
+	[Parameter]
+	public RenderFragment? AdditionalButtons { get; set; }
+	
+	protected override void OnInitialized()
+	{
+		GroupBy = DefaultGroupBy;
+		Reset();
+	}
+
+	public void Dispose()
+	{
+		topLoader.Dispose();
+		bottomLoader.Dispose();
+	}
+	
+	private static readonly Dictionary<string, string> shortcuts = new()
+	{
+		{"Alt C", "Toggle CollectionSelector"},
+		{"Del", "Delete Selected"},
+		{"Esc", "Clear Selection"},
+		{"Ctrl A", "Select All Currently-Loaded Items"},
+		{"Ctrl G", "Toggle Ctrl G Input"},
+		{"Ctrl Shift A", "Load and Select Everything"},
+		{"Ctrl Shift -", "Zoom Grouping Out"},
+		{"Ctrl Shift +", "Zoom Grouping In"},
+		{"/", "Search"},
+		{"Ctrl Click", "Always Select Item"},
+		{"Alt Click", "Always Fullscreen Item"},
+		{"Shift Click", "Select Range of Items"}
+	};
+}
+
+@* Loading content *@
+@code {
+	///Must resemble this order: path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted
+	[Parameter]
+	public required string Columns { get; set; } = "l.path, l.date_taken, l.date_added, l.starred, l.uuid, l.thumbnail, l.description, l.date_deleted";
+
+	[Parameter]
+	public required string Table { get; set; } = "library AS l";
+
+	[Parameter]
+	public string Join { get; set; } = "";
+	
+	[Parameter]
+	public string? Where { get; set; }
+
+	[Parameter]
+	public required string[] OrderByFields { get; set; } = {"date_taken", "date_added"};
+
+	[Parameter]
+	public bool SortDesc { get; set; } = true;
+	
+	public List<LibraryItem> Content { get; private set; } = new(600);
+	
+	public CtrlGInput CtrlGInput { get; private set; } = new();
+
+	private ContentLoader topLoader = null!, bottomLoader = null!;
+}
+
+@functions {
+	///Call this when the sort order and/or order by have changed.
+	public void Reset()
+	{
+		Content.Clear();
+		topLoader = new ContentLoader(this, false, false);
+		bottomLoader = new ContentLoader(this, true, true);
+	}
+	
+	private void StartDateChanged()
+	{
+		Content.Clear();
+		topLoader = new ContentLoader(this, false, true);
+		bottomLoader = new ContentLoader(this, true, true);
+	}
+}
+
+@* Grouping and displaying data *@
+@code {
+	[Parameter, EditorRequired]
+	public string NoItemsText { get; set; } = null!;
+	
+	[Parameter]
+	public GroupBy DefaultGroupBy { get; set; } = GroupBy.Day;
+	
+	[Parameter]
+	public bool PersistentHeader { get; set; }
+	
+	[Parameter]
+	public bool MemoriesPage { get; set; }
+
+	[Parameter]
+	public bool TrashPage { get; set; }
+	
+	private GroupBy groupBy;
+	private GroupBy GroupBy
+	{
+		get => groupBy;
+		set
+		{
+			int intValue = (int) value;
+			if (intValue is < 0 or > 3) return;
+			groupBy = value;
+			StateHasChanged();
+		}
+	}
+
+	private Func<LibraryItem, dynamic?> GroupByFunction => (GroupBy, OrderByFields.First()) switch
+	{
+		(GroupBy.Day, "date_taken") => row => row.DateTaken?.Date,
+		(GroupBy.Day, "date_added" or "date_added_to_collection") => row => row.DateAdded.Date,
+		(GroupBy.Day, "date_deleted") => row => row.DateDeleted?.Date,
+		
+		(GroupBy.Month, "date_taken") => row => new {row.DateTaken?.Month, row.DateTaken?.Year},
+		(GroupBy.Month, "date_added" or "date_added_to_collection") => row => new {row.DateAdded.Month, row.DateAdded.Year},
+		(GroupBy.Month, "date_deleted") => row => new {row.DateDeleted?.Month, row.DateDeleted?.Year},
+		
+		(GroupBy.Year, "date_taken") => row => row.DateTaken?.Year,
+		(GroupBy.Year, "date_added" or "date_added_to_collection") => row => row.DateAdded.Year,
+		(GroupBy.Year, "date_deleted") => row => row.DateDeleted?.Year,
+		
+		_ => throw new ArgumentOutOfRangeException()
+	};
+}
+
+@functions {
+	private string FormatDateTaken(DateTime? dateTaken)
+	{
+		if (dateTaken == null) return "No Date Taken";
+
+		bool thisYear = dateTaken.Value.Year == DateTime.Now.Year;
+		string formatString = GroupBy switch
+		{
+			GroupBy.None => "",
+			GroupBy.Day => thisYear ? "ddd, MMM d" : "ddd, MMM d, yyyy",
+			GroupBy.Month => thisYear ? "MMMM" : "MMMM yyyy",
+			GroupBy.Year => "yyyy",
+			_ => ""
+		};
+
+		return dateTaken.Value.ToString(formatString);
+	}
+}
+
+@* Selecting items and manipulating them. *@
+@code {
+	public HashSet<Guid> SelectedItems { get; private set; } = new();
+	public int LastSelectedIndex;
+
+	private CollectionSelector cs = null!;
+
+	private FullscreenViewer<LibraryItem> fv = new();
+	
+	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
+	
+	private ProgressPopUp downloadPopUp = null!;
+	
+	private string DeletePromptMessage
+	{
+		get
+		{
+			string message;
+			
+			if (TrashPage)
+			{
+				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
+					message = "PERMANENTLY delete selected item?";
+				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+					message = "PERMANENTLY delete selected items?";
+				else
+					message = "PERMANENTLY delete ALL items?";
+			}
+			else
+			{
+				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
+					message = "Move selected item to Trash?";
+				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+					message = "Move selected items to Trash?";
+				else
+					message = "Move ALL items to Trash?";
+			}
+
+			return message;
+		}
+	}
+
+	private string RestorePromptMessage
+	{
+		get
+		{
+			string message;
+
+			if (SelectedItems.Count == 1 || fv.Visibility.Visible)
+				message = "Restore selected item?";
+			else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+				message = "Restore selected items?";
+			else
+				message = "Restore ALL items?";
+
+			return message;
+		}
+	}
+}
+
+@functions {
+	public void Rerender() => StateHasChanged();
+
+	public void ChangeRangeState(int startIndex, int endIndex, bool select)
+	{
+		int increment = startIndex < endIndex ? 1 : -1;
+
+		for (int i = startIndex; i != endIndex + increment; i += increment)
+		{
+			if (select)
+				SelectedItems.Add(Content[i].Id);
+			else
+				SelectedItems.Remove(Content[i].Id);
+		}
+
+		StateHasChanged();
+	}
+
+	private void SelectAllLoadedItems()
+	{
+		foreach (LibraryItem row in Content)
+			SelectedItems.Add(row.Id);
+		StateHasChanged();
+	}
+
+	private void LoadAndSelectAll()
+	{
+		if (CtrlGInput.NewStartDate != null)
+			topLoader.AddContent(Int32.MaxValue);
+		bottomLoader.AddContent(Int32.MaxValue);
+		SelectAllLoadedItems();
+	}
+	
+	public void SetFullscreenItem(int index)
+	{
+		fv.Index = index;
+		fv.Enable();
+		cs.SelectedItem = fv.Current.Id;
+		StateHasChanged();
+	}
+	
+	private void ClearChecks()
+	{
+		SelectedItems.Clear();
+		StateHasChanged();
+	}
+
+	private void UpdateStars(bool starred)
+	{
+		C.UpdateStarred(SelectedItems, starred);
+		starPrompt.Disable();
+		
+		foreach (LibraryItem item in Content.Where(item => SelectedItems.Contains(item.Id)))
+			item.Starred = starred;
+
+		ClearChecks();
+	}
+
+	private void RestoreButtonClick()
+	{
+		if (S.showPrompts)
+			restorePrompt.Enable();
+		else
+			RestoreSelected();
+	}
+
+	private void RestoreSelected()
+	{
+		if (fv.Visibility.Visible)
+		{
+			C.RestoreItem(fv.Current.Id);
+			Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+			
+			if (fv.Index == Content.Count)
+				fv.Index--;
+		}
+		else if (SelectedItems.Count == 0)
+		{
+			C.RestoreTrash();
+			Content.Clear();
+		}
+		else
+		{
+			C.RestoreItems(SelectedItems);
+			Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+		}
+
+		SelectedItems.Clear();
+		restorePrompt.Disable();
+		StateHasChanged();
+	}
+
+	private void DeleteButtonClick()
+	{
+		if (S.showPrompts)
+			deletePrompt.Enable();
+		else
+			DeleteSelected();
+	}
+
+	private void DeleteSelected()
+	{
+		if (TrashPage)
+		{
+			if (fv.Visibility.Visible)
+			{
+				C.RemoveFromTrash(fv.Current.Id);
+				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+				
+				if (fv.Index == Content.Count)
+					fv.Index--;
+			}
+			else if (SelectedItems.Count == 0)
+			{
+				C.EmptyTrash();
+				Content.Clear();
+			}
+			else
+			{
+				C.RemoveFromTrash(SelectedItems);
+				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+			}
+		}
+		else
+		{
+			if (fv.Visibility.Visible)
+			{
+				C.MoveToTrash(fv.Current.Id);
+				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
+				
+				if (fv.Index == Content.Count)
+					fv.Index--;
+			}
+			else
+			{
+				C.MoveToTrash(SelectedItems);
+				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
+			}
+		}
+		
+		SelectedItems.Clear();
+		deletePrompt.Disable();
+		StateHasChanged();
+	}
+
+	private async void DownloadButtonClick()
+	{
+		if (SelectedItems.Count == 0) return;
+
+		downloadPopUp.Enable();
+		await InvokeAsync(StateHasChanged);
+		await Task.Delay(0);
+		await Task.Delay(1);
+
+		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}");
+		Directory.CreateDirectory(zipFolderPath);
+
+		foreach (LibraryItem item in Content)
+		{
+			if (!SelectedItems.Contains(item.Id)) continue;
+			string shortPath = item.Path;
+			string fullPath = Path.Combine(S.libFolderPath, shortPath);
+			string destPath = Path.Combine(zipFolderPath, Path.GetFileName(shortPath));
+			File.Copy(fullPath, destPath);
+		}
+
+		ClearChecks();
+
+		string zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
+		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
+		ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath, CompressionLevel.Fastest, false);
+
+		downloadPopUp.Disable();
+		await InvokeAsync(StateHasChanged);
+
+		Directory.Delete(zipFolderPath, true); //Not needed after it's zipped.
+
+		navigationManager.NavigateTo($"mm_tmp/{zipFilename}", true);
+	}
+}

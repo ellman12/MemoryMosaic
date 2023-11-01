@@ -18,16 +18,13 @@ public class Settings
     [JsonProperty] public static string tmpFolderPath = null!;
         
     ///Should prompts be shown when doing things like deleting items and albums, etc.?
-    [JsonProperty] public static bool showPrompts;
-
-    ///Should items without a Date Taken be shown in albums and folders?
-    [JsonProperty] public static bool displayNoDTInCV;
+    [JsonProperty] public static bool showPrompts = true;
 
     ///Controls the quality of thumbnails when they are generated. Values are between 1 and 31. Lower the number, higher the quality.
-    [JsonProperty] public static int thumbnailQuality;
+    [JsonProperty] public static int thumbnailQuality = 7;
 
     ///Controls what items are printed out by the Logger.
-    [JsonProperty] public static LogLevel logLevel;
+    [JsonProperty] public static LogLevel logLevel = LogLevel.Info;
         
     public const int POSTGRES_VERSION = 15;
 
@@ -43,7 +40,6 @@ public class Settings
 
     public static void ReadSettings()
     {
-        new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile(FilePath).Build();
         JsonConvert.DeserializeObject<Settings>(File.ReadAllText(FilePath));
         importFolderPath = importFolderPath.Replace('\\', '/');
         libFolderPath = libFolderPath.Replace('\\', '/');
@@ -63,7 +59,6 @@ public class Settings
         libFolderPath = $"{root}/mm_library";
         backupFolderPath = $"{root}/mm_backup";
         tmpFolderPath = $"{root}/mm_tmp";
-        showPrompts = displayNoDTInCV = true;
         thumbnailQuality = 7;
         logLevel = LogLevel.Error;
         File.WriteAllText(FilePath, JsonConvert.SerializeObject(new Settings()));

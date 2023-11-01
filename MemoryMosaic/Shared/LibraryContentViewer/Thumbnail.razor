@@ -1,0 +1,62 @@
+@inherits Component
+@namespace MemoryMosaic.Shared.LibraryContentViewer
+
+<div class="thumbnail" @onmousedown="@ThumbnailClick" @onclick:stopPropagation="true"> @* https://stackoverflow.com/a/64724214 *@
+	@if (Item.Starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
+	@if (Item.Video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
+	@if (!String.IsNullOrWhiteSpace(Item.Description)) { <MaterialIcon Icon="notes" Class="description-icon"/> }
+	<Checkbox Input="@LCV.SelectedItems.Contains(Id)" EventArgsOnClick="@CheckClick"/>
+	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="@Item.Path" loading="lazy" @onclick="@ImgClick"/>
+</div>
+
+@code {
+	[Parameter, EditorRequired]
+	public required LibraryItem Item { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required LibraryContentViewer LCV { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required int Index { get; set; }
+
+	private Guid Id => Item.Id;
+}
+
+@functions {
+	private void ToggleSelected()
+	{
+		if (LCV.SelectedItems.Contains(Id))
+			LCV.SelectedItems.Remove(Id);
+		else
+			LCV.SelectedItems.Add(Id);
+
+		LCV.LastSelectedIndex = Index;
+		LCV.Rerender();
+	}
+
+	private void ThumbnailClick(MouseEventArgs e)
+	{
+		if (e.ShiftKey)
+			LCV.ChangeRangeState(LCV.LastSelectedIndex, Index, true);
+	}
+
+	private void CheckClick(MouseEventArgs e)
+	{
+		if (e.AltKey)
+			LCV.SetFullscreenItem(Index);
+		else if (!e.ShiftKey)
+			ToggleSelected();
+
+		StateHasChanged(); //Ensures the checkbox is selected if clicked while Shift held down.
+	}
+
+	private void ImgClick(MouseEventArgs e)
+	{
+		if (e.AltKey)
+			LCV.SetFullscreenItem(Index);
+		else if ((LCV.SelectedItems.Count > 0 || e.CtrlKey) && !e.ShiftKey)
+			ToggleSelected();
+		else if (!e.ShiftKey)
+			LCV.SetFullscreenItem(Index);
+	}
+}

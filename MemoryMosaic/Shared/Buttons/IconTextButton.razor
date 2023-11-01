@@ -1,9 +1,7 @@
 @* Button with an icon and text. *@
 @inherits IconButton
 
-<link href="css/Components/Buttons/IconTextButton.css" rel="stylesheet"/>
-
-<button id="@ID" class="iconTextBtn @Class" @onclick="@HandleClick" title="@Title">
+<button id="@ID" class="iconTextBtn @Class" style="@Style" @onclick="@HandleClick" title="@Title">
 	<MaterialIcon Icon="@Icon" IconStyle="@IconStyle"/>
 	<span style="color: @TextColor; @TextStyle">@Text</span>
 </button>

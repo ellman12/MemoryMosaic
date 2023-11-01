@@ -3,6 +3,7 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<RootNamespace>MemoryMosaic</RootNamespace>
 		<Nullable>enable</Nullable>
+		<NoWarn>BL0005</NoWarn> <!-- warning BL0005: Component parameter should not be set outside of its component. -->
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AspNetCore.SassCompiler" Version="1.64.2"/>
+		<PackageReference Include="AspNetCore.SassCompiler" Version="1.66.0"/>
 		<PackageReference Include="DateTakenExtractor" Version="1.2.0"/>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
 		<PackageReference Include="Npgsql" Version="6.0.2"/>
@@ -27,5 +28,6 @@
 
 	<ItemGroup>
 		<None Include="wwwroot\MM.js"/>
+		<None Include="wwwroot\VideoPlayer.js"/>
 	</ItemGroup>
 </Project>

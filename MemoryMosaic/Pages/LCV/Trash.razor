@@ -1,0 +1,65 @@
+@page "/trash"
+
+<title>Trash - MemoryMosaic</title>
+
+<Dropdown @ref="@dropdown" Positioning="top: 55px; right: 25px">
+	<DropdownButton Icon="check" Text="Newest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.NewestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateDeleted ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Newest Date Taken First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateTaken))" IconStyle="@(sortMode == TrashSortMode.NewestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateTaken ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Newest Date Added First" OnClick="@(() => ChangeOrder(TrashSortMode.NewestDateAdded))" IconStyle="@(sortMode == TrashSortMode.NewestDateAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.NewestDateAdded ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Oldest Date Deleted First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateDeleted))" IconStyle="@(sortMode == TrashSortMode.OldestDateDeleted ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateDeleted ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Oldest Date Taken First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateTaken))" IconStyle="@(sortMode == TrashSortMode.OldestDateTaken ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateTaken ? "#1a73e8" : "white")"/>
+	<DropdownButton Icon="check" Text="Oldest Date Added First" OnClick="@(() => ChangeOrder(TrashSortMode.OldestDateAdded))" IconStyle="@(sortMode == TrashSortMode.OldestDateAdded ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == TrashSortMode.OldestDateAdded ? "#1a73e8" : "white")"/>
+</Dropdown>
+
+<LibraryContentViewer @ref="@lcv" NoItemsText="No Items in Trash" OrderByFields="@orderBy" SortDesc="@sortDesc" TrashPage="true">
+	<AdditionalButtons>
+		<IconTextButton Icon="sort" Text="@sortBtnText" OnClick="@(() => { dropdown.Toggle(); StateHasChanged(); })" Style="margin-left: 8px; margin-right: -30px"/>
+	</AdditionalButtons>
+</LibraryContentViewer>
+
+@code {
+	private LibraryContentViewer lcv = null!;
+	private TrashSortMode sortMode = TrashSortMode.NewestDateDeleted;
+	private string sortBtnText = "Newest Date Deleted";
+	private string[] orderBy = {"date_deleted"};
+	private bool sortDesc = true;
+	private Dropdown dropdown = new();
+
+	private void SetSortBtnText()
+	{
+		sortBtnText = sortMode switch
+		{
+			TrashSortMode.NewestDateDeleted => "Newest Date Deleted",
+			TrashSortMode.OldestDateDeleted => "Oldest Date Deleted",
+			TrashSortMode.NewestDateTaken => "Newest Date Taken",
+			TrashSortMode.OldestDateTaken => "Oldest Date Taken",
+			TrashSortMode.NewestDateAdded => "Newest Date Added",
+			TrashSortMode.OldestDateAdded => "Oldest Date Added",
+			_ => "Newest Date Deleted"
+		};
+	}
+
+	private void UpdateSorting()
+	{
+		if (sortMode is TrashSortMode.NewestDateDeleted or TrashSortMode.OldestDateDeleted)
+			orderBy = new[] {"date_deleted"};
+		else if (sortMode is TrashSortMode.NewestDateTaken or TrashSortMode.OldestDateTaken) 
+			orderBy = new[] {"date_taken"};
+		else if (sortMode is TrashSortMode.NewestDateAdded or TrashSortMode.OldestDateAdded) 
+			orderBy = new[] {"date_added"};
+
+		sortDesc = (int) sortMode % 2 == 0;
+	}
+
+	private async void ChangeOrder(TrashSortMode newMode)
+	{
+		sortMode = newMode;
+		dropdown.Disable();
+		SetSortBtnText();
+		UpdateSorting();
+		StateHasChanged();
+		await Task.Delay(0);
+		await Task.Delay(1);
+		lcv.Reset();
+	}
+}

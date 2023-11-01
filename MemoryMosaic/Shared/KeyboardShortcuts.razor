@@ -26,13 +26,13 @@
 	public Action? CtrlA { get; set; }
 	
 	[Parameter]
+	public Action? CtrlShiftA { get; set; }
+
+	[Parameter]
 	public Action? CtrlS { get; set; }
 
 	[Parameter]
 	public Action? CtrlO { get; set; }
-
-	[Parameter]
-	public Action? CtrlD { get; set; }
 
 	[Parameter]
 	public Action? CtrlE { get; set; }
@@ -69,6 +69,13 @@
 	
 	[Parameter]
 	public Action? Slash { get; set; }
+	
+	[Parameter]
+	public Action? CtrlShiftMinus { get; set; }
+	
+	[Parameter]
+	public Action? CtrlShiftPlus { get; set; }
+	
 
 	protected override void OnInitialized()
 	{
@@ -79,9 +86,9 @@
 		if (Left != null) HotKeysContext.Add(ModKeys.None, Keys.Left, Left);
 		if (Right != null) HotKeysContext.Add(ModKeys.None, Keys.Right, Right);
 		if (CtrlA != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.A, CtrlA);
+		if (CtrlShiftA != null) HotKeysContext.Add(ModKeys.Ctrl | ModKeys.Shift, Keys.A, CtrlShiftA);
 		if (CtrlS != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.S, CtrlS);
 		if (CtrlO != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.O, CtrlO);
-		if (CtrlD != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.D, CtrlD);
 		if (CtrlE != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.E, CtrlE);
 		if (CtrlG != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.G, CtrlG);
 		if (CtrlSlash != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Slash, CtrlSlash);
@@ -94,5 +101,7 @@
 		if (CtrlLeft != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Left, CtrlLeft);
 		if (CtrlRight != null) HotKeysContext.Add(ModKeys.Ctrl, Keys.Right, CtrlRight);
 		if (Slash != null) HotKeysContext.Add(ModKeys.None, Keys.Slash, Slash);
+		if (CtrlShiftMinus != null) HotKeysContext.Add(ModKeys.Ctrl | ModKeys.Shift, Keys.Hyphen, CtrlShiftMinus);
+		if (CtrlShiftPlus != null) HotKeysContext.Add(ModKeys.Ctrl | ModKeys.Shift, Keys.Equal, CtrlShiftPlus);
 	}
 }

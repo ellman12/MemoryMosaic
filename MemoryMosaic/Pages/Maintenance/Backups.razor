@@ -74,12 +74,12 @@
         L.LogLine("Begin copying mm_library", LogLevel.Debug);
 
         Directory.CreateDirectory(backupFolder);
-        Parallel.ForEach(C.LoadEntireMediaTable(), row =>
+        Parallel.ForEach(C.LoadEntireLibraryTable(), row =>
         {
-            string srcFilePath = Path.Join(S.libFolderPath, row.path);
-            string destFilePath = Path.Join(backupFolder, row.path);
+            string srcFilePath = Path.Join(S.libFolderPath, row.Path);
+            string destFilePath = Path.Join(backupFolder, row.Path);
 
-            string dtFolderFull = Path.Combine(backupFolder, Path.GetDirectoryName(row.path)!);
+            string dtFolderFull = Path.Combine(backupFolder, Path.GetDirectoryName(row.Path)!);
             if (!Directory.Exists(dtFolderFull))
                 Directory.CreateDirectory(dtFolderFull);
             
@@ -132,7 +132,7 @@
         L.LogLine("Begin clearing database", LogLevel.Debug);
         
         C.Open();
-        await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS media CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
+        await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS library CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
         cmd.ExecuteNonQuery();
         C.Close();
         

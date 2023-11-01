@@ -27,7 +27,6 @@
         </div>
 
         <Checkbox @bind-Input="@showPrompts" Label="Show Prompts?"/>
-        <Checkbox @bind-Input="@displayNoDTInCV" Label="Show Items with No Dt in Collections?"/>
 
         @{
             string color = logLevel switch
@@ -95,7 +94,7 @@
         @if (maintenanceLoaded)
         {
             <LinkButton Icon="insert_drive_file" Text="@($"Untracked Files ({untrackedPaths?.Count})")" Href="maintenance/untracked-files" Title="Items in Library Folder but NOT in Database"/>
-            <LinkButton Icon="find_in_page" Text="@($"Missing Files ({mediaMissingFiles?.Count})")" Href="maintenance/missing-files" Title="Items in Database but the Files Don't Exist"/>
+            <LinkButton Icon="find_in_page" Text="@($"Missing Files ({missingFiles?.Count})")" Href="maintenance/missing-files" Title="Items in Database but the Files Don't Exist"/>
             <IconTextButton Icon="folder" Text="@($"Empty Folders ({emptyFolders?.Count})")" OnClick="@EmptyFoldersBtnClick" Title="Click to Delete All Empty Folders From Library and Import"/>
         }
     </div>
@@ -109,7 +108,7 @@
 
         @if (statsLoaded)
         {
-            <span>@($"{mediaRowCount} {(mediaRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
+            <span>@($"{libraryRowCount} {(libraryRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
             <span>@($"{trashRowCount} {(trashRowCount == 1 ? "Item In Trash" : "Items In Trash")}")</span>
             <span>@($"{collectionsCount} {(collectionsCount == 1 ? "Collection" : "Collections")}")</span>
             
@@ -126,19 +125,19 @@
             
             if (oldestDTItem != null)
             {
-                <a target="_blank" href="mm_library/@oldestDTItem.path">Item with Oldest Date Taken, Taken on @oldestDTItem.dateTaken</a> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
+                <a target="_blank" href="mm_library/@oldestDTItem.Path">Item with Oldest Date Taken, Taken on @oldestDTItem.DateTaken</a> <!-- https://stackoverflow.com/questions/50709625/link-with-target-blank-and-rel-noopener-noreferrer-still-vulnerable -->
             }
             if (newestDTItem != null)
             {
-                <a target="_blank" href="mm_library/@newestDTItem.path">Item with Newest Date Taken, Taken on @newestDTItem.dateTaken</a>
+                <a target="_blank" href="mm_library/@newestDTItem.Path">Item with Newest Date Taken, Taken on @newestDTItem.DateTaken</a>
             }
             if (oldestDAItem != null)
             {
-                <a target="_blank" href="mm_library/@oldestDAItem.path">Item with Oldest Date Added, Added on @oldestDAItem.dateAdded</a>
+                <a target="_blank" href="mm_library/@oldestDAItem.Path">Item with Oldest Date Added, Added on @oldestDAItem.DateAdded</a>
             }
             if (newestDAItem != null)
             {
-                <a style="margin-bottom: 14px" target="_blank" href="mm_library/@newestDAItem.path">Item with Newest Date Added, Added on @newestDAItem.dateAdded</a>
+                <a style="margin-bottom: 14px" target="_blank" href="mm_library/@newestDAItem.Path">Item with Newest Date Added, Added on @newestDAItem.DateAdded</a>
             }
             <span>Server went online at @whenWentOnline</span>
             <span>Server has been online for @(DateTime.Now - whenWentOnline)</span>
@@ -162,7 +161,6 @@
     private string importFolderPath = S.importFolderPath;
     private string libraryRootPath = S.libFolderPath;
     private bool showPrompts = S.showPrompts;
-    private bool displayNoDTInCV = S.displayNoDTInCV;
     private string backupFolderPath = S.backupFolderPath;
     private string tmpFolderPath = S.tmpFolderPath;
     private int thumbnailQuality = S.thumbnailQuality;
@@ -181,15 +179,15 @@
     private List<string>? emptyFolders;
     
     //Missing files
-    private List<MediaRow>? mediaMissingFiles;
+    private List<LibraryItem>? missingFiles;
     
     //Stats
     private bool statsLoaded;
-    private long mediaRowCount, trashRowCount, collectionsCount;
+    private long libraryRowCount, trashRowCount, collectionsCount;
     private long totalUsableDriveSize; //How much space the drive mm_library is on could have. E.g., on a 1 TB drive it returns ~930 GB. The rest is probably reserved for the OS.
     private long freeDriveSpace; //Bytes
     private long librarySize; //Bytes
-    private MediaRow? oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
+    private LibraryItem? oldestDTItem, newestDTItem, oldestDAItem, newestDAItem;
     public static DateTime whenWentOnline;
     
     //Debug
@@ -198,7 +196,7 @@
     protected override void OnInitialized()
     {
         statsLoaded = false;
-        mediaRowCount = trashRowCount = 0;
+        libraryRowCount = trashRowCount = 0;
         collectionsCount = 0;
         totalUsableDriveSize = 0;
         freeDriveSpace = 0;
@@ -219,7 +217,6 @@
         S.importFolderPath = importFolderPath;
         S.libFolderPath = libraryRootPath;
         S.showPrompts = showPrompts;
-        S.displayNoDTInCV = displayNoDTInCV;
         S.backupFolderPath = backupFolderPath;
         S.tmpFolderPath = tmpFolderPath;
         S.thumbnailQuality = thumbnailQuality;
@@ -233,7 +230,6 @@
         importFolderPath = S.importFolderPath;
         libraryRootPath = S.libFolderPath;
         showPrompts = S.showPrompts;
-        displayNoDTInCV = S.displayNoDTInCV;
         backupFolderPath = S.backupFolderPath;
         tmpFolderPath = S.tmpFolderPath;
         thumbnailQuality = S.thumbnailQuality;
@@ -260,15 +256,15 @@
         amountUpdated = amountToUpdate = 0;
         thumbnailProgress.Enable();
 
-        List<MediaRow> allItems = C.LoadEntireMediaTable();
+        List<LibraryItem> allItems = C.LoadEntireLibraryTable();
         amountToUpdate = allItems.Count;
 
         await Parallel.ForEachAsync(allItems, async (item, _) =>
         {
             await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
-            await using NpgsqlCommand cmd = new("UPDATE media SET thumbnail = @newThumbnail WHERE path = @path", localConn);
-            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, item.path)));
-            cmd.Parameters.AddWithValue("@path", item.path);
+            await using NpgsqlCommand cmd = new("UPDATE library SET thumbnail = @newThumbnail WHERE path = @path", localConn);
+            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(Path.Join(S.libFolderPath, item.Path)));
+            cmd.Parameters.AddWithValue("@path", item.Path);
             await cmd.ExecuteNonQueryAsync(_);
             amountUpdated++;
             await InvokeAsync(StateHasChanged);
@@ -290,8 +286,8 @@
     {
         maintenanceLoaded = true;
         emptyFolders = new List<string>();
-        untrackedPaths = M.GetUntrackedLibFiles();
-        mediaMissingFiles = M.GetMediaMissingFiles();
+        untrackedPaths = M.GetUntrackedFiles();
+        missingFiles = M.GetMissingFiles();
 
         folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
@@ -304,7 +300,7 @@
     private async void GetStats()
     {
         statsLoaded = true;
-        mediaRowCount = Stats.GetNumItemsInLibrary();
+        libraryRowCount = Stats.GetNumItemsInLibrary();
         trashRowCount = Stats.GetNumItemsInTrash();
         collectionsCount = Stats.CountCollections();
         
