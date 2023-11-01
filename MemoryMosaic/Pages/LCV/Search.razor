@@ -17,6 +17,12 @@
 	private string searchText = "";
 	private bool firstLoad = true;
 
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+			searchInput.Focus();
+	}
+
 	private void SearchLibrary()
 	{
 		if (String.IsNullOrEmpty(searchText)) return;
