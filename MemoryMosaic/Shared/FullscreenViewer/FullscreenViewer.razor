@@ -140,7 +140,8 @@
 
 @if (Visibility.Visible)
 {
-	<KeyboardShortcuts AltLeft="@Disable" CtrlD="@DeleteButtonClick" Del="@DeleteButtonClick" CtrlLeft="@MoveLeft" CtrlRight="@MoveRight" Esc="@Disable" I="@infoVisibility.Toggle" Left="@TryMoveLeft" Right="@TryMoveRight"/>
+	<KeyboardShortcuts AltS="@UpdateStarred" AltLeft="@Disable" Del="@DeleteButtonClick" CtrlLeft="@MoveLeft" CtrlRight="@MoveRight" Esc="@Disable" I="@infoVisibility.Toggle" Left="@TryMoveLeft" Right="@TryMoveRight"/>
+	<ShortcutsReference Shortcuts="@Shortcuts"/>
 }
 
 @code {
@@ -201,6 +202,45 @@
 		Visibility.Rerender = RerenderParent;
 		dtPickerVis.Rerender = StateHasChanged;
 		fileRename.Rerender = StateHasChanged;
+	}
+	
+	private Dictionary<string, string> Shortcuts
+	{
+		get
+		{
+			Dictionary<string, string> shortcuts = new()
+			{
+				{"Esc", "Close This"},
+				{"Alt Left", "Close This"},
+				{"Del", "Delete Current Item"},
+				{"Alt C", "Toggle CollectionSelector"},
+				{"I", "Toggle Info Panel"},
+				{"Ctrl Left", "Move Left"},
+				{"Ctrl Right", "Move Right"}
+			};
+
+			if (Current.Video)
+			{
+				shortcuts.Add("Space or K", "Play/Pause");
+				shortcuts.Add("Left", "Move Left 5 Seconds");
+				shortcuts.Add("Right", "Move Right 5 Seconds");
+				shortcuts.Add("J", "Move Left 10 Seconds");
+				shortcuts.Add("L", "Move Right 10 Seconds");
+				shortcuts.Add("Up", "Increase Volume");
+				shortcuts.Add("Down", "Decrease Volume");
+				shortcuts.Add("F", "Toggle Fullscreen");
+				shortcuts.Add("M", "Toggle Mute");
+				shortcuts.Add("Home", "Start of Video");
+				shortcuts.Add("End", "End of Video");
+			}
+			else
+			{
+				shortcuts.Add("Left", "Move Left");
+				shortcuts.Add("Right", "Move Right");
+			}
+			
+			return shortcuts;
+		}
 	}
 }
 

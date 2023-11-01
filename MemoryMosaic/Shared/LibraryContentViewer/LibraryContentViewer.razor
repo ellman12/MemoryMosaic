@@ -17,7 +17,8 @@ Items can be selected, and depending on the page, different options may be appli
 
 @if (!fv.Visibility.Visible)
 {
-	<KeyboardShortcuts CtrlD="@DeleteButtonClick" Del="@DeleteButtonClick" Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)"/>
+	<KeyboardShortcuts AltS="@(() => starPrompt.Toggle())" Del="@DeleteButtonClick" Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)" Slash="@(() => navigationManager.NavigateTo("/search"))"/>
+	<ShortcutsReference Shortcuts="@shortcuts"/>
 }
 
 <header style="visibility: @(SelectedItems.Count > 0 || PersistentHeader || TrashPage || MemoriesPage ? "visible" : "hidden")">
@@ -139,6 +140,19 @@ Items can be selected, and depending on the page, different options may be appli
 		topLoader.Dispose();
 		bottomLoader.Dispose();
 	}
+	
+	private static readonly Dictionary<string, string> shortcuts = new()
+	{
+		{"Alt C", "Toggle CollectionSelector"},
+		{"Del", "Delete Selected"},
+		{"Esc", "Clear Selection"},
+		{"Ctrl A", "Select All Currently-Loaded Items"},
+		{"Ctrl G", "Toggle Ctrl G Input"},
+		{"Ctrl Shift A", "Load and Select Everything"},
+		{"Ctrl Shift -", "Zoom Grouping Out"},
+		{"Ctrl Shift +", "Zoom Grouping In"},
+		{"/", "Search"}
+	};
 }
 
 @* Loading content *@
