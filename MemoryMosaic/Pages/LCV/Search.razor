@@ -1,4 +1,4 @@
-﻿@page "/search"
+@page "/search"
 
 <title>Search - MM</title>
 <link href="css/Pages/LCV/Search.css" rel="stylesheet"/>
@@ -9,16 +9,20 @@
 
 <KeyboardShortcuts Slash="@(() => searchInput.Focus())"/>
 
-<LibraryContentViewer @ref="@lcv" NoItemsText="No Items Found" Where="@($"path ILIKE '{(String.IsNullOrWhiteSpace(searchText) ? "" : $"%{searchText}%")}'")" PersistentHeader="true"/>
+<LibraryContentViewer @ref="@lcv" NoItemsText="@(firstLoad ? "Search Your Library" : "No Items Found")" Where="@($"path ILIKE '{(String.IsNullOrWhiteSpace(searchText) ? "" : $"%{searchText}%")}'")" PersistentHeader="true"/>
 
 @code {
-     private LibraryContentViewer lcv = null!;
-     private TextInput searchInput = null!;
-     private string searchText = "";
+	private LibraryContentViewer lcv = null!;
+	private TextInput searchInput = null!;
+	private string searchText = "";
+	private bool firstLoad = true;
 
-     private void SearchLibrary()
-     {
-         StateHasChanged();
-         lcv.Reset();
-     }
+	private void SearchLibrary()
+	{
+		if (String.IsNullOrEmpty(searchText)) return;
+		
+		StateHasChanged();
+		lcv.Reset();
+		firstLoad = false;
+	}
 }
