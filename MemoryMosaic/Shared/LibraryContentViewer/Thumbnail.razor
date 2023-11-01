@@ -4,6 +4,7 @@
 <div class="thumbnail" @onmousedown="@ThumbnailClick" @onclick:stopPropagation="true"> @* https://stackoverflow.com/a/64724214 *@
 	@if (Item.Starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
 	@if (Item.Video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
+	@if (!String.IsNullOrWhiteSpace(Item.Description)) { <MaterialIcon Icon="notes" Class="description-icon"/> }
 	<Checkbox Input="@LCV.SelectedItems.Contains(Id)" EventArgsOnClick="@CheckClick"/>
 	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="@Item.Path" loading="lazy" @onclick="@ImgClick"/>
 </div>
@@ -28,7 +29,7 @@
 			LCV.SelectedItems.Remove(Id);
 		else
 			LCV.SelectedItems.Add(Id);
-		
+
 		LCV.LastSelectedIndex = Index;
 		LCV.Rerender();
 	}
@@ -45,7 +46,7 @@
 			LCV.SetFullscreenItem(Index);
 		else if (!e.ShiftKey)
 			ToggleSelected();
-		
+
 		StateHasChanged(); //Ensures the checkbox is selected if clicked while Shift held down.
 	}
 
@@ -58,4 +59,4 @@
 		else if (!e.ShiftKey)
 			LCV.SetFullscreenItem(Index);
 	}
- }
+}
