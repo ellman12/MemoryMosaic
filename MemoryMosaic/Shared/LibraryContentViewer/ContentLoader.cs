@@ -1,6 +1,6 @@
 namespace MemoryMosaic.Shared.LibraryContentViewer;
 
-public sealed class ContentLoader
+public sealed class ContentLoader : IDisposable
 {
 	private readonly LibraryContentViewer LCV;
 
@@ -51,6 +51,12 @@ public sealed class ContentLoader
 		using NpgsqlCommand cmd = new(Query, conn);
 		reader = cmd.ExecuteReader();
 		AddContent();
+	}
+	
+	public void Dispose()
+	{
+		conn?.Dispose();
+		reader?.Dispose();
 	}
 
 	public void AddContent() => AddContent(100);

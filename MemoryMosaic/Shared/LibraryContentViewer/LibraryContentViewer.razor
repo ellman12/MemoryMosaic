@@ -4,6 +4,7 @@ Content is dynamically loaded in small chunks as they scroll up or down the page
 Items can be selected, and depending on the page, different options may be applied to them, such as (un)starring, deleting, changing what collection(s) they are a part of, etc.
 *@
 @inherits Component
+@implements IDisposable
 @inject NavigationManager navigationManager
 @using System.IO.Compression
 @namespace MemoryMosaic.Shared.LibraryContentViewer
@@ -131,6 +132,12 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		GroupBy = DefaultGroupBy;
 		Reset();
+	}
+
+	public void Dispose()
+	{
+		topLoader.Dispose();
+		bottomLoader.Dispose();
 	}
 }
 
