@@ -3,174 +3,27 @@
 <link href="css/Components/Modal/ShortcutsReference.css" rel="stylesheet"/>
 
 <ModalBackground Visibility="@Visibility">
-    <div id="reference">
-        <div id="header">
-            <span>Keyboard Shortcuts</span>
-        </div>
+	<div id="shortcutsReference">
+		<span>Keyboard Shortcuts</span>
 
-        <div id="allShortcuts">
-            <div>
-                <code>Ctrl /</code>
-                <span>Shows this</span>
-            </div>
-            
-            @if (IText != null)
-            {
-                <div>
-                    <code>I</code>
-                    <span>@IText</span>
-                </div>
-            }
-            
-            @if (DelText != null)
-            {
-                <div>
-                    <code>Del</code>
-                    <span>@DelText</span>
-                </div>
-            }
-            
-            @if (EscText != null)
-            {
-                <div>
-                    <code>Esc</code>
-                    <span>@EscText</span>
-                </div>
-            }
-            
-            @if (LeftText != null)
-            {
-                <div>
-                    <code>Left</code>
-                    <span>@LeftText</span>
-                </div>
-            }
-            
-            @if (RightText != null)
-            {
-                <div>
-                    <code>Right</code>
-                    <span>@RightText</span>
-                </div>
-            }
-            
-            @if (CtrlDText != null)
-            {
-                <div>
-                    <code>Ctrl D</code>
-                    <span>@CtrlDText</span>
-                </div>
-            }
-            
-            @if (CtrlEText != null)
-            {
-                <div>
-                    <code>Ctrl E</code>
-                    <span>@CtrlEText</span>
-                </div>
-            }
-            
-            @if (CtrlGText != null)
-            {
-                <div>
-                    <code>Ctrl G</code>
-                    <span>@CtrlGText</span>
-                </div>
-            }
-            
-            @if (AltFText != null)
-            {
-                <div>
-                    <code>Alt F</code>
-                    <span>@AltFText</span>
-                </div>
-            }
-            
-            @if (AltAText != null)
-            {
-                <div>
-                    <code>Alt A</code>
-                    <span>@AltAText</span>
-                </div>
-            }
-            
-            @if (AltCText != null)
-            {
-                <div>
-                    <code>Alt C</code>
-                    <span>@AltCText</span>
-                </div>
-            }
-            
-            @if (AltSText != null)
-            {
-                <div>
-                    <code>Alt S</code>
-                    <span>@AltSText</span>
-                </div>
-            }
-            
-            @if (AltLeftText != null)
-            {
-                <div>
-                    <code>Alt Left</code>
-                    <span>@AltLeftText</span>
-                </div>
-            }
-            
-            @if (AltRightText != null)
-            {
-                <div>
-                    <code>Alt Right</code>
-                    <span>@AltRightText</span>
-                </div>
-            }
-        </div>
-    </div>
+		<div>
+			<code>Ctrl /</code>
+			<span>Toggles This</span>
+		</div>
+
+		@foreach (var shortcut in Shortcuts)
+		{
+			<div>
+				<code>@shortcut.Key</code>
+				<span>@shortcut.Value</span>
+			</div>
+		}
+	</div>
 </ModalBackground>
 
 <KeyboardShortcuts CtrlSlash="@Toggle"/>
 
 @code {
-    [Parameter]
-    public string? IText { get; set; }
-
-    [Parameter]
-    public string? DelText { get; set; }
-
-    [Parameter]
-    public string? EscText { get; set; }
-
-    [Parameter]
-    public string? LeftText { get; set; }
-
-    [Parameter]
-    public string? RightText { get; set; }
-
-    [Parameter]
-    public string? CtrlDText { get; set; }
-
-    [Parameter]
-    public string? CtrlEText { get; set; }
-	
-    [Parameter]
-    public string? CtrlGText { get; set; }
-
-    [Parameter]
-    public string? AltFText { get; set; }
-
-    [Parameter]
-    public string? AltAText { get; set; }
-    
-    [Parameter]
-    public string? AltCText { get; set; }
-
-    [Parameter]
-    public string? AltSText { get; set; }
-
-    [Parameter]
-    public string? AltLeftText { get; set; }
-	
-    [Parameter]
-    public string? AltRightText { get; set; }
+	[Parameter, EditorRequired]
+	public required Dictionary<string, string> Shortcuts { get; set; }
 }
