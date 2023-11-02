@@ -132,7 +132,7 @@
         L.LogLine("Begin clearing database", LogLevel.Debug);
         
         C.Open();
-        await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS library CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE;", C.connection);
+        await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS library CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE", C.connection);
         cmd.ExecuteNonQuery();
         C.Close();
         

@@ -23,7 +23,7 @@ public static class Database
 	public static void Create(string name)
 	{
 		Connect();
-		using var cmd = new NpgsqlCommand($"CREATE DATABASE \"{name}\" WITH OWNER = postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;", Connection);
+		using var cmd = new NpgsqlCommand($"CREATE DATABASE \"{name}\" WITH OWNER = postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1", Connection);
 		cmd.ExecuteNonQuery();
 		Close();
 	}

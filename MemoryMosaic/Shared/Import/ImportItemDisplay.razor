@@ -6,7 +6,7 @@
 @* <div class="importItem" @onclick="@(mouseArgs => { if (mouseArgs.CtrlKey) CheckClicked(mouseArgs); })"> *@
 	@* <button class="checkBtn" @onclick="@CheckClicked"><span class="material-icons-outlined checkbox @(Import.selectedItems.Contains(ImportItem.Id) ? "checked" : "unchecked")">check_circle</span></button> *@
 	
-	@* <img src="data:image/jpg;base64,@ImportItem.thumbnail" onclick="window.open('mm_import/@ImportItem.shortPath', '_blank').focus();" alt="" loading="lazy"/> *@
+	@* <img src="data:image/jpg;base64,@ImportItem.thumbnail" onclick="window.open('mm_import/@ImportItem.shortPath', '_blank').focus()" alt="" loading="lazy"/> *@
 	@* <span class="shortPath @(Import.pathWidthClass == "shortWidth" ? "shortWidth" : "fullWidth")" onclick="openEdit(@Index)">Import/@ImportItem.shortPath</span> *@
 
 	@* <input type="text" @bind="@ImportItem.renamedFilename" style="display: none" id="text @Index"> *@
@@ -22,7 +22,7 @@
 			@* } *@
 			@* else *@
 			@* { *@
-				@* <span style="color: green;">C:&nbsp;@ImportItem.customDateTaken</span> *@
+				@* <span style="color: green">C:&nbsp;@ImportItem.customDateTaken</span> *@
 			@* } *@
 		@* } *@
 		@* else if (ImportItem.metadataDateTaken == null && ImportItem.filenameDateTaken == null || ImportItem.dateTakenSource == DateTakenSource.None) *@
