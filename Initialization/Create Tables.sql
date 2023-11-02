@@ -21,12 +21,13 @@ ALTER TABLE public.library OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.collections
 (
-    id serial NOT NULL PRIMARY KEY,
-    name text NOT NULL UNIQUE,
+    id serial UNIQUE NOT NULL,
+    name text UNIQUE NOT NULL,
     cover text REFERENCES library(path) ON UPDATE CASCADE ON DELETE SET NULL DEFAULT NULL,
     last_updated timestamp without time zone NOT NULL, -- The last time this item was renamed, added to/removed from, etc.
     folder boolean NOT NULL DEFAULT false, -- If this is a folder and thus its contents should remain separate from rest of library.
-    readonly boolean NOT NULL DEFAULT false -- If this Collection has been marked as readonly, it cannot: be renamed, have items added/removed, change if it's a folder or not, appear in CollectionSelector, or be deleted.
+    readonly boolean NOT NULL DEFAULT false, -- If this Collection has been marked as readonly, it cannot: be renamed, have items added/removed, change if it's a folder or not, appear in CollectionSelector, or be deleted.
+    PRIMARY KEY (id, name)
 ) TABLESPACE pg_default;
 ALTER TABLE public.collections OWNER to postgres;
 
