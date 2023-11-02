@@ -6,9 +6,9 @@ public class Collection
 	public int Id { get; init; }
 	public string Name { get; set; }
 	public string? Cover { get; set; }
-	public DateTime DateUpdated { get; set; }
 	public bool Folder { get; set; }
 	public bool ReadOnly { get; set; }
+	public DateTime DateUpdated { get; set; }
 
 	public Collection(int id, string name, string cover)
 	{
