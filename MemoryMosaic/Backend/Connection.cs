@@ -41,13 +41,14 @@ public static class Connection
 
     #region Library
 
-    ///<summary>For inserting an item into the library table. Will not insert duplicates.</summary>
-    ///<param name="path">The short path to the item, relative to mm_library. Convention is to use '/' as the separator.</param>
-    ///<param name="dateTaken">When this item was taken.</param>
-    ///<param name="uuid">The uuid of this item.</param>
-    ///<param name="thumbnail">A base64 string representing the thumbnail.</param>
-    ///<param name="starred">Is this item starred or not?</param>
-    public static async Task InsertItem(string path, DateTime? dateTaken, Guid uuid, string thumbnail, bool starred = false)
+    /// <summary>For inserting an item into the library table.</summary>
+    /// <param name="path">The short path to the item, relative to mm_library. Convention is to use '/' as the separator. '/' cannot be the first character.</param>
+    /// <param name="id">The id of this item.</param>
+    /// <param name="dateTaken">When this item was taken.</param>
+    /// <param name="separate">If this item is in a folder.</param>
+    /// <param name="starred">If this item is starred.</param>
+    /// <param name="thumbnail">A compressed base64 string representing the thumbnail.</param>
+    public static async Task InsertItem(string path, Guid id, DateTime? dateTaken, bool separate, bool starred, string thumbnail)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
@@ -55,13 +56,16 @@ public static class Connection
         {
             await using NpgsqlCommand cmd = new("", localConn);
             cmd.Parameters.AddWithValue("@path", path);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.Parameters.AddWithValue("@id", id);
+            
+            if (dateTaken != null)
+                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+            
+            cmd.Parameters.AddWithValue("@separate", separate);
             cmd.Parameters.AddWithValue("@starred", starred);
             cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
-            if (dateTaken != null) cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
 
-            cmd.CommandText = $"INSERT INTO library (path, {(dateTaken == null ? "" : "date_taken,")} starred, uuid , thumbnail) VALUES (@path, {(dateTaken == null ? "" : "@dateTaken, ")} @starred, @uuid, @thumbnail) ON CONFLICT(path) DO NOTHING";
-
+            cmd.CommandText = $"INSERT INTO library (path, id, {(dateTaken == null ? "" : "date_taken,")} separate, starred, thumbnail) VALUES (@path, @id, {(dateTaken == null ? "" : "@dateTaken, ")} @separate, @starred, @thumbnail) ON CONFLICT(path) DO NOTHING";
             await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)
