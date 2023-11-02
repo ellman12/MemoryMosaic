@@ -88,7 +88,7 @@ public static class Stats
             if (r.HasRows)
             {
                 await r.ReadAsync();
-                item = new LibraryItem(r.GetString(0), r.GetDateTime(1), r.GetDateTime(2), false, r.GetGuid(3), r.GetString(4), null, null);
+                item = new LibraryItem(r);
                 await r.CloseAsync();
             }
         }

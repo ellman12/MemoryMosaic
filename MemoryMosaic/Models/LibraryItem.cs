@@ -9,18 +9,22 @@ public class LibraryItem : Media
 
 	public DateTime? DateDeleted { get; init; }
 
-	public LibraryItem(string path, DateTime? dateTaken, DateTime dateAdded, bool starred, Guid id, string thumbnail, string? description, DateTime? dateDeleted)
+	///Creates a new LibraryItem from a query of this form: path, id, date_taken, date_added, starred, description, date_deleted, thumbnail
+	public LibraryItem(string path, Guid id, DateTime? dateTaken, DateTime dateAdded, bool starred, string? description, DateTime? dateDeleted, string thumbnail)
 	{
 		Path = path;
+		Id = id;
 		DateTaken = dateTaken;
 		DateAdded = dateAdded;
 		Starred = starred;
-		Id = id;
-		Thumbnail = thumbnail;
 		Description = description;
 		DateDeleted = dateDeleted;
+		Thumbnail = thumbnail;
 		Video = F.SupportedVideoExts.Contains(System.IO.Path.GetExtension(Path).ToLower());
 	}
+
+	///Creates a new LibraryItem from a query of this form: path, id, date_taken, date_added, starred, description, date_deleted, thumbnail
+	public LibraryItem(NpgsqlDataReader reader) : this(reader.GetString(0), reader.GetGuid(1), reader.IsDBNull(2) ? null : reader.GetDateTime(2), reader.GetDateTime(3), reader.GetBoolean(4), reader.IsDBNull(5) ? null : reader.GetString(5), reader.IsDBNull(6) ? null : reader.GetDateTime(6), reader.GetString(7)) {}
 
 	public override string RequestPath => "mm_library";
 }
