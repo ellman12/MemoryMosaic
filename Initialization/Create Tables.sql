@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.collections
 	cover text REFERENCES library(path) ON UPDATE CASCADE ON DELETE SET NULL DEFAULT NULL,
 	folder boolean NOT NULL DEFAULT false, -- If this is a folder and thus its contents should remain separate from rest of library.
 	readonly boolean NOT NULL DEFAULT false, -- If this Collection has been marked as readonly, it cannot: be renamed, have items added/removed, change if it's a folder or not, appear in CollectionSelector, or be deleted.
-	last_modified timestamp without time zone NOT NULL, -- The last time this item was renamed, added to/removed from, etc.
+	last_modified timestamp without time zone NOT NULL DEFAULT now(), -- The last time this item was renamed, added to/removed from, etc.
 	PRIMARY KEY (id, name)
 ) TABLESPACE pg_default;
 ALTER TABLE public.collections OWNER to postgres;

@@ -435,12 +435,12 @@ public static class Connection
     ///<param name="isFolder">True if this collection should be a folder. False by default.</param>
     ///<returns>True if successfully created collection, false if collection couldn't be created (e.g., because duplicate name).</returns>
     ///<remarks>The name column in the collection table requires all values to be unique.</remarks>
-    public static bool CreateCollection(string name, bool isFolder = false)
+    public static bool CreateCollection(string name, bool isFolder)
     {
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("INSERT INTO collections (name, last_modified, folder) VALUES (@name, now(), @isFolder)", connection);
+            using NpgsqlCommand cmd = new("INSERT INTO collections (name, folder) VALUES (@name, @isFolder)", connection);
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@isFolder", isFolder);
             cmd.ExecuteNonQuery();
