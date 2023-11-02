@@ -9,13 +9,13 @@ CREATE TABLE IF NOT EXISTS public.library
     date_added timestamp without time zone NOT NULL DEFAULT now(), -- When was added to library
     starred boolean NOT NULL DEFAULT false,
     separate boolean NOT NULL DEFAULT false, -- Is this item in a folder?
-    uuid uuid NOT NULL DEFAULT uuid_generate_v1(),
+    id uuid NOT NULL DEFAULT uuid_generate_v1(),
     thumbnail text NOT NULL, -- Base64 string representing thumbnail.
     date_deleted timestamp without time zone DEFAULT NULL, -- If this has a value, it's in the Trash.
     description text DEFAULT NULL,
-    PRIMARY KEY (path, uuid),
+    PRIMARY KEY (path, id),
     UNIQUE (path),
-    UNIQUE (uuid)
+    UNIQUE (id)
 ) TABLESPACE pg_default;
 ALTER TABLE public.library OWNER to postgres;
 
@@ -33,9 +33,9 @@ ALTER TABLE public.collections OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.collection_entries
 (
-    uuid uuid NOT NULL REFERENCES library(uuid) ON DELETE CASCADE,
+    id uuid NOT NULL REFERENCES library(id) ON DELETE CASCADE,
     collection_id integer NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
     date_added_to_collection timestamp without time zone NOT NULL DEFAULT now(),
-    PRIMARY KEY (uuid, collection_id)
+    PRIMARY KEY (id, collection_id)
 ) TABLESPACE pg_default;
 ALTER TABLE public.collection_entries OWNER to postgres;
