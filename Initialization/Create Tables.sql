@@ -33,9 +33,9 @@ ALTER TABLE public.collections OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.collection_entries
 (
-    id uuid NOT NULL REFERENCES library(id) ON DELETE CASCADE,
+    item_id uuid NOT NULL REFERENCES library(id) ON DELETE CASCADE,
     collection_id integer NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
     date_added_to_collection timestamp without time zone NOT NULL DEFAULT now(),
-    PRIMARY KEY (id, collection_id)
+    PRIMARY KEY (item_id, collection_id)
 ) TABLESPACE pg_default;
 ALTER TABLE public.collection_entries OWNER to postgres;
