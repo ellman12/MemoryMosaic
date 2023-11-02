@@ -179,12 +179,12 @@
             {
                 if (SelectedItem != Guid.Empty)
                 {
-                    await C.AddToCollectionAsync(SelectedItem, folders[checkedFolderIndex].Id);
+                    await C.AddToCollectionAsync(folders[checkedFolderIndex].Id, SelectedItem);
                 }
                 else
                 {
                     foreach (Guid item in SelectedItems)
-                        await C.AddToCollectionAsync(item, folders[checkedFolderIndex].Id);
+                        await C.AddToCollectionAsync(folders[checkedFolderIndex].Id, item);
                 }
             }
             else //Adding to album(s).
@@ -195,12 +195,12 @@
 
                     if (SelectedItem != Guid.Empty)
                     {
-                        await C.AddToCollectionAsync(SelectedItem, albums[c].Id);
+                        await C.AddToCollectionAsync(albums[c].Id, SelectedItem);
                     }
                     else
                     {
                         foreach (Guid item in SelectedItems)
-                            await C.AddToCollectionAsync(item, albums[c].Id);
+                            await C.AddToCollectionAsync(albums[c].Id, item);
                     }
                 }
             }
