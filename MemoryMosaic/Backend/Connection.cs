@@ -440,7 +440,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("INSERT INTO collections (name, last_updated, folder) VALUES (@name, now(), @isFolder)", connection);
+            using NpgsqlCommand cmd = new("INSERT INTO collections (name, last_modified, folder) VALUES (@name, now(), @isFolder)", connection);
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@isFolder", isFolder);
             cmd.ExecuteNonQuery();
@@ -510,7 +510,7 @@ public static class Connection
         
         try
         {
-            await using NpgsqlCommand cmd = new($"SELECT name, last_updated, folder, readonly FROM collections WHERE id = {collectionID}", localConn);
+            await using NpgsqlCommand cmd = new($"SELECT name, last_modified, folder, readonly FROM collections WHERE id = {collectionID}", localConn);
             await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 
             if (!r.HasRows) return null;
@@ -631,7 +631,7 @@ public static class Connection
             }
 
             //Actually add the item to the collection and set the collection's last updated to now.
-            cmd.CommandText = "INSERT INTO collection_entries VALUES (@id, @collectionID) ON CONFLICT (id, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id = @collectionID";
+            cmd.CommandText = "INSERT INTO collection_entries VALUES (@id, @collectionID) ON CONFLICT (id, collection_id) DO NOTHING; UPDATE collections SET last_modified = now() WHERE id = @collectionID";
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -666,7 +666,7 @@ public static class Connection
             }
 
             //Actually add the item to the collection and set the collection's last updated to now.
-            cmd.CommandText = "INSERT INTO collection_entries VALUES (@id, @collectionID) ON CONFLICT (id, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id = @collectionID";
+            cmd.CommandText = "INSERT INTO collection_entries VALUES (@id, @collectionID) ON CONFLICT (id, collection_id) DO NOTHING; UPDATE collections SET last_modified = now() WHERE id = @collectionID";
             await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)
@@ -692,7 +692,7 @@ public static class Connection
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "UPDATE collections SET last_updated = now() WHERE id = @collectionID";
+            cmd.CommandText = "UPDATE collections SET last_modified = now() WHERE id = @collectionID";
             cmd.ExecuteNonQuery();
 
             cmd.CommandText = "UPDATE library SET separate = false WHERE id = @id AND separate = true";
@@ -722,8 +722,8 @@ public static class Connection
         {
             CMSortMode.Title => "name ASC",
             CMSortMode.TitleReversed => "name DESC",
-            CMSortMode.LastModified => "last_updated DESC",
-            CMSortMode.LastModifiedReversed => "last_updated ASC",
+            CMSortMode.LastModified => "last_modified DESC",
+            CMSortMode.LastModifiedReversed => "last_modified ASC",
             _ => "name ASC"
         };
 
@@ -743,7 +743,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new($"SELECT id, name, cover, last_updated FROM collections {where} ORDER BY {orderBy}", connection);
+            using NpgsqlCommand cmd = new($"SELECT id, name, cover, last_modified FROM collections {where} ORDER BY {orderBy}", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
             r.Close();
