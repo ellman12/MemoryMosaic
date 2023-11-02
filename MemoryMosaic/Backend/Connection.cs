@@ -127,16 +127,17 @@ public static class Connection
         }
     }
 
-    ///<summary>Gets an item's short path from its uuid.</summary>
+    //TODO: come back to this guy later. I hate it.
+    ///<summary>Gets an item's short path from its id.</summary>
     ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
-    public static string? GetPathFromUuid(Guid uuid)
+    public static string? GetPathFromId(Guid id)
     {
         string? path = null;
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE uuid=@uuid", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE id = @id", connection);
+            cmd.Parameters.AddWithValue("@id", id);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             if (r.HasRows)
             {
@@ -201,7 +202,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted FROM library ORDER BY date_taken DESC", connection);
+            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, id, thumbnail, description, date_deleted FROM library ORDER BY date_taken DESC", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) library.Add(new LibraryItem(r.GetString(0), r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetDateTime(2), r.GetBoolean(3), r.GetGuid(4), r.GetString(5), r.IsDBNull(6) ? null : r.GetString(6), r.IsDBNull(7) ? null : r.GetDateTime(7)));
             r.Close();
@@ -218,9 +219,9 @@ public static class Connection
     }
     
     /// <summary>Sets the description of an item.</summary>
-    /// <param name="uuid">The uuid of the item.</param>
+    /// <param name="id">The id of the item.</param>
     /// <param name="newDescription">The new description of the item.</param>
-    public static void UpdateDescription(Guid uuid, string? newDescription)
+    public static void UpdateDescription(Guid id, string? newDescription)
     {
         try
         {
@@ -228,14 +229,14 @@ public static class Connection
             using NpgsqlCommand cmd = new(null, connection);
             if (String.IsNullOrWhiteSpace(newDescription))
             {
-                cmd.CommandText = "UPDATE library SET description = NULL WHERE uuid=@uuid";
+                cmd.CommandText = "UPDATE library SET description = NULL WHERE id = @id";
             }
             else
             {
-                cmd.CommandText = "UPDATE library SET description = @newDescription WHERE uuid=@uuid";
+                cmd.CommandText = "UPDATE library SET description = @newDescription WHERE id = @id";
                 cmd.Parameters.AddWithValue("@newDescription", newDescription);
             }
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -251,13 +252,13 @@ public static class Connection
     #region Trash
 
     ///Set this library item's date_deleted to the current date and time.
-    public static void MoveToTrash(Guid uuid)
+    public static void MoveToTrash(Guid id)
     {
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("UPDATE library SET date_deleted = now() WHERE uuid=@uuid", connection);
-            cmd.Parameters.AddWithValue("uuid", uuid);
+            using NpgsqlCommand cmd = new("UPDATE library SET date_deleted = now() WHERE id = @id", connection);
+            cmd.Parameters.AddWithValue("id", id);
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -271,18 +272,18 @@ public static class Connection
     }
 
     ///Set the date_deleted field of an IEnumerable&lt;Guid&gt; of items to the current date and time.
-    public static void MoveToTrash(IEnumerable<Guid> uuids)
+    public static void MoveToTrash(IEnumerable<Guid> ids)
     {
-        foreach (Guid uuid in uuids)
-            MoveToTrash(uuid);
+        foreach (Guid id in ids)
+            MoveToTrash(id);
     }
 
     ///PERMANENTLY remove an item from the database and DELETES the file from disk.
-    public static void RemoveFromTrash(Guid uuid)
+    public static void RemoveFromTrash(Guid id)
     {
         try
         {
-            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromUuid(uuid) ?? throw new InvalidOperationException()), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromId(id) ?? throw new InvalidOperationException()), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         }
         catch (FileNotFoundException e)
         {
@@ -293,11 +294,11 @@ public static class Connection
         {
             Open();
 
-            using NpgsqlCommand cmd = new("DELETE FROM library WHERE uuid=@uuid AND date_deleted IS NOT NULL", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            using NpgsqlCommand cmd = new("DELETE FROM library WHERE id = @id AND date_deleted IS NOT NULL", connection);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid";
+            cmd.CommandText = "DELETE FROM collection_entries WHERE id = @id";
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -311,10 +312,10 @@ public static class Connection
     }
 
     ///PERMANENTLY removes an IEnumerable&lt;Guid&gt; of items from the database and DELETES the file from disk.
-    public static void RemoveFromTrash(IEnumerable<Guid> uuids)
+    public static void RemoveFromTrash(IEnumerable<Guid> ids)
     {
-        foreach (Guid uuid in uuids)
-            RemoveFromTrash(uuid);
+        foreach (Guid id in ids)
+            RemoveFromTrash(id);
     }
     
     ///PERMANENTLY removes all items in Trash from server and database.
@@ -341,14 +342,14 @@ public static class Connection
     }
 
     ///Clears an item's date_deleted field, removing it from the Trash and restoring it back into the library. Also restores the collections it was previously in.
-    public static void RestoreItem(Guid uuid)
+    public static void RestoreItem(Guid id)
     {
         try
         {
             Open();
 
-            using NpgsqlCommand cmd = new("UPDATE library SET date_deleted = NULL WHERE uuid = @uuid", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            using NpgsqlCommand cmd = new("UPDATE library SET date_deleted = NULL WHERE id = @id", connection);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e) { L.LogException(e); }
@@ -356,10 +357,10 @@ public static class Connection
     }
 
     ///Clears the date_deleted field for each item in the IEnumerable&lt;Guid&gt;, restoring it back into the library.
-    public static void RestoreItems(IEnumerable<Guid> uuids)
+    public static void RestoreItems(IEnumerable<Guid> ids)
     {
-        foreach (Guid uuid in uuids)
-            RestoreItem(uuid);
+        foreach (Guid id in ids)
+            RestoreItem(id);
     }
 
     ///Restores EVERY item in the Trash back into library.
@@ -380,14 +381,14 @@ public static class Connection
     #region Starred
     
     ///<summary>Change a single item from either starred (true) or not starred.</summary>
-    public static void UpdateStarred(Guid uuid, bool starred)
+    public static void UpdateStarred(Guid id, bool starred)
     {
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("UPDATE library SET starred=@starred WHERE uuid=@uuid", connection);
+            using NpgsqlCommand cmd = new("UPDATE library SET starred = @starred WHERE id = @id", connection);
             cmd.Parameters.AddWithValue("@starred", starred);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -401,16 +402,16 @@ public static class Connection
     }
     
     ///<summary>Change an IEnumerable of items from either starred (true) or not starred.</summary>
-    public static void UpdateStarred(IEnumerable<Guid> uuids, bool starred)
+    public static void UpdateStarred(IEnumerable<Guid> ids, bool starred)
     {
         try
         {
             Open();
-            foreach(Guid uuid in uuids)
+            foreach(Guid id in ids)
             {
-                using NpgsqlCommand cmd = new("UPDATE library SET starred=@starred WHERE uuid=@uuid", connection);
+                using NpgsqlCommand cmd = new("UPDATE library SET starred = @starred WHERE id = @id", connection);
                 cmd.Parameters.AddWithValue("@starred", starred);
-                cmd.Parameters.AddWithValue("@uuid", uuid);
+                cmd.Parameters.AddWithValue("@id", id);
                 cmd.ExecuteNonQuery();
             }
         }
@@ -463,7 +464,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("UPDATE collections SET name=@newName WHERE id=@id", connection);
+            using NpgsqlCommand cmd = new("UPDATE collections SET name = @newName WHERE id = @id", connection);
             cmd.Parameters.AddWithValue("@newName", newName);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
@@ -486,7 +487,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("UPDATE collections SET cover=@path WHERE id=@collectionID", connection);
+            using NpgsqlCommand cmd = new("UPDATE collections SET cover = @path WHERE id = @collectionID", connection);
             cmd.Parameters.AddWithValue("@path", path);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
             cmd.ExecuteNonQuery();
@@ -558,7 +559,7 @@ public static class Connection
         {
             Open();
 
-            using NpgsqlCommand selectCmd = new("SELECT name FROM collections WHERE id=@id", connection);
+            using NpgsqlCommand selectCmd = new("SELECT name FROM collections WHERE id = @id", connection);
             selectCmd.Parameters.AddWithValue("@id", id);
             using NpgsqlDataReader r = selectCmd.ExecuteReader();
             if (r.HasRows)
@@ -589,12 +590,12 @@ public static class Connection
             Open();
             
             //Set all items to no longer being separate (only matters if this was a folder). If don't do this they won't appear in main library.
-            NpgsqlCommand cmd = new("UPDATE library SET separate=false FROM collection_entries WHERE collection_id=@collectionID AND collection_entries.uuid=library.uuid", connection);
+            NpgsqlCommand cmd = new("UPDATE library SET separate = false FROM collection_entries WHERE collection_id = @collectionID AND collection_entries.item_id = library.id", connection);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
             cmd.ExecuteNonQuery();
             
             //Removing the row for this collection in collections table automatically removes any rows in collection_entries referencing this collection.
-            cmd = new NpgsqlCommand("DELETE FROM collections WHERE id=@collectionID", connection);
+            cmd = new NpgsqlCommand("DELETE FROM collections WHERE id = @collectionID", connection);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
             cmd.ExecuteNonQuery();
         }
@@ -609,9 +610,9 @@ public static class Connection
     }
 
     ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
-    ///<param name="uuid">The uuid of the item.</param>
+    ///<param name="id">The id of the item.</param>
     ///<param name="collectionID">The ID of the collection to add the item to.</param>
-    public static void AddToCollection(Guid uuid, int collectionID)
+    public static void AddToCollection(Guid id, int collectionID)
     {
         bool isFolder = IsFolder(collectionID);
         
@@ -619,18 +620,18 @@ public static class Connection
         {
             Open();
             using NpgsqlCommand cmd = new("", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
 
             if (isFolder)
             {
                 //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
-                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid; UPDATE library SET separate=true WHERE uuid=@uuid";
+                cmd.CommandText = "DELETE FROM collection_entries WHERE id = @id; UPDATE library SET separate = true WHERE id = @id";
                 cmd.ExecuteNonQuery();
             }
 
             //Actually add the item to the collection and set the collection's last updated to now.
-            cmd.CommandText = "INSERT INTO collection_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
+            cmd.CommandText = "INSERT INTO collection_entries VALUES (@id, @collectionID) ON CONFLICT (id, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id = @collectionID";
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -644,9 +645,9 @@ public static class Connection
     }
     
     ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
-    ///<param name="uuid">The uuid of the item.</param>
+    ///<param name="id">The id of the item.</param>
     ///<param name="collectionID">The ID of the collection to add the item to.</param>
-    public static async Task AddToCollectionAsync(Guid uuid, int collectionID)
+    public static async Task AddToCollectionAsync(Guid id, int collectionID)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
         bool isFolder = await IsFolderAsync(collectionID);
@@ -654,18 +655,18 @@ public static class Connection
         try
         {
             await using NpgsqlCommand cmd = new("", localConn);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
 
             if (isFolder)
             {
                 //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
-                cmd.CommandText = "DELETE FROM collection_entries WHERE uuid=@uuid; UPDATE library SET separate=true WHERE uuid=@uuid";
+                cmd.CommandText = "DELETE FROM collection_entries WHERE id = @id; UPDATE library SET separate = true WHERE id = @id";
                 await cmd.ExecuteNonQueryAsync();
             }
 
             //Actually add the item to the collection and set the collection's last updated to now.
-            cmd.CommandText = "INSERT INTO collection_entries VALUES (@uuid, @collectionID) ON CONFLICT (uuid, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id=@collectionID";
+            cmd.CommandText = "INSERT INTO collection_entries VALUES (@id, @collectionID) ON CONFLICT (id, collection_id) DO NOTHING; UPDATE collections SET last_updated = now() WHERE id = @collectionID";
             await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)
@@ -679,22 +680,22 @@ public static class Connection
     }
 
     ///<summary>Remove a single item from a collection.</summary>
-    ///<param name="uuid">The uuid of the item to remove.</param>
+    ///<param name="id">The id of the item to remove.</param>
     ///<param name="collectionID">ID of the collection to remove from.</param>
-    public static void RemoveFromCollection(Guid uuid, int collectionID)
+    public static void RemoveFromCollection(Guid id, int collectionID)
     {
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("DELETE FROM collection_entries WHERE collection_id=@collectionID AND uuid=@uuid", connection);
+            using NpgsqlCommand cmd = new("DELETE FROM collection_entries WHERE collection_id = @collectionID AND id = @id", connection);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "UPDATE collections SET last_updated = now() WHERE id=@collectionID";
+            cmd.CommandText = "UPDATE collections SET last_updated = now() WHERE id = @collectionID";
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "UPDATE library SET separate = false WHERE uuid=@uuid AND separate = true";
+            cmd.CommandText = "UPDATE library SET separate = false WHERE id = @id AND separate = true";
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -759,17 +760,17 @@ public static class Connection
         return collections;
     }
 
-    ///<summary>Returns a List&lt;Collection&gt; of all the Collections this uuid is in.</summary>
-    ///<param name="uuid">Uuid of the item.</param>
-    public static List<Collection> GetCollectionsContaining(Guid uuid)
+    ///<summary>Returns a List&lt;Collection&gt; of all the Collections this id is in.</summary>
+    ///<param name="id">ID of the item.</param>
+    public static List<Collection> GetCollectionsContaining(Guid id)
     {
         List<Collection> collections = new();
 
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT id, name, cover FROM collections AS c INNER JOIN collection_entries AS e ON c.id=e.collection_id WHERE uuid=@uuid ORDER BY name ASC", connection);
-            cmd.Parameters.AddWithValue("@uuid", uuid);
+            using NpgsqlCommand cmd = new("SELECT id, name, cover FROM collections AS c INNER JOIN collection_entries AS e ON c.id = e.collection_id WHERE id = @id ORDER BY name ASC", connection);
+            cmd.Parameters.AddWithValue("@id", id);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
             r.Close();
@@ -795,12 +796,12 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("UPDATE library SET separate=@folder FROM collection_entries WHERE collection_id=@collectionID AND collection_entries.uuid=library.uuid", connection);
+            using NpgsqlCommand cmd = new("UPDATE library SET separate=@folder FROM collection_entries WHERE collection_id = @collectionID AND collection_entries.item_id = library.id", connection);
             cmd.Parameters.AddWithValue("@folder", folder);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "UPDATE collections SET folder=@folder WHERE id=@collectionID";
+            cmd.CommandText = "UPDATE collections SET folder = @folder WHERE id = @collectionID";
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -820,7 +821,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", connection);
+            using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id = @collectionID", connection);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             if (r.HasRows)
@@ -850,7 +851,7 @@ public static class Connection
         
         try
         {
-            await using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id=@collectionID", localConn);
+            await using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id = @collectionID", localConn);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
             await using NpgsqlDataReader r = cmd.ExecuteReader();
             if (r.HasRows)

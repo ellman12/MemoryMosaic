@@ -35,7 +35,7 @@
 	}
 </Dropdown>
 
-<LibraryContentViewer @ref="@lcv" Columns="@Columns" Join="collection_entries AS ce ON l.uuid=ce.uuid" Where="@($"collection_id={collection.Id} AND separate={collection.Folder}")" OrderByFields="@OrderBy" SortDesc="@((int) sortMode % 2 == 0)" NoItemsText="@($"{(collection.Folder ? "Folder" : "Album")} is Empty")" PersistentHeader="true">
+<LibraryContentViewer @ref="@lcv" Columns="@Columns" Join="collection_entries AS ce ON l.id=ce.item_id" Where="@($"collection_id={collection.Id} AND separate={collection.Folder}")" OrderByFields="@OrderBy" SortDesc="@((int) sortMode % 2 == 0)" NoItemsText="@($"{(collection.Folder ? "Folder" : "Album")} is Empty")" PersistentHeader="true">
 	<AdditionalButtons>
 		@if (!collection.ReadOnly && lcv.SelectedItems.Count > 0)
 		{
@@ -57,7 +57,7 @@
 	private Dropdown moreOptions = null!;
 	private readonly ElementVisibility buttons = new();
 	
-	private string Columns => $"l.path, l.date_taken, {((int) sortMode >= 4 ? "ce.date_added_to_collection" : "l.date_added")}, l.starred, l.uuid, l.thumbnail, l.description, l.date_deleted";
+	private string Columns => $"l.path, l.id, l.date_taken, {((int) sortMode >= 4 ? "ce.date_added_to_collection" : "l.date_added")}, l.starred, l.description, l.date_deleted, l.thumbnail";
 
 	private string[] OrderBy => sortMode switch
 	{
@@ -126,8 +126,8 @@
 	//Remove selected from the collection
 	private void RemoveBtnClick()
 	{
-		foreach (Guid uuid in lcv.SelectedItems)
-			C.RemoveFromCollection(uuid, collection!.Id);
+		foreach (Guid id in lcv.SelectedItems)
+			C.RemoveFromCollection(id, collection!.Id);
 		
 		lcv.Reset();
 		StateHasChanged();

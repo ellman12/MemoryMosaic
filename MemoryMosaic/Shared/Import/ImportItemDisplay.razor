@@ -126,12 +126,12 @@
 		@* } *@
 		@* Import.Rerender(); *@
 		
-		@* //Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the uuid from selectedItems. *@
-		@* void ToggleCheck(Guid uuid) *@
+		@* //Modifies a checkmark's CSS class to show if checked/unchecked, and adds/removes the id from selectedItems. *@
+		@* void ToggleCheck(Guid id) *@
 		@* { *@
-			@* if (Import.selectedItems.Contains(uuid)) *@
-				@* Import.selectedItems.Remove(uuid); *@
-			@* else Import.selectedItems.Add(uuid); *@
+			@* if (Import.selectedItems.Contains(id)) *@
+				@* Import.selectedItems.Remove(id); *@
+			@* else Import.selectedItems.Add(id); *@
 		@* } *@
 	
 		@* //Add items from start to end into selectedItems. Used for Shift Click. *@

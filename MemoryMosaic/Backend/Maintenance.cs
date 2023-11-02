@@ -35,7 +35,7 @@ public static class Maintenance
         try
         {
             C.Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, uuid, thumbnail, description, date_deleted FROM library", C.connection);
+            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, id, thumbnail, description, date_deleted FROM library", C.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
             while (r.Read())
@@ -68,7 +68,7 @@ public static class Maintenance
             C.Open();
             foreach (LibraryItem row in rows)
             {
-                using NpgsqlCommand cmd = new("DELETE FROM library WHERE path=@path", C.connection);
+                using NpgsqlCommand cmd = new("DELETE FROM library WHERE path = @path", C.connection);
                 cmd.Parameters.AddWithValue("@path", row.Path);
                 cmd.ExecuteNonQuery();
             }

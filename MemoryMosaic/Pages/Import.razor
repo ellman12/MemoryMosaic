@@ -186,7 +186,7 @@
 
 	@* private static readonly LazyDictionary<string, List<MediaRow>> libFilesWithSameName = new(), libFilesWithSimilarName = new(); *@
 
-	@* ///If the user does a search, store the results as the uuids of the items. *@
+	@* ///If the user does a search, store the results as the ids of the items. *@
 	@* private static readonly HashSet<Guid> searchResults = new(); *@
 
 	@* ///Stores what items are selected by the user. *@
@@ -269,7 +269,7 @@
 	@* private static void FindLibraryFilesWithSameOrSimilarName(string filenameNoExt) *@
 	@* { *@
 		@* C.Open(); *@
-		@* using NpgsqlCommand cmd = new($"SELECT path, date_taken, uuid, thumbnail, date_deleted FROM library WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection); *@
+		@* using NpgsqlCommand cmd = new($"SELECT path, date_taken, id, thumbnail, date_deleted FROM library WHERE path LIKE '%{filenameNoExt}%' ORDER BY date_taken DESC", C.connection); *@
 		@* using NpgsqlDataReader r = cmd.ExecuteReader(); *@
 		@* if (!r.HasRows) *@
 		@* { *@
@@ -369,8 +369,8 @@
 	@* { *@
 		@* if (searchResults.Count > 0) *@
 		@* { *@
-			@* foreach (Guid uuid in searchResults) *@
-				@* selectedItems.Remove(uuid); *@
+			@* foreach (Guid id in searchResults) *@
+				@* selectedItems.Remove(id); *@
 		@* } *@
 		@* else *@
 		@* { *@
@@ -390,8 +390,8 @@
 	@* { *@
 		@* if (searchResults.Count > 0) *@
 		@* { *@
-			@* foreach (Guid uuid in searchResults) *@
-				@* selectedItems.Add(uuid); *@
+			@* foreach (Guid id in searchResults) *@
+				@* selectedItems.Add(id); *@
 		@* } *@
 		@* else *@
 		@* { *@
