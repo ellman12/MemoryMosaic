@@ -202,7 +202,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, id, thumbnail, description, date_deleted FROM library ORDER BY date_taken DESC", connection);
+            using NpgsqlCommand cmd = new("SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail FROM library ORDER BY date_taken DESC", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) library.Add(new LibraryItem(r));
             r.Close();
@@ -682,7 +682,7 @@ public static class Connection
     public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, bool showReadonly, CMSortMode mode = CMSortMode.Title)
     {
         List<Collection> collections = new();
-
+        
         string orderBy = mode switch
         {
             CMSortMode.Title => "name ASC",
@@ -692,25 +692,26 @@ public static class Connection
             _ => "name ASC"
         };
 
-        //If both true, show albums and folders and thus no need for a where clause.
-        string where;
-        if (showAlbums && showFolders)
-            where = "";
-        else if (showAlbums)
-            where = "WHERE folder = false";
-        else if (showFolders)
-            where = "WHERE folder = true";
-        else
-            where = "WHERE folder = true and folder = false";
+        string where = (showAlbums, showFolders) switch
+        {
+            (true, true) => "",
+            (true, false) => "WHERE folder = false",
+            (false, true) => "WHERE folder = true",
+            _ => ""
+        };
         
-        if (!String.IsNullOrEmpty(where) && !showReadonly) where += " AND readonly = false";
+        if (where != "" && !showReadonly)
+            where += " AND readonly = false";
 
         try
         {
             Open();
             using NpgsqlCommand cmd = new($"SELECT id, name, cover, last_modified FROM collections {where} ORDER BY {orderBy}", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
+            
+            while (r.Read())
+                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
+            
             r.Close();
         }
         catch (NpgsqlException e)
@@ -737,7 +738,10 @@ public static class Connection
             using NpgsqlCommand cmd = new("SELECT id, name, cover FROM collections AS c INNER JOIN collection_entries AS e ON c.id = e.collection_id WHERE id = @id ORDER BY name ASC", connection);
             cmd.Parameters.AddWithValue("@id", id);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
+            
+            while (r.Read())
+                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
+            
             r.Close();
         }
         catch (NpgsqlException e)
