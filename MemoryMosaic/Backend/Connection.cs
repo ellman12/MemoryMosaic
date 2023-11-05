@@ -127,36 +127,6 @@ public static class Connection
         }
     }
 
-    //TODO: come back to this guy later. I hate it.
-    ///<summary>Gets an item's short path from its id.</summary>
-    ///<returns>The short path of the item, if found. null if couldn't find short path.</returns>
-    public static string? GetPathFromId(Guid id)
-    {
-        string? path = null;
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE id = @id", connection);
-            cmd.Parameters.AddWithValue("@id", id);
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-            if (r.HasRows)
-            {
-                r.Read(); //There should only be 1 line to read.
-                path = r.GetString(0); //First and only column.
-                r.Close();
-            }
-        }
-        catch (NpgsqlException e)
-        {
-            L.LogException(e);
-        }
-        finally
-        {
-            Close();
-        }
-        return path;
-    }
-    
     ///<summary>Used in FullscreenViewer for renaming the current item's file.</summary>
     ///<param name="oldShortPath">The original short path of the item.</param>
     ///<param name="newFilename">The new filename of the item.</param>
@@ -279,11 +249,11 @@ public static class Connection
     }
 
     ///PERMANENTLY remove an item from the database and DELETES the file from disk.
-    public static void RemoveFromTrash(Guid id)
+    public static void RemoveFromTrash(LibraryItem item)
     {
         try
         {
-            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, GetPathFromId(id) ?? throw new InvalidOperationException()), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, item.Path), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         }
         catch (FileNotFoundException e)
         {
@@ -295,7 +265,7 @@ public static class Connection
             Open();
 
             using NpgsqlCommand cmd = new("DELETE FROM library WHERE id = @id AND date_deleted IS NOT NULL", connection);
-            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@id", item.Id);
             cmd.ExecuteNonQuery();
 
             cmd.CommandText = "DELETE FROM collection_entries WHERE item_id = @id";
@@ -312,10 +282,10 @@ public static class Connection
     }
 
     ///PERMANENTLY removes an IEnumerable&lt;Guid&gt; of items from the database and DELETES the file from disk.
-    public static void RemoveFromTrash(IEnumerable<Guid> ids)
+    public static void RemoveFromTrash(IEnumerable<LibraryItem> items)
     {
-        foreach (Guid id in ids)
-            RemoveFromTrash(id);
+        foreach (LibraryItem item in items)
+            RemoveFromTrash(item);
     }
     
     ///PERMANENTLY removes all items in Trash from server and database.

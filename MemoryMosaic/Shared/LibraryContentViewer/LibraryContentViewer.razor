@@ -436,7 +436,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			if (fv.Visibility.Visible)
 			{
-				C.RemoveFromTrash(fv.Current.Id);
+				C.RemoveFromTrash(fv.Current);
 				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
 				
 				if (fv.Index == Content.Count)
@@ -449,7 +449,7 @@ Items can be selected, and depending on the page, different options may be appli
 			}
 			else
 			{
-				C.RemoveFromTrash(SelectedItems);
+				C.RemoveFromTrash(Content.Where(item => SelectedItems.Contains(item.Id)));
 				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 			}
 		}
