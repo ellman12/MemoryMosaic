@@ -611,41 +611,6 @@ public static class Connection
 
     ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
     ///<param name="collectionID">The ID of the collection to add the item to.</param>
-    ///<param name="id">The id of the item.</param>
-    public static void AddToCollection(int collectionID, Guid id)
-    {
-        bool isFolder = IsFolder(collectionID);
-        
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("", connection);
-            cmd.Parameters.AddWithValue("@collectionID", collectionID);
-            cmd.Parameters.AddWithValue("@id", id);
-
-            if (isFolder)
-            {
-                //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
-                cmd.CommandText = "DELETE FROM collection_entries WHERE item_id = @id; UPDATE library SET separate = true WHERE id = @id";
-                cmd.ExecuteNonQuery();
-            }
-
-            //Actually add the item to the collection and set the collection's last updated to now.
-            cmd.CommandText = "INSERT INTO collection_entries VALUES (@collectionID, @id) ON CONFLICT (collection_id, item_id) DO NOTHING; UPDATE collections SET last_modified = now() WHERE id = @collectionID";
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e)
-        {
-            L.LogException(e);
-        }
-        finally
-        {
-            Close();
-        }
-    }
-    
-    ///<summary>Add a single item to a collection in collection_entries. If it's a folder it handles all that automatically.</summary>
-    ///<param name="collectionID">The ID of the collection to add the item to.</param>
     ///<param name="itemId">The id of the item.</param>
     public static async Task AddToCollectionAsync(int collectionID, Guid itemId)
     {
