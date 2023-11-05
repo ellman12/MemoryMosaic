@@ -25,12 +25,12 @@ public class Collection
 		LastModified = lastModified;
 	}
 
-	public Collection(int id, string name, DateTime lastModified, bool folder, bool readOnly)
+	public Collection(int id, string name, bool folder, bool readOnly, DateTime lastModified)
 	{
 		Id = id;
 		Name = name;
-		LastModified = lastModified;
 		Folder = folder;
 		ReadOnly = readOnly;
+		LastModified = lastModified;
 	}
 }
