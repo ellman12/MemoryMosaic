@@ -29,35 +29,7 @@ public static class Maintenance
     }
 
     ///Returns a List&lt;LibraryItem&gt; of all rows and columns from the library table that don't have existing files in mm_library.
-    public static List<LibraryItem> GetMissingFiles()
-    {
-        List<LibraryItem> missingFiles = new();
-        try
-        {
-            C.Open();
-            using NpgsqlCommand cmd = new("SELECT path, date_taken, date_added, starred, id, thumbnail, description, date_deleted FROM library", C.connection);
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-
-            while (r.Read())
-            {
-                string shortPath = r.GetString(0);
-                string fullPath = Path.Combine(S.libFolderPath, shortPath);
-                if (!File.Exists(fullPath))
-                    missingFiles.Add(new LibraryItem(r));
-            }
-            r.Close();
-        }
-        catch (NpgsqlException e)
-        {
-            L.LogException(e);
-        }
-        finally
-        {
-            C.Close();
-        }
-
-        return missingFiles;
-    }
+    public static List<LibraryItem> GetMissingFiles() => C.LoadEntireLibraryTable().Where(item => !File.Exists(Path.Combine(S.libFolderPath, item.Path))).ToList();
 
     ///<summary>Delete these items FROM library table that are in the DB but don't exist as files.</summary>
     ///<param name="rows">List&lt;LibraryItem&gt; retrieved with GetMissingFiles()</param>
