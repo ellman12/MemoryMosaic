@@ -26,4 +26,6 @@ public class ImportItem : Media
 	public HashSet<int>? Collections { get; set; }
 	
 	public override string RequestPath => "mm_import";
+	
+	public override string FullPath => System.IO.Path.Combine(S.importFolderPath, Path);
 }

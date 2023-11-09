@@ -27,4 +27,6 @@ public class LibraryItem : Media
 	public LibraryItem(NpgsqlDataReader reader) : this(reader.GetString(0), reader.GetGuid(1), reader.IsDBNull(2) ? null : reader.GetDateTime(2), reader.GetDateTime(3), reader.GetBoolean(4), reader.IsDBNull(5) ? null : reader.GetString(5), reader.IsDBNull(6) ? null : reader.GetDateTime(6), reader.GetString(7)) {}
 
 	public override string RequestPath => "mm_library";
+
+	public override string FullPath => System.IO.Path.Combine(S.libFolderPath, Path);
 }

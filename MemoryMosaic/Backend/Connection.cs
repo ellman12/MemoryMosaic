@@ -253,7 +253,7 @@ public static class Connection
     {
         try
         {
-            FileSystem.DeleteFile(Path.Combine(S.libFolderPath, item.Path), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            FileSystem.DeleteFile(item.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         }
         catch (FileNotFoundException e)
         {

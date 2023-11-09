@@ -18,4 +18,6 @@ public abstract class Media
 	public bool Video { get; protected init; }
 
 	public abstract string RequestPath { get; }
+	
+	public abstract string FullPath { get; }
 }
