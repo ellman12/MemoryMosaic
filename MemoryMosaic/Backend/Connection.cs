@@ -705,7 +705,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT id, name, cover FROM collections AS c INNER JOIN collection_entries AS e ON c.id = e.collection_id WHERE id = @id ORDER BY name ASC", connection);
+            using NpgsqlCommand cmd = new("SELECT id, name, cover FROM collections AS c INNER JOIN collection_entries AS e ON c.id = e.collection_id WHERE item_id = @id ORDER BY name ASC", connection);
             cmd.Parameters.AddWithValue("@id", id);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             
