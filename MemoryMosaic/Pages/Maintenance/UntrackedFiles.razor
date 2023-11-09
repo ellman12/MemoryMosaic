@@ -8,15 +8,15 @@
     <IconTextButton Icon="trash" Text="Delete All" OnClick="@DeleteAll"/>
 </header>
 
-@{
-    if (untrackedFiles.Count == 0)
-    {
-        <h1>No Untracked Items</h1>
-        return;
-    }
-    
-    <main>
-        @for (int i = 0; i < untrackedFiles.Count; i++)
+<main>
+    @{
+        if (untrackedFiles.Count == 0)
+        {
+            <h1>No Untracked Items</h1>
+            return;
+        }
+
+        for (int i = 0; i < untrackedFiles.Count; i++)
         {
             int ii = i;
             string path = untrackedFiles[i];
@@ -36,13 +36,13 @@
                     <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus()" src="@("data:image/jpg;base64," + F.GenerateThumbnail(path))" alt="@shortPath" loading="lazy"/>
                 }
 
-                <span title="@name" class="filenameSpan">@name</span>
+                <span title="@name">@name</span>
                 <IconButton Icon="drive_file_move" OnClick="@(() => MoveBtnClick(ii))" Title="Move This Item to Import"/>
                 <IconButton Icon="trash" OnClick="@(() => DeleteBtnClick(ii))" Title="Delete This Item From Server"/>
             </div>
         }
-    </main>
-}
+    }
+</main>
 
 @code {
     private readonly List<string> untrackedFiles = M.GetUntrackedFiles();

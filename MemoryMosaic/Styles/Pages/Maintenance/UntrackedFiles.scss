@@ -9,12 +9,11 @@ header {
 }
 
 main {
-	@include main(70px);
+	@include flex-main(70px, column);
 
 	> div {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
+		@include flex-row;
+		@include available-width;
 		margin-bottom: 10px;
 
 		> img {
