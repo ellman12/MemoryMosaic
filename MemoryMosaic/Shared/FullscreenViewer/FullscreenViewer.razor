@@ -11,7 +11,7 @@
 			<IconButton Icon="collections" OnClick="@(() => CollectionSelector.Enable())"/>
 			<IconButton Icon="@(Current.Starred ? "star" : "star_outline")" OnClick="@UpdateStarred"/>
 			
-			@if (TrashPage)
+			@if (PageName == "Trash")
 			{
 				<IconButton Icon="restore" OnClick="@RestoreButtonClick"/>
 			}
@@ -159,8 +159,8 @@
 	
 	[Parameter] public Action? RestoreButtonClick { get; set; }
 	[Parameter] public Action? DeleteButtonClick { get; set; }
-	
-	[Parameter] public bool TrashPage { get; set; }
+
+	[Parameter] public string? PageName { get; set; }
 	[Parameter] public bool DisplayType { get; set; }
 	
 	public T Current => Content[Index];
