@@ -10,14 +10,14 @@ public class Collection
 	public bool ReadOnly { get; set; }
 	public DateTime LastModified { get; set; }
 
-	public Collection(int id, string name, string cover)
+	public Collection(int id, string name, string? cover)
 	{
 		Id = id;
 		Name = name;
 		Cover = cover;
 	}
             
-	public Collection(int id, string name, string cover, DateTime lastModified)
+	public Collection(int id, string name, string? cover, DateTime lastModified)
 	{
 		Id = id;
 		Name = name;
