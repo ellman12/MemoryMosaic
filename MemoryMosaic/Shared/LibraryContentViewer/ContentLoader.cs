@@ -1,6 +1,6 @@
 namespace MemoryMosaic.Shared.LibraryContentViewer;
 
-public sealed class ContentLoader : IDisposable
+public sealed class ContentLoader : IDisposable, IAsyncDisposable
 {
 	private readonly LibraryContentViewer LCV;
 
@@ -59,6 +59,15 @@ public sealed class ContentLoader : IDisposable
 		reader?.Dispose();
 	}
 
+	public async ValueTask DisposeAsync()
+	{
+		if (conn != null)
+			await conn.DisposeAsync();
+
+		if (reader != null)
+			await reader.DisposeAsync();
+	}
+
 	public void AddContent() => AddContent(100);
 
 	public int AddContent(int readLimit)
@@ -72,9 +81,9 @@ public sealed class ContentLoader : IDisposable
 			LibraryItem newItem = new(reader);
 			
 			if (Bottom)
-                LCV.Content.Add(newItem);
+				LCV.Content.Add(newItem);
 			else
-                LCV.Content.Insert(0, newItem);
+				LCV.Content.Insert(0, newItem);
 			
 			rowsAdded++;
 		}

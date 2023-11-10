@@ -5,6 +5,7 @@ Items can be selected, and depending on the page, different options may be appli
 *@
 @inherits Component
 @implements IDisposable
+@implements IAsyncDisposable
 @inject NavigationManager navigationManager
 @using System.IO.Compression
 @namespace MemoryMosaic.Shared.LibraryContentViewer
@@ -139,6 +140,12 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		topLoader.Dispose();
 		bottomLoader.Dispose();
+	}
+	
+	public async ValueTask DisposeAsync()
+	{
+		await topLoader.DisposeAsync();
+		await bottomLoader.DisposeAsync();
 	}
 	
 	private static readonly Dictionary<string, string> shortcuts = new()
