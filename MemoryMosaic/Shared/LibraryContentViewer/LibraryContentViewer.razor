@@ -106,7 +106,7 @@ Items can be selected, and depending on the page, different options may be appli
 	<div class="load-div" style="@bottomLoader.Visibility.Style" @onmouseover="@bottomLoader.AddContent" @onscroll="@bottomLoader.AddContent"></div>
 </main>
 
-<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" CollectionSelector="@cs" RerenderParent="@StateHasChanged" TopLoader="@topLoader" BottomLoader="@bottomLoader" RestoreButtonClick="@RestoreButtonClick" DeleteButtonClick="@DeleteButtonClick" PageName="@PageName"/>
+<FullscreenViewer @ref="@fv" T="@LibraryItem" Content="@Content" CollectionSelector="@cs" RerenderParent="@StateHasChanged" TopLoader="@topLoader" BottomLoader="@bottomLoader" RestoreButtonClick="@RestoreButtonClick" DeleteButtonClick="@DeleteButtonClick" PageName="@PageName" Collection="@Collection"/>
 
 <CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" Rerender="@StateHasChanged"/>
 
@@ -219,6 +219,8 @@ Items can be selected, and depending on the page, different options may be appli
 
 	public bool TrashPage => PageName == "Trash";
 	private bool MemoriesPage => PageName == "Memories";
+	
+	[Parameter] public Collection? Collection { get; set; }
 	
 	private GroupBy groupBy;
 	private GroupBy GroupBy

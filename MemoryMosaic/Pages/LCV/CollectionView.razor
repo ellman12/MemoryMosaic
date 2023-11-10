@@ -35,7 +35,7 @@
 	}
 </Dropdown>
 
-<LibraryContentViewer @ref="@lcv" Columns="@Columns" Join="collection_entries AS ce ON l.id=ce.item_id" Where="@($"collection_id={collection.Id} AND separate={collection.Folder}")" OrderByFields="@OrderBy" SortDesc="@((int) sortMode % 2 == 0)" NoItemsText="@($"{(collection.Folder ? "Folder" : "Album")} is Empty")" PersistentHeader="true">
+<LibraryContentViewer @ref="@lcv" Columns="@Columns" Join="collection_entries AS ce ON l.id=ce.item_id" Where="@($"collection_id={collection.Id} AND separate={collection.Folder}")" OrderByFields="@OrderBy" SortDesc="@((int) sortMode % 2 == 0)" NoItemsText="@($"{(collection.Folder ? "Folder" : "Album")} is Empty")" PersistentHeader="true" Collection="@collection">
 	<AdditionalButtons>
 		@if (!collection.ReadOnly && lcv.SelectedItems.Count > 0)
 		{

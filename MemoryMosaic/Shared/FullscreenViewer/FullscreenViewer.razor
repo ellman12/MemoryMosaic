@@ -10,6 +10,11 @@
 			<IconButton Icon="info" OnClick="@infoVisibility.Toggle"/>
 			<IconButton Icon="collections" OnClick="@(() => CollectionSelector.Enable())"/>
 			<IconButton Icon="@(Current.Starred ? "star" : "star_outline")" OnClick="@UpdateStarred"/>
+		
+			@if (Collection is {ReadOnly: false} && !Current.Video)
+			{
+				<IconButton Icon="collections_bookmark" OnClick="@(() => C.UpdateCollectionCover(Collection.Id, Current.Path))" Title="Use As Collection Cover"/>
+			}
 			
 			@if (PageName == "Trash")
 			{
@@ -163,6 +168,8 @@
 
 	[Parameter] public string? PageName { get; set; }
 	[Parameter] public bool DisplayItemType { get; set; }
+	
+	[Parameter] public Collection? Collection { get; set; }
 	
 	public T Current => Content[Index];
 
