@@ -17,7 +17,7 @@
     <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@dropdown.Toggle"/>
 </header>
 
-<Dropdown @ref="@dropdown" Positioning="top: 60px; right: 182px">
+<Dropdown @ref="@dropdown" Positioning="top: 64px; right: 182px">
     <DropdownButton Icon="check" Text="Collection Title" OnClick="@(() => ChangeOrder(CMSortMode.Title))" IconStyle="@(sortMode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.Title ? "#1a73e8" : "white")"/>
     <DropdownButton Icon="check" Text="Title Reversed" OnClick="@(() => ChangeOrder(CMSortMode.TitleReversed))" IconStyle="@(sortMode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.TitleReversed ? "#1a73e8" : "white")"/>
     <DropdownButton Icon="check" Text="Last Modified" OnClick="@(() => ChangeOrder(CMSortMode.LastModified))" IconStyle="@(sortMode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModified ? "#1a73e8" : "white")"/>
