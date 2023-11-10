@@ -11,7 +11,7 @@
 
 	> div { margin-bottom: 4px; }
 
-	#header {
+	> div:first-of-type {
 		@include flex-row;
 		height: 50px;
 		padding-top: 4px;
