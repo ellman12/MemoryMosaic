@@ -419,6 +419,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			C.RestoreTrash();
 			Content.Clear();
+			topLoader.HasMoreRows = bottomLoader.HasMoreRows = false;
 		}
 		else
 		{
@@ -428,6 +429,10 @@ Items can be selected, and depending on the page, different options may be appli
 
 		SelectedItems.Clear();
 		restorePrompt.Disable();
+		
+		topLoader.AddContent();
+		bottomLoader.AddContent();
+		
 		StateHasChanged();
 	}
 
@@ -455,6 +460,7 @@ Items can be selected, and depending on the page, different options may be appli
 			{
 				C.EmptyTrash();
 				Content.Clear();
+				topLoader.HasMoreRows = bottomLoader.HasMoreRows = false;
 			}
 			else
 			{
@@ -480,7 +486,11 @@ Items can be selected, and depending on the page, different options may be appli
 		}
 		
 		SelectedItems.Clear();
-		deletePrompt.Disable();
+        deletePrompt.Disable();
+        		
+        topLoader.AddContent();
+        bottomLoader.AddContent();
+		
 		StateHasChanged();
 	}
 

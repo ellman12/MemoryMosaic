@@ -8,7 +8,7 @@ public sealed class ContentLoader : IDisposable, IAsyncDisposable
 
 	public ElementVisibility Visibility { get; } = new();
 	
-	public bool HasMoreRows { get; private set; }
+	public bool HasMoreRows { get; set; }
 
 	private readonly NpgsqlConnection? conn;
 	
