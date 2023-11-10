@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Backend.Enums;
+﻿namespace MemoryMosaic.Enums;
 
 ///How items in CollectionView should be sorted.
 public enum CVSortMode
