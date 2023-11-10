@@ -11,6 +11,7 @@ global using System.Threading.Tasks;
 global using MemoryMosaic.Backend;
 global using MemoryMosaic.Enums;
 global using MemoryMosaic.Models;
+global using MemoryMosaic.Extensions;
 global using Microsoft.VisualBasic.FileIO;
 global using C = MemoryMosaic.Backend.Connection;
 global using D = DateTakenExtractor.DateTakenExtractor;

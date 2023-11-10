@@ -663,7 +663,7 @@ public static class Connection
             using NpgsqlDataReader r = cmd.ExecuteReader();
             
             while (r.Read())
-                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
+                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
             
             r.Close();
         }
@@ -693,7 +693,7 @@ public static class Connection
             using NpgsqlDataReader r = cmd.ExecuteReader();
             
             while (r.Read())
-                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.IsDBNull(2) ? String.Empty : r.GetString(2)));
+                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2)));
             
             r.Close();
         }

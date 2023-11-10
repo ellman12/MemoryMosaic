@@ -282,7 +282,7 @@
 		@* { *@
 			@* string path = r.GetString(0); *@
 			@* string thisFilename = Path.GetFileNameWithoutExtension(path); *@
-			@* MediaRow result = new(path, r.IsDBNull(1) ? null : r.GetDateTime(1), r.GetGuid(2), r.GetString(3), r.IsDBNull(4) ? null : r.GetDateTime(4)); *@
+			@* MediaRow result = new(path, r.TryGetDateTime(1), r.GetGuid(2), r.GetString(3), r.IsDBNull(4) ? null : r.GetDateTime(4)); *@
 			@* if (filenameNoExt == thisFilename) *@
 			@* { *@
 				@* if (!libFilesWithSameName.ContainsKey(filenameNoExt)) *@
