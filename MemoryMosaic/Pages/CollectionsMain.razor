@@ -14,7 +14,7 @@
         <Checkbox @bind-Input="@showReadonly" Label="Show Readonly" OnChange="@GetCollectionsTable"/>
     </div>
 
-    <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@dropdown.Toggle"/>
+    <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@(() => dropdown.Toggle())"/>
 </header>
 
 <Dropdown @ref="@dropdown" Positioning="top: 64px; right: 182px">
@@ -44,7 +44,7 @@
 
     private CollectionCreator collectionCreator = null!;
 
-    private Dropdown dropdown = new();
+    private Dropdown dropdown = null!;
     
     private string sortBtnText = null!;
     private static CMSortMode sortMode = CMSortMode.LastModified;
