@@ -136,7 +136,7 @@
 
 	private void DeleteCollectionBtnClick()
 	{
-		if (S.ShowPrompts == false)
+		if (!S.ShowPrompts)
 		{
 			DeleteCollection();
 			return;

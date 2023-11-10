@@ -191,7 +191,7 @@
             {
                 for (int c = 0; c < checkedAlbums.Count; c++)
                 {
-                    if (checkedAlbums[c] == false) continue;
+                    if (!checkedAlbums[c]) continue;
 
                     if (SelectedItem != Guid.Empty)
                     {
