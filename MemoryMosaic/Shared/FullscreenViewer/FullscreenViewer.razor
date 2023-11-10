@@ -45,7 +45,7 @@
 	<div id="info" class="@(infoVisibility.Visible ? "visible" : "hidden")">
 		<span>Info</span>
 		
-		@if (DisplayType)
+		@if (DisplayItemType)
 		{
 			<span>@Current.GetType().Name</span>
 		}
@@ -154,6 +154,7 @@
 	[Parameter, EditorRequired]
 	public Action RerenderParent { get; set; } = null!;
 
+	//TODO: could some of this stuff just be received from an LCV param?
 	[Parameter] public ContentLoader? TopLoader { get; set; }
 	[Parameter] public ContentLoader? BottomLoader { get; set; }
 	
@@ -161,7 +162,7 @@
 	[Parameter] public Action? DeleteButtonClick { get; set; }
 
 	[Parameter] public string? PageName { get; set; }
-	[Parameter] public bool DisplayType { get; set; }
+	[Parameter] public bool DisplayItemType { get; set; }
 	
 	public T Current => Content[Index];
 
