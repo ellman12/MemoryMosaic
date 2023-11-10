@@ -18,7 +18,7 @@ public static class Stats
         }
         catch (Exception e)
         {
-            Console.WriteLine("Counting library rows error. " + e.Message);
+            L.LogException(e);
             return -1;
         }
         finally
@@ -42,7 +42,7 @@ public static class Stats
         }
         catch (Exception e)
         {
-            Console.WriteLine("Counting trash rows error. " + e.Message);
+            L.LogException(e);
             return -1;
         }
         finally
@@ -66,7 +66,7 @@ public static class Stats
         }
         catch (Exception e)
         {
-            Console.WriteLine("Counting collections rows error. " + e.Message);
+            L.LogException(e);
             return -1;
         }
         finally

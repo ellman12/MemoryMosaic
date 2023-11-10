@@ -329,7 +329,7 @@
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine("Error in RunQuery. " + e.Message);
+            L.LogException(e);
         }
         finally
         {
