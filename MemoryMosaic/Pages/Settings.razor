@@ -8,28 +8,28 @@
         <span>Settings</span>
         <div class="text-setting">
             <span>Where to look for items to add to your library</span>
-            <TextInput @bind-Input="@importFolderPath" Width="available"/>
+            <TextInput @bind-Input="@ImportFolderPath" Width="available"/>
         </div>
 
         <div class="text-setting">
             <span>Root path to library folder</span>
-            <TextInput @bind-Input="@libraryRootPath" Width="available"/>
+            <TextInput @bind-Input="@LibraryRootPath" Width="available"/>
         </div>
 
         <div class="text-setting">
             <span>Where to backup library and database</span>
-            <TextInput @bind-Input="@backupFolderPath" Width="available"/>
+            <TextInput @bind-Input="@BackupFolderPath" Width="available"/>
         </div>
         
         <div class="text-setting">
             <span>Where to store temporary items</span>
-            <TextInput @bind-Input="@tmpFolderPath" Width="available"/>
+            <TextInput @bind-Input="@TmpFolderPath" Width="available"/>
         </div>
 
-        <Checkbox @bind-Input="@showPrompts" Label="Show Prompts?"/>
+        <Checkbox @bind-Input="@ShowPrompts" Label="Show Prompts?"/>
 
         @{
-            string color = logLevel switch
+            string color = LogLevel switch
             {
                 LogLevel.None => "White",
                 LogLevel.Debug => "Green",
@@ -41,7 +41,7 @@
         
             <div class="dropdown-setting">
                 <span>Log Level</span>
-                <select style="color: @color" @bind="@logLevel">
+                <select style="color: @color" @bind="@LogLevel">
                     <option>None</option>
                     <option style="color: green">Debug</option>
                     <option style="color: cyan">Info</option>
@@ -55,8 +55,8 @@
             @if (!thumbnailProgress.Visible)
             {
                 <div id="thumbnail-slider">
-                    <span title="Lower the number, higher the quality.">Thumbnail Quality: @thumbnailQuality</span>
-                    <input type="range" step="1" min="1" max="31" @bind="@thumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
+                    <span title="Lower the number, higher the quality.">Thumbnail Quality: @ThumbnailQuality</span>
+                    <input type="range" step="1" min="1" max="31" @bind="@ThumbnailQuality" @bind:event="oninput" title="Lower the number, higher the quality."/>
                 </div>
             }
             
@@ -158,13 +158,13 @@
 
 @code {
     //Settings
-    private string importFolderPath = S.importFolderPath;
-    private string libraryRootPath = S.libFolderPath;
-    private bool showPrompts = S.showPrompts;
-    private string backupFolderPath = S.backupFolderPath;
-    private string tmpFolderPath = S.tmpFolderPath;
-    private int thumbnailQuality = S.thumbnailQuality;
-    private LogLevel logLevel = S.logLevel;
+    private string ImportFolderPath = S.ImportFolderPath;
+    private string LibraryRootPath = S.LibFolderPath;
+    private bool ShowPrompts = S.ShowPrompts;
+    private string BackupFolderPath = S.BackupFolderPath;
+    private string TmpFolderPath = S.TmpFolderPath;
+    private int ThumbnailQuality = S.ThumbnailQuality;
+    private LogLevel LogLevel = S.LogLevel;
 
     //Updating thumbnails
     private int amountToUpdate, amountUpdated;
@@ -214,26 +214,26 @@
     ///Update settings.
     private void ApplyBtnClicked()
     {
-        S.importFolderPath = importFolderPath;
-        S.libFolderPath = libraryRootPath;
-        S.showPrompts = showPrompts;
-        S.backupFolderPath = backupFolderPath;
-        S.tmpFolderPath = tmpFolderPath;
-        S.thumbnailQuality = thumbnailQuality;
-        S.logLevel = logLevel;
+        S.ImportFolderPath = ImportFolderPath;
+        S.LibFolderPath = LibraryRootPath;
+        S.ShowPrompts = ShowPrompts;
+        S.BackupFolderPath = BackupFolderPath;
+        S.TmpFolderPath = TmpFolderPath;
+        S.ThumbnailQuality = ThumbnailQuality;
+        S.LogLevel = LogLevel;
         S.WriteSettings();
     }
 
     ///Cancel modification of settings.
     private void CancelBtnClicked()
     {
-        importFolderPath = S.importFolderPath;
-        libraryRootPath = S.libFolderPath;
-        showPrompts = S.showPrompts;
-        backupFolderPath = S.backupFolderPath;
-        tmpFolderPath = S.tmpFolderPath;
-        thumbnailQuality = S.thumbnailQuality;
-        logLevel = S.logLevel;
+        ImportFolderPath = S.ImportFolderPath;
+        LibraryRootPath = S.LibFolderPath;
+        ShowPrompts = S.ShowPrompts;
+        BackupFolderPath = S.BackupFolderPath;
+        TmpFolderPath = S.TmpFolderPath;
+        ThumbnailQuality = S.ThumbnailQuality;
+        LogLevel = S.LogLevel;
     }
 
     ///Reset settings to default values.
@@ -247,8 +247,8 @@
 
     private static void ClearTmpFolder()
     {
-        Directory.Delete(S.tmpFolderPath, true);
-        Directory.CreateDirectory(S.tmpFolderPath);
+        Directory.Delete(S.TmpFolderPath, true);
+        Directory.CreateDirectory(S.TmpFolderPath);
     }
 
     private async void UpdateThumbnails()
@@ -289,7 +289,7 @@
         untrackedPaths = M.GetUntrackedFiles();
         missingFiles = M.GetMissingFiles();
 
-        folderPaths = Directory.GetDirectories(S.libFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.importFolderPath, "*", SearchOption.AllDirectories)).ToArray();
+        folderPaths = Directory.GetDirectories(S.LibFolderPath, "*", SearchOption.AllDirectories).Concat(Directory.GetDirectories(S.ImportFolderPath, "*", SearchOption.AllDirectories)).ToArray();
         foreach (string path in folderPaths)
             if (M.IsFolderEmpty(path) && !emptyFolders.Contains(path)) emptyFolders.Add(path);
 
@@ -304,11 +304,11 @@
         trashRowCount = Stats.GetNumItemsInTrash();
         collectionsCount = Stats.CountCollections();
         
-        DriveInfo driveInfo = new(S.libFolderPath);
+        DriveInfo driveInfo = new(S.LibFolderPath);
         totalUsableDriveSize = driveInfo.TotalSize;
         freeDriveSpace = driveInfo.TotalFreeSpace;
         
-        librarySize = new DirectoryInfo(S.libFolderPath).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+        librarySize = new DirectoryInfo(S.LibFolderPath).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
 
         oldestDTItem = await Stats.FindItemWithOldestDateTakenAsync();
         newestDTItem = await Stats.FindItemWithNewestDateTakenAsync();

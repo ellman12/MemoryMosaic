@@ -11,7 +11,7 @@ public class ImportItem : Media
 
 	public string Extension { get; init; } = null!;
 
-	public string AbsolutePath => System.IO.Path.Join(S.importFolderPath, Path);
+	public string AbsolutePath => System.IO.Path.Join(S.ImportFolderPath, Path);
 
 	public DateTime? MetadataDateTaken { get; init; }
 
@@ -27,5 +27,5 @@ public class ImportItem : Media
 	
 	public override string RequestPath => "mm_import";
 	
-	public override string FullPath => System.IO.Path.Combine(S.importFolderPath, Path);
+	public override string FullPath => System.IO.Path.Combine(S.ImportFolderPath, Path);
 }

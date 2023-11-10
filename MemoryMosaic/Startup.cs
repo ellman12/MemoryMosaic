@@ -45,19 +45,19 @@ public class Startup
         app.UseStaticFiles(new StaticFileOptions
         {
             ServeUnknownFileTypes = true,
-            FileProvider = new PhysicalFileProvider(S.libFolderPath),
+            FileProvider = new PhysicalFileProvider(S.LibFolderPath),
             RequestPath = new PathString("/mm_library")
         });
         app.UseStaticFiles(new StaticFileOptions
         {
             ServeUnknownFileTypes = true,
-            FileProvider = new PhysicalFileProvider(S.importFolderPath),
+            FileProvider = new PhysicalFileProvider(S.ImportFolderPath),
             RequestPath = new PathString("/mm_import")
         });
         app.UseStaticFiles(new StaticFileOptions
         {
             ServeUnknownFileTypes = true,
-            FileProvider = new PhysicalFileProvider(S.tmpFolderPath),
+            FileProvider = new PhysicalFileProvider(S.TmpFolderPath),
             RequestPath = new PathString("/mm_tmp")
         });
 

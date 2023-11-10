@@ -87,7 +87,7 @@ public static class Connection
         try
         {
             string filename = Path.GetFileName(shortPath);
-            string originalFullPath = Path.Combine(S.libFolderPath, shortPath);
+            string originalFullPath = Path.Combine(S.LibFolderPath, shortPath);
             
             string newShortPath = CreateShortPath(newDateTaken, filename);
             string newDTFolderPath = CreateFullDateFolderPath(newDateTaken);
@@ -137,9 +137,9 @@ public static class Connection
     {
         try
         {
-            string originalFullPath = Path.Combine(S.libFolderPath, oldShortPath);
+            string originalFullPath = Path.Combine(S.LibFolderPath, oldShortPath);
             string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
-            string newFullPath = Path.Combine(S.libFolderPath, newShortPath);
+            string newFullPath = Path.Combine(S.LibFolderPath, newShortPath);
 
             if (File.Exists(newFullPath))
                 return null;
@@ -299,7 +299,7 @@ public static class Connection
 
             while (r.Read())
             {
-                try { FileSystem.DeleteFile(Path.Combine(S.libFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
+                try { FileSystem.DeleteFile(Path.Combine(S.LibFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
                 catch (IOException e) { L.LogException(e); }
             }
 
@@ -809,13 +809,13 @@ public static class Connection
     ///<summary>Create the full folder path to where an item with this date taken would get moved to in the MM library.</summary>
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<returns>The full date folder path.</returns>
-    public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(S.libFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
+    public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(S.LibFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
 
     ///<summary>Given a Date Taken and a filename, create the full path to where the item would get moved to in the MM library.</summary>
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<param name="filename">The filename and extension of the item.</param>
     ///<returns>The full path to where the item would get moved to in the MM library.</returns>
-    public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(S.libFolderPath, CreateShortPath(dateTaken, filename));
+    public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(S.LibFolderPath, CreateShortPath(dateTaken, filename));
 
     #endregion
 }

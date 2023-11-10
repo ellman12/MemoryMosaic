@@ -17,9 +17,9 @@ public static class Maintenance
         List<string> untrackedPaths = new(); //Tracks items in mm_library but not in database
         HashSet<string> libraryPaths = C.LoadEntireLibraryTable().Select(item => item.Path).ToHashSet();
 
-        foreach (string fullPath in Directory.GetFiles(S.libFolderPath, "*", SearchOption.AllDirectories))
+        foreach (string fullPath in Directory.GetFiles(S.LibFolderPath, "*", SearchOption.AllDirectories))
         {
-            string shortPath = fullPath.Replace(S.libFolderPath, null).Replace('\\', '/');
+            string shortPath = fullPath.Replace(S.LibFolderPath, null).Replace('\\', '/');
             if (shortPath.StartsWith('/')) shortPath = shortPath[1..]; //Database short paths don't ever start with '/'.
                 
             if (!libraryPaths.Contains(shortPath))
@@ -29,7 +29,7 @@ public static class Maintenance
     }
 
     ///Returns a List&lt;LibraryItem&gt; of all rows and columns from the library table that don't have existing files in mm_library.
-    public static List<LibraryItem> GetMissingFiles() => C.LoadEntireLibraryTable().Where(item => !File.Exists(Path.Combine(S.libFolderPath, item.Path))).ToList();
+    public static List<LibraryItem> GetMissingFiles() => C.LoadEntireLibraryTable().Where(item => !File.Exists(Path.Combine(S.LibFolderPath, item.Path))).ToList();
 
     ///<summary>Delete these items FROM library table that are in the DB but don't exist as files.</summary>
     ///<param name="rows">List&lt;LibraryItem&gt; retrieved with GetMissingFiles()</param>

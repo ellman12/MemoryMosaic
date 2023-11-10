@@ -28,5 +28,5 @@ public class LibraryItem : Media
 
 	public override string RequestPath => "mm_library";
 
-	public override string FullPath => System.IO.Path.Combine(S.libFolderPath, Path);
+	public override string FullPath => System.IO.Path.Combine(S.LibFolderPath, Path);
 }

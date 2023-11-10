@@ -48,7 +48,7 @@ public static class Functions
     ///<returns>A base64 string representing the thumbnail.</returns>
     public static string GenerateThumbnail(string filePath)
     {
-        string thumbnailFullPath = Path.Join(S.tmpFolderPath, Guid.NewGuid() + ".jpg");
+        string thumbnailFullPath = Path.Join(S.TmpFolderPath, Guid.NewGuid() + ".jpg");
         ProcessStartInfo ffmpegInfo = new()
         {
             CreateNoWindow = true,
@@ -60,7 +60,7 @@ public static class Functions
         if (ext == ".png")
             ffmpegInfo.Arguments += $"-compression_level 100 \"{thumbnailFullPath}\""; //0-100 for quality. 100 is lowest.
         else
-            ffmpegInfo.Arguments += $"{(SupportedVideoExts.Contains(ext) ? "-vf \"select=eq(n\\,0)\"" : "")} -vf scale=320:-2 -q:v {S.thumbnailQuality} \"{thumbnailFullPath}\"";
+            ffmpegInfo.Arguments += $"{(SupportedVideoExts.Contains(ext) ? "-vf \"select=eq(n\\,0)\"" : "")} -vf scale=320:-2 -q:v {S.ThumbnailQuality} \"{thumbnailFullPath}\"";
 
         Process ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
         ffmpegProcess.WaitForExit();

@@ -39,7 +39,7 @@
 
     protected override void OnInitialized()
     {
-        foreach (string backupFolder in Directory.GetDirectories(S.backupFolderPath, "MM Backup*", SearchOption.TopDirectoryOnly))
+        foreach (string backupFolder in Directory.GetDirectories(S.BackupFolderPath, "MM Backup*", SearchOption.TopDirectoryOnly))
         {
             try
             {
@@ -68,7 +68,7 @@
         await Task.Delay(0);
         await Task.Delay(1);
 
-        string backupFolder = Path.Combine(S.backupFolderPath, $"MM Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
+        string backupFolder = Path.Combine(S.BackupFolderPath, $"MM Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
         string dbDumpPath = Path.Combine(backupFolder, "Database.bak");
         
         L.LogLine("Begin copying mm_library", LogLevel.Debug);
@@ -141,7 +141,7 @@
         ProcessStartInfo startInfo = new()
         {
             WindowStyle = ProcessWindowStyle.Hidden,
-            WorkingDirectory = S.backupFolderPath,
+            WorkingDirectory = S.BackupFolderPath,
             FileName = "cmd.exe",
             Arguments = $"/C type \"{Path.Combine(backupFullPath, "Database.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\""
         };
@@ -150,11 +150,11 @@
         await process.WaitForExitAsync();
         
         L.LogLine("Database restored, clearing mm_library", LogLevel.Debug);
-        if (Directory.Exists(S.libFolderPath)) Directory.Delete(S.libFolderPath, true);
+        if (Directory.Exists(S.LibFolderPath)) Directory.Delete(S.LibFolderPath, true);
         
         L.LogLine("mm_library cleared, restoring mm_library", LogLevel.Debug);
-        FileSystem.CopyDirectory(backupFullPath, S.libFolderPath);
-        File.Delete(Path.Combine(S.libFolderPath, "Database.bak"));
+        FileSystem.CopyDirectory(backupFullPath, S.LibFolderPath);
+        File.Delete(Path.Combine(S.LibFolderPath, "Database.bak"));
         
         restorePopUp.Disable();
         await InvokeAsync(StateHasChanged);
@@ -178,8 +178,8 @@
         await Task.Delay(0);
         await Task.Delay(1);
         
-        Directory.Delete(S.backupFolderPath, true);
-        Directory.CreateDirectory(S.backupFolderPath);
+        Directory.Delete(S.BackupFolderPath, true);
+        Directory.CreateDirectory(S.BackupFolderPath);
         backups.Clear();
         
         deletePopUp.Disable();

@@ -399,7 +399,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private void RestoreButtonClick()
 	{
-		if (S.showPrompts)
+		if (S.ShowPrompts)
 			restorePrompt.Enable();
 		else
 			RestoreSelected();
@@ -433,7 +433,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private void DeleteButtonClick()
 	{
-		if (S.showPrompts)
+		if (S.ShowPrompts)
 			deletePrompt.Enable();
 		else
 			DeleteSelected();
@@ -493,7 +493,7 @@ Items can be selected, and depending on the page, different options may be appli
 		await Task.Delay(0);
 		await Task.Delay(1);
 
-		string zipFolderPath = Path.Combine(S.tmpFolderPath, $"Download {Guid.NewGuid()}");
+		string zipFolderPath = Path.Combine(S.TmpFolderPath, $"Download {Guid.NewGuid()}");
 		Directory.CreateDirectory(zipFolderPath);
 
 		foreach (LibraryItem item in Content)
@@ -506,7 +506,7 @@ Items can be selected, and depending on the page, different options may be appli
 		ClearChecks();
 
 		string zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
-		string zipFilePath = Path.Combine(S.tmpFolderPath, zipFilename);
+		string zipFilePath = Path.Combine(S.TmpFolderPath, zipFilename);
 		ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath, CompressionLevel.Fastest, false);
 
 		downloadPopUp.Disable();
