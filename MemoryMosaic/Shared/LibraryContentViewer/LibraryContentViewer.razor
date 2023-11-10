@@ -302,7 +302,7 @@ Items can be selected, and depending on the page, different options may be appli
 			{
 				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 					message = "PERMANENTLY delete selected item?";
-				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+				else if (SelectedItems.Count > 0)
 					message = "PERMANENTLY delete selected items?";
 				else
 					message = "PERMANENTLY delete ALL items?";
@@ -311,7 +311,7 @@ Items can be selected, and depending on the page, different options may be appli
 			{
 				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 					message = "Move selected item to Trash?";
-				else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+				else if (SelectedItems.Count > 0)
 					message = "Move selected items to Trash?";
 				else
 					message = "Move ALL items to Trash?";
@@ -329,7 +329,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 			if (SelectedItems.Count == 1 || fv.Visibility.Visible)
 				message = "Restore selected item?";
-			else if (SelectedItems.Count > 0 && SelectedItems.Count < Content.Count)
+			else if (SelectedItems.Count > 0)
 				message = "Restore selected items?";
 			else
 				message = "Restore ALL items?";
