@@ -605,7 +605,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("DELETE FROM collection_entries WHERE collection_id = @collectionID AND id = @id", connection);
+            using NpgsqlCommand cmd = new("DELETE FROM collection_entries WHERE collection_id = @collectionID AND item_id = @id", connection);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
