@@ -492,7 +492,7 @@ Items can be selected, and depending on the page, different options may be appli
 		foreach (LibraryItem item in Content)
 		{
 			if (!SelectedItems.Contains(item.Id)) continue;
-			string destPath = Path.Combine(zipFolderPath, Path.GetFileName(item.Path));
+			string destPath = Path.Combine(zipFolderPath, item.Filename);
 			File.Copy(item.FullPath, destPath);
 		}
 

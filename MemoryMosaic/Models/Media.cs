@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Models;
+namespace MemoryMosaic.Models;
 
 ///Represents any kind of photo/video file.
 public abstract class Media
@@ -16,6 +16,10 @@ public abstract class Media
 	public string Thumbnail { get; init; } = null!;
 	
 	public bool Video { get; protected init; }
+
+	public string Filename => System.IO.Path.GetFileName(Path);
+	
+	public string FilenameWithoutExtension => System.IO.Path.GetFileNameWithoutExtension(Path);
 
 	public abstract string RequestPath { get; }
 	

@@ -55,9 +55,9 @@
 			<span>@Current.GetType().Name</span>
 		}
 		
-		<div class="field" title="@Path.GetFileName(Current.Path)">
+		<div class="field" title="@Current.Filename">
         	<MaterialIcon Icon="image"/>
-        	<span>@Path.GetFileName(Current.Path)</span>
+        	<span>@Current.Filename</span>
         	<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
         </div>
 
@@ -195,7 +195,7 @@
 			if (Current is LibraryItem li)
 				newDateTaken = li.DateTaken;
 
-			newFilename = Path.GetFileNameWithoutExtension(Current.Path);
+			newFilename = Current.FilenameWithoutExtension;
 			ext = Path.GetExtension(Current.Path);
 			
 			StateHasChanged();
