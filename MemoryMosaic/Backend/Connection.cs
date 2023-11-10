@@ -374,25 +374,8 @@ public static class Connection
     ///<summary>Change an IEnumerable of items from either starred (true) or not starred.</summary>
     public static void UpdateStarred(IEnumerable<Guid> ids, bool starred)
     {
-        try
-        {
-            Open();
-            foreach(Guid id in ids)
-            {
-                using NpgsqlCommand cmd = new("UPDATE library SET starred = @starred WHERE id = @id", connection);
-                cmd.Parameters.AddWithValue("@starred", starred);
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.ExecuteNonQuery();
-            }
-        }
-        catch (NpgsqlException e)
-        {
-            L.LogException(e);
-        }
-        finally
-        {
-            Close();
-        }
+        foreach (Guid id in ids)
+            UpdateStarred(id, starred);
     }
     #endregion
     
