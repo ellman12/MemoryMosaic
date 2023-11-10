@@ -198,6 +198,7 @@ Items can be selected, and depending on the page, different options may be appli
 	public void Reset()
 	{
 		Content.Clear();
+		SelectedItems.Clear();
 		topLoader = new ContentLoader(this, false, false);
 		bottomLoader = new ContentLoader(this, true, true);
 	}
@@ -205,6 +206,7 @@ Items can be selected, and depending on the page, different options may be appli
 	private void StartDateChanged()
 	{
 		Content.Clear();
+		SelectedItems.Clear();
 		topLoader = new ContentLoader(this, false, true);
 		bottomLoader = new ContentLoader(this, true, true);
 	}
