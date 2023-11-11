@@ -505,38 +505,6 @@ public static class Connection
         }
     }
 
-    ///<summary>Given an collection id, attempt to return its name.</summary>
-    ///<param name="id">The id of the collection.</param>
-    ///<returns>Collection name.</returns>
-    public static string? GetCollectionName(int id)
-    {
-        string? returnVal = null;
-        try
-        {
-            Open();
-
-            using NpgsqlCommand selectCmd = new("SELECT name FROM collections WHERE id = @id", connection);
-            selectCmd.Parameters.AddWithValue("@id", id);
-            using NpgsqlDataReader r = selectCmd.ExecuteReader();
-            if (r.HasRows)
-            {
-                r.Read(); //There should only be 1 line to read.
-                returnVal = r.GetString(0); //First and only column.
-                r.Close();
-            }
-        }
-        catch (NpgsqlException e)
-        {
-            L.LogException(e);
-        }
-        finally
-        {
-            Close();
-        }
-
-        return returnVal;
-    } 
-
     ///<summary>Deletes the collection with the given ID, and remove all items in this collection from collection_entries. THIS CANNOT BE UNDONE! This also does not delete the path from the library table, so you can safely delete a collection without losing the actual photos and videos.</summary>
     ///<param name="collectionID">The id of the collection to delete.</param>
     public static void DeleteCollection(int collectionID)
