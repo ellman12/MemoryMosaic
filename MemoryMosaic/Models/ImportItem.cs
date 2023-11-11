@@ -1,7 +1,7 @@
 ﻿namespace MemoryMosaic.Models;
 
 ///Represents an item in Import that's not yet part of the library.
-public class ImportItem : Media
+public sealed class ImportItem : Media
 {
 	///The original filename of this item, without the extension.
 	public string OriginalFilename { get; init; } = null!; 

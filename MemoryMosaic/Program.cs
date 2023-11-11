@@ -26,7 +26,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace MemoryMosaic;
 
-public class Program
+public sealed class Program
 {
 #if DEBUG
     public const bool Debug = true;
