@@ -579,7 +579,7 @@ public static class Connection
             if (isFolder)
             {
                 //If an item is being added to a folder it can only be in 1 folder and 0 albums so remove from everywhere else first. Then, mark the item as in a folder (separate).
-                cmd.CommandText = "DELETE FROM collection_entries WHERE item_id = @itemId; UPDATE library SET separate = true WHERE id = @id";
+                cmd.CommandText = "DELETE FROM collection_entries WHERE item_id = @itemId; UPDATE library SET separate = true WHERE id = @itemId";
                 await cmd.ExecuteNonQueryAsync();
             }
 
