@@ -5,7 +5,7 @@
 @{
 	if (Disabled)
 	{
-		<input @ref="@input" type="number" id="@ID" class="@Class @(HideSpinner ? "hide-number-buttons" : "")" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" min="@Min" max="@Max" maxlength="2" placeholder="@Placeholder" disabled/>
+		<input @ref="@input" type="number" id="@ID" class="@Class @(HideSpinner ? "hide-number-buttons" : "")" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" min="@Min" max="@Max" placeholder="@Placeholder" disabled/>
 	}
 	else
 	{
