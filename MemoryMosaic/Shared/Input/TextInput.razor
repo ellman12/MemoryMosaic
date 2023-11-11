@@ -6,10 +6,10 @@
 @{
 	if (Disabled)
 	{
-		<input @ref="@input" type="text" id="@ID" class="@Class" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
+		<input @ref="@input" type="text" id="@ID" class="@Class" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onchange="@HandleOnChange" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder" disabled/>
 	}
 	else
 	{
-		<input @ref="@input" type="text" id="@ID" class="@Class" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
+		<input @ref="@input" type="text" id="@ID" class="@Class" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onchange="@HandleOnChange" @onfocusout="@HandleFocusOut" @bind:event="oninput" placeholder="@Placeholder"/>
 	}
 }

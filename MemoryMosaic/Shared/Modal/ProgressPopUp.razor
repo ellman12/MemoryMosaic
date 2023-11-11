@@ -3,7 +3,7 @@
 <link href="css/Components/Modal/ProgressPopUp.css" rel="stylesheet"/>
 
 <ModalBackground Visibility="@Visibility">
-    <div class="progressPopUp" style="width: @(Width + "px"); height: @(Height + "px")">
+    <div id="@ID" class="progressPopUp @Class" style="width: @(Width + "px"); height: @(Height + "px"); @Style">
         <span style="font-size: @(FontSize + "px")">@Message</span>
     </div>
 </ModalBackground>

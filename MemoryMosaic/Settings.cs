@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace MemoryMosaic;
 
-public class Settings
+public sealed class Settings
 {
     ///The full path to the mm_import folder on the server. This is where items live before being added to the library.
     [JsonProperty] public static string ImportFolderPath { get; set; } = "";

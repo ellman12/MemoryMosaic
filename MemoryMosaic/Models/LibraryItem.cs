@@ -1,7 +1,7 @@
 ﻿namespace MemoryMosaic.Models;
 
 ///Represents a row in the library table.
-public class LibraryItem : Media
+public sealed class LibraryItem : Media
 {
 	public DateTime? DateTaken { get; set; }
 

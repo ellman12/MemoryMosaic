@@ -1,7 +1,7 @@
 ﻿namespace MemoryMosaic.Models;
 
 ///Represents a row from the Collections table.
-public class Collection
+public sealed class Collection
 {
 	public int Id { get; init; }
 	public string Name { get; set; }

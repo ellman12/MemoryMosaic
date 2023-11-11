@@ -1,6 +1,6 @@
 @inherits InputComponent<bool>
 
-<div @ref="@input" class="checkbox @(Input ? "checked" : "unchecked")" @onclick="@(e => { HandleClick(e); Input = !Input; UpdateInput(); OnChange?.Invoke(); })">
+<div @ref="@input" class="checkbox @(Input ? "checked" : "unchecked")" @onclick="@(e => { HandleClick(e); Input = !Input; UpdateInput(); HandleOnChange(); })">
 	<MaterialIcon Icon="@(Input ? "check_box" : "check_box_outline_blank")" IconStyle="@($"color: {(Input ? "#0080ff" : "white")}")"/>
 	@if (!String.IsNullOrWhiteSpace(Label))
 	{
@@ -10,6 +10,4 @@
 
 @code {
 	[Parameter] public string? Label { get; set; }
-
-	[Parameter] public Action? OnChange { get; set; }
 }
