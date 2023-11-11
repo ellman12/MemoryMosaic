@@ -17,6 +17,8 @@ public class InputComponent<T> : Component
 	[Parameter] public Action<KeyboardEventArgs>? OnKeyDown { get; set; }
 
 	[Parameter] public Action? OnFocusOut { get; set; }
+	
+	[Parameter] public Action? OnChange { get; set; }
 
 	public async void Focus() => await input.FocusAsync();
 
@@ -27,4 +29,6 @@ public class InputComponent<T> : Component
 	protected void HandleKeyDown(KeyboardEventArgs e) => OnKeyDown?.Invoke(e);
 
 	protected void HandleFocusOut() => OnFocusOut?.Invoke();
+	
+	protected void HandleOnChange() => OnChange?.Invoke();
 }
