@@ -174,7 +174,10 @@ public static class Connection
             Open();
             using NpgsqlCommand cmd = new("SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail FROM library ORDER BY date_taken DESC", connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) library.Add(new LibraryItem(r));
+            
+            while (r.Read())
+                library.Add(new LibraryItem(r));
+            
             r.Close();
         }
         catch (NpgsqlException e)
@@ -746,7 +749,7 @@ public static class Connection
         {
             await using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id = @collectionID", localConn);
             cmd.Parameters.AddWithValue("@collectionID", collectionID);
-            await using NpgsqlDataReader r = cmd.ExecuteReader();
+            await using NpgsqlDataReader r = cmd.ExecuteReader(CommandBehavior.SingleRow);
             if (r.HasRows)
             {
                 r.Read();

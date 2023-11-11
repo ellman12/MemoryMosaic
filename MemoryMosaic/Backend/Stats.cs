@@ -13,7 +13,8 @@ public static class Stats
             C.Open();
             using NpgsqlCommand cmd = new("SELECT path FROM library WHERE date_deleted IS NULL", C.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) rows++;
+            while (r.Read())
+                rows++;
             return rows;
         }
         catch (Exception e)
@@ -37,7 +38,8 @@ public static class Stats
             C.Open();
             using NpgsqlCommand cmd = new("SELECT path FROM library WHERE date_deleted IS NOT NULL", C.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) rows++;
+            while (r.Read())
+                rows++;
             return rows;
         }
         catch (Exception e)
@@ -61,7 +63,8 @@ public static class Stats
             C.Open();
             using NpgsqlCommand cmd = new("SELECT id FROM collections", C.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
-            while (r.Read()) rows++;
+            while (r.Read())
+                rows++;
             return rows;
         }
         catch (Exception e)
