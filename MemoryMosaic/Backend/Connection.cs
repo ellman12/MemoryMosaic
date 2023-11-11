@@ -737,35 +737,6 @@ public static class Connection
     }
     
     ///Returns true if a Collection is a folder, false otherwise.
-    public static bool IsFolder(int collectionID)
-    {
-        bool isFolder = false;
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("SELECT folder FROM collections WHERE id = @collectionID", connection);
-            cmd.Parameters.AddWithValue("@collectionID", collectionID);
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-            if (r.HasRows)
-            {
-                r.Read();
-                isFolder = r.GetBoolean(0);
-                r.Close();
-            }
-        }
-        catch (NpgsqlException e)
-        {
-            L.LogException(e);
-        }
-        finally
-        {
-            Close();
-        }
-
-        return isFolder;
-    }
-    
-    ///Returns true if a Collection is a folder, false otherwise.
     public static async Task<bool> IsFolderAsync(int collectionID)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
