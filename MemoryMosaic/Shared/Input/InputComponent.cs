@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace MemoryMosaic.Shared.Input;
 
+///Represents any kind of component that accepts input.
 public class InputComponent<T> : Component
 {
 	[Parameter] public T? Input { get; set; }
