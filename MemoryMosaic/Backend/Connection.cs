@@ -603,16 +603,16 @@ public static class Connection
     ///<param name="showReadonly">Should readonly collections be selected?</param>
     ///<param name="mode">How should the data be sorted?</param>
     ///<returns>A List&lt;Collection&gt; of all the albums and/or folders.</returns>
-    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, bool showReadonly, CMSortMode mode = CMSortMode.Title)
+    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, bool showReadonly, CollectionsSortMode mode = CollectionsSortMode.Title)
     {
         List<Collection> collections = new();
         
         string orderBy = mode switch
         {
-            CMSortMode.Title => "name ASC",
-            CMSortMode.TitleReversed => "name DESC",
-            CMSortMode.LastModified => "last_modified DESC",
-            CMSortMode.LastModifiedReversed => "last_modified ASC",
+            CollectionsSortMode.Title => "name ASC",
+            CollectionsSortMode.TitleReversed => "name DESC",
+            CollectionsSortMode.LastModified => "last_modified DESC",
+            CollectionsSortMode.LastModifiedReversed => "last_modified ASC",
             _ => "name ASC"
         };
 

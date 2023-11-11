@@ -2,7 +2,7 @@
 @page "/collections"
 
 <title>Collections - MemoryMosaic</title>
-<link href="css/Pages/CollectionsMain.css" rel="stylesheet"/>
+<link href="css/Pages/Collections.css" rel="stylesheet"/>
 
 <header>
     <span id="collectionsText">Collections</span>
@@ -18,10 +18,10 @@
 </header>
 
 <Dropdown @ref="@dropdown" Positioning="top: 64px; right: 182px">
-    <DropdownButton Icon="check" Text="Collection Title" OnClick="@(() => ChangeOrder(CMSortMode.Title))" IconStyle="@(sortMode == CMSortMode.Title ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.Title ? "#1a73e8" : "white")"/>
-    <DropdownButton Icon="check" Text="Title Reversed" OnClick="@(() => ChangeOrder(CMSortMode.TitleReversed))" IconStyle="@(sortMode == CMSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.TitleReversed ? "#1a73e8" : "white")"/>
-    <DropdownButton Icon="check" Text="Last Modified" OnClick="@(() => ChangeOrder(CMSortMode.LastModified))" IconStyle="@(sortMode == CMSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModified ? "#1a73e8" : "white")"/>
-    <DropdownButton Icon="check" Text="Last Modified Reversed" OnClick="@(() => ChangeOrder(CMSortMode.LastModifiedReversed))" IconStyle="@(sortMode == CMSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CMSortMode.LastModifiedReversed ? "#1a73e8" : "white")"/>
+    <DropdownButton Icon="check" Text="Collection Title" OnClick="@(() => ChangeOrder(CollectionsSortMode.Title))" IconStyle="@(sortMode == CollectionsSortMode.Title ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.Title ? "#1a73e8" : "white")"/>
+    <DropdownButton Icon="check" Text="Title Reversed" OnClick="@(() => ChangeOrder(CollectionsSortMode.TitleReversed))" IconStyle="@(sortMode == CollectionsSortMode.TitleReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.TitleReversed ? "#1a73e8" : "white")"/>
+    <DropdownButton Icon="check" Text="Last Modified" OnClick="@(() => ChangeOrder(CollectionsSortMode.LastModified))" IconStyle="@(sortMode == CollectionsSortMode.LastModified ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.LastModified ? "#1a73e8" : "white")"/>
+    <DropdownButton Icon="check" Text="Last Modified Reversed" OnClick="@(() => ChangeOrder(CollectionsSortMode.LastModifiedReversed))" IconStyle="@(sortMode == CollectionsSortMode.LastModifiedReversed ? "color: #1a73e8" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.LastModifiedReversed ? "#1a73e8" : "white")"/>
 </Dropdown>
 
 <main>
@@ -47,7 +47,7 @@
     private Dropdown dropdown = null!;
     
     private string sortBtnText = null!;
-    private static CMSortMode sortMode = CMSortMode.LastModified;
+    private static CollectionsSortMode sortMode = CollectionsSortMode.LastModified;
     private static bool showAlbums = true, showFolders, showReadonly = true;
 
     protected override void OnInitialized()
@@ -66,15 +66,15 @@
     {
         sortBtnText = sortMode switch
         {
-            CMSortMode.Title => "Collection Title",
-            CMSortMode.TitleReversed => "Title Reversed",
-            CMSortMode.LastModified => "Last Modified",
-            CMSortMode.LastModifiedReversed => "Last Modified Reversed",
+            CollectionsSortMode.Title => "Collection Title",
+            CollectionsSortMode.TitleReversed => "Title Reversed",
+            CollectionsSortMode.LastModified => "Last Modified",
+            CollectionsSortMode.LastModifiedReversed => "Last Modified Reversed",
             _ => "Collection Title"
         };
     }
 
-    private void ChangeOrder(CMSortMode newMode)
+    private void ChangeOrder(CollectionsSortMode newMode)
     {
         sortMode = newMode;
         GetCollectionsTable();

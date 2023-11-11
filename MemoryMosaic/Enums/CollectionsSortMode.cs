@@ -1,7 +1,7 @@
 ﻿namespace MemoryMosaic.Enums;
 
-///How items in CollectionsMain should be sorted.
-public enum CMSortMode
+///How items in Collections.razor should be sorted.
+public enum CollectionsSortMode
 {
 	Title,
 	TitleReversed,
