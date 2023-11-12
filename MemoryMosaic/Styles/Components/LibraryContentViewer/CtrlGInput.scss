@@ -27,13 +27,13 @@
 			width: fit-content;
 
 			&:focus {
-				border: 1px solid #0080ff;
-				outline: 1px solid #0080ff;
+				border: 1px solid $AccentColor;
+				outline: 1px solid $AccentColor;
 			}
 
-			&::-webkit-datetime-edit-day-field:focus { background-color: #0080ff; }
-			&::-webkit-datetime-edit-month-field:focus { background-color: #0080ff; }
-			&::-webkit-datetime-edit-year-field:focus { background-color: #0080ff; }
+			&::-webkit-datetime-edit-day-field:focus { background-color: $AccentColor; }
+			&::-webkit-datetime-edit-month-field:focus { background-color: $AccentColor; }
+			&::-webkit-datetime-edit-year-field:focus { background-color: $AccentColor; }
 
 			&::-webkit-calendar-picker-indicator {
 				margin-left: -20px;
