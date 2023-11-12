@@ -12,4 +12,10 @@
 
 		&:last-of-type { margin-top: -1px; }
 	}
+
+	&:focus-visible {
+		border: none;
+		outline: 2px solid $AccentColor;
+		border-radius: 4px;
+	}
 }

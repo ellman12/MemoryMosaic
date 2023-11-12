@@ -21,6 +21,11 @@ nav {
 		white-space: nowrap;
 
 		&:hover { @include hover; }
+		
+		&:focus-visible {
+			border: none;
+			outline: 2px solid $AccentColor;
+		}
 
 		> * + span { padding-left: 10px; }
 	}
@@ -35,5 +40,4 @@ nav {
 			fill: $AccentColor;
 		}
 	}
-
 }
