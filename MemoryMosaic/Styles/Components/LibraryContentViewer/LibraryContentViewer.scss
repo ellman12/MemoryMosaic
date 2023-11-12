@@ -1,4 +1,5 @@
-@import "../../Shared";
+@import "../../Mixins";
+@import "../../Constants";
 
 header {
 	@include page-header(1px solid gray, 60px);
@@ -33,12 +34,12 @@ main {
 
 		&:first-of-type {
 			top: -50px;
-			@if ($debug) { outline: 10px solid red; }
+			@if ($Debug) { outline: 10px solid red; }
 		}
 
 		&:last-of-type {
 			bottom: 10px;
-			@if ($debug) { outline: 10px solid blue; }
+			@if ($Debug) { outline: 10px solid blue; }
 		}
 	}
 

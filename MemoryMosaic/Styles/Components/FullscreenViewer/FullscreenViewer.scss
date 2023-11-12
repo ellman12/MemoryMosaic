@@ -1,4 +1,5 @@
-@import "../../Shared";
+@import "../../Constants";
+@import "../../Mixins";
 
 #fullscreen-viewer {
 	@include flex-row;

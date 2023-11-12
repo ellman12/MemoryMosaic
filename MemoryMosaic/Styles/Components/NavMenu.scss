@@ -1,3 +1,5 @@
+@import "../Constants";
+
 * { text-decoration: none; }
 
 nav {
@@ -21,7 +23,7 @@ nav {
 		white-space: nowrap;
 
 		&:hover {
-			background-color: var(--hover-color);
+			background-color: $HoverColor;
 			cursor: pointer;
 		}
 

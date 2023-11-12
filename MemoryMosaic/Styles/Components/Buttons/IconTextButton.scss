@@ -1,3 +1,5 @@
+@import "../../Constants";
+
 .iconTextBtn {
     background-color: black;
     border: 1px solid white;
@@ -13,6 +15,6 @@
 }
 
 .iconTextBtn:hover {
-    background-color: var(--hover-color);
+    background-color: $HoverColor;
     cursor: pointer;
 }

@@ -1,5 +1,5 @@
 /* Main collections page where user clicks collection thumbnail they want to view items of */
-@import "../Shared";
+@import "../Mixins";
 
 header {
 	@include page-header(1px solid gray, 75px, 164px);

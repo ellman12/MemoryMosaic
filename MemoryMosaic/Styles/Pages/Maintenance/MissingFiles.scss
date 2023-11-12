@@ -1,4 +1,4 @@
-﻿@import "../../Shared";
+﻿@import "../../Mixins";
 
 header {
 	@include page-header(0, 60px);
