@@ -1,6 +1,6 @@
 @import "../../Constants";
 
-input[type=number] {
+input[type="number"] {
 	background-color: black;
 	border: 2px solid white;
 	outline: none;
@@ -8,7 +8,7 @@ input[type=number] {
 	border-radius: 4px;
 }
 
-input[type=number]:focus-visible {
+input[type="number"]:focus-visible {
 	border: 2px solid $AccentColor;
 	outline: none;
 }
