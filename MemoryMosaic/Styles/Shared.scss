@@ -30,3 +30,30 @@ h1 {
 	width: 100%;
 	text-align: center;
 }
+
+input[type="range"] {
+	accent-color: $AccentColor; 
+}
+
+input[type="date"], input[type="datetime-local"] {
+	background-color: black;
+	border: 1px solid white;
+	padding: 2px;
+	border-radius: 4px;
+	width: fit-content;
+	margin-right: 4px;
+
+	&:focus {
+		border: 1px solid $AccentColor;
+		outline: 1px solid $AccentColor;
+	}
+
+	&::-webkit-datetime-edit-day-field:focus { background-color: $AccentColor; }
+	&::-webkit-datetime-edit-month-field:focus { background-color: $AccentColor; }
+	&::-webkit-datetime-edit-year-field:focus { background-color: $AccentColor; }
+
+	&::-webkit-calendar-picker-indicator {
+		margin-left: -20px;
+		font-size: 16px;
+	}
+}
