@@ -5,17 +5,20 @@
 @{
 	if (Disabled)
 	{
-		<input @ref="@input" type="number" id="@ID" class="@Class @(HideSpinner ? "hide-number-buttons" : "")" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onchange="@HandleOnChange" @onfocusout="@HandleFocusOut" @bind:event="oninput" min="@Min" max="@Max" placeholder="@Placeholder" disabled/>
+		<input @ref="@input" type="number" id="@ID" class="@Class @(HideSpinner ? "hide-number-buttons" : "")" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onchange="@HandleOnChange" @onfocusout="@HandleFocusOut" @bind:event="oninput" step="@Step" min="@Min" max="@Max" placeholder="@Placeholder" disabled/>
 	}
 	else
 	{
-		<input @ref="@input" type="number" id="@ID" class="@Class @(HideSpinner ? "hide-number-buttons" : "")" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onchange="@HandleOnChange" @onfocusout="@HandleFocusOut" @bind:event="oninput" min="@Min" max="@Max" placeholder="@Placeholder"/>
+		<input @ref="@input" type="number" id="@ID" class="@Class @(HideSpinner ? "hide-number-buttons" : "")" style="font-size: @(FontSize)px; width: @Width; @Style" @bind="@Input" @bind:after="@UpdateInput" @onkeydown="@HandleKeyDown" @onchange="@HandleOnChange" @onfocusout="@HandleFocusOut" @bind:event="oninput" step="@Step" min="@Min" max="@Max" placeholder="@Placeholder"/>
 	}
 }
 
 @code {
 	[Parameter]
 	public bool HideSpinner { get; set; }
+
+	[Parameter]
+	public int Step { get; set; } = 1;
 
 	[Parameter]
 	public int Min { get; set; } = Int32.MinValue;
