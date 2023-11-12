@@ -13,18 +13,16 @@ nav {
 	&::-webkit-scrollbar { display: none; }
 
 	> .navLink {
+		@include flex-row;
 		padding-left: 10px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		height: 47px;
+		height: 50px;
 		border: none;
 		border-radius: 4px;
 		white-space: nowrap;
 
 		&:hover { @include hover; }
 
-		> span + span, > svg + span { padding-left: 11px; }
+		> * + span { padding-left: 10px; }
 	}
 
 	> .active {
