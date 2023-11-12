@@ -1,3 +1,5 @@
+@import "../../Constants";
+
 .importItem {
     display: flex;
     flex-direction: row;
@@ -32,12 +34,12 @@
 .importItem > .checkBtn > .checkbox:hover { cursor: pointer; }
 
 .importItem > .checkBtn > .checked {
-    color: #009FFF;
+    color: $AccentColor;
     opacity: 0.9;
 }
 
 .importItem > .checkBtn > .checked:hover {
-    color: #009FFF;
+    color: $AccentColor;
     opacity: 1;
 }
 
