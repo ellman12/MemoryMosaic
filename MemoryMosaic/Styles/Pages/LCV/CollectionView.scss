@@ -17,12 +17,12 @@
 		border-radius: 0;
 
 		&:hover {
-			border-bottom: 2px solid #dadce0;
+			border-bottom: 2px solid white;
 			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		&:focus-visible {
-			border-bottom: 2px solid #4285f4;
+			border-bottom: 2px solid $AccentColor;
 			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 	}
