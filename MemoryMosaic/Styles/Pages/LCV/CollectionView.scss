@@ -17,13 +17,13 @@
 		border-radius: 0;
 
 		&:hover {
+			@include transition(all, 0.3s);
 			border-bottom: 2px solid white;
-			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		&:focus-visible {
+			@include transition(all, 0.3s);
 			border-bottom: 2px solid $AccentColor;
-			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 	}
 

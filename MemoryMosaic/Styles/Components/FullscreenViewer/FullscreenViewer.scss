@@ -16,12 +16,12 @@
 		height: 100%;
 		
 		> #backButton {
+			@include transition(opacity, 0.2s);
 			position: absolute;
 			opacity: 0;
 			top: 4px;
 			left: 10px;
 			z-index: 99999;
-			transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 			
 			&:hover { opacity: 1; }
 		}
@@ -46,8 +46,8 @@
 				cursor: pointer;
 
 				> .iconBtn {
+					@include transition(opacity, 0.2s);
 					opacity: 1;
-					transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 				}
 			}
 
@@ -93,8 +93,8 @@
 
 	> #info {
 		@include flex-col;
+		@include transition(margin-right, 0.35s);
 		height: 100%;
-		transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 		width: 350px;
 		padding: 12px;
 		border-left: 2px solid white;
