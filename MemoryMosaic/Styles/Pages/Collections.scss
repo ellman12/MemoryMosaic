@@ -1,8 +1,10 @@
 /* Main collections page where user clicks collection thumbnail they want to view items of */
-@import "../Shared";
+@import "../Mixins";
 
 header {
-	@include page-header(1px solid gray, 75px, 164px);
+	@include page-header(1px solid gray, auto, 164px);
+	padding-top: 12px;
+	padding-bottom: 12px;
 
 	> #collectionsText {
 		font-size: 20px;
@@ -11,14 +13,15 @@ header {
 	}
 
 	> #checkboxes {
-		@include flex-col;
+		@include flex-row;
+		gap: 16px;
 		position: absolute;
-		right: 470px;
+		right: 300px;
 	}
 
 	> #sortBtn {
 		position: absolute;
-		right: 250px;
+		right: 100px;
 	}
 }
 
@@ -42,7 +45,7 @@ main {
 			overflow: hidden;
 			width: 200px;
 			height: 200px;
-			background-color: #212121;
+			background-color: $CoverBackground;
 			border-radius: 4px;
 		}
 

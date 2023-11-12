@@ -1,17 +1,18 @@
+@import "../../Mixins";
+
 .dropdownBtn {
     background-color: black;
     border: none;
     display: flex;
     align-items: center;
     font-size: 1rem;
-    padding: 11px;
-}
+    padding: 10px;
 
-.dropdownBtn > :first-child {
-    padding-right: 11px;
-}
+    > :first-child { padding-right: 10px; }
 
-.dropdownBtn:hover {
-    background-color: var(--hover-color);
-    cursor: pointer;
+    &:hover { @include hover; }
+
+    &:focus-visible {
+        outline: 2px solid $AccentColor;
+    }
 }

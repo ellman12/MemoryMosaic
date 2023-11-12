@@ -1,4 +1,4 @@
-@import "../Shared";
+@import "../Mixins";
 
 #body {
 	@include flex-col;
@@ -49,12 +49,6 @@
 			margin-bottom: 14px;
 
 			> span { margin-right: 6px; }
-
-			> select {
-				background-color: black;
-				border: 1px solid white;
-				border-radius: 4px;
-			}
 		}
 
 		> #thumbnail-settings {
@@ -106,7 +100,7 @@
 		}
 
 		> a {
-			color: #0080ff;
+			color: $AccentColor;
 			text-decoration: underline;
 			text-underline: cadetblue;
 		}

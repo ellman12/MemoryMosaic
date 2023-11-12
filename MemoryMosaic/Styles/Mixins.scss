@@ -1,0 +1,63 @@
+@import "Constants";
+
+@mixin main($top, $left: 145px) {
+	top: $top;
+	left: $left;
+	position: absolute;
+}
+
+@mixin flex-main($flex-direction, $top, $left: 145px) {
+	@include main($top, $left);
+	display: flex;
+	flex-direction: $flex-direction;
+}
+
+@mixin hover {
+	background-color: $HoverColor;
+	cursor: pointer;
+}
+
+@mixin flex-col {
+	display: flex;
+	flex-direction: column;
+}
+
+@mixin flex-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+@mixin flex-justify-center {
+	display: flex;
+	justify-content: center;
+}
+
+@mixin available-width {
+	width: available;
+	width: -webkit-fill-available;
+	width: -moz-available;
+}
+
+@mixin page-header($border-bottom: 1px solid gray, $height: auto, $left: 145px) {
+	border-bottom: $border-bottom;
+	height: $height;
+	@include available-width;
+	@include flex-row;
+	position: fixed;
+	top: 0;
+	left: $left;
+	background-color: black;
+	z-index: 999;
+}
+
+@mixin center-align($top: 50%, $left: 50%) {
+	position: fixed;
+	top: $top;
+	left: $left;
+	transform: translate(-50%, -50%);
+}
+
+@mixin transition($property, $duration)  {
+	transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}

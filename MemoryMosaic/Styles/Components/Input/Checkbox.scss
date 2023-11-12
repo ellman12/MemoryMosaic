@@ -1,15 +1,25 @@
-@import "../../Shared";
+@import "../../Mixins";
 
 .checkbox {
 	@include flex-row;
 	width: fit-content;
 	height: fit-content;
+	padding-top: 2px;
+	padding-bottom: 2px;
 
 	> span {
 		white-space: nowrap;
 		margin-left: 2px;
 		margin-right: 2px;
 
-		&:last-of-type { margin-top: -1px; }
+		&:nth-of-type(2) {
+			padding-right: 4px;
+		}
+	}
+
+	&:focus-visible {
+		border: none;
+		outline: 2px solid $AccentColor;
+		border-radius: 4px;
 	}
 }

@@ -1,4 +1,4 @@
-@import "../../Shared.scss";
+@import "../../Mixins";
 
 #collection-selector {
 	@include flex-col;

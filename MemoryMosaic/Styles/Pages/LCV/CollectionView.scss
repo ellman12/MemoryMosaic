@@ -1,4 +1,4 @@
-@import "../../Shared";
+@import "../../Mixins";
 
 #header {
 	@include flex-row;
@@ -17,13 +17,13 @@
 		border-radius: 0;
 
 		&:hover {
-			border-bottom: 2px solid #dadce0;
-			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			@include transition(all, 0.3s);
+			border-bottom: 2px solid white;
 		}
 
 		&:focus-visible {
-			border-bottom: 2px solid #4285f4;
-			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			@include transition(all, 0.3s);
+			border-bottom: 2px solid $AccentColor;
 		}
 	}
 
