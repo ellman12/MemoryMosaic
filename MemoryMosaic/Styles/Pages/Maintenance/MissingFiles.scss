@@ -20,7 +20,7 @@ main {
 			display: flex;
 			width: 60px;
 			height: 60px;
-			background-color: #212121;
+			background-color: $CoverBackground;
 			border-radius: 4px;
 
 			> img {
