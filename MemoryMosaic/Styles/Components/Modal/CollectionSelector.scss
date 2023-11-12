@@ -76,6 +76,7 @@
 
 				.checkbox {
 					@include flex-row;
+					pointer-events: none;
 
 					span { margin-left: 6px; }
 				}
