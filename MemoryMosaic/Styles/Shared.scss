@@ -57,3 +57,13 @@ input[type="date"], input[type="datetime-local"] {
 		font-size: 16px;
 	}
 }
+
+select {
+	background-color: black;
+	outline: 1px solid white;
+	border-radius: 4px;
+	
+	&:focus-visible {
+		outline: 2px solid $AccentColor;
+	}
+}
