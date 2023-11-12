@@ -1,4 +1,4 @@
-@import "../Constants";
+@import "../Mixins";
 
 * { text-decoration: none; }
 
@@ -22,10 +22,7 @@ nav {
 		border-radius: 4px;
 		white-space: nowrap;
 
-		&:hover {
-			background-color: $HoverColor;
-			cursor: pointer;
-		}
+		&:hover { @include hover; }
 
 		> span + span, > svg + span { padding-left: 11px; }
 	}

@@ -1,5 +1,5 @@
-@import "../../Mixins";
 @import "../../Constants";
+@import "../../Mixins";
 
 header {
 	@include page-header(1px solid gray, 60px);

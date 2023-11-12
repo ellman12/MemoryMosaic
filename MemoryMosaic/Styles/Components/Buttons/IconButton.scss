@@ -1,4 +1,4 @@
-@import "../../Constants";
+@import "../../Mixins";
 
 .iconBtn {
     color: white;
@@ -12,7 +12,4 @@
     justify-content: center;
 }
 
-.iconBtn:hover {
-    background-color: $HoverColor;
-    cursor: pointer;
-}
+.iconBtn:hover { @include hover; }

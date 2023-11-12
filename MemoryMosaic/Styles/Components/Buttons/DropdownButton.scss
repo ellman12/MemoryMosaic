@@ -1,4 +1,4 @@
-@import "../../Constants";
+@import "../../Mixins";
 
 .dropdownBtn {
     background-color: black;
@@ -13,7 +13,4 @@
     padding-right: 11px;
 }
 
-.dropdownBtn:hover {
-    background-color: $HoverColor;
-    cursor: pointer;
-}
+.dropdownBtn:hover { @include hover; }
