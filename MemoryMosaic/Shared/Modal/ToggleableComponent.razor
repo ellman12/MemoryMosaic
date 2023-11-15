@@ -8,6 +8,8 @@
 	public void Disable() => UpdateState(false);
 	public void Enable() => UpdateState(true);
 
+	public bool Visible => Visibility.Visible;
+	
 	private void UpdateState(bool newState)
 	{
 		Visibility.Visible = newState;

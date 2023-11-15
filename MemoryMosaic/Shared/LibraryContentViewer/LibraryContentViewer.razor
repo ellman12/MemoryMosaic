@@ -16,7 +16,7 @@ Items can be selected, and depending on the page, different options may be appli
 	return;
 }
 
-@if (!fv.Visibility.Visible)
+@if (!fv.Visible)
 {
 	<KeyboardShortcuts AltS="@(() => starPrompt.Toggle())" Del="@DeleteButtonClick" Esc="@ClearChecks" CtrlA="@SelectAllLoadedItems" CtrlShiftA="@LoadAndSelectAll" CtrlShiftMinus="@(() => GroupBy++)" CtrlShiftPlus="@(() => GroupBy--)" Slash="@(() => navigationManager.NavigateTo("/search"))"/>
 	<ShortcutsReference Shortcuts="@shortcuts"/>
@@ -111,7 +111,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 <CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" Rerender="@StateHasChanged"/>
 
-@if (!fv.Visibility.Visible && !MemoriesPage)
+@if (!fv.Visible && !MemoriesPage)
 {
 	<CtrlGInput @ref="@CtrlGInput" LCV="@this" StartDateChanged="@StartDateChanged"/>
 }
@@ -302,7 +302,7 @@ Items can be selected, and depending on the page, different options may be appli
 			
 			if (TrashPage)
 			{
-				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
+				if (SelectedItems.Count == 1 || fv.Visible)
 					message = "PERMANENTLY delete selected item?";
 				else if (SelectedItems.Count > 0)
 					message = "PERMANENTLY delete selected items?";
@@ -311,7 +311,7 @@ Items can be selected, and depending on the page, different options may be appli
 			}
 			else
 			{
-				if (SelectedItems.Count == 1 || fv.Visibility.Visible)
+				if (SelectedItems.Count == 1 || fv.Visible)
 					message = "Move selected item to Trash?";
 				else if (SelectedItems.Count > 0)
 					message = "Move selected items to Trash?";
@@ -329,7 +329,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			string message;
 
-			if (SelectedItems.Count == 1 || fv.Visibility.Visible)
+			if (SelectedItems.Count == 1 || fv.Visible)
 				message = "Restore selected item?";
 			else if (SelectedItems.Count > 0)
 				message = "Restore selected items?";
@@ -409,7 +409,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private void RestoreSelected()
 	{
-		if (fv.Visibility.Visible)
+		if (fv.Visible)
 		{
 			C.RestoreItem(fv.Current.Id);
 			Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
@@ -450,7 +450,7 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		if (TrashPage)
 		{
-			if (fv.Visibility.Visible)
+			if (fv.Visible)
 			{
 				C.RemoveFromTrash(fv.Current);
 				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
@@ -472,7 +472,7 @@ Items can be selected, and depending on the page, different options may be appli
 		}
 		else
 		{
-			if (fv.Visibility.Visible)
+			if (fv.Visible)
 			{
 				C.MoveToTrash(fv.Current.Id);
 				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));

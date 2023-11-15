@@ -31,7 +31,7 @@
 		}
 
 		<div id="item">
-			@if (Current.Video && Visibility.Visible)
+			@if (Current.Video && Visible)
 			{
 				<VideoPlayer Path="@($"{Current.RequestPath}/{Current.Path}")"/>
 			}
@@ -143,7 +143,7 @@
 	</ModalBackground>
 </div>
 
-@if (Visibility.Visible)
+@if (Visible)
 {
 	<KeyboardShortcuts AltS="@UpdateStarred" AltLeft="@Disable" Del="@DeleteButtonClick" CtrlLeft="@MoveLeft" CtrlRight="@MoveRight" Esc="@Disable" I="@infoVisibility.Toggle" Left="@TryMoveLeft" Right="@TryMoveRight"/>
 	<ShortcutsReference Shortcuts="@Shortcuts"/>
