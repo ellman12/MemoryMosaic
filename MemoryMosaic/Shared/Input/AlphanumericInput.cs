@@ -9,7 +9,7 @@ public class AlphanumericInput<T> : InputComponent<T>
 
 	[Parameter] public string Width { get; set; } = "200px";
 
-	protected override void OnInitialized()
+	protected override void OnParametersSet()
 	{
 		Width = Width == "available" ? "available; width: -moz-available; width: -webkit-fill-available;" : Width;
 	}
