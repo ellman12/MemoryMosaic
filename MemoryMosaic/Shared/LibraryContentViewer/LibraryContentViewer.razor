@@ -215,7 +215,7 @@ Items can be selected, and depending on the page, different options may be appli
 @* Grouping and displaying data *@
 @code {
 	[Parameter, EditorRequired]
-	public string NoItemsText { get; set; } = null!;
+	public string NoItemsText { get; set; } = "";
 	
 	[Parameter]
 	public GroupBy DefaultGroupBy { get; set; } = GroupBy.Day;
