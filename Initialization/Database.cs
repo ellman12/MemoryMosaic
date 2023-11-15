@@ -23,7 +23,7 @@ public static class Database
 	public static void Create(string name)
 	{
 		Connect();
-		using var cmd = new NpgsqlCommand($"CREATE DATABASE \"{name}\" WITH OWNER = postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1", Connection);
+		using NpgsqlCommand cmd = new($"CREATE DATABASE \"{name}\" WITH OWNER = postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1", Connection);
 		cmd.ExecuteNonQuery();
 		Close();
 	}
@@ -48,7 +48,7 @@ public static class Database
 	public static void Delete(string name)
 	{
 		Connect();
-		using var cmd = new NpgsqlCommand($"DROP DATABASE \"{name}\"", Connection);
+		using NpgsqlCommand cmd = new($"DROP DATABASE \"{name}\"", Connection);
 		cmd.ExecuteNonQuery();
 		Close();
 	}
@@ -57,7 +57,7 @@ public static class Database
 	public static bool Exists(string name)
 	{
 		Connect();
-		using var cmd = new NpgsqlCommand($"SELECT datname FROM pg_database WHERE datname = '{name}'", Connection);
+		using NpgsqlCommand cmd = new($"SELECT datname FROM pg_database WHERE datname = '{name}'", Connection);
 		using var reader = cmd.ExecuteReader();
 		if (reader.HasRows && reader.Read())
 			return reader.GetString(0) == name;
