@@ -259,13 +259,13 @@
         List<LibraryItem> allItems = C.LoadEntireLibraryTable();
         amountToUpdate = allItems.Count;
 
-        await Parallel.ForEachAsync(allItems, async (item, _) =>
+        await Parallel.ForEachAsync(allItems, async (item, cancellationToken) =>
         {
             await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
             await using NpgsqlCommand cmd = new("UPDATE library SET thumbnail = @newThumbnail WHERE path = @path", localConn);
             cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(item.FullPath));
             cmd.Parameters.AddWithValue("@path", item.Path);
-            await cmd.ExecuteNonQueryAsync(_);
+            await cmd.ExecuteNonQueryAsync(cancellationToken);
             amountUpdated++;
             await InvokeAsync(StateHasChanged);
         });
