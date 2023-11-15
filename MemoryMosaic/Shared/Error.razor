@@ -6,8 +6,17 @@
         margin: -140px 0 0 -150px;
     }
     
-    #centeredDiv > h1, #centeredDiv > p {
+    #centeredDiv > p {
         text-align: center;
+    }
+    
+    #centeredDiv > p:first-of-type {
+        font-size: 40px;
+    }
+    
+    #centeredDiv > * {
+        font-size: 20px;
+        margin: 16px;
     }
     
     #centeredDiv > a {
@@ -19,7 +28,7 @@
 </style> 
 
 <div id="centeredDiv">
-    <h1>404. That's an error.</h1>
+    <p>404. That's an error.</p>
     <p>The requested URL was not found.</p>
     <a href="/"> Click me to go to the home page.</a>
 </div>
