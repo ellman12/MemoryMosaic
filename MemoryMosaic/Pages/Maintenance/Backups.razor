@@ -7,6 +7,11 @@
     <IconTextButton Icon="restore" Text="Create Backup" OnClick="@CreateBackup"/>
     <IconTextButton Icon="trash" Text="Delete All Backups" OnClick="@DeleteAllBackups"/>
     <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
+    
+    <div>
+        <Checkbox @bind-Input="@updateDatabase" Label="Backup/Restore Database"/>
+        <Checkbox @bind-Input="@updateFiles" Label="Backup/Restore Files"/>
+    </div>
 </header>
 
 <ProgressPopUp @ref="@backupPopUp" Width="320" Height="300" Message="Creating Backup. Do not navigate away from this page."/>
@@ -37,6 +42,8 @@
     ///Stores each backup's full path, date and time it was made, and its size in bytes.
     private List<(string, DateTime, long)> backups = new();
 
+    private bool updateDatabase = true, updateFiles = true;
+
     protected override void OnInitialized()
     {
         foreach (string backupFolder in Directory.GetDirectories(S.BackupFolderPath, "MM Backup*", SearchOption.TopDirectoryOnly))
@@ -58,9 +65,15 @@
 }
 
 @functions {
-    ///Copies the contents of mm_library to a backup folder, and dumps the contents of the database to a .bak file in that folder.
+    #region Create
     private async void CreateBackup()
     {
+        if (!updateDatabase && !updateFiles)
+        {
+            L.LogLine("Neither option selected, aborting backup", LogLevel.Info);
+            return;
+        }
+        
         L.LogLine("Backup Started", LogLevel.Info);
         
         backupPopUp.Enable();
@@ -69,40 +82,13 @@
         await Task.Delay(1);
 
         string backupFolder = Path.Combine(S.BackupFolderPath, $"MM Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
-        string dbDumpPath = Path.Combine(backupFolder, "Database.bak");
-        
-        L.LogLine("Begin copying mm_library", LogLevel.Debug);
-
         Directory.CreateDirectory(backupFolder);
-        Parallel.ForEach(C.LoadEntireLibraryTable(), row =>
-        {
-           string dtFolderPath = Path.Combine(backupFolder, Path.GetDirectoryName(row.Path)!);
-            if (!Directory.Exists(dtFolderPath))
-                Directory.CreateDirectory(dtFolderPath);
+
+        if (updateDatabase)
+            await BackupDatabase(backupFolder);
             
-            string destFilePath = Path.Join(backupFolder, row.Path);
-            File.Copy(row.FullPath, destFilePath);
-        });
-        L.LogLine("Finish copying mm_library", LogLevel.Debug);
-        
-        //Dump database contents to a .bak file.
-        L.LogLine("Starting psql process", LogLevel.Debug);
-        using Process process = new Process();
-        process.StartInfo = new ProcessStartInfo
-        {
-            WindowStyle = ProcessWindowStyle.Hidden,
-            CreateNoWindow = true,
-            RedirectStandardError = false,
-            RedirectStandardInput = false,
-            RedirectStandardOutput = false,
-            WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
-            FileName = "cmd.exe",
-            Arguments = $"/C pg_dump.exe \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\" > \"{dbDumpPath}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
-        };
-        process.Start();
-        await process.WaitForExitAsync();
-        
-        L.LogLine("Psql process finished", LogLevel.Debug);
+        if (updateFiles)
+            BackupFiles(backupFolder);
         
         backups.Insert(0, new ValueTuple<string, DateTime, long>
         {
@@ -117,48 +103,107 @@
         L.LogLine("Backup Finished", LogLevel.Info);
     }
 
-    ///Restore MM to this backup.
+    private static async Task BackupDatabase(string backupFolder)
+    {
+        L.LogLine("Starting psql process", LogLevel.Info);
+
+        using Process process = new Process();
+        process.StartInfo = new ProcessStartInfo
+        {
+            WindowStyle = ProcessWindowStyle.Hidden,
+            CreateNoWindow = true,
+            RedirectStandardError = false,
+            RedirectStandardInput = false,
+            RedirectStandardOutput = false,
+            WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
+            FileName = "cmd.exe",
+            Arguments = $"/C pg_dump.exe \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\" > \"{Path.Combine(backupFolder, "Database.bak")}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+        };
+        process.Start();
+        await process.WaitForExitAsync();
+        
+        L.LogLine("Psql process finished", LogLevel.Info);
+    }
+
+    private static void BackupFiles(string backupFolder)
+    {
+        L.LogLine("Begin copying mm_library", LogLevel.Info);
+
+        Parallel.ForEach(C.LoadEntireLibraryTable(), row =>
+        {
+            string dtFolderPath = Path.Combine(backupFolder, Path.GetDirectoryName(row.Path)!);
+            Directory.CreateDirectory(dtFolderPath);
+            string destFilePath = Path.Join(backupFolder, row.Path);
+            File.Copy(row.FullPath, destFilePath);
+        });
+        
+        L.LogLine("Finish copying mm_library", LogLevel.Info);
+    }
+    #endregion
+
+    #region Restore
     private async void RestoreBackup(string backupFullPath)
     {
-        L.LogLine("Restore started", LogLevel.Info);
+        if (!updateDatabase && !updateFiles)
+        {
+            L.LogLine("Neither option selected, aborting restore", LogLevel.Info);
+            return;
+        }
         
+        L.LogLine("Restore started", LogLevel.Info);
+
         restorePopUp.Enable();
         await InvokeAsync(StateHasChanged);
 
-        L.LogLine("Begin clearing database", LogLevel.Debug);
+        if (updateDatabase)
+            await RestoreDatabase(backupFullPath);
+        
+        if (updateFiles)
+            RestoreFiles(backupFullPath);
+        
+        restorePopUp.Disable();
+        await InvokeAsync(StateHasChanged);
+
+        L.LogLine("Restoration finished", LogLevel.Info);
+    }
+
+    private static async Task RestoreDatabase(string backupFullPath)
+    {
+        L.LogLine("Begin clearing database", LogLevel.Info);
         
         C.Open();
         await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS library CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE", C.connection);
         cmd.ExecuteNonQuery();
         C.Close();
         
-        L.LogLine("Database cleared, restoring database", LogLevel.Debug);
+        L.LogLine("Database cleared, restoring database", LogLevel.Info);
         
-        //Restore the database from the .bak file.
-        Process process = new();
-        ProcessStartInfo startInfo = new()
+        using Process process = new();
+        process.StartInfo = new ProcessStartInfo
         {
             WindowStyle = ProcessWindowStyle.Hidden,
             WorkingDirectory = S.BackupFolderPath,
             FileName = "cmd.exe",
             Arguments = $"/C type \"{Path.Combine(backupFullPath, "Database.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\""
         };
-        process.StartInfo = startInfo;
         process.Start();
         await process.WaitForExitAsync();
         
-        L.LogLine("Database restored, clearing mm_library", LogLevel.Debug);
-        if (Directory.Exists(S.LibFolderPath)) Directory.Delete(S.LibFolderPath, true);
+        L.LogLine("Database restored", LogLevel.Info);
+    }
+
+    private static void RestoreFiles(string backupFullPath)
+    {
+        L.LogLine("Restoring mm_library, clearing mm_library", LogLevel.Info); 
+        if (Directory.Exists(S.LibFolderPath))
+            Directory.Delete(S.LibFolderPath, true);
         
-        L.LogLine("mm_library cleared, restoring mm_library", LogLevel.Debug);
+        L.LogLine("mm_library cleared, copying files to mm_library", LogLevel.Info);
         FileSystem.CopyDirectory(backupFullPath, S.LibFolderPath);
         File.Delete(Path.Combine(S.LibFolderPath, "Database.bak"));
-        
-        restorePopUp.Disable();
-        await InvokeAsync(StateHasChanged);
-
-        L.LogLine("mm_library restored, restoration finished", LogLevel.Info);
+        L.LogLine("Finish copying files", LogLevel.Info);
     }
+    #endregion
 
     private async void DeleteBackup(string backupFullPath)
     {
