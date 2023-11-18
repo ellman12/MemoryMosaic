@@ -85,7 +85,7 @@ public static class Stats
         try
         {
             await using NpgsqlConnection conn = await C.CreateLocalConnectionAsync();
-            NpgsqlCommand cmd = new($"SELECT path, id, date_taken, date_added, starred, description, date_deleted thumbnail FROM library {filter}", conn);
+            NpgsqlCommand cmd = new($"SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail thumbnail FROM library {filter}", conn);
             NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 
             if (r.HasRows)
