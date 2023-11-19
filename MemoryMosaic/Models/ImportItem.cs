@@ -4,14 +4,14 @@
 public sealed class ImportItem : Media
 {
 	///The original filename of this item, without the extension.
-	public string OriginalFilename { get; init; } = ""; 
+	public string OriginalFilename { get; init; } 
 
 	///What the file has been renamed to, if applicable, without the extension.
-	public string NewFilename { get; set; } = ""; 
+	public string NewFilename { get; set; } 
 
-	public string Extension { get; init; } = "";
+	public string Extension { get; init; }
 
-	public string AbsolutePath => System.IO.Path.Join(S.ImportFolderPath, Path);
+	public string AbsolutePath { get; init; }
 
 	public DateTime? MetadataDateTaken { get; init; }
 
@@ -28,4 +28,22 @@ public sealed class ImportItem : Media
 	public override string RequestPath => "mm_import";
 	
 	public override string FullPath => System.IO.Path.Combine(S.ImportFolderPath, Path);
+
+	public ImportItem(string absolutePath)
+	{
+		AbsolutePath = absolutePath;
+		OriginalFilename = NewFilename = System.IO.Path.GetFileNameWithoutExtension(AbsolutePath);
+		Extension = System.IO.Path.GetExtension(AbsolutePath);
+
+		D.GetDateTakenFromBoth(AbsolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
+		MetadataDateTaken = metadataDT;
+		FilenameDateTaken = filenameDT;
+
+		if (MetadataDateTaken != null)
+			DateTakenSource = DateTakenSource.Metadata;
+		else if (FilenameDateTaken != null)
+			DateTakenSource = DateTakenSource.Filename;
+		else
+			DateTakenSource = DateTakenSource.None;
+	}
 }
