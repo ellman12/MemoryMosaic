@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Models;
+namespace MemoryMosaic.Models;
 
 ///Represents an item in Import that's not yet part of the library.
 public sealed class ImportItem : Media
@@ -27,13 +27,13 @@ public sealed class ImportItem : Media
 	
 	public override string RequestPath => "mm_import";
 	
-	public override string FullPath => System.IO.Path.Combine(S.ImportFolderPath, Path);
+	public override string FullPath => P.Combine(S.ImportFolderPath, Path);
 
 	public ImportItem(string absolutePath)
 	{
 		AbsolutePath = absolutePath;
-		OriginalFilename = NewFilename = System.IO.Path.GetFileNameWithoutExtension(AbsolutePath);
-		Extension = System.IO.Path.GetExtension(AbsolutePath);
+		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(AbsolutePath);
+		Extension = P.GetExtension(AbsolutePath);
 
 		D.GetDateTakenFromBoth(AbsolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;

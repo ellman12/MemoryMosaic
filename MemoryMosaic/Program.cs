@@ -18,6 +18,7 @@ global using D = DateTakenExtractor.DateTakenExtractor;
 global using F = MemoryMosaic.Backend.Functions;
 global using L = MemoryMosaic.Backend.Logger;
 global using M = MemoryMosaic.Backend.Maintenance;
+global using P = System.IO.Path;
 global using S = MemoryMosaic.Settings;
 global using SearchOption = System.IO.SearchOption;
 

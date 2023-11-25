@@ -20,7 +20,7 @@ public sealed class LibraryItem : Media
 		Description = description;
 		DateDeleted = dateDeleted;
 		Thumbnail = thumbnail;
-		Video = F.SupportedVideoExts.Contains(System.IO.Path.GetExtension(Path).ToLower());
+		Video = F.SupportedVideoExts.Contains(P.GetExtension(Path).ToLower());
 	}
 
 	///Creates a new LibraryItem from a query of this form: path, id, date_taken, date_added, starred, description, date_deleted, thumbnail
@@ -28,5 +28,5 @@ public sealed class LibraryItem : Media
 
 	public override string RequestPath => "mm_library";
 
-	public override string FullPath => System.IO.Path.Combine(S.LibFolderPath, Path);
+	public override string FullPath => P.Combine(S.LibFolderPath, Path);
 }
