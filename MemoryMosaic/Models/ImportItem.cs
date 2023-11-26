@@ -23,7 +23,7 @@ public sealed class ImportItem : Media
 	public DateTakenSource DateTakenSource { get; set; }
 
 	///The album(s) or folder to add this item to.
-	public HashSet<int>? Collections { get; set; }
+	public HashSet<Collection>? Collections { get; init; }
 	
 	public override string RequestPath => "mm_import";
 	
