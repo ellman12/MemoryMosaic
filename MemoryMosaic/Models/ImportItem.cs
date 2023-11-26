@@ -1,3 +1,5 @@
+﻿using System.Text.Json.Serialization;
+
 namespace MemoryMosaic.Models;
 
 ///Represents an item in Import that's not yet part of the library.
@@ -25,12 +27,17 @@ public sealed class ImportItem : Media
 	///The album(s) or folder to add this item to.
 	public HashSet<Collection>? Collections { get; init; }
 	
+	[JsonIgnore]
 	public override string RequestPath => "mm_import";
 	
+	[JsonIgnore]
 	public override string FullPath => P.Combine(S.ImportFolderPath, Path);
 
 	public ImportItem(string absolutePath)
 	{
+		Id = Guid.NewGuid();
+		
+		Path = absolutePath.Replace(S.ImportFolderPath, "");
 		AbsolutePath = absolutePath;
 		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(AbsolutePath);
 		Extension = P.GetExtension(AbsolutePath);
