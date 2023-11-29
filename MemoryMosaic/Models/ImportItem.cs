@@ -36,6 +36,7 @@ public sealed class ImportItem : Media
 	public ImportItem(string absolutePath)
 	{
 		Id = Guid.NewGuid();
+		Thumbnail = F.GenerateThumbnail(absolutePath);
 		
 		Path = absolutePath.Replace(S.ImportFolderPath, "");
 		AbsolutePath = absolutePath;
