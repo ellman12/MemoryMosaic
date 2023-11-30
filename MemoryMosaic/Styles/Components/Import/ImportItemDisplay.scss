@@ -1,121 +1,27 @@
-@import "../../Constants";
+@import "../../Mixins";
 
 .importItem {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 7px;
-    margin-bottom: 7px;
-    min-height: 60px;
-}
+	@include flex-row;
+	gap: 12px;
+	margin-bottom: 6px;
+	min-height: 60px;
 
-.errorDiv > .importItem > .shortPath {
-    color: red;
-    margin-right: 10px;
-}
-
-.importItem > .shortPath {
-    color: green;
-    margin-right: 10px;
-}
-
-.importItem > .checkBtn {
-    border: none;
-    outline: none;
-    background: none;
-}
-
-.importItem > .checkBtn > .checkbox {
-    opacity: 0;
-    margin-left: 4px;
-    margin-right: 10px;
-}
-
-.importItem > .checkBtn > .checkbox:hover { cursor: pointer; }
-
-.importItem > .checkBtn > .checked {
-    color: $AccentColor;
-    opacity: 0.9;
-}
-
-.importItem > .checkBtn > .checked:hover {
-    color: $AccentColor;
-    opacity: 1;
-}
-
-.importItem:hover > .checkBtn > .unchecked { /* Show checkbox on hover */
-    opacity: 0.42;
-    transition: 0.15s;
-}
-
-.importItem > .checkBtn > .unchecked:hover {
-    opacity: 1;
-}
-
-.importItem > .shortWidth {
-    max-width: 180px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.importItem > .shortWidth:hover {
-    max-width: initial;
-    width: auto;
-}
-
-.libraryItem > .fullWidth {
-    width: auto;
-}
-
-.importItem > img {
-    width: 4%;
-    margin-right: 10px;
-}
-
-.importItem > input[type="text"] {
-    color: black;
-    margin-left: 10px;
-}
-
-.importItem > .dateTakenDisplay {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.importItem > .yearWarn {
-    color: yellow;
-    margin-left: 10px;
-    margin-right: 5px;
-}
-
-.importItem > select {
-    background-color: black;
-    border: 1px solid white;
-    border-radius: 4px;
-    outline: none;
-}
-
-.importItem > select:active, .importItem > select:focus {
-    outline: 2px solid dodgerblue;
-}
-
-.importItem > input[type="datetime-local"] {
-    color: black;
-    margin-left: 10px;
-    margin-right: 4px;
-}
-
-.importItem > .collectionsDisplay > span {
-    margin-left: 4px;
-}
-
-.importItem > .collectionsDisplay > span:hover {
-    cursor: pointer;
-}
-
-.importItem > .star-icon {
-    color: yellow;
+	> .checkbox {
+		
+	}
+	
+	> img {
+		width: 6%;
+	}
+	
+	> span:first-of-type {
+		max-width: 200px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		
+		> &:hover {
+			max-width: fit-content;
+		}
+	}
 }
