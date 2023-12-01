@@ -3,10 +3,10 @@
 
 <div class="importItem">
 	<Checkbox/>
-	
+
 	<img src="data:image/jpg;base64,@ImportItem.Thumbnail" alt="" loading="lazy"/>
-	<span class="@Import.PathWidth">@ImportItem.Path</span>
-	
+	<span class="@Import.PathWidth">@ImportItem.Path.Substring(1)</span>
+
 	@if (filenameEditVisible)
 	{
 		<TextInput bind-Input="@ImportItem.NewFilename"/>
@@ -49,7 +49,7 @@
 		<option>None</option>
 		<option>Custom</option>
 	</select>
-	
+
 	@if (ImportItem.Collections != null)
 	{
 		<div class="collections">
@@ -59,7 +59,7 @@
 			}
 		</div>
 	}
-		
+
 	@if (ImportItem.DateTakenSource == DateTakenSource.Metadata && ImportItem.MetadataDateTaken?.Year < Import.MinYear)
 	{
 		<span>M Year is less than the min year</span>
@@ -85,7 +85,7 @@
 @code {
 	[Parameter, EditorRequired]
 	public required Import Import { get; set; }
-	
+
 	[Parameter, EditorRequired]
 	public required ImportItem ImportItem { get; set; }
 
