@@ -29,7 +29,8 @@
 		&.full { width: auto; }
 	}
 	
-	> span:nth-of-type(2) {
+	.dateTakenDisplay {
+		@include flex-col;
 		width: 210px;
 	}
 	

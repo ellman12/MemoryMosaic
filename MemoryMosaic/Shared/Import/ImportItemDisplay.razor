@@ -13,30 +13,33 @@
 		<IconButton Icon="save"/>
 		<IconButton Icon="close"/>
 	}
-	
+
 	<div class="dateTakenDisplay">
 		@if (ImportItem.DateTakenSource == DateTakenSource.Custom)
 		{
-			<span title="Custom Date Taken">C: @(ImportItem.CustomDateTaken == null ? "No Date Taken" : ImportItem.CustomDateTaken)</span>
+			<span>C: @(ImportItem.CustomDateTaken == null ? "No Date Taken" : ImportItem.CustomDateTaken)</span>
 		}
-		else if (ImportItem.MetadataDateTaken == null && ImportItem.FilenameDateTaken == null)
+		else if (ImportItem.MetadataDateTaken == null && ImportItem.FilenameDateTaken == null || ImportItem.DateTakenSource == DateTakenSource.None)
 		{
-			<span style="color: yellow">No Date Taken</span>
+			<span>No Date Taken</span>
 		}
 		else if (ImportItem.MetadataDateTaken == ImportItem.FilenameDateTaken)
 		{
-			<span title="Metadata and Filename Date Taken">M & F: @ImportItem.FilenameDateTaken</span>
+			<span>M & F: @ImportItem.MetadataDateTaken</span>
 		}
-		else if (ImportItem.MetadataDateTaken != null)
+		else
 		{
-			<span title="Metadata Date Taken">M: @ImportItem.MetadataDateTaken</span>
-		}
-		else if (ImportItem.FilenameDateTaken != null)
-		{
-			<span title="Filename Date Taken">F: @ImportItem.FilenameDateTaken</span>
+			if (ImportItem.MetadataDateTaken != null)
+			{
+				<span>M: @ImportItem.MetadataDateTaken</span>
+			}
+			if (ImportItem.FilenameDateTaken != null)
+			{
+				<span>F: @ImportItem.FilenameDateTaken</span>
+			}
 		}
 	</div>
-	
+
 	<select @bind="@ImportItem.DateTakenSource">
 		@if (ImportItem.MetadataDateTaken != null)
 		{
@@ -77,7 +80,7 @@
 		<span>F Year is greater than the max year</span>
 	}
 
-	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" />
+	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")"/>
 
 	<textarea @bind="@ImportItem.Description" placeholder="Description"></textarea>
 </div>
