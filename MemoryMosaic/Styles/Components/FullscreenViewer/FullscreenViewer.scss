@@ -132,11 +132,8 @@
 
 		> textarea {
 			@include available-width;
-			border: 1px solid white;
 			margin-top: 12px;
 			margin-bottom: 12px;
-			background-color: black;
-			font-size: 16px;
 			min-height: 1.2em;
 			height: 3em;
 			max-height: 10em;
