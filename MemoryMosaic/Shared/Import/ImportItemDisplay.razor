@@ -80,7 +80,7 @@
 		<span>F Year is greater than the max year</span>
 	}
 
-	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")"/>
+	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" OnClick="@ToggleStarred"/>
 
 	<textarea @bind="@ImportItem.Description" placeholder="Description"></textarea>
 </div>
@@ -93,4 +93,12 @@
 	public required ImportItem ImportItem { get; set; }
 
 	private bool filenameEditVisible;
+}
+
+@functions {
+	private void ToggleStarred()
+	{
+		ImportItem.Starred = !ImportItem.Starred;
+		StateHasChanged();
+	}
 }
