@@ -41,7 +41,6 @@ input[type="date"], input[type="datetime-local"] {
 	padding: 2px;
 	border-radius: 4px;
 	width: fit-content;
-	margin-right: 4px;
 
 	&:focus-visible {
 		border: 1px solid $AccentColor;

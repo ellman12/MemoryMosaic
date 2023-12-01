@@ -15,12 +15,8 @@
 	> div {
 		@include flex-row;
 		align-self: flex-end;
+		gap: 4px;
 		margin-right: 4px;
 		margin-bottom: 4px;
-
-		> .iconBtn {
-			margin-left: 2px;
-			margin-right: 2px;
-		}
 	}
 }
