@@ -79,8 +79,11 @@
 	{
 		<span>F Year is greater than the max year</span>
 	}
-	
-	<input type="datetime-local" @bind="@ImportItem.CustomDateTaken" step="1"/>
+
+	@if (ImportItem.DateTakenSource == DateTakenSource.Custom)
+	{
+		<input type="datetime-local" @bind="@ImportItem.CustomDateTaken" step="1"/>
+	}
 
 	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" OnClick="@ToggleStarred"/>
 
