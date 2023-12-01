@@ -20,6 +20,8 @@
 
 @* <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@StateHasChanged" Content="" DisplayItemType="true"/> *@
 
+<KeyboardShortcuts AltS="@TogglePathWidth"/>
+
 @code {
 	private CollectionSelector cs = null!;
 
@@ -53,5 +55,11 @@
 		});
 		
 		L.LogLine($"Finish Import.{nameof(OnInitialized)}", LogLevel.Info);
+	}
+
+	private void TogglePathWidth()
+	{
+		PathWidth = PathWidth == "short" ? "full" : "short";
+		StateHasChanged();
 	}
 }

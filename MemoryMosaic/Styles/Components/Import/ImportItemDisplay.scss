@@ -16,13 +16,20 @@
 	}
 	
 	> span:first-of-type {
-		max-width: 200px;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		
-		> &:hover {
-			max-width: fit-content;
+		&.short {
+			width: 220px;
+			
+			&:hover { width: auto; }
 		}
+		
+		&.full { width: auto; }
+	}
+	
+	> span:nth-of-type(2) {
+		width: 210px;
 	}
 }
