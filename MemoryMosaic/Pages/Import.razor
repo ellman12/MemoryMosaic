@@ -1,4 +1,4 @@
-﻿@page "/import"
+@page "/import"
 @using System.Text
 @using MemoryMosaic.DataStructures
 
@@ -34,18 +34,18 @@
 }
 
 @code {
-	private bool finishedLoading;
-
-	private readonly List<ImportItem> importItems = new();
-
-	private List<LibraryItem> libraryCache = null!, filesWithSameName = new(), filesWithSimilarName = new();
-
 	public HashSet<Guid> SelectedItems { get; private set; } = new();
 
 	public string PathWidth { get; private set; } = "short";
 
 	public int MinYear { get; private set; } = 2000;
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
+
+	private bool finishedLoading;
+
+	private List<LibraryItem> libraryCache = null!, filesWithSameName = new(), filesWithSimilarName = new();
+
+	private readonly List<ImportItem> importItems = new();
 }
 
 @functions {
