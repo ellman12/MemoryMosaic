@@ -1,5 +1,9 @@
 @import "../Mixins";
 
+header {
+	@include page-header(1px solid gray, 60px);
+}
+
 main {
 	@include flex-main(column, 64px);
 }

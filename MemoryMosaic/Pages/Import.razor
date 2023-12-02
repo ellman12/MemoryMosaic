@@ -7,7 +7,11 @@
 <link href="css/Components/Import/ImportItemDisplay.css" rel="stylesheet"/>
 
 <header>
-
+	@if (SelectedItems.Count > 0)
+	{
+		<IconButton Icon="close" OnClick="@ClearChecks"/>
+		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
+	}
 </header>
 
 <main>
@@ -17,7 +21,7 @@
 	}
 </main>
 
-@* <CollectionSelector @ref="@cs" SelectedItems="@selectedItems" ClearSelectedOnConfirm="false"/> *@
+@* <CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" ClearSelectedOnConfirm="false"/> *@
 
 @* <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@StateHasChanged" Content="" DisplayItemType="true"/> *@
 
@@ -36,7 +40,7 @@
 
 	private List<LibraryItem> libraryCache = null!, filesWithSameName = new(), filesWithSimilarName = new();
 
-	private HashSet<Guid> selectedItems;
+	public HashSet<Guid> SelectedItems { get; private set; } = new();
 
 	public string PathWidth { get; private set; } = "short";
 
@@ -54,13 +58,21 @@
 			ImportItem importFile = new(absPath.Replace('\\', '/'));
 			importItems.Add(importFile);
 		});
-		
+
 		L.LogLine($"Finish Import.{nameof(OnInitialized)}", LogLevel.Info);
+	}
+
+	public void Rerender() => StateHasChanged();
+
+	private void ClearChecks()
+	{
+		SelectedItems.Clear();
+		Rerender();
 	}
 
 	private void TogglePathWidth()
 	{
 		PathWidth = PathWidth == "short" ? "full" : "short";
-		StateHasChanged();
+		Rerender();
 	}
 }

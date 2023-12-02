@@ -1,7 +1,7 @@
 @using MemoryMosaic.Pages
 
 <div class="importItem">
-	<Checkbox/>
+	<Checkbox Input="@Import.SelectedItems.Contains(ImportItem.Id)" OnChange="@ToggleSelected"/>
 
 	<img src="data:image/jpg;base64,@ImportItem.Thumbnail" alt="" loading="lazy"/>
 	<span class="@Import.PathWidth">@ImportItem.Path.Substring(1)</span>
@@ -100,6 +100,16 @@
 }
 
 @functions {
+	private void ToggleSelected()
+	{
+		if (Import.SelectedItems.Contains(ImportItem.Id))
+			Import.SelectedItems.Remove(ImportItem.Id);
+		else
+			Import.SelectedItems.Add(ImportItem.Id);
+
+		Import.Rerender();
+	}
+	
 	private void ToggleStarred()
 	{
 		ImportItem.Starred = !ImportItem.Starred;
