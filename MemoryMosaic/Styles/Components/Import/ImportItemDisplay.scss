@@ -7,44 +7,46 @@
 	min-height: 60px;
 
 	> .checkbox {
-		
+
 	}
-	
+
 	> img {
 		height: auto;
 		width: 90px;
 	}
-	
+
 	> span:first-of-type {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		
+
 		&.short {
 			width: 220px;
-			
+
 			&:hover { width: auto; }
 		}
-		
+
 		&.full { width: auto; }
 	}
-	
+
 	.dateTakenDisplay {
 		@include flex-col;
 		width: 210px;
 	}
-	
-	&:hover > select {
-		display: inline;
+
+	&:hover {
+		> select { display: inline; }
+		
+		> textarea { display: inline !important; }
 	}
-	
+
 	> select {
 		display: none;
 	}
-	
+
 	.starBtn:hover { background: none; }
 	
-	textarea {
+	> textarea {
 		height: 2.5em;
 		width: 10em;
 		min-height: 2.5em;

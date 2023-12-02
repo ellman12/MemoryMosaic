@@ -87,7 +87,7 @@
 
 	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" OnClick="@ToggleStarred"/>
 
-	<textarea @bind="@ImportItem.Description" placeholder="Description"></textarea>
+	<textarea style="display: @(String.IsNullOrWhiteSpace(ImportItem.Description) ? "none" : "inline")" @bind="@ImportItem.Description" placeholder="Description"></textarea>
 </div>
 
 @code {
