@@ -96,12 +96,26 @@
 	[Parameter, EditorRequired]
 	public required ImportItem ImportItem { get; set; }
 
+	[Parameter, EditorRequired]
+	public int Index { get; set; }
+
 	private bool filenameEditVisible;
 
 	private bool Checked => Import.SelectedItems.Contains(ImportItem.Id);
 }
 
 @functions {
+	private void CheckClicked(MouseEventArgs e)
+	{
+		if (e.ShiftKey)
+			Import.ChangeRangeState(Import.LastCheckedIndex, Index);
+		else
+			ToggleSelected();
+
+		Import.Rerender();
+		StateHasChanged();
+	}
+
 	private void ToggleSelected()
 	{
 		if (Import.SelectedItems.Contains(ImportItem.Id))
@@ -109,9 +123,9 @@
 		else
 			Import.SelectedItems.Add(ImportItem.Id);
 
-		Import.Rerender();
+		Import.LastCheckedIndex = Index;
 	}
-	
+
 	private void ToggleStarred()
 	{
 		ImportItem.Starred = !ImportItem.Starred;
