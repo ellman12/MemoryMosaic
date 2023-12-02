@@ -6,10 +6,6 @@
 	margin-bottom: 6px;
 	min-height: 60px;
 
-	> .checkbox {
-
-	}
-
 	> img {
 		height: auto;
 		width: 90px;
@@ -34,6 +30,7 @@
 	}
 
 	&:hover {
+		> .checkbox { visibility: visible !important; }
 		> select { display: inline; }
 		> .starBtn { display: flex !important; }
 		> textarea { display: inline !important; }

@@ -1,7 +1,7 @@
 @using MemoryMosaic.Pages
 
 <div class="importItem">
-	<Checkbox Input="@Import.SelectedItems.Contains(ImportItem.Id)" OnChange="@ToggleSelected"/>
+	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
 	<img src="data:image/jpg;base64,@ImportItem.Thumbnail" alt="" loading="lazy"/>
 	<span class="@Import.PathWidth">@ImportItem.Path.Substring(1)</span>
@@ -97,6 +97,8 @@
 	public required ImportItem ImportItem { get; set; }
 
 	private bool filenameEditVisible;
+
+	private bool Checked => Import.SelectedItems.Contains(ImportItem.Id);
 }
 
 @functions {
