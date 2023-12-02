@@ -31,7 +31,6 @@
 
 	.dateTakenDisplay {
 		@include flex-col;
-		width: 210px;
 	}
 
 	&:hover {
