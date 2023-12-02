@@ -85,7 +85,7 @@
 		<input type="datetime-local" @bind="@ImportItem.CustomDateTaken" step="1"/>
 	}
 
-	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" OnClick="@ToggleStarred"/>
+	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(ImportItem.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
 
 	<textarea style="display: @(String.IsNullOrWhiteSpace(ImportItem.Description) ? "none" : "inline")" @bind="@ImportItem.Description" placeholder="Description"></textarea>
 </div>

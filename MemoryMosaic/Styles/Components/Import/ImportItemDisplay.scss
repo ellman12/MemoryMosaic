@@ -36,7 +36,7 @@
 
 	&:hover {
 		> select { display: inline; }
-		
+		> .starBtn { display: flex !important; }
 		> textarea { display: inline !important; }
 	}
 
