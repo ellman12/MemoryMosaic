@@ -30,11 +30,11 @@
 		{
 			if (ImportItem.MetadataDateTaken != null)
 			{
-				<span>M: @ImportItem.MetadataDateTaken</span>
+				<span style="@(ImportItem.DateTakenSource == DateTakenSource.Metadata ? "color: #0080ff" : "")">M: @ImportItem.MetadataDateTaken</span>
 			}
 			if (ImportItem.FilenameDateTaken != null)
 			{
-				<span>F: @ImportItem.FilenameDateTaken</span>
+				<span style="@(ImportItem.DateTakenSource == DateTakenSource.Filename ? "color: #0080ff" : "")">M: @ImportItem.FilenameDateTaken</span>
 			}
 		}
 	</div>
