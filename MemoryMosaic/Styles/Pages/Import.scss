@@ -6,5 +6,6 @@ header {
 
 main {
 	@include flex-main(column, 64px);
+	@include available-width;
 }
 
