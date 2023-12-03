@@ -20,7 +20,10 @@
 		&.short {
 			width: 220px;
 
-			&:hover { width: auto; }
+			&:hover {
+				min-width: 220px;
+				width: auto;
+			}
 		}
 
 		&.full { width: auto; }
