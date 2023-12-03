@@ -42,30 +42,41 @@ public static class Connection
     #region Library
 
     /// <summary>For inserting an item into the library table.</summary>
-    /// <param name="path">The short path to the item, relative to mm_library. Convention is to use '/' as the separator. '/' cannot be the first character.</param>
-    /// <param name="id">The id of this item.</param>
-    /// <param name="dateTaken">When this item was taken.</param>
+    /// <param name="item">The item to insert into the library.</param>
+    /// <param name="dateTaken">The date taken to use for the item.</param>
     /// <param name="separate">If this item is in a folder.</param>
-    /// <param name="starred">If this item is starred.</param>
-    /// <param name="thumbnail">A compressed base64 string representing the thumbnail.</param>
-    public static async Task InsertItem(string path, Guid id, DateTime? dateTaken, bool separate, bool starred, string thumbnail)
+    public static async Task InsertItem(ImportItem item, DateTime? dateTaken, bool separate)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
         try
         {
             await using NpgsqlCommand cmd = new("", localConn);
-            cmd.Parameters.AddWithValue("@path", path);
-            cmd.Parameters.AddWithValue("@id", id);
-            
-            if (dateTaken != null)
-                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
-            
-            cmd.Parameters.AddWithValue("@separate", separate);
-            cmd.Parameters.AddWithValue("@starred", starred);
-            cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
 
-            cmd.CommandText = $"INSERT INTO library (path, id, {(dateTaken == null ? "" : "date_taken,")} separate, starred, thumbnail) VALUES (@path, @id, {(dateTaken == null ? "" : "@dateTaken, ")} @separate, @starred, @thumbnail) ON CONFLICT(path) DO NOTHING";
+            string columns = "path, id, separate, starred, thumbnail ";
+            string values = "@path, @id, @separate, @starred, @thumbnail ";
+
+            if (dateTaken != null)
+            {
+                columns += ", date_taken";
+                values += ", @dateTaken";
+                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+            }
+
+            if (!String.IsNullOrWhiteSpace(item.Description))
+            {
+                columns += ", description";
+                values += ", @description";
+                cmd.Parameters.AddWithValue("@description", item.Description);
+            }
+                
+            cmd.Parameters.AddWithValue("@path", CreateShortPath(dateTaken, item.NewFilename + item.Extension));
+            cmd.Parameters.AddWithValue("@id", item.Id);
+            cmd.Parameters.AddWithValue("@separate", separate);
+            cmd.Parameters.AddWithValue("@starred", item.Starred);
+            cmd.Parameters.AddWithValue("@thumbnail", item.Thumbnail);
+
+            cmd.CommandText = $"INSERT INTO library ({columns}) VALUES ({values})";
             await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)
