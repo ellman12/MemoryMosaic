@@ -12,6 +12,17 @@
 		<IconButton Icon="close" OnClick="@ClearChecks"/>
 		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
 	}
+
+	@{
+		string addBtnMsg;
+		if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
+			addBtnMsg = "Add All";
+		else if (SelectedItems.Count == 1)
+			addBtnMsg = "Add 1 Item";
+		else
+			addBtnMsg = $"Add {SelectedItems.Count} Items";
+		<IconTextButton Icon="library_add" Text="@addBtnMsg" OnClick="@AddItems"/>
+	}
 </header>
 
 <main>
@@ -86,5 +97,38 @@
 			SelectedItems.Add(importItems[i].Id);
 
 		StateHasChanged();
+	}
+
+	private async void AddItems()
+	{
+		IEnumerable<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : importItems.Where(item => SelectedItems.Contains(item.Id));
+
+		foreach (ImportItem item in items.ToList())
+		{
+			DateTime? dateTaken = item.DateTakenSource switch
+			{
+				DateTakenSource.Metadata => item.MetadataDateTaken,
+				DateTakenSource.Filename => item.FilenameDateTaken,
+				DateTakenSource.Custom => item.CustomDateTaken,
+				DateTakenSource.None => null,
+				_ => throw new ArgumentOutOfRangeException()
+			};
+			
+			await C.InsertItem(item, dateTaken, false);
+			
+			string destFolder = C.CreateFullDateFolderPath(dateTaken);
+			Directory.CreateDirectory(destFolder);
+			string destPath = C.CreateFullPath(dateTaken, item.OriginalFilename + item.Extension);
+			File.Move(item.AbsolutePath, destPath);
+
+			await Task.Run(() => D.UpdateDateTaken(destPath, dateTaken));
+		}
+		
+		if (SelectedItems.Count > 0)
+            importItems.RemoveAll(file => SelectedItems.Contains(file.Id));
+        else
+			importItems.Clear();
+
+        ClearChecks();
 	}
 }

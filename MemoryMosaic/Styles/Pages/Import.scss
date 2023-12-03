@@ -2,6 +2,11 @@
 
 header {
 	@include page-header(1px solid gray, 60px);
+	
+	> .iconTextBtn {
+		position: absolute;
+		left: 300px;
+	}
 }
 
 main {
