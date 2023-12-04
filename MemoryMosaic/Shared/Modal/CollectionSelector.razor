@@ -82,7 +82,7 @@
     
     private List<bool> checkedAlbums = null!;
     private List<bool> checkedFolders = null!;
-    public int checkedFolderIndex = -1; //Which index in Folders is checked (can only have 1 checked).
+    public int CheckedFolderIndex { get; private set; } = -1; //Which index in Folders is checked (can only have 1 checked).
 
     private string? searchText;
 
@@ -106,7 +106,7 @@
         Folders = C.GetCollectionsTable(false, true, false);
         checkedAlbums = (from album in Albums select new bool()).ToList();
         checkedFolders = (from folder in Folders select new bool()).ToList();
-        checkedFolderIndex = -1;
+        CheckedFolderIndex = -1;
     }
 
     private void CloseBtnClick()
@@ -135,14 +135,14 @@
     private void AlbumClicked(int index)
     {
         ClearFolderChecks();
-        checkedFolderIndex = -1;
+        CheckedFolderIndex = -1;
         checkedAlbums[index] = !checkedAlbums[index];
     }
 
     private void FolderClicked(int index)
     {
         ClearSelectedCollections();
-        checkedFolderIndex = index;
+        CheckedFolderIndex = index;
         checkedFolders[index] = true;
     }
     
@@ -162,7 +162,7 @@
         {
             int newestFolderIndex = Folders.FindIndex(f => f.Name == collectionCreator.NewCollectionName);
             if (newestFolderIndex == -1) return;
-            checkedFolderIndex = newestFolderIndex;
+            CheckedFolderIndex = newestFolderIndex;
             checkedFolders[newestFolderIndex] = true;
         }
     }
@@ -176,16 +176,16 @@
         }
         else
         {
-            if (checkedFolderIndex != -1) //If a folder is selected this won't be -1
+            if (CheckedFolderIndex != -1) //If a folder is selected this won't be -1
             {
                 if (SelectedItem != Guid.Empty)
                 {
-                    await C.AddToCollectionAsync(Folders[checkedFolderIndex].Id, SelectedItem);
+                    await C.AddToCollectionAsync(Folders[CheckedFolderIndex].Id, SelectedItem);
                 }
                 else
                 {
                     foreach (Guid item in SelectedItems)
-                        await C.AddToCollectionAsync(Folders[checkedFolderIndex].Id, item);
+                        await C.AddToCollectionAsync(Folders[CheckedFolderIndex].Id, item);
                 }
             }
             else //Adding to album(s).
@@ -239,9 +239,9 @@
             string[] input = File.ReadAllLines(filePath);
             if (input[0] == "F")
             {
-                checkedFolderIndex = FindIndex(checkedFolders, Folders, input[1]);
-                if (checkedFolderIndex == -1) rewrite = true;
-                else checkedFolders[checkedFolderIndex] = true;
+                CheckedFolderIndex = FindIndex(checkedFolders, Folders, input[1]);
+                if (CheckedFolderIndex == -1) rewrite = true;
+                else checkedFolders[CheckedFolderIndex] = true;
             }
             else if (input[0] == "A")
             {
@@ -269,7 +269,7 @@
         void SaveSelectionToDisk()
         {
             if (checkedFolders.Any(b => b))
-                File.WriteAllText(filePath, $"F\n{Folders[checkedFolderIndex].Id}");
+                File.WriteAllText(filePath, $"F\n{Folders[CheckedFolderIndex].Id}");
             else
             {
                 File.WriteAllText(filePath, "A\n");
