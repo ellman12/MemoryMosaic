@@ -1,6 +1,6 @@
 @using MemoryMosaic.Pages
 
-<div class="importItem">
+<div class="importItem" @onclick="@(mouseArgs => { if (mouseArgs.CtrlKey) CheckClicked(mouseArgs); })">
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
 	<img src="data:image/jpg;base64,@ImportItem.Thumbnail" alt="" loading="lazy"/>
