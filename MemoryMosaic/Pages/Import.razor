@@ -114,7 +114,7 @@
 				_ => throw new ArgumentOutOfRangeException()
 			};
 			
-			await C.InsertItem(item, dateTaken, false);
+			await C.InsertItem(item, dateTaken);
 
 			if (item.Collections != null)
 			{

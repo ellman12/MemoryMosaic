@@ -44,8 +44,7 @@ public static class Connection
     /// <summary>For inserting an item into the library table.</summary>
     /// <param name="item">The item to insert into the library.</param>
     /// <param name="dateTaken">The date taken to use for the item.</param>
-    /// <param name="separate">If this item is in a folder.</param>
-    public static async Task InsertItem(ImportItem item, DateTime? dateTaken, bool separate)
+    public static async Task InsertItem(ImportItem item, DateTime? dateTaken)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
@@ -72,7 +71,7 @@ public static class Connection
                 
             cmd.Parameters.AddWithValue("@path", CreateShortPath(dateTaken, item.NewFilename + item.Extension));
             cmd.Parameters.AddWithValue("@id", item.Id);
-            cmd.Parameters.AddWithValue("@separate", separate);
+            cmd.Parameters.AddWithValue("@separate", item.Collections?.All(collection => collection.Folder) ?? false);
             cmd.Parameters.AddWithValue("@starred", item.Starred);
             cmd.Parameters.AddWithValue("@thumbnail", item.Thumbnail);
 
