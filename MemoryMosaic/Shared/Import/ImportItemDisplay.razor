@@ -39,6 +39,16 @@
 		}
 	</div>
 
+	@if (ImportItem.Collections != null)
+	{
+		<div class="collections">
+			@foreach (Collection collection in ImportItem.Collections)
+			{
+				<span title="@collection.Id" @onclick="@(() => ImportItem.Collections.RemoveWhere(c => c.Id == collection.Id))">@collection.Name</span>
+			}
+		</div>
+	}
+
 	<select @bind="@ImportItem.DateTakenSource">
 		@if (ImportItem.MetadataDateTaken != null)
 		{
@@ -51,16 +61,6 @@
 		<option>None</option>
 		<option>Custom</option>
 	</select>
-
-	@if (ImportItem.Collections != null)
-	{
-		<div class="collections">
-			@foreach (Collection collection in ImportItem.Collections)
-			{
-				<span title="@collection.Id" @onclick="@(() => ImportItem.Collections.RemoveWhere(c => c.Id == collection.Id))">@collection.Name</span>
-			}
-		</div>
-	}
 
 	@if (ImportItem.DateTakenSource == DateTakenSource.Metadata && ImportItem.MetadataDateTaken?.Year < Import.MinYear)
 	{

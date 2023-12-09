@@ -39,6 +39,11 @@
 		> .starBtn { display: flex !important; }
 		> textarea { display: inline !important; }
 	}
+	
+	> .collections {
+		@include flex-row;
+		gap: 8px;
+	}
 
 	> select {
 		display: none;

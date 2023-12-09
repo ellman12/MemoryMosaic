@@ -1,4 +1,4 @@
-﻿@page "/import"
+@page "/import"
 @using System.Text
 @using MemoryMosaic.DataStructures
 
@@ -32,7 +32,7 @@
 	}
 </main>
 
-@* <CollectionSelector @ref="@cs" SelectedItems="@SelectedItems" ClearSelectedOnConfirm="false"/> *@
+<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems" ClearSelectedOnConfirm="false"/>
 
 @* <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@StateHasChanged" Content="" DisplayItemType="true"/> *@
 
@@ -45,7 +45,7 @@
 }
 
 @code {
-	public HashSet<Guid> SelectedItems { get; private set; } = new();
+	public HashSet<Guid> SelectedItems { get; } = new();
 
 	public string PathWidth { get; private set; } = "short";
 
@@ -115,6 +115,12 @@
 			};
 			
 			await C.InsertItem(item, dateTaken, false);
+
+			if (item.Collections != null)
+			{
+				foreach (var collection in item.Collections)
+					await C.AddToCollectionAsync(collection.Id, item.Id);
+			}
 			
 			string destFolder = C.CreateFullDateFolderPath(dateTaken);
 			Directory.CreateDirectory(destFolder);
@@ -130,5 +136,26 @@
 			importItems.Clear();
 
         ClearChecks();
+	}
+	
+	private void UpdateCollections()
+	{
+		foreach (ImportItem item in importItems.Where(item => SelectedItems.Contains(item.Id)))
+		{
+			item.Collections ??= new HashSet<Collection>();
+
+			if (cs.SelectedFolderId != -1)
+			{
+				item.Collections.Clear();
+				item.Collections.Add(cs.Folders.Find(folder => folder.Id == cs.SelectedFolderId) ?? throw new NullReferenceException());
+			}
+			else
+			{
+				item.Collections.RemoveWhere(folder => cs.Folders.Contains(folder));
+				item.Collections.UnionWith(cs.Albums.Where(album => cs.SelectedAlbums.Contains(album.Id)));
+			}
+		}
+
+		StateHasChanged();
 	}
 }

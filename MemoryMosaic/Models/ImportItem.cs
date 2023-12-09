@@ -25,7 +25,7 @@ public sealed class ImportItem : Media
 	public DateTakenSource DateTakenSource { get; set; }
 
 	///The album(s) or folder to add this item to.
-	public HashSet<Collection>? Collections { get; init; }
+	public HashSet<Collection>? Collections { get; set; }
 	
 	[JsonIgnore]
 	public override string RequestPath => "mm_import";
