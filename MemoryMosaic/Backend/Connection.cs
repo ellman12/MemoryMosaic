@@ -175,30 +175,18 @@ public static class Connection
     }
 
     ///<summary>Loads every row in the library table, even if has no DT, in a folder, in the trash, etc. Sorted by date_taken descending (NULL and newest DT first).</summary>
-    ///<returns>List&lt;LibraryItem&gt; of EVERY row in the library table.</returns>
-    public static List<LibraryItem> LoadEntireLibraryTable()
+    ///<returns>IEnumerable&lt;LibraryItem&gt; of EVERY row in the library table.</returns>
+    public static IEnumerable<LibraryItem> GetEntireLibrary()
     {
-        List<LibraryItem> library = new();
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail FROM library ORDER BY date_taken DESC", connection);
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-            
-            while (r.Read())
-                library.Add(new LibraryItem(r));
-            
-            r.Close();
-        }
-        catch (NpgsqlException e)
-        {
-            L.LogException(e);
-        }
-        finally
-        {
-            Close();
-        }
-        return library;
+        Open();
+        using NpgsqlCommand cmd = new("SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail FROM library ORDER BY date_taken DESC", connection);
+        using NpgsqlDataReader r = cmd.ExecuteReader();
+        
+        while (r.Read())
+            yield return new LibraryItem(r);
+        
+        r.Close();
+        Close();
     }
     
     /// <summary>Sets the description of an item.</summary>

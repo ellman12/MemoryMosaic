@@ -129,7 +129,7 @@
     {
         L.LogLine("Begin copying mm_library", LogLevel.Info);
 
-        Parallel.ForEach(C.LoadEntireLibraryTable(), row =>
+        Parallel.ForEach(C.GetEntireLibrary(), row =>
         {
             string dtFolderPath = Path.Combine(backupFolder, Path.GetDirectoryName(row.Path)!);
             Directory.CreateDirectory(dtFolderPath);
