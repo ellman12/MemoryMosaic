@@ -103,7 +103,7 @@
 	{
 		IEnumerable<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : importItems.Where(item => SelectedItems.Contains(item.Id));
 
-		foreach (ImportItem item in items.ToList())
+		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
 		{
 			DateTime? dateTaken = item.DateTakenSource switch
 			{
@@ -127,8 +127,8 @@
 			string destPath = C.CreateFullPath(dateTaken, item.OriginalFilename + item.Extension);
 			File.Move(item.AbsolutePath, destPath);
 
-			await Task.Run(() => D.UpdateDateTaken(destPath, dateTaken));
-		}
+			await Task.Run(() => D.UpdateDateTaken(destPath, dateTaken), cancellationToken);
+		});
 		
 		if (SelectedItems.Count > 0)
             importItems.RemoveAll(file => SelectedItems.Contains(file.Id));
