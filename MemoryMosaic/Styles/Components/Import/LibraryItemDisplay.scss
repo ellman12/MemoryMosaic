@@ -29,4 +29,8 @@
 
 		&.full { width: auto; }
 	}
+	
+	.dateDisplay {
+		@include flex-col;
+	}
 }

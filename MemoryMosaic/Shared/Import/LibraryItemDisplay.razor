@@ -3,7 +3,12 @@
 <div class="libraryItem">
 	<img src="data:image/jpg;base64,@LibraryItem.Thumbnail" alt="" loading="lazy"/>
 	<span class="@Import.PathWidth">@("Library/" + LibraryItem.Path)</span>
-	<span>@(LibraryItem.DateTaken == null ? "No Date Taken" : LibraryItem.DateTaken)</span>
+	
+	<div class="dateDisplay">
+		<span>DT: @(LibraryItem.DateTaken == null ? "No Date Taken" : LibraryItem.DateTaken)</span>
+		<span>DA: @LibraryItem.DateAdded</span>
+	</div>
+	
 	<span>@(LibraryItem.DateDeleted != null ? "In Trash" : "")</span>
 	<IconButton Icon="trash" OnClick="@DeleteBtnClick"/>
 </div>
