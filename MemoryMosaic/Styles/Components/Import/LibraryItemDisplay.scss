@@ -1,0 +1,32 @@
+@import "../../Mixins";
+
+.libraryItem {
+	@include flex-row;
+	@include available-width;
+	gap: 12px;
+	margin-bottom: 6px;
+	min-height: 60px;
+	padding-left: 40px;
+
+	> img {
+		height: auto;
+		width: 90px;
+	}
+
+	> span:first-of-type {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+
+		&.short {
+			width: 220px;
+
+			&:hover {
+				min-width: 220px;
+				width: auto;
+			}
+		}
+
+		&.full { width: auto; }
+	}
+}
