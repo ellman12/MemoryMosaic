@@ -28,25 +28,31 @@
 </header>
 
 <main>
-	@for (int i = 0; i < importItems.Count; i++)
-	{
-		int ii = i;
-		ImmutableArray<LibraryItem> libraryItems = LibraryCache.Values.Where(item => importItems[ii].Filename.Contains(item.Filename)).ToImmutableArray();
-
-		if (libraryItems.Any())
+	@{
+		int index = 0;
+		foreach (var group in importItems.GroupBy(item => item.Filename))
 		{
-			<div class="errorDiv">
-				<ImportItemDisplay Import="@this" ImportItem="@importItems[i]" Index="@i"/>
+			foreach (var importItem in group)
+			{
+				ImmutableArray<LibraryItem> existingItems = LibraryCache.Values.Where(libraryItem => importItem.Filename.Contains(libraryItem.Filename)).ToImmutableArray();
 
-				@foreach (var libraryItem in libraryItems)
+				if (existingItems.Any())
 				{
-					<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this"/>
+					<div class="errorDiv">
+						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
+
+						@foreach (var libraryItem in existingItems)
+						{
+							<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this"/>
+						}
+					</div>
 				}
-			</div>
-		}
-		else
-		{
-			<ImportItemDisplay ImportItem="@importItems[i]" Index="@i" Import="@this"/>
+				else
+				{
+					<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
+				}
+				index++;
+			}
 		}
 	}
 </main>
