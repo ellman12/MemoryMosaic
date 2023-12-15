@@ -23,7 +23,7 @@
 		if (LibraryItem.DateDeleted == null)
 			C.MoveToTrash(LibraryItem.Id);
 		C.RemoveFromTrash(LibraryItem);
-		// Import.OrganizeItems(); //TODO
+		Import.LibraryCache.Remove(LibraryItem.Path);
 		Import.Rerender();
 	}
 }

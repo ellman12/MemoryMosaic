@@ -12,5 +12,11 @@ header {
 main {
 	@include flex-main(column, 64px);
 	@include available-width;
+	
+	> .errorDiv {
+		border: 4px solid red;
+		margin-top: 3px;
+		margin-bottom: 3px;
+	}
 }
 
