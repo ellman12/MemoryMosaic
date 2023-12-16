@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace MemoryMosaic.Models;
 
@@ -38,7 +38,7 @@ public sealed class ImportItem : Media
 		Id = Guid.NewGuid();
 		Thumbnail = F.GenerateThumbnail(absolutePath);
 		
-		Path = absolutePath.Replace(S.ImportFolderPath, "");
+		Path = absolutePath.Replace(S.ImportFolderPath, "").Substring(1);
 		AbsolutePath = absolutePath;
 		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(AbsolutePath);
 		Extension = P.GetExtension(AbsolutePath);

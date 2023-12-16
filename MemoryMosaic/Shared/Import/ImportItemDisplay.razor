@@ -4,7 +4,7 @@
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
 	<img src="data:image/jpg;base64,@ImportItem.Thumbnail" alt="" loading="lazy"/>
-	<span class="@Import.PathWidth">@ImportItem.Path.Substring(1)</span>
+	<span class="@Import.PathWidth">@ImportItem.Path</span>
 
 	@if (filenameEditVisible)
 	{
