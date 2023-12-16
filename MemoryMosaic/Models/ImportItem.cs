@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace MemoryMosaic.Models;
 
@@ -27,6 +27,29 @@ public sealed class ImportItem : Media
 	///The album(s) or folder to add this item to.
 	public HashSet<Collection>? Collections { get; set; }
 	
+	///Returns the date taken value from the currently selected source.
+	[JsonIgnore]
+	public DateTime? SelectedDateTaken
+	{
+		get
+		{
+			return DateTakenSource switch
+			{
+				DateTakenSource.Metadata => MetadataDateTaken,
+				DateTakenSource.Filename => FilenameDateTaken,
+				DateTakenSource.Custom => CustomDateTaken,
+				DateTakenSource.None => null,
+				_ => throw new ArgumentOutOfRangeException()
+			};
+		}
+	}
+
+	[JsonIgnore]
+	public string DestinationPath => C.CreateShortPath(SelectedDateTaken, NewFilename + Extension);
+
+	[JsonIgnore]
+	public string AbsoluteDestinationPath => $"{P.Combine(S.LibFolderPath, DestinationPath)}";
+
 	[JsonIgnore]
 	public override string RequestPath => "mm_import";
 	

@@ -141,16 +141,7 @@
 
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
 		{
-			DateTime? dateTaken = item.DateTakenSource switch
-			{
-				DateTakenSource.Metadata => item.MetadataDateTaken,
-				DateTakenSource.Filename => item.FilenameDateTaken,
-				DateTakenSource.Custom => item.CustomDateTaken,
-				DateTakenSource.None => null,
-				_ => throw new ArgumentOutOfRangeException()
-			};
-			
-			await C.InsertItem(item, dateTaken);
+			await C.InsertItem(item);
 
 			if (item.Collections != null)
 			{
@@ -158,12 +149,12 @@
 					await C.AddToCollectionAsync(collection.Id, item.Id);
 			}
 			
-			string destFolder = C.CreateFullDateFolderPath(dateTaken);
-			Directory.CreateDirectory(destFolder);
-			string destPath = C.CreateFullPath(dateTaken, item.OriginalFilename + item.Extension);
-			File.Move(item.AbsolutePath, destPath);
-
-			await Task.Run(() => D.UpdateDateTaken(destPath, dateTaken), cancellationToken);
+			await Task.Run(() =>
+			{
+				Directory.CreateDirectory(C.CreateFullDateFolderPath(item.SelectedDateTaken));
+				File.Move(item.AbsolutePath, item.AbsoluteDestinationPath);
+				D.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
+			}, cancellationToken);
 		});
 		
 		if (SelectedItems.Count > 0)

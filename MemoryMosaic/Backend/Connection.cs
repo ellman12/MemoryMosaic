@@ -43,8 +43,7 @@ public static class Connection
 
     /// <summary>For inserting an item into the library table.</summary>
     /// <param name="item">The item to insert into the library.</param>
-    /// <param name="dateTaken">The date taken to use for the item.</param>
-    public static async Task InsertItem(ImportItem item, DateTime? dateTaken)
+    public static async Task InsertItem(ImportItem item)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
@@ -55,11 +54,11 @@ public static class Connection
             string columns = "path, id, separate, starred, thumbnail ";
             string values = "@path, @id, @separate, @starred, @thumbnail ";
 
-            if (dateTaken != null)
+            if (item.SelectedDateTaken != null)
             {
                 columns += ", date_taken";
                 values += ", @dateTaken";
-                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
+                cmd.Parameters.AddWithValue("@dateTaken", item.SelectedDateTaken);
             }
 
             if (!String.IsNullOrWhiteSpace(item.Description))
@@ -69,7 +68,7 @@ public static class Connection
                 cmd.Parameters.AddWithValue("@description", item.Description);
             }
                 
-            cmd.Parameters.AddWithValue("@path", CreateShortPath(dateTaken, item.NewFilename + item.Extension));
+            cmd.Parameters.AddWithValue("@path", item.DestinationPath);
             cmd.Parameters.AddWithValue("@id", item.Id);
             cmd.Parameters.AddWithValue("@separate", item.Collections?.All(collection => collection.Folder) ?? false);
             cmd.Parameters.AddWithValue("@starred", item.Starred);
@@ -750,12 +749,6 @@ public static class Connection
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<returns>The full date folder path.</returns>
     public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(S.LibFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
-
-    ///<summary>Given a Date Taken and a filename, create the full path to where the item would get moved to in the MM library.</summary>
-    ///<param name="dateTaken">The date taken to use for creating the path.</param>
-    ///<param name="filename">The filename and extension of the item.</param>
-    ///<returns>The full path to where the item would get moved to in the MM library.</returns>
-    public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(S.LibFolderPath, CreateShortPath(dateTaken, filename));
 
     #endregion
 }
