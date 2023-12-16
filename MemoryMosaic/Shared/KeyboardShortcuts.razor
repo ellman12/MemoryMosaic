@@ -53,6 +53,9 @@
 	public Action? AltC { get; set; }
 
 	[Parameter]
+	public Action? AltD { get; set; }
+
+	[Parameter]
 	public Action? AltS { get; set; }
 
 	[Parameter]
@@ -95,6 +98,7 @@
 		if (AltF != null) HotKeysContext.Add(ModKeys.Alt, Keys.F, AltF);
 		if (AltA != null) HotKeysContext.Add(ModKeys.Alt, Keys.A, AltA);
 		if (AltC != null) HotKeysContext.Add(ModKeys.Alt, Keys.C, AltC);
+		if (AltD != null) HotKeysContext.Add(ModKeys.Alt, Keys.D, AltD);
 		if (AltS != null) HotKeysContext.Add(ModKeys.Alt, Keys.S, AltS);
 		if (AltLeft != null) HotKeysContext.Add(ModKeys.Alt, Keys.Left, AltLeft);
 		if (AltRight != null) HotKeysContext.Add(ModKeys.Alt, Keys.Right, AltRight);
