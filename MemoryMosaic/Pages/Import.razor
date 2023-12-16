@@ -30,27 +30,28 @@
 <main>
 	@{
 		int index = 0;
-		foreach (var group in importItems.GroupBy(item => item.Filename))
+		foreach (var group in importItems.GroupBy(item => new { item.SelectedDateTaken, item.DestinationPath }))
 		{
-			foreach (var importItem in group)
+			ImmutableArray<LibraryItem> existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+
+			if (group.Count() > 1 || existingItems.Any())
 			{
-				ImmutableArray<LibraryItem> existingItems = LibraryCache.Values.Where(libraryItem => importItem.Filename.Contains(libraryItem.Filename)).ToImmutableArray();
-
-				if (existingItems.Any())
-				{
-					<div class="errorDiv">
+				<div class="errorDiv">
+					@foreach (var importItem in group)
+					{
 						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
-
-						@foreach (var libraryItem in existingItems)
-						{
-							<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this"/>
-						}
-					</div>
-				}
-				else
-				{
-					<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
-				}
+						index++;
+					}
+					
+					@foreach (var libraryItem in existingItems)
+					{
+						<LibraryItemDisplay Import="@this" LibraryItem="@libraryItem"/>
+					}
+				</div>
+			}
+			else
+			{
+				<ImportItemDisplay Import="@this" ImportItem="@group.First()" Index="@index"/>
 				index++;
 			}
 		}
