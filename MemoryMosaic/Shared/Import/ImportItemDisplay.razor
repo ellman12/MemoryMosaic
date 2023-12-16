@@ -87,6 +87,11 @@
 	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(ImportItem.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
 
 	<textarea style="display: @(String.IsNullOrWhiteSpace(ImportItem.Description) ? "none" : "inline")" @bind="@ImportItem.Description" placeholder="Description"></textarea>
+	
+	@if (Import.DestinationPathsVisible)
+	{
+		<span>@ImportItem.DestinationPath</span>
+	}
 </div>
 
 @code {

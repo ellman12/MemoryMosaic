@@ -62,7 +62,7 @@
 
 @* <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@StateHasChanged" Content="" DisplayItemType="true"/> *@
 
-<KeyboardShortcuts AltS="@TogglePathWidth" Esc="@ClearChecks"/>
+<KeyboardShortcuts AltS="@TogglePathWidth" AltD="@ToggleDestinationPaths" Esc="@ClearChecks"/>
 
 @code {
 	private CollectionSelector cs = null!;
@@ -74,6 +74,7 @@
 	public HashSet<Guid> SelectedItems { get; } = new();
 
 	public string PathWidth { get; private set; } = "short";
+	public bool DestinationPathsVisible { get; private set; } = false;
 
 	public int LastCheckedIndex { get; set; }
 
@@ -116,6 +117,12 @@
 	private void TogglePathWidth()
 	{
 		PathWidth = PathWidth == "short" ? "full" : "short";
+		Rerender();
+	}
+
+	private void ToggleDestinationPaths()
+	{
+		DestinationPathsVisible = !DestinationPathsVisible;
 		Rerender();
 	}
 	
