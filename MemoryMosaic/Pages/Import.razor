@@ -30,6 +30,7 @@
 	<div>
 		@if (SelectedItems.Count > 0)
 		{
+			<IconButton Icon="photo_library" OnClick="@cs.Enable"/>
 			<IconButton Icon="star" OnClick="@ToggleStars"/>
 			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
 		}
