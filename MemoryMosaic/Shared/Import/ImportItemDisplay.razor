@@ -94,7 +94,7 @@
 	
 	@if (Import.DestinationPathsVisible || HasErrors || ImportItem.OriginalFilename != ImportItem.NewFilename)
 	{
-		<span>@ImportItem.DestinationPath</span>
+		<span class="@Import.PathWidth">@ImportItem.DestinationPath</span>
 	}
 </div>
 
