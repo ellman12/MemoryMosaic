@@ -36,7 +36,7 @@
 
 			if (group.Count() > 1 || existingItems.Any())
 			{
-				<div class="errorDiv">
+				<div class="errorContainer">
 					@foreach (var importItem in group)
 					{
 						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
