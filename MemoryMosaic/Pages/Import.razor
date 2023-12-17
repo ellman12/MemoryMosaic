@@ -40,7 +40,7 @@
 				<div class="errorContainer">
 					@foreach (var importItem in group)
 					{
-						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
+						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index" HasErrors="true"/>
 						index++;
 					}
 					
