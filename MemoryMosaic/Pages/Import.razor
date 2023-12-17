@@ -1,10 +1,12 @@
 @page "/import"
 @using System.Text
 @using MemoryMosaic.DataStructures
+@using System.Collections.Immutable
 
 <title>Import - MemoryMosaic</title>
 <link href="css/Pages/Import.css" rel="stylesheet"/>
 <link href="css/Components/Import/ImportItemDisplay.css" rel="stylesheet"/>
+<link href="css/Components/Import/LibraryItemDisplay.css" rel="stylesheet"/>
 
 <header>
 	@if (SelectedItems.Count > 0)
@@ -12,23 +14,48 @@
 		<IconButton Icon="close" OnClick="@ClearChecks"/>
 		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
 	}
-
-	@{
-		string addBtnMsg;
-		if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
-			addBtnMsg = "Add All";
-		else if (SelectedItems.Count == 1)
-			addBtnMsg = "Add 1 Item";
-		else
-			addBtnMsg = $"Add {SelectedItems.Count} Items";
-		<IconTextButton Icon="library_add" Text="@addBtnMsg" OnClick="@AddItems"/>
+	
+	<div id="stats">
+		@if (ErrorAmount > 0)
+		{
+			<span style="color: red">@ErrorAmount errors</span>
+		}
+	</div>
+	
+	@if (ErrorAmount == 0)
+	{
+		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@AddItems"/>
 	}
 </header>
 
 <main>
-	@for (int i = 0; i < importItems.Count; i++)
-	{
-		<ImportItemDisplay Import="@this" ImportItem="@importItems[i]" Index="@i"/>
+	@{
+		int index = 0;
+		foreach (var group in importItems.GroupBy(item => new { item.DestinationPath }))
+		{
+			ImmutableArray<LibraryItem> existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+
+			if (group.Count() > 1 || existingItems.Any())
+			{
+				<div class="errorContainer">
+					@foreach (var importItem in group)
+					{
+						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
+						index++;
+					}
+					
+					@foreach (var libraryItem in existingItems)
+					{
+						<LibraryItemDisplay Import="@this" LibraryItem="@libraryItem"/>
+					}
+				</div>
+			}
+			else
+			{
+				<ImportItemDisplay Import="@this" ImportItem="@group.First()" Index="@index"/>
+				index++;
+			}
+		}
 	}
 </main>
 
@@ -36,7 +63,7 @@
 
 @* <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@StateHasChanged" Content="" DisplayItemType="true"/> *@
 
-<KeyboardShortcuts AltS="@TogglePathWidth" Esc="@ClearChecks"/>
+<KeyboardShortcuts AltS="@TogglePathWidth" AltD="@ToggleDestinationPaths" Esc="@ClearChecks"/>
 
 @code {
 	private CollectionSelector cs = null!;
@@ -48,6 +75,7 @@
 	public HashSet<Guid> SelectedItems { get; } = new();
 
 	public string PathWidth { get; private set; } = "short";
+	public bool DestinationPathsVisible { get; private set; }
 
 	public int LastCheckedIndex { get; set; }
 
@@ -56,9 +84,9 @@
 
 	private bool finishedLoading;
 
-	private List<LibraryItem> libraryCache = null!, filesWithSameName = new(), filesWithSimilarName = new();
+	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
 
-	private readonly List<ImportItem> importItems = new();
+	private List<ImportItem> importItems = new();
 }
 
 @functions {
@@ -66,17 +94,49 @@
 	{
 		L.LogLine($"Begin Import.{nameof(OnInitialized)}", LogLevel.Info);
 
+		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
+
 		Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (absPath, _) =>
 		{
 			ImportItem importFile = new(absPath.Replace('\\', '/'));
 			importItems.Add(importFile);
 		});
 
+		SortItems();
+
 		L.LogLine($"Finish Import.{nameof(OnInitialized)}", LogLevel.Info);
 	}
 
 	public void Rerender() => StateHasChanged();
 
+	private int ErrorAmount
+	{
+		get
+		{
+			int total = 0;
+
+			total += importItems.GroupBy(item => new { item.DestinationPath }).Count(group => group.Count() > 1);
+			
+			total += LibraryCache.Values.Count(libraryItem => importItems.Any(importItem => importItem.DestinationPath == libraryItem.Path));
+			
+			return total;
+		}
+	}
+
+	private string AddBtnText
+	{
+		get
+		{
+			if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
+				return "Add All";
+			 if (SelectedItems.Count == 1)
+				return "Add 1 Item";
+			
+			return $"Add {SelectedItems.Count} Items";
+
+		}
+	}
+	
 	private void ClearChecks()
 	{
 		SelectedItems.Clear();
@@ -86,6 +146,12 @@
 	private void TogglePathWidth()
 	{
 		PathWidth = PathWidth == "short" ? "full" : "short";
+		Rerender();
+	}
+
+	private void ToggleDestinationPaths()
+	{
+		DestinationPathsVisible = !DestinationPathsVisible;
 		Rerender();
 	}
 	
@@ -99,22 +165,20 @@
 		StateHasChanged();
 	}
 
+	private void SortItems()
+	{
+		importItems = importItems.OrderByDescending(item => LibraryCache.Count(libItem => P.GetFileName(libItem.Key).Contains(item.Filename)))
+			.ThenBy(item => item.Filename)
+			.ToList();
+	}
+
 	private async void AddItems()
 	{
 		IEnumerable<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : importItems.Where(item => SelectedItems.Contains(item.Id));
 
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
 		{
-			DateTime? dateTaken = item.DateTakenSource switch
-			{
-				DateTakenSource.Metadata => item.MetadataDateTaken,
-				DateTakenSource.Filename => item.FilenameDateTaken,
-				DateTakenSource.Custom => item.CustomDateTaken,
-				DateTakenSource.None => null,
-				_ => throw new ArgumentOutOfRangeException()
-			};
-			
-			await C.InsertItem(item, dateTaken);
+			await C.InsertItem(item);
 
 			if (item.Collections != null)
 			{
@@ -122,12 +186,12 @@
 					await C.AddToCollectionAsync(collection.Id, item.Id);
 			}
 			
-			string destFolder = C.CreateFullDateFolderPath(dateTaken);
-			Directory.CreateDirectory(destFolder);
-			string destPath = C.CreateFullPath(dateTaken, item.OriginalFilename + item.Extension);
-			File.Move(item.AbsolutePath, destPath);
-
-			await Task.Run(() => D.UpdateDateTaken(destPath, dateTaken), cancellationToken);
+			await Task.Run(() =>
+			{
+				Directory.CreateDirectory(C.CreateFullDateFolderPath(item.SelectedDateTaken));
+				File.Move(item.AbsolutePath, item.AbsoluteDestinationPath);
+				D.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
+			}, cancellationToken);
 		});
 		
 		if (SelectedItems.Count > 0)

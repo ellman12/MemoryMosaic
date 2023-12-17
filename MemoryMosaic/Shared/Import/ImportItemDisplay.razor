@@ -4,7 +4,7 @@
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
 	<img src="data:image/jpg;base64,@ImportItem.Thumbnail" alt="" loading="lazy"/>
-	<span class="@Import.PathWidth">@ImportItem.Path.Substring(1)</span>
+	<span class="@Import.PathWidth">@ImportItem.Path</span>
 
 	@if (filenameEditVisible)
 	{
@@ -49,7 +49,7 @@
 		</div>
 	}
 
-	<select @bind="@ImportItem.DateTakenSource">
+	<select @bind="@ImportItem.DateTakenSource" @bind:after="@Import.Rerender">
 		@if (ImportItem.MetadataDateTaken != null)
 		{
 			<option>Metadata</option>
@@ -81,12 +81,17 @@
 
 	@if (ImportItem.DateTakenSource == DateTakenSource.Custom)
 	{
-		<input type="datetime-local" @bind="@ImportItem.CustomDateTaken" step="1"/>
+		<input type="datetime-local" @bind="@ImportItem.CustomDateTaken" @bind:after="@Import.Rerender" step="1"/>
 	}
 
 	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(ImportItem.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
 
 	<textarea style="display: @(String.IsNullOrWhiteSpace(ImportItem.Description) ? "none" : "inline")" @bind="@ImportItem.Description" placeholder="Description"></textarea>
+	
+	@if (Import.DestinationPathsVisible)
+	{
+		<span>@ImportItem.DestinationPath</span>
+	}
 </div>
 
 @code {
