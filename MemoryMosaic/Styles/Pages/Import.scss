@@ -14,6 +14,12 @@ header {
 		position: absolute;
 		left: 400px;
 	}
+	
+	> div:last-of-type {
+		@include flex-row;
+		position: fixed;
+		right: 30px;
+	}
 }
 
 main {

@@ -26,6 +26,16 @@
 	{
 		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@AddItems"/>
 	}
+	
+	<div>
+		
+		@if (SelectedItems.Count > 0)
+		{
+			<div>
+				<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
+			</div>
+		}
+	</div>
 </header>
 
 <main>
