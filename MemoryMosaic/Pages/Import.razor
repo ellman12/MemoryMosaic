@@ -22,15 +22,9 @@
 		}
 	</div>
 	
-	@if (ErrorAmount == 0) {
-		string addBtnMsg;
-		if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
-			addBtnMsg = "Add All";
-		else if (SelectedItems.Count == 1)
-			addBtnMsg = "Add 1 Item";
-		else
-			addBtnMsg = $"Add {SelectedItems.Count} Items";
-		<IconTextButton Icon="library_add" Text="@addBtnMsg" OnClick="@AddItems"/>
+	@if (ErrorAmount == 0)
+	{
+		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@AddItems"/>
 	}
 </header>
 
@@ -126,6 +120,20 @@
 			total += LibraryCache.Values.Count(libraryItem => importItems.Any(importItem => importItem.DestinationPath == libraryItem.Path));
 			
 			return total;
+		}
+	}
+
+	private string AddBtnText
+	{
+		get
+		{
+			if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
+				return "Add All";
+			 if (SelectedItems.Count == 1)
+				return "Add 1 Item";
+			
+			return $"Add {SelectedItems.Count} Items";
+
 		}
 	}
 	
