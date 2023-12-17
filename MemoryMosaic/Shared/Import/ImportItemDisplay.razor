@@ -7,7 +7,7 @@
 	
 	@if (!EditingFilename)
 	{
-		<span @onclick="@EnableRename" class="@Import.PathWidth">@ImportItem.Path</span>
+		<span @ondblclick="@EnableRename" class="@Import.PathWidth">@ImportItem.Path</span>
 	}
 
 	@if (EditingFilename)
