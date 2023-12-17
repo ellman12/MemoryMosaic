@@ -14,8 +14,15 @@
 		<IconButton Icon="close" OnClick="@ClearChecks"/>
 		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
 	}
-
-	@{
+	
+	<div id="stats">
+		@if (ErrorAmount > 0)
+		{
+			<span style="color: red">@ErrorAmount errors</span>
+		}
+	</div>
+	
+	@if (ErrorAmount == 0) {
 		string addBtnMsg;
 		if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
 			addBtnMsg = "Add All";
@@ -108,6 +115,20 @@
 
 	public void Rerender() => StateHasChanged();
 
+	private int ErrorAmount
+	{
+		get
+		{
+			int total = 0;
+
+			total += importItems.GroupBy(item => new { item.DestinationPath }).Count(group => group.Count() > 1);
+			
+			total += LibraryCache.Values.Count(libraryItem => importItems.Any(importItem => importItem.DestinationPath == libraryItem.Path));
+			
+			return total;
+		}
+	}
+	
 	private void ClearChecks()
 	{
 		SelectedItems.Clear();

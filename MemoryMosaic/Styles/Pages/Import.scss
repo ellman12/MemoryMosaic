@@ -3,9 +3,16 @@
 header {
 	@include page-header(1px solid gray, 60px);
 	
+	> #stats {
+		@include flex-col;
+		position: absolute;
+		left: 250px;
+		height: max-content;
+	}
+	
 	> .iconTextBtn {
 		position: absolute;
-		left: 300px;
+		left: 400px;
 	}
 }
 
