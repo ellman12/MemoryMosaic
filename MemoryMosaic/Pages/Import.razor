@@ -22,7 +22,7 @@
 		}
 	</div>
 	
-	@if (ErrorAmount == 0)
+	@if (ErrorAmount == 0 && !EditingFilename)
 	{
 		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@AddItems"/>
 	}
@@ -77,6 +77,8 @@
 	public string PathWidth { get; private set; } = "short";
 	public bool DestinationPathsVisible { get; private set; }
 
+	public bool EditingFilename { get; set; }
+		
 	public int LastCheckedIndex { get; set; }
 
 	public int MinYear { get; private set; } = 2000;

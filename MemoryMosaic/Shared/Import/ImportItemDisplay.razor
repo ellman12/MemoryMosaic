@@ -4,13 +4,17 @@
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
 	<img src="data:image/jpg;base64,@ImportItem.Thumbnail" alt="" loading="lazy"/>
-	<span class="@Import.PathWidth">@ImportItem.Path</span>
-
-	@if (filenameEditVisible)
+	
+	@if (!EditingFilename)
 	{
-		<TextInput bind-Input="@ImportItem.NewFilename"/>
-		<IconButton Icon="save"/>
-		<IconButton Icon="close"/>
+		<span @onclick="@EnableRename" class="@Import.PathWidth">@ImportItem.Path</span>
+	}
+
+	@if (EditingFilename)
+	{
+		<TextInput @bind-Input="@ImportItem.NewFilename" Width="250px"/>
+		<IconButton Icon="save" OnClick="@RenameItem"/>
+		<IconButton Icon="close" OnClick="@CancelRenaming"/>
 	}
 
 	<div class="dateTakenDisplay">
@@ -104,7 +108,16 @@
 	[Parameter, EditorRequired]
 	public int Index { get; set; }
 
-	private bool filenameEditVisible;
+	private bool editingFilename;
+	private bool EditingFilename
+	{
+		get => editingFilename;
+		set
+		{
+			Import.EditingFilename = editingFilename = value;
+			Import.Rerender();
+		}
+	}
 
 	private bool Checked => Import.SelectedItems.Contains(ImportItem.Id);
 }
@@ -135,5 +148,23 @@
 	{
 		ImportItem.Starred = !ImportItem.Starred;
 		StateHasChanged();
+	}
+
+	private void EnableRename()
+	{
+		EditingFilename = true;
+		Import.Rerender();
+	}
+
+	private void RenameItem()
+	{
+		EditingFilename = false;
+		Import.Rerender();
+	}
+	
+	private void CancelRenaming()
+	{
+		EditingFilename = false;
+		ImportItem.NewFilename = ImportItem.OriginalFilename;
 	}
 }
