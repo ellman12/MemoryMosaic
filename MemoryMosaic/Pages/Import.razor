@@ -18,7 +18,7 @@
 	<div id="stats">
 		@if (ErrorAmount > 0)
 		{
-			<span style="color: red">@ErrorAmount errors</span>
+			<span style="color: red">@ErrorAmount @(ErrorAmount == 1 ? "Error" : "Errors")</span>
 		}
 	</div>
 	
