@@ -11,7 +11,7 @@
 <header>
 	@if (SelectedItems.Count > 0)
 	{
-		<IconButton Icon="close" OnClick="@ClearChecks"/>
+		<IconButton Icon="close" OnClick="@ClearSelection"/>
 		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
 	}
 	
@@ -63,7 +63,7 @@
 
 @* <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@StateHasChanged" Content="" DisplayItemType="true"/> *@
 
-<KeyboardShortcuts CtrlA="@(() => ChangeRangeState(0, importItems.Count - 1))" AltS="@TogglePathWidth" AltD="@ToggleDestinationPaths" Esc="@ClearChecks"/>
+<KeyboardShortcuts CtrlA="@(() => ChangeRangeState(0, importItems.Count - 1))" AltS="@TogglePathWidth" AltD="@ToggleDestinationPaths" Del="@DeleteSelected" Esc="@ClearSelection"/>
 
 @code {
 	private CollectionSelector cs = null!;
@@ -139,7 +139,7 @@
 		}
 	}
 	
-	private void ClearChecks()
+	private void ClearSelection()
 	{
 		SelectedItems.Clear();
 		Rerender();
@@ -155,6 +155,18 @@
 	{
 		DestinationPathsVisible = !DestinationPathsVisible;
 		Rerender();
+	}
+
+	private void DeleteSelected()
+	{
+		var itemsToDelete = importItems.Where(importItem => SelectedItems.Contains(importItem.Id));
+
+		foreach (var importItem in itemsToDelete)
+			FileSystem.DeleteFile(importItem.FullPath);
+
+		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
+		ClearSelection();
+		StateHasChanged();
 	}
 	
 	public void ChangeRangeState(int startIndex, int endIndex)
@@ -201,7 +213,7 @@
         else
 			importItems.Clear();
 
-        ClearChecks();
+        ClearSelection();
 	}
 	
 	private void UpdateCollections()
