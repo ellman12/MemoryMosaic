@@ -31,7 +31,7 @@
 <main>
 	@{
 		int index = 0;
-		foreach (var group in importItems.GroupBy(item => new { item.DestinationPath }))
+		foreach (var group in importItems.GroupBy(item => item.DestinationPath))
 		{
 			ImmutableArray<LibraryItem> existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
 
@@ -115,7 +115,7 @@
 		{
 			int total = 0;
 
-			total += importItems.GroupBy(item => new { item.DestinationPath }).Count(group => group.Count() > 1);
+			total += importItems.GroupBy(item => item.DestinationPath).Count(group => group.Count() > 1);
 			
 			total += LibraryCache.Values.Count(libraryItem => importItems.Any(importItem => importItem.DestinationPath == libraryItem.Path));
 			
