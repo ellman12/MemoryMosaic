@@ -17,6 +17,7 @@ header {
 	
 	> div:last-of-type {
 		@include flex-row;
+		gap: 8px;
 		position: fixed;
 		right: 30px;
 	}

@@ -28,12 +28,10 @@
 	}
 	
 	<div>
-		
 		@if (SelectedItems.Count > 0)
 		{
-			<div>
-				<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
-			</div>
+			<IconButton Icon="star" OnClick="@ToggleStars"/>
+			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
 		}
 	</div>
 </header>
@@ -165,6 +163,17 @@
 	{
 		DestinationPathsVisible = !DestinationPathsVisible;
 		Rerender();
+	}
+	
+	private void ToggleStars()
+	{
+	    var items = importItems.Where(item => SelectedItems.Contains(item.Id)).ToImmutableArray();
+		bool allStarred = items.All(file => file.Starred);
+
+		foreach (var importItem in items)
+			importItem.Starred = !allStarred;
+
+	    StateHasChanged();
 	}
 
 	private void DeleteSelected()
