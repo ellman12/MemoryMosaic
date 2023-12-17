@@ -63,7 +63,7 @@
 
 @* <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@StateHasChanged" Content="" DisplayItemType="true"/> *@
 
-<KeyboardShortcuts AltS="@TogglePathWidth" AltD="@ToggleDestinationPaths" Esc="@ClearChecks"/>
+<KeyboardShortcuts CtrlA="@(() => ChangeRangeState(0, importItems.Count - 1))" AltS="@TogglePathWidth" AltD="@ToggleDestinationPaths" Esc="@ClearChecks"/>
 
 @code {
 	private CollectionSelector cs = null!;
