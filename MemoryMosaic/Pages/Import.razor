@@ -30,7 +30,7 @@
 <main>
 	@{
 		int index = 0;
-		foreach (var group in importItems.GroupBy(item => new { item.SelectedDateTaken, item.DestinationPath }))
+		foreach (var group in importItems.GroupBy(item => new { item.DestinationPath }))
 		{
 			ImmutableArray<LibraryItem> existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
 
@@ -74,7 +74,7 @@
 	public HashSet<Guid> SelectedItems { get; } = new();
 
 	public string PathWidth { get; private set; } = "short";
-	public bool DestinationPathsVisible { get; private set; } = false;
+	public bool DestinationPathsVisible { get; private set; }
 
 	public int LastCheckedIndex { get; set; }
 
