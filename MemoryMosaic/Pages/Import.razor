@@ -204,7 +204,7 @@
 		var itemsToDelete = importItems.Where(importItem => SelectedItems.Contains(importItem.Id));
 
 		foreach (var importItem in itemsToDelete)
-			FileSystem.DeleteFile(importItem.FullPath);
+			FileSystem.DeleteFile(importItem.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
 		ClearSelection();
