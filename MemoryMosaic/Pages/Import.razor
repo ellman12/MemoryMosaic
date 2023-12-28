@@ -30,6 +30,18 @@
 	<div>
 		@if (SelectedItems.Count > 0)
 		{
+			var items = importItems.Where(item => SelectedItems.Contains(item.Id)).ToImmutableArray();
+			bool canDisplayMetadata = items.All(item => item.MetadataDateTaken != null);
+			bool canDisplayFilename = items.All(item => item.FilenameDateTaken != null);
+			
+			<select @bind="@newDateTakenSource">
+				@if (canDisplayMetadata) { <option>Metadata</option> }
+				@if (canDisplayFilename) { <option>Filename</option> }
+				<option>None</option>
+				<option>Custom</option>
+			</select>
+			
+			<IconButton Icon="save" OnClick="@UpdateDateTakenSources"/>
 			<IconButton Icon="photo_library" OnClick="@cs.Enable"/>
 			<IconButton Icon="star" OnClick="@ToggleStars"/>
 			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
@@ -94,6 +106,8 @@
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
 
 	private bool finishedLoading;
+
+	private DateTakenSource newDateTakenSource; 
 
 	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
 
@@ -165,7 +179,15 @@
 		DestinationPathsVisible = !DestinationPathsVisible;
 		Rerender();
 	}
-	
+
+	private void UpdateDateTakenSources()
+	{
+		foreach (var importItem in importItems.Where(item => SelectedItems.Contains(item.Id)))
+			importItem.DateTakenSource = newDateTakenSource;
+		
+		Rerender();
+	}
+
 	private void ToggleStars()
 	{
 	    var items = importItems.Where(item => SelectedItems.Contains(item.Id)).ToImmutableArray();
