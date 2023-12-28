@@ -43,7 +43,6 @@
 			
 			<IconButton Icon="save" OnClick="@UpdateDateTakenSources"/>
 			<IconButton Icon="star" OnClick="@ToggleStars"/>
-			
 			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
 		}
 		
@@ -286,6 +285,7 @@
 				Directory.CreateDirectory(C.CreateFullDateFolderPath(item.SelectedDateTaken));
 				File.Move(item.AbsolutePath, item.AbsoluteDestinationPath);
 				D.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
+				LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
 			}, cancellationToken);
 		});
 		
