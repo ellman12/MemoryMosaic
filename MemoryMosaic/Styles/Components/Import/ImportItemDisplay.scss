@@ -49,6 +49,10 @@
 	> select {
 		display: none;
 	}
+	
+	> select + span {
+		color: yellow;
+	}
 
 	.starBtn:hover { background: none; }
 	

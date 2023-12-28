@@ -66,6 +66,11 @@
 		<option>Custom</option>
 	</select>
 
+	@if (ImportItem.DateTakenSource == DateTakenSource.Custom)
+	{
+		<input type="datetime-local" @bind="@ImportItem.CustomDateTaken" @bind:after="@Import.Rerender" step="1"/>
+	}
+
 	@if (ImportItem.DateTakenSource == DateTakenSource.Metadata && ImportItem.MetadataDateTaken?.Year < Import.MinYear)
 	{
 		<span>M Year is less than the min year</span>
@@ -81,11 +86,6 @@
 	@if (ImportItem.DateTakenSource == DateTakenSource.Filename && ImportItem.FilenameDateTaken?.Year > Import.MaxYear)
 	{
 		<span>F Year is greater than the max year</span>
-	}
-
-	@if (ImportItem.DateTakenSource == DateTakenSource.Custom)
-	{
-		<input type="datetime-local" @bind="@ImportItem.CustomDateTaken" @bind:after="@Import.Rerender" step="1"/>
 	}
 
 	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(ImportItem.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
