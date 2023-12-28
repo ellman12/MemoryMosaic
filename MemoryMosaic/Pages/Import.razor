@@ -43,21 +43,25 @@
 			
 			<IconButton Icon="save" OnClick="@UpdateDateTakenSources"/>
 			<IconButton Icon="star" OnClick="@ToggleStars"/>
-			<IconButton Icon="more_vert" OnClick="@(() => moreOptions?.Toggle())"/>
-			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
 			
-			<Dropdown @ref="@moreOptions" Positioning="top: 64px; right: 80px">
-				<div>
-					<span>Min Year</span>
-					<IntInput @bind-Input="@MinYear" HideSpinner="true" Placeholder="Min Year" Style="width: 40px; margin-left: 8px"/>
-				</div>
-				
-				<div>
-					<span>Max Year</span>
-					<IntInput @bind-Input="@MaxYear" HideSpinner="true" Placeholder="Max Year" Style="width: 40px; margin-left: 8px"/>
-				</div>
-			</Dropdown>
+			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
 		}
+		
+		<IconButton Icon="more_vert" OnClick="@(() => moreOptions.Toggle())"/>
+		
+		<Dropdown @ref="@moreOptions" Positioning="top: 64px; right: 40px">
+			<div>
+				<span>Min Year</span>
+				<IntInput @bind-Input="@MinYear" HideSpinner="true" Placeholder="Min Year" Style="width: 40px; margin-left: 8px"/>
+			</div>
+			
+			<div>
+				<span>Max Year</span>
+				<IntInput @bind-Input="@MaxYear" HideSpinner="true" Placeholder="Max Year" Style="width: 40px; margin-left: 8px"/>
+			</div>
+			
+			<Checkbox @bind-Input="@displayWarnings" Label="Display Warnings" Title="Warnings are files with the same name but in a different folder."/>
+		</Dropdown>
 	</div>
 </header>
 
@@ -67,10 +71,14 @@
 		foreach (var group in importItems.GroupBy(item => item.DestinationPath))
 		{
 			ImmutableArray<LibraryItem> existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+			
+			ImmutableArray<LibraryItem> warnings = displayWarnings
+				? ImmutableArray<LibraryItem>.Empty
+				: LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension)).ToImmutableArray();
 
 			if (group.Count() > 1 || existingItems.Any())
 			{
-				<div class="errorContainer">
+				<div class="container" style="border-color: red">
 					@foreach (var importItem in group)
 					{
 						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index" HasErrors="true"/>
@@ -83,7 +91,24 @@
 					}
 				</div>
 			}
-			else
+
+			if (!existingItems.Any() && warnings.Any())
+			{
+				<div class="container" style="border-color: yellow">
+					@foreach (var importItem in group)
+					{
+						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index" HasErrors="true"/>
+						index++;
+					}
+					
+					@foreach (var libraryItem in warnings)
+					{
+						<LibraryItemDisplay Import="@this" LibraryItem="@libraryItem"/>
+					}
+				</div>
+			}
+			
+			if (!existingItems.Any() && !warnings.Any())
 			{
 				<ImportItemDisplay Import="@this" ImportItem="@group.First()" Index="@index"/>
 				index++;
@@ -118,8 +143,8 @@
 
 	public int MinYear { get; private set; } = 2000;
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
-
-	private bool finishedLoading;
+	
+	private bool displayWarnings = true, finishedLoading;
 
 	private DateTakenSource newDateTakenSource; 
 
