@@ -42,9 +42,21 @@
 			</select>
 			
 			<IconButton Icon="save" OnClick="@UpdateDateTakenSources"/>
-			<IconButton Icon="photo_library" OnClick="@cs.Enable"/>
 			<IconButton Icon="star" OnClick="@ToggleStars"/>
+			<IconButton Icon="more_vert" OnClick="@(() => moreOptions?.Toggle())"/>
 			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
+			
+			<Dropdown @ref="@moreOptions" Positioning="top: 64px; right: 80px">
+				<div>
+					<span>Min Year</span>
+					<IntInput @bind-Input="@MinYear" HideSpinner="true" Placeholder="Min Year" Style="width: 40px; margin-left: 8px"/>
+				</div>
+				
+				<div>
+					<span>Max Year</span>
+					<IntInput @bind-Input="@MaxYear" HideSpinner="true" Placeholder="Max Year" Style="width: 40px; margin-left: 8px"/>
+				</div>
+			</Dropdown>
 		}
 	</div>
 </header>
@@ -90,6 +102,8 @@
 	private CollectionSelector cs = null!;
 
 	private FullscreenViewer<Media> fv = null!;
+
+	private Dropdown moreOptions = null!;
 }
 
 @code {

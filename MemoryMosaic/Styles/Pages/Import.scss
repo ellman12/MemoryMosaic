@@ -20,6 +20,21 @@ header {
 		gap: 8px;
 		position: fixed;
 		right: 30px;
+		
+		> .dropdown {
+			@include flex-col;
+			width: max-content;
+			padding: 8px;
+			gap: 8px;
+			
+			> div {
+				@include flex-row;
+				
+				> span {
+					width: 70px;
+				}
+			}
+		}
 	}
 }
 
