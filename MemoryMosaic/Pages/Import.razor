@@ -1,12 +1,16 @@
 @page "/import"
-@using System.Text
-@using MemoryMosaic.DataStructures
 @using System.Collections.Immutable
 
 <title>Import - MemoryMosaic</title>
 <link href="css/Pages/Import.css" rel="stylesheet"/>
 <link href="css/Components/Import/ImportItemDisplay.css" rel="stylesheet"/>
 <link href="css/Components/Import/LibraryItemDisplay.css" rel="stylesheet"/>
+
+@if (importItems.Count == 0)
+{
+	<h1>No supported files found in mm_import.</h1>
+	return;
+}
 
 <header>
 	@if (SelectedItems.Count > 0)
