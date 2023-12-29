@@ -111,6 +111,6 @@
 
 <CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems" ClearSelectedOnConfirm="false"/>
 
-@* <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@StateHasChanged" Content="" DisplayItemType="true"/> *@
+<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@(importItems.Cast<Media>().ToList())" DisplayItemType="true"/>
 
 <KeyboardShortcuts CtrlA="@(() => ChangeRangeState(0, importItems.Count - 1))" AltS="@TogglePathWidth" AltD="@ToggleDestinationPaths" Del="@DeleteSelected" Esc="@ClearSelection"/>

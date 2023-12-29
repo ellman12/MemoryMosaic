@@ -160,4 +160,11 @@
 		EditingFilename = false;
 		Item.NewFilename = Item.OriginalFilename;
 	}
+
+	private void ThumbnailClicked()
+	{
+		Import.fv.Index = Index;
+		Import.fv.Enable();
+		Import.Rerender(); 
+	}
 }

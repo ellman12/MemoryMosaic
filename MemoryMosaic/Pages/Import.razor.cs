@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Pages;
+namespace MemoryMosaic.Pages;
 
 using System.Collections.Immutable;
 using Shared.Modal;
@@ -21,6 +21,8 @@ public partial class Import
 
 	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
 	
+	public FullscreenViewer<Media> fv = null!;
+
 	private bool displayWarnings = true, finishedLoading;
 
 	private DateTakenSource newDateTakenSource;
@@ -28,8 +30,6 @@ public partial class Import
 	private List<ImportItem> importItems = new();
 
 	private CollectionSelector cs = null!;
-
-	private FullscreenViewer<Media> fv = null!;
 
 	private Dropdown moreOptions = null!;
 	
