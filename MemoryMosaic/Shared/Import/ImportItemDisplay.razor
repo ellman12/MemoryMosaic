@@ -94,6 +94,7 @@
 	
 	@if (Import.DestinationPathsVisible || HasErrors || ImportItem.OriginalFilename != ImportItem.NewFilename)
 	{
+		<span style="font-size: 22px; color: @(HasErrors ? "red" : "white")">&rArr;</span>		
 		<span class="@Import.PathWidth">@ImportItem.DestinationPath</span>
 	}
 </div>
