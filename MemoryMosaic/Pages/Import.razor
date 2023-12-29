@@ -73,9 +73,9 @@
 		int index = 0;
 		foreach (var group in importItems.GroupBy(item => item.DestinationPath))
 		{
-			ImmutableArray<LibraryItem> existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
 			
-			ImmutableArray<LibraryItem> warnings = displayWarnings
+			var warnings = displayWarnings
 				? ImmutableArray<LibraryItem>.Empty
 				: LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension)).ToImmutableArray();
 
