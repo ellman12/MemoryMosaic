@@ -107,7 +107,7 @@
 				</div>
 			}
 			
-			if (!existingItems.Any() && !warnings.Any())
+			if (group.Count() == 1 && !existingItems.Any() && !warnings.Any())
 			{
 				<ImportItemDisplay Import="@this" ImportItem="@group.First()" Index="@index"/>
 				index++;
