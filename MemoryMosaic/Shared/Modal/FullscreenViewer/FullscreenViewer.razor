@@ -90,6 +90,8 @@
 				<span>@FormatDateTaken(CurrentIi.SelectedDateTaken)</span>
 				<IconButton Icon="edit" OnClick="@dtPickerVis.Enable"/>
 			</div>
+			
+			<span>DT Source: @CurrentIi.DateTakenSource</span>
 		}
 
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
