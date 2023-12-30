@@ -56,31 +56,40 @@
 		}
 		
 		<div class="field" title="@Current.Filename">
-        	<MaterialIcon Icon="image"/>
-        	<span>@Current.Filename</span>
-        	<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
-        </div>
-
-		@if (Current is LibraryItem current)
+			<MaterialIcon Icon="image"/>
+			<span>@Current.Filename</span>
+			<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
+		</div>
+		
+		@if (CurrentLi != null)
 		{
 			<div class="field" title="Date Taken">
 				<MaterialIcon Icon="photo_camera"/>
-				<span>@FormatDateTaken(current.DateTaken)</span>
+				<span>@FormatDateTaken(CurrentLi.DateTaken)</span>
 				<IconButton Icon="edit" OnClick="@dtPickerVis.Enable"/>
 			</div>
 
 			<div class="field" title="Date Added">
 				<MaterialIcon Icon="cloud_upload"/>
-				<span>@FormatDateTaken(current.DateAdded)</span>
+				<span>@FormatDateTaken(CurrentLi.DateAdded)</span>
 			</div>
 			
-			if (current.DateDeleted != null)
+			if (CurrentLi.DateDeleted != null)
 			{
 				<div class="field" title="Date Deleted">
 					<MaterialIcon Icon="trash"/>
-					<span>@FormatDateTaken(current.DateDeleted)</span>
+					<span>@FormatDateTaken(CurrentLi.DateDeleted)</span>
 				</div>
 			}
+		}
+
+		@if (CurrentIi != null)
+		{
+			<div class="field" title="Selected Date Taken">
+				<MaterialIcon Icon="photo_camera"/>
+				<span>@FormatDateTaken(CurrentIi.SelectedDateTaken)</span>
+				<IconButton Icon="edit" OnClick="@dtPickerVis.Enable"/>
+			</div>
 		}
 
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
@@ -114,14 +123,14 @@
 			<span>Pick New Date Taken</span>
 
 			<div>
-				@if (Current is LibraryItem li)
+				@if (CurrentLi != null)
 				{
 					<input type="datetime-local" @bind="@newDateTaken" step="1"/>
-					<IconButton Icon="check" OnClick="@(() => { li.DateTaken = newDateTaken; dtPickerVis.Disable(); C.UpdateDateTaken(Current.Path, newDateTaken); })"/>
+					<IconButton Icon="check" OnClick="@(() => { CurrentLi.DateTaken = newDateTaken; dtPickerVis.Disable(); C.UpdateDateTaken(Current.Path, newDateTaken); })"/>
 				}
-				else if (Current is ImportItem ii)
+				else if (CurrentIi != null)
 				{
-					<input type="datetime-local" @bind="@ii.CustomDateTaken" step="1"/>
+					<input type="datetime-local" @bind="@CurrentIi.CustomDateTaken" step="1"/>
 					<IconButton Icon="check" OnClick="@dtPickerVis.Disable"/>
 				}
 
@@ -172,6 +181,8 @@
 	[Parameter] public Collection? Collection { get; set; }
 	
 	public T Current => Content[Index];
+	private LibraryItem? CurrentLi => Current as LibraryItem;
+	private ImportItem? CurrentIi => Current as ImportItem;
 
 	private List<Collection>? collectionsContaining;
 
