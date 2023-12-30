@@ -125,7 +125,17 @@ public partial class Import
 
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
 		ClearSelection();
-		StateHasChanged();
+		Rerender();
+	}
+
+	private void DeleteCurrent()
+	{
+		importItems.RemoveAll(importItem => fv.Current.Id == importItem.Id);
+		FileSystem.DeleteFile(fv.Current.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+		Rerender();
+		
+		if (fv.Index == importItems.Count)
+			fv.Index--;
 	}
 
 	public void ChangeRangeState(int startIndex, int endIndex)
