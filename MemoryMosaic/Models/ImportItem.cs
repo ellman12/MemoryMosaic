@@ -65,6 +65,7 @@ public sealed class ImportItem : Media
 		AbsolutePath = absolutePath;
 		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(AbsolutePath);
 		Extension = P.GetExtension(AbsolutePath);
+		Video = D.IsVideoExt(Extension);
 
 		D.GetDateTakenFromBoth(AbsolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;
