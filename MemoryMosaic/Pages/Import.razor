@@ -109,7 +109,7 @@
 	}
 </main>
 
-<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems" ClearSelectedOnConfirm="false"/>
+<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems"/>
 
 <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@(importItems.Cast<Media>().ToList())" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent"/>
 

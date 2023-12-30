@@ -181,8 +181,8 @@
 	[Parameter] public Collection? Collection { get; set; }
 	
 	public T Current => Content[Index];
-	private LibraryItem? CurrentLi => Current as LibraryItem;
-	private ImportItem? CurrentIi => Current as ImportItem;
+	public LibraryItem? CurrentLi => Current as LibraryItem;
+	public ImportItem? CurrentIi => Current as ImportItem;
 
 	private List<Collection>? collectionsContaining;
 

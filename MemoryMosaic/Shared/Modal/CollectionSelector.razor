@@ -94,9 +94,6 @@
     [Parameter]
     public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
 
-    [Parameter]
-    public bool ClearSelectedOnConfirm { get; set; } = true; //Used in Import.
-
     public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
 
     protected override void OnInitialized() => RefreshData();
@@ -202,9 +199,6 @@
         PreviousSelectionBtnClick(true);
 
         CloseBtnClick();
-
-        if (ClearSelectedOnConfirm)
-            ClearSelected();
     }
 
     private void PreviousSelectionBtnClick(bool save)
