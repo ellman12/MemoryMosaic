@@ -133,7 +133,7 @@
 				else if (CurrentIi != null)
 				{
 					<input type="datetime-local" @bind="@CurrentIi.CustomDateTaken" step="1"/>
-					<IconButton Icon="check" OnClick="@dtPickerVis.Disable"/>
+					<IconButton Icon="check" OnClick="@(() => { dtPickerVis.Disable(); StateHasChanged(); })"/>
 				}
 
 				<IconButton Icon="close" OnClick="@dtPickerVis.Disable"/>
