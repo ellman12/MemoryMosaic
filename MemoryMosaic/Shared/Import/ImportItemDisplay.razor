@@ -17,7 +17,7 @@
 		<IconButton Icon="close" OnClick="@CancelRenaming"/>
 	}
 
-	<div class="dateTakenDisplay">
+	<div class="dateTakenDisplay" @ondblclick="@(() => ImportItem.DateTakenSource = DateTakenSource.Custom)">
 		@if (ImportItem.DateTakenSource == DateTakenSource.Custom)
 		{
 			<span>C: @(ImportItem.CustomDateTaken == null ? "No Date Taken" : ImportItem.CustomDateTaken)</span>
