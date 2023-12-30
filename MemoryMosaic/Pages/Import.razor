@@ -76,8 +76,8 @@
 			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
 			
 			var warnings = displayWarnings
-				? ImmutableArray<LibraryItem>.Empty
-				: LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension)).ToImmutableArray();
+				? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension)).ToImmutableArray()
+				: ImmutableArray<LibraryItem>.Empty;
 
 			if (group.Count() > 1 || existingItems.Any())
 			{
@@ -100,7 +100,7 @@
 				<div class="container" style="border-color: yellow">
 					@foreach (var importItem in group)
 					{
-						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index" HasErrors="true"/>
+						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
 						index++;
 					}
 					
