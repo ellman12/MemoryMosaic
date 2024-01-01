@@ -76,46 +76,36 @@
 			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
 			
 			var warnings = displayWarnings
-				? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension)).ToImmutableArray()
+				? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension && !existingItems.Contains(libraryItem))).ToImmutableArray()
 				: ImmutableArray<LibraryItem>.Empty;
 
-			if (group.Count() > 1 || existingItems.Any())
-			{
-				<div class="container" style="border-color: red">
-					@foreach (var importItem in group)
-					{
-						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index" HasErrors="true"/>
-						index++;
-					}
-					
-					@foreach (var libraryItem in existingItems)
-					{
-						<LibraryItemDisplay Import="@this" LibraryItem="@libraryItem"/>
-					}
-				</div>
-			}
+			string borderClass;
+			if (group.Count() > 1 || existingItems.Length > 0)
+				borderClass = "error";
+			else if (warnings.Length > 0)
+				borderClass = "warning";
+			else
+				borderClass = "none";
 
-			if (!existingItems.Any() && warnings.Any())
-			{
-				<div class="container" style="border-color: yellow">
-					@foreach (var importItem in group)
-					{
-						<ImportItemDisplay Import="@this" ImportItem="@importItem" Index="@index"/>
-						index++;
-					}
-					
-					@foreach (var libraryItem in warnings)
-					{
-						<LibraryItemDisplay Import="@this" LibraryItem="@libraryItem"/>
-					}
-				</div>
-			}
-			
-			if (group.Count() == 1 && !existingItems.Any() && !warnings.Any())
-			{
-				<ImportItemDisplay Import="@this" ImportItem="@group.First()" Index="@index"/>
-				index++;
-			}
+			<div class="container @borderClass">
+				@foreach (var importItem in group)
+				{
+					<ImportItemDisplay ImportItem="@importItem" Import="@this" Index="index" HasErrors="@(borderClass == "red")"/>
+					index++;
+				}
+				
+				@foreach (var libraryItem in existingItems)
+				{
+					<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this" Index="index"/>
+					index++;
+				}
+				
+				@foreach (var libraryItem in warnings)
+				{
+					<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this" Index="index"/>
+					index++;
+				}
+			</div>
 		}
 	}
 </main>
