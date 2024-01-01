@@ -7,7 +7,7 @@
 	
 	@if (!EditingFilename)
 	{
-		<span @ondblclick="@EnableRename" class="@Import.PathWidth">@ImportItem.Path</span>
+		<span @ondblclick="@EnableRename" class="@Import.PathWidth @BorderClass">@ImportItem.Path</span>
 	}
 
 	@if (EditingFilename)
@@ -95,7 +95,7 @@
 	@if (Import.DestinationPathsVisible || HasErrors || ImportItem.OriginalFilename != ImportItem.NewFilename)
 	{
 		<span style="font-size: 22px; color: @(HasErrors ? "red" : "white")">&rArr;</span>		
-		<span class="@Import.PathWidth">@ImportItem.DestinationPath</span>
+		<span class="@Import.PathWidth @BorderClass">@ImportItem.DestinationPath</span>
 	}
 </div>
 
@@ -110,7 +110,7 @@
 	public int Index { get; set; }
 	
 	[Parameter]
-	public bool HasErrors { get; set; }
+	public required string BorderClass { get; set; }
 
 	private bool editingFilename;
 	private bool EditingFilename
@@ -124,6 +124,7 @@
 	}
 
 	private bool Checked => Import.SelectedItems.Contains(ImportItem.Id);
+	private bool HasErrors => BorderClass == "red";
 }
 
 @functions {

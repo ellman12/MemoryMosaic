@@ -1,8 +1,8 @@
-﻿@using MemoryMosaic.Pages
+@using MemoryMosaic.Pages
 
 <div class="libraryItem">
 	<img src="data:image/jpg;base64,@LibraryItem.Thumbnail" alt="" loading="lazy"/>
-	<span class="@Import.PathWidth">@("Library/" + LibraryItem.Path)</span>
+	<span class="@Import.PathWidth @Type">@("Library/" + LibraryItem.Path)</span>
 	
 	<div class="dateDisplay">
 		<span>DT: @(LibraryItem.DateTaken == null ? "No Date Taken" : LibraryItem.DateTaken)</span>
@@ -17,6 +17,12 @@
 	[Parameter, EditorRequired] public Import Import { get; set; } = null!;
 	
 	[Parameter, EditorRequired] public LibraryItem LibraryItem { get; set; } = null!;
+
+	[Parameter, EditorRequired]
+	public int Index { get; set; }
+	
+	[Parameter, EditorRequired]
+	public required string Type { get; set; }
 
 	private void DeleteBtnClick()
 	{

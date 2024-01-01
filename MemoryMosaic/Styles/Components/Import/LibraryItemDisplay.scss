@@ -30,6 +30,10 @@
 		}
 
 		&.full { width: auto; }
+
+		&.error { color: red }
+		&.warning { color: yellow }
+		&.none { color: white }
 	}
 	
 	.dateDisplay {

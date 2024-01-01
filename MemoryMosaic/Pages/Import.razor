@@ -90,19 +90,19 @@
 			<div class="container @borderClass">
 				@foreach (var importItem in group)
 				{
-					<ImportItemDisplay ImportItem="@importItem" Import="@this" Index="index" HasErrors="@(borderClass == "red")"/>
+					<ImportItemDisplay ImportItem="@importItem" Import="@this" Index="index" BorderClass="@borderClass"/>
 					index++;
 				}
 				
 				@foreach (var libraryItem in existingItems)
 				{
-					<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this" Index="index"/>
+					<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this" Index="index" Type="error"/>
 					index++;
 				}
 				
 				@foreach (var libraryItem in warnings)
 				{
-					<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this" Index="index"/>
+					<LibraryItemDisplay LibraryItem="@libraryItem" Import="@this" Index="index" Type="warning"/> 
 					index++;
 				}
 			</div>
