@@ -41,7 +41,7 @@
 		&.none { color: white }
 	}
 
-	.dateTakenDisplay {
+	.dateDisplay, .dateTakenDisplay {
 		@include flex-col;
 	}
 
