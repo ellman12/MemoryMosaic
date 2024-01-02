@@ -1,64 +1,65 @@
+@inherits ItemDisplay<ImportItem>
 @using MemoryMosaic.Pages
 
 <div class="importItem" @onclick="@(mouseArgs => { if (mouseArgs.CtrlKey) CheckClicked(mouseArgs); })">
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
-	<img src="data:image/jpg;base64,@ImportItem.Thumbnail" alt="" loading="lazy"/>
+	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" loading="lazy"/>
 	
 	@if (!EditingFilename)
 	{
-		<span @ondblclick="@EnableRename" class="@Import.PathWidth @BorderClass">@ImportItem.Path</span>
+		<span @ondblclick="@EnableRename" class="@PathWidth @TextClass">@Item.Path</span>
 	}
 
 	@if (EditingFilename)
 	{
-		<TextInput @bind-Input="@ImportItem.NewFilename" Width="250px"/>
+		<TextInput @bind-Input="@Item.NewFilename" Width="250px"/>
 		<IconButton Icon="save" OnClick="@RenameItem"/>
 		<IconButton Icon="close" OnClick="@CancelRenaming"/>
 	}
 
-	<div class="dateTakenDisplay" @ondblclick="@(() => ImportItem.DateTakenSource = DateTakenSource.Custom)">
-		@if (ImportItem.DateTakenSource == DateTakenSource.Custom)
+	<div class="dateTakenDisplay" @ondblclick="@(() => Item.DateTakenSource = DateTakenSource.Custom)">
+		@if (Item.DateTakenSource == DateTakenSource.Custom)
 		{
-			<span>C: @(ImportItem.CustomDateTaken == null ? "No Date Taken" : ImportItem.CustomDateTaken)</span>
+			<span>C: @(Item.CustomDateTaken == null ? "No Date Taken" : Item.CustomDateTaken)</span>
 		}
-		else if (ImportItem.MetadataDateTaken == null && ImportItem.FilenameDateTaken == null || ImportItem.DateTakenSource == DateTakenSource.None)
+		else if (Item.MetadataDateTaken == null && Item.FilenameDateTaken == null || Item.DateTakenSource == DateTakenSource.None)
 		{
 			<span>No Date Taken</span>
 		}
-		else if (ImportItem.MetadataDateTaken == ImportItem.FilenameDateTaken)
+		else if (Item.MetadataDateTaken == Item.FilenameDateTaken)
 		{
-			<span>M & F: @ImportItem.MetadataDateTaken</span>
+			<span>M & F: @Item.MetadataDateTaken</span>
 		}
 		else
 		{
-			if (ImportItem.MetadataDateTaken != null)
+			if (Item.MetadataDateTaken != null)
 			{
-				<span style="@(ImportItem is {DateTakenSource: DateTakenSource.Metadata, FilenameDateTaken: not null} ? "color: #0080ff" : "")">M: @ImportItem.MetadataDateTaken</span>
+				<span style="@(Item is {DateTakenSource: DateTakenSource.Metadata, FilenameDateTaken: not null} ? "color: #0080ff" : "")">M: @Item.MetadataDateTaken</span>
 			}
-			if (ImportItem.FilenameDateTaken != null)
+			if (Item.FilenameDateTaken != null)
 			{
-				<span style="@(ImportItem is {DateTakenSource: DateTakenSource.Filename, MetadataDateTaken: not null} ? "color: #0080ff" : "")">F: @ImportItem.FilenameDateTaken</span>
+				<span style="@(Item is {DateTakenSource: DateTakenSource.Filename, MetadataDateTaken: not null} ? "color: #0080ff" : "")">F: @Item.FilenameDateTaken</span>
 			}
 		}
 	</div>
 
-	@if (ImportItem.Collections != null)
+	@if (Item.Collections != null)
 	{
 		<div class="collections">
-			@foreach (Collection collection in ImportItem.Collections)
+			@foreach (Collection collection in Item.Collections)
 			{
-				<span title="@collection.Id" @onclick="@(() => ImportItem.Collections.RemoveWhere(c => c.Id == collection.Id))">@collection.Name</span>
+				<span title="@collection.Id" @onclick="@(() => Item.Collections.RemoveWhere(c => c.Id == collection.Id))">@collection.Name</span>
 			}
 		</div>
 	}
 
-	<select @bind="@ImportItem.DateTakenSource" @bind:after="@Import.Rerender">
-		@if (ImportItem.MetadataDateTaken != null)
+	<select @bind="@Item.DateTakenSource" @bind:after="@Import.Rerender">
+		@if (Item.MetadataDateTaken != null)
 		{
 			<option>Metadata</option>
 		}
-		@if (ImportItem.FilenameDateTaken != null)
+		@if (Item.FilenameDateTaken != null)
 		{
 			<option>Filename</option>
 		}
@@ -66,52 +67,40 @@
 		<option>Custom</option>
 	</select>
 
-	@if (ImportItem.DateTakenSource == DateTakenSource.Custom)
+	@if (Item.DateTakenSource == DateTakenSource.Custom)
 	{
-		<input type="datetime-local" @bind="@ImportItem.CustomDateTaken" @bind:after="@Import.Rerender" step="1"/>
+		<input type="datetime-local" @bind="@Item.CustomDateTaken" @bind:after="@Import.Rerender" step="1"/>
 	}
 
-	@if (ImportItem.DateTakenSource == DateTakenSource.Metadata && ImportItem.MetadataDateTaken?.Year < Import.MinYear)
+	@if (Item.DateTakenSource == DateTakenSource.Metadata && Item.MetadataDateTaken?.Year < Import.MinYear)
 	{
 		<span>M Year is less than the min year</span>
 	}
-	@if (ImportItem.DateTakenSource == DateTakenSource.Filename && ImportItem.FilenameDateTaken?.Year < Import.MinYear)
+	@if (Item.DateTakenSource == DateTakenSource.Filename && Item.FilenameDateTaken?.Year < Import.MinYear)
 	{
 		<span>F Year is less than the min year</span>
 	}
-	@if (ImportItem.DateTakenSource == DateTakenSource.Metadata && ImportItem.MetadataDateTaken?.Year > Import.MaxYear)
+	@if (Item.DateTakenSource == DateTakenSource.Metadata && Item.MetadataDateTaken?.Year > Import.MaxYear)
 	{
 		<span>M Year is greater than the max year</span>
 	}
-	@if (ImportItem.DateTakenSource == DateTakenSource.Filename && ImportItem.FilenameDateTaken?.Year > Import.MaxYear)
+	@if (Item.DateTakenSource == DateTakenSource.Filename && Item.FilenameDateTaken?.Year > Import.MaxYear)
 	{
 		<span>F Year is greater than the max year</span>
 	}
 
-	<IconButton Icon="@(ImportItem.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(ImportItem.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
+	<IconButton Icon="@(Item.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(Item.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
 
-	<textarea style="display: @(String.IsNullOrWhiteSpace(ImportItem.Description) ? "none" : "inline")" @bind="@ImportItem.Description" placeholder="Description"></textarea>
+	<textarea style="display: @(String.IsNullOrWhiteSpace(Item.Description) ? "none" : "inline")" @bind="@Item.Description" placeholder="Description"></textarea>
 	
-	@if (Import.DestinationPathsVisible || HasErrors || ImportItem.OriginalFilename != ImportItem.NewFilename)
+	@if (Import.DestinationPathsVisible || TextClass == "error" || Item.OriginalFilename != Item.NewFilename)
 	{
-		<span style="font-size: 22px; color: @(HasErrors ? "red" : "white")">&rArr;</span>		
-		<span class="@Import.PathWidth @BorderClass">@ImportItem.DestinationPath</span>
+		<span class="@TextClass" style="font-size: 22px">&rArr;</span>		
+		<span class="@PathWidth @TextClass">@Item.DestinationPath</span>
 	}
 </div>
 
 @code {
-	[Parameter, EditorRequired]
-	public required Import Import { get; set; }
-
-	[Parameter, EditorRequired]
-	public required ImportItem ImportItem { get; set; }
-
-	[Parameter, EditorRequired]
-	public int Index { get; set; }
-	
-	[Parameter]
-	public required string BorderClass { get; set; }
-
 	private bool editingFilename;
 	private bool EditingFilename
 	{
@@ -123,8 +112,7 @@
 		}
 	}
 
-	private bool Checked => Import.SelectedItems.Contains(ImportItem.Id);
-	private bool HasErrors => BorderClass == "red";
+	private bool Checked => Import.SelectedItems.Contains(Item.Id);
 }
 
 @functions {
@@ -141,17 +129,17 @@
 
 	private void ToggleSelected()
 	{
-		if (Import.SelectedItems.Contains(ImportItem.Id))
-			Import.SelectedItems.Remove(ImportItem.Id);
+		if (Import.SelectedItems.Contains(Item.Id))
+			Import.SelectedItems.Remove(Item.Id);
 		else
-			Import.SelectedItems.Add(ImportItem.Id);
+			Import.SelectedItems.Add(Item.Id);
 
 		Import.LastCheckedIndex = Index;
 	}
 
 	private void ToggleStarred()
 	{
-		ImportItem.Starred = !ImportItem.Starred;
+		Item.Starred = !Item.Starred;
 		StateHasChanged();
 	}
 
@@ -170,6 +158,6 @@
 	private void CancelRenaming()
 	{
 		EditingFilename = false;
-		ImportItem.NewFilename = ImportItem.OriginalFilename;
+		Item.NewFilename = Item.OriginalFilename;
 	}
 }
