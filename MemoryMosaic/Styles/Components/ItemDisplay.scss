@@ -1,6 +1,10 @@
-@import "../../Mixins";
+﻿@import "../Mixins";
 
-.importItem {
+.libraryItem {
+	padding-left: 40px;
+}
+
+.importItem, .libraryItem {
 	@include flex-row;
 	@include available-width;
 	gap: 12px;
@@ -29,9 +33,13 @@
 		}
 
 		&.full { width: auto; }
+	}
 
+	> span {
 		&.error { color: red }
+
 		&.warning { color: yellow }
+
 		&.none { color: white }
 	}
 
@@ -41,11 +49,14 @@
 
 	&:hover {
 		> .checkbox { visibility: visible !important; }
+
 		> select { display: inline; }
+
 		> .starBtn { display: flex !important; }
+
 		> textarea { display: inline !important; }
 	}
-	
+
 	> .collections {
 		@include flex-row;
 		gap: 8px;
@@ -54,13 +65,13 @@
 	> select {
 		display: none;
 	}
-	
+
 	> select + span {
 		color: yellow;
 	}
 
 	.starBtn:hover { background: none; }
-	
+
 	> textarea {
 		height: 2.5em;
 		width: 10em;
