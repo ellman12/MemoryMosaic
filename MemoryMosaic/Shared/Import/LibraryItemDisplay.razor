@@ -2,7 +2,7 @@
 @using MemoryMosaic.Pages
 
 <div class="libraryItem">
-	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" loading="lazy"/>
+	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
 	<span class="@PathWidth @TextClass">@("Library/" + Item.Path)</span>
 	
 	<div class="dateDisplay">

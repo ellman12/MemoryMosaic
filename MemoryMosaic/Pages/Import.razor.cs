@@ -1,4 +1,4 @@
-namespace MemoryMosaic.Pages;
+﻿namespace MemoryMosaic.Pages;
 
 using System.Collections.Immutable;
 using Shared.Modal;
@@ -76,6 +76,29 @@ public partial class Import
 				return "Add 1 Item";
 
 			return $"Add {SelectedItems.Count} Items";
+		}
+	}
+
+	private List<Media> Content
+	{
+		get
+		{
+			List<Media> content = new();
+
+			foreach (var group in importItems.GroupBy(item => item.DestinationPath))
+			{
+				var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+
+				var warnings = displayWarnings
+					? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension && !existingItems.Contains(libraryItem))).ToImmutableArray()
+					: ImmutableArray<LibraryItem>.Empty;
+
+				content.AddRange(group);
+				content.AddRange(existingItems);
+				content.AddRange(warnings);
+			}
+			
+			return content;
 		}
 	}
 
