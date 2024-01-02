@@ -23,7 +23,7 @@ public sealed partial class Import
 
 	public FullscreenViewer<Media> fv = null!;
 
-	private bool displayWarnings = true, finishedLoading;
+	private bool displayWarnings = true, onlyDisplayErrors;
 
 	private DateTakenSource newDateTakenSource;
 

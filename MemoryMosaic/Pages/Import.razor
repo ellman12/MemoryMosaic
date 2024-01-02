@@ -63,6 +63,7 @@
 			</div>
 			
 			<Checkbox @bind-Input="@displayWarnings" Label="Display Warnings" Title="Warnings are files with the same name but in a different folder."/>
+			<Checkbox @bind-Input="@onlyDisplayErrors" Label="Only Display Errors" Title="Errors occur when 2 or more import items would end up in the same destination folder, or when there's already a library item with the same name in that folder."/>
 		</Dropdown>
 	</div>
 </header>
@@ -73,6 +74,9 @@
 		foreach (var group in importItems.GroupBy(item => item.DestinationPath))
 		{
 			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+			
+			if (onlyDisplayErrors && group.Count() + existingItems.Length == 1)
+				continue;
 			
 			var warnings = displayWarnings
 				? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension && !existingItems.Contains(libraryItem))).ToImmutableArray()
