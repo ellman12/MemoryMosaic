@@ -9,7 +9,7 @@ public partial class Import
 	public HashSet<Guid> SelectedItems { get; } = new();
 
 	public string PathWidth { get; private set; } = "short";
-	
+
 	public bool DestinationPathsVisible { get; private set; }
 
 	public bool EditingFilename { get; set; }
@@ -20,7 +20,9 @@ public partial class Import
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
 
 	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
-	
+
+	public FullscreenViewer<Media> fv = null!;
+
 	private bool displayWarnings = true, finishedLoading;
 
 	private DateTakenSource newDateTakenSource;
@@ -29,10 +31,8 @@ public partial class Import
 
 	private CollectionSelector cs = null!;
 
-	private FullscreenViewer<Media> fv = null!;
-
 	private Dropdown moreOptions = null!;
-	
+
 	public void Rerender() => StateHasChanged();
 
 	protected override async Task OnInitializedAsync()
@@ -79,6 +79,29 @@ public partial class Import
 		}
 	}
 
+	private List<Media> Content
+	{
+		get
+		{
+			List<Media> content = new();
+
+			foreach (var group in importItems.GroupBy(item => item.DestinationPath))
+			{
+				var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+
+				var warnings = displayWarnings
+					? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension && !existingItems.Contains(libraryItem))).ToImmutableArray()
+					: ImmutableArray<LibraryItem>.Empty;
+
+				content.AddRange(group);
+				content.AddRange(existingItems);
+				content.AddRange(warnings);
+			}
+			
+			return content;
+		}
+	}
+
 	private void ClearSelection()
 	{
 		SelectedItems.Clear();
@@ -113,7 +136,7 @@ public partial class Import
 		foreach (var importItem in items)
 			importItem.Starred = !allStarred;
 
-		StateHasChanged();
+		Rerender();
 	}
 
 	private void DeleteSelected()
@@ -125,7 +148,17 @@ public partial class Import
 
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
 		ClearSelection();
-		StateHasChanged();
+		Rerender();
+	}
+
+	private void DeleteCurrent()
+	{
+		importItems.RemoveAll(importItem => fv.Current.Id == importItem.Id);
+		FileSystem.DeleteFile(fv.Current.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+		Rerender();
+
+		if (fv.Index == importItems.Count)
+			fv.Index--;
 	}
 
 	public void ChangeRangeState(int startIndex, int endIndex)
@@ -135,7 +168,7 @@ public partial class Import
 		for (int i = startIndex; i != endIndex + increment; i += increment)
 			SelectedItems.Add(importItems[i].Id);
 
-		StateHasChanged();
+		Rerender();
 	}
 
 	private void SortItems()
@@ -178,22 +211,38 @@ public partial class Import
 
 	private void UpdateCollections()
 	{
-		foreach (ImportItem item in importItems.Where(item => SelectedItems.Contains(item.Id)))
+		if (fv.Visible)
+			UpdateSelectedItemCollections();
+		else
+			UpdateSelectedItemsCollections();
+
+		Rerender();
+	}
+
+	private void UpdateItemCollections(ImportItem item)
+	{
+		item.Collections ??= new HashSet<Collection>();
+
+		if (cs.SelectedFolderId != -1)
 		{
-			item.Collections ??= new HashSet<Collection>();
-
-			if (cs.SelectedFolderId != -1)
-			{
-				item.Collections.Clear();
-				item.Collections.Add(cs.Folders.Find(folder => folder.Id == cs.SelectedFolderId) ?? throw new NullReferenceException());
-			}
-			else
-			{
-				item.Collections.RemoveWhere(folder => cs.Folders.Contains(folder));
-				item.Collections.UnionWith(cs.Albums.Where(album => cs.SelectedAlbums.Contains(album.Id)));
-			}
+			item.Collections.Clear();
+			item.Collections.Add(cs.Folders.Find(folder => folder.Id == cs.SelectedFolderId) ?? throw new NullReferenceException());
 		}
+		else
+		{
+			item.Collections.RemoveWhere(folder => cs.Folders.Contains(folder));
+			item.Collections.UnionWith(cs.Albums.Where(album => cs.SelectedAlbums.Contains(album.Id)));
+		}
+	}
 
-		StateHasChanged();
+	private void UpdateSelectedItemCollections()
+	{
+		UpdateItemCollections(fv.CurrentIi ?? throw new NullReferenceException("Current Import Item is null"));
+	}
+
+	private void UpdateSelectedItemsCollections()
+	{
+		foreach (ImportItem item in importItems.Where(item => SelectedItems.Contains(item.Id)))
+			UpdateItemCollections(item);
 	}
 }

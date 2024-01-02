@@ -20,7 +20,16 @@ public sealed class ImportItem : Media
 	public DateTime? FilenameDateTaken { get; init; }
 
 	///The new date taken (or null) that the user picks in Import.
-	public DateTime? CustomDateTaken { get; set; }
+	public DateTime? CustomDateTaken
+	{
+		get => customDateTaken;
+		set
+		{
+			customDateTaken = value;
+			DateTakenSource = DateTakenSource.Custom;
+		}
+	}
+	private DateTime? customDateTaken;
 
 	public DateTakenSource DateTakenSource { get; set; }
 
@@ -65,16 +74,18 @@ public sealed class ImportItem : Media
 		AbsolutePath = absolutePath;
 		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(AbsolutePath);
 		Extension = P.GetExtension(AbsolutePath);
+		Video = D.IsVideoExt(Extension);
 
 		D.GetDateTakenFromBoth(AbsolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;
 		FilenameDateTaken = filenameDT;
-
 		if (MetadataDateTaken != null)
 			DateTakenSource = DateTakenSource.Metadata;
 		else if (FilenameDateTaken != null)
 			DateTakenSource = DateTakenSource.Filename;
 		else
 			DateTakenSource = DateTakenSource.None;
+		
+		customDateTaken = SelectedDateTaken;
 	}
 }

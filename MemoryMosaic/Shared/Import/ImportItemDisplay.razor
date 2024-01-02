@@ -4,7 +4,7 @@
 <div class="importItem" @onclick="@(mouseArgs => { if (mouseArgs.CtrlKey) CheckClicked(mouseArgs); })">
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
-	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" loading="lazy"/>
+	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
 	
 	@if (!EditingFilename)
 	{

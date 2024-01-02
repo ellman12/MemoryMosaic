@@ -15,4 +15,11 @@ public abstract class ItemDisplay<T> : Component where T : Media
 	[Parameter, EditorRequired] public required string TextClass { get; set; }
 	
 	protected string PathWidth => Import.PathWidth == "full" || TextClass == "error" ? "full" : "short";
+
+	protected void ThumbnailClicked()
+	{
+		Import.fv.Index = Index;
+		Import.fv.Enable();
+		Import.Rerender(); 
+	}
 }
