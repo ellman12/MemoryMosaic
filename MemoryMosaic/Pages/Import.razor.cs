@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using Shared.Modal;
 using Shared.Modal.FullscreenViewer;
 
-public partial class Import
+public sealed partial class Import
 {
 	public HashSet<Guid> SelectedItems { get; } = new();
 
