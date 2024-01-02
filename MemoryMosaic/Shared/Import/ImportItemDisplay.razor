@@ -93,7 +93,7 @@
 
 	<textarea style="display: @(String.IsNullOrWhiteSpace(Item.Description) ? "none" : "inline")" @bind="@Item.Description" placeholder="Description"></textarea>
 	
-	@if (Import.DestinationPathsVisible || TextClass == "error" || Item.OriginalFilename != Item.NewFilename)
+	@if (Import.DestinationPathsVisible || TextClass != "none" || Item.OriginalFilename != Item.NewFilename)
 	{
 		<span class="@TextClass" style="font-size: 22px">&rArr;</span>		
 		<span class="@PathWidth @TextClass">@Item.DestinationPath</span>

@@ -14,7 +14,7 @@ public abstract class ItemDisplay<T> : Component where T : Media
 	
 	[Parameter, EditorRequired] public required string TextClass { get; set; }
 	
-	protected string PathWidth => Import.PathWidth == "full" || TextClass == "error" ? "full" : "short";
+	protected string PathWidth => Import.PathWidth == "full" || TextClass != "none" ? "full" : "short";
 
 	protected void ThumbnailClicked()
 	{
