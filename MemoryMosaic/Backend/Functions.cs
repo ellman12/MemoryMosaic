@@ -40,7 +40,7 @@ public static class Functions
                 break;
         }
 
-        return $"{Math.Round(compactBytes, 3)} {unit}";
+        return $"{Math.Round(compactBytes)} {unit}";
     }
 
     ///<summary>Given the absolute path to a image/video file, use ffmpeg to generate a compressed thumbnail of the image or the first frame.</summary>
