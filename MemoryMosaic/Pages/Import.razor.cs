@@ -1,5 +1,6 @@
 ﻿namespace MemoryMosaic.Pages;
 
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using Shared.Modal;
 using Shared.Modal.FullscreenViewer;
@@ -35,18 +36,19 @@ public sealed partial class Import
 
 	public void Rerender() => StateHasChanged();
 
-	protected override async Task OnInitializedAsync()
+	protected override void OnInitialized()
 	{
 		L.LogLine("Begin Import Initialization", LogLevel.Info);
 
-		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
+		ConcurrentBag<ImportItem> bag = new();
 
-		Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (absPath, _) =>
+		Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
 		{
-			ImportItem importFile = new(absPath.Replace('\\', '/'));
-			importItems.Add(importFile);
+			bag.Add(new ImportItem(fullPath.Replace('\\', '/')));
 		});
-
+		
+		importItems = bag.ToList();
+		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
 		SortItems();
 
 		L.LogLine("Finish Import Initialization", LogLevel.Info);
