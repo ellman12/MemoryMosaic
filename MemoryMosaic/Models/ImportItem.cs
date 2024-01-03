@@ -6,18 +6,16 @@ namespace MemoryMosaic.Models;
 public sealed class ImportItem : Media
 {
 	///The original filename of this item, without the extension.
-	public string OriginalFilename { get; init; } 
+	public string OriginalFilename { get; } 
 
 	///What the file has been renamed to, if applicable, without the extension.
-	public string NewFilename { get; set; } 
+	public string NewFilename { get; set; }
 
-	public string Extension { get; init; }
+	private string Extension { get; }
 
-	public string AbsolutePath { get; init; }
+	public DateTime? MetadataDateTaken { get; }
 
-	public DateTime? MetadataDateTaken { get; init; }
-
-	public DateTime? FilenameDateTaken { get; init; }
+	public DateTime? FilenameDateTaken { get; }
 
 	///The new date taken (or null) that the user picks in Import.
 	public DateTime? CustomDateTaken
@@ -71,12 +69,11 @@ public sealed class ImportItem : Media
 		Thumbnail = F.GenerateThumbnail(absolutePath);
 		
 		Path = absolutePath.Replace(S.ImportFolderPath, "").Substring(1);
-		AbsolutePath = absolutePath;
-		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(AbsolutePath);
-		Extension = P.GetExtension(AbsolutePath);
+		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(absolutePath);
+		Extension = P.GetExtension(absolutePath);
 		Video = D.IsVideoExt(Extension);
 
-		D.GetDateTakenFromBoth(AbsolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
+		D.GetDateTakenFromBoth(absolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;
 		FilenameDateTaken = filenameDT;
 		if (MetadataDateTaken != null)

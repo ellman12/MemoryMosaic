@@ -5,9 +5,9 @@ public sealed class LibraryItem : Media
 {
 	public DateTime? DateTaken { get; set; }
 
-	public DateTime DateAdded { get; init; }
+	public DateTime DateAdded { get; }
 
-	public DateTime? DateDeleted { get; init; }
+	public DateTime? DateDeleted { get; }
 
 	///Creates a new LibraryItem from a query of this form: path, id, date_taken, date_added, starred, description, date_deleted, thumbnail
 	public LibraryItem(string path, Guid id, DateTime? dateTaken, DateTime dateAdded, bool starred, string? description, DateTime? dateDeleted, string thumbnail)
