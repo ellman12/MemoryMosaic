@@ -17,10 +17,6 @@ public abstract class Media
 	
 	public bool Video { get; protected init; }
 
-	public string Filename => P.GetFileName(Path);
-	
-	public string FilenameWithoutExtension => P.GetFileNameWithoutExtension(Path);
-
 	public abstract string RequestPath { get; }
 	
 	public abstract string FullPath { get; }

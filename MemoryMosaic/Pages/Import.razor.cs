@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Pages;
+namespace MemoryMosaic.Pages;
 
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
@@ -179,8 +179,8 @@ public sealed partial class Import
 
 	private void SortItems()
 	{
-		importItems = importItems.OrderByDescending(item => LibraryCache.Count(libItem => P.GetFileName(libItem.Key).Contains(item.Filename)))
-			.ThenBy(item => item.Filename)
+		importItems = importItems.OrderByDescending(item => LibraryCache.Count(libItem => P.GetFileName(libItem.Key).Contains(item.NewFilename)))
+			.ThenBy(item => item.NewFilename)
 			.ToList();
 	}
 

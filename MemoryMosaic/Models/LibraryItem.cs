@@ -40,6 +40,10 @@ public sealed class LibraryItem : Media
 		Video = F.SupportedVideoExts.Contains(P.GetExtension(Path).ToLower());
 	}
 	
+	public string Filename => P.GetFileName(Path);
+	
+	public string FilenameWithoutExtension => P.GetFileNameWithoutExtension(Path);
+
 	public override string RequestPath => "mm_library";
 
 	public override string FullPath => P.Combine(S.LibFolderPath, Path);

@@ -55,14 +55,14 @@
 			<span>@Current.GetType().Name</span>
 		}
 		
-		<div class="field" title="@Current.Filename">
-			<MaterialIcon Icon="image"/>
-			<span>@Current.Filename</span>
-			<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
-		</div>
-		
 		@if (CurrentLi != null)
 		{
+			<div class="field" title="@CurrentLi.Filename">
+				<MaterialIcon Icon="image"/>
+				<span>@CurrentLi.Filename</span>
+				<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
+			</div>
+			
 			<div class="field" title="Date Taken">
 				<MaterialIcon Icon="photo_camera"/>
 				<span>@FormatDateTaken(CurrentLi.DateTaken)</span>
@@ -85,6 +85,12 @@
 
 		@if (CurrentIi != null)
 		{
+			<div class="field" title="@CurrentIi.NewFilename">
+				<MaterialIcon Icon="image"/>
+				<span>@CurrentIi.NewFilename</span>
+				<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
+			</div>
+					
 			<div class="field" title="Selected Date Taken">
 				<MaterialIcon Icon="photo_camera"/>
 				<span>@FormatDateTaken(CurrentIi.SelectedDateTaken)</span>
@@ -208,7 +214,8 @@
 			if (Current is LibraryItem li)
 				newDateTaken = li.DateTaken;
 
-			newFilename = Current.FilenameWithoutExtension;
+			newFilename = CurrentLi != null ? CurrentLi.FilenameWithoutExtension : CurrentIi!.NewFilename;
+			
 			ext = Path.GetExtension(Current.Path);
 			
 			StateHasChanged();
