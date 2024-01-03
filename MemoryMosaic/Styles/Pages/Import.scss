@@ -4,10 +4,18 @@ header {
 	@include page-header(1px solid gray, 60px);
 	
 	> #stats {
-		@include flex-col;
+		@include flex-row;
 		position: absolute;
-		left: 250px;
-		height: max-content;
+		left: 230px;
+		height: 100%;
+		
+		> div {
+			@include flex-col;
+			height: 44px;
+			justify-content: space-between;
+			margin-left: 12px;
+			margin-right: 12px;
+		}
 	}
 	
 	> .iconTextBtn {

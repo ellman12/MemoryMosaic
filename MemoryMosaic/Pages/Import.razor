@@ -20,18 +20,23 @@
 	
 	<div id="stats">
 		<div>
+			<span>@importItems.Count Items</span>
+			<span>@F.FormatBytes(F.GetFolderSize(S.ImportFolderPath))</span>
+		</div>
+
+		<div>
 			@if (ErrorAmount > 0)
 			{
 				<span style="color: red">@ErrorAmount @(ErrorAmount == 1 ? "Error" : "Errors")</span>
 			}
-			
+	
 			@if (displayWarnings && WarningAmount > 0)
 			{
 				<span style="color: yellow">@WarningAmount @(WarningAmount == 1 ? "Warning" : "Warnings")</span>
 			}
 		</div>
 	</div>
-	
+
 	@if (ErrorAmount == 0 && !EditingFilename)
 	{
 		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@AddItems"/>
