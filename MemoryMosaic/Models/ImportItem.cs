@@ -13,8 +13,6 @@ public sealed class ImportItem : Media
 
 	public string Extension { get; init; }
 
-	public string AbsolutePath { get; init; }
-
 	public DateTime? MetadataDateTaken { get; init; }
 
 	public DateTime? FilenameDateTaken { get; init; }
@@ -71,12 +69,11 @@ public sealed class ImportItem : Media
 		Thumbnail = F.GenerateThumbnail(absolutePath);
 		
 		Path = absolutePath.Replace(S.ImportFolderPath, "").Substring(1);
-		AbsolutePath = absolutePath;
-		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(AbsolutePath);
-		Extension = P.GetExtension(AbsolutePath);
+		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(absolutePath);
+		Extension = P.GetExtension(absolutePath);
 		Video = D.IsVideoExt(Extension);
 
-		D.GetDateTakenFromBoth(AbsolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
+		D.GetDateTakenFromBoth(absolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;
 		FilenameDateTaken = filenameDT;
 		if (MetadataDateTaken != null)

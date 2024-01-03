@@ -199,7 +199,7 @@ public sealed partial class Import
 			await Task.Run(() =>
 			{
 				Directory.CreateDirectory(C.CreateFullDateFolderPath(item.SelectedDateTaken));
-				File.Move(item.AbsolutePath, item.AbsoluteDestinationPath);
+				File.Move(item.FullPath, item.AbsoluteDestinationPath);
 				D.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
 				LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
 			}, cancellationToken);
