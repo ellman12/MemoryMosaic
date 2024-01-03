@@ -9,9 +9,9 @@ public sealed class ImportItem : Media
 	public string OriginalFilename { get; } 
 
 	///What the file has been renamed to, if applicable, without the extension.
-	public string NewFilename { get; set; } 
+	public string NewFilename { get; set; }
 
-	public string Extension { get; }
+	private string Extension { get; }
 
 	public DateTime? MetadataDateTaken { get; }
 
