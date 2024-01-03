@@ -66,6 +66,10 @@ public sealed partial class Import
 		}
 	}
 
+	private int WarningAmount => importItems
+		.GroupBy(importItem => importItem.DestinationPath)
+		.Count(group => LibraryCache.Values.Any(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension)));
+
 	private string AddBtnText
 	{
 		get
