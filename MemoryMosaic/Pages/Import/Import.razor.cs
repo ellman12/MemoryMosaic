@@ -118,6 +118,17 @@ public sealed partial class Import
 	
 	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilename.Contains(searchText)).ToImmutableArray();
 
+	private static readonly Dictionary<string, string> Shortcuts = new()
+	{
+		{"Ctrl A", "Select All"},
+		{"Alt A", "Add Selected, If No Errors"},
+		{"Alt C", "Toggle CollectionSelector"},
+		{"Alt S", "Toggles If Paths Are Condensed or Full Size"},
+		{"Alt D", "Toggles If Destination Paths Are Shown"},
+		{"Del", "Delete Selected"},
+		{"Esc", "Clear Selection"}
+	};
+	
 	private void ClearSelection()
 	{
 		SelectedItems.Clear();
@@ -196,6 +207,9 @@ public sealed partial class Import
 
 	private async void AddItems()
 	{
+		if (ErrorAmount > 0 || EditingFilename)
+			return;
+		
 		IEnumerable<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : importItems.Where(item => SelectedItems.Contains(item.Id));
 
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
