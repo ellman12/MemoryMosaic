@@ -1,7 +1,7 @@
 ﻿namespace MemoryMosaic.Shared.Import;
 
 using Microsoft.AspNetCore.Components;
-using Pages;
+using Pages.Import;
 
 ///Base class for ImportItemDisplay and LibraryItemDisplay.
 public abstract class ItemDisplay<T> : Component where T : Media

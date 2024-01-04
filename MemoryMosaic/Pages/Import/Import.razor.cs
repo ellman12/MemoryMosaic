@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Pages;
+﻿namespace MemoryMosaic.Pages.Import;
 
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
@@ -262,5 +262,5 @@ public sealed partial class Import
 			UpdateItemCollections(item);
 	}
 
-	private long CalculateSizeOfItems(IEnumerable<ImportItem> items) => items.Sum(item => new FileInfo(item.FullPath).Length);
+	private static long CalculateSizeOfItems(IEnumerable<ImportItem> items) => items.Sum(item => new FileInfo(item.FullPath).Length);
 }
