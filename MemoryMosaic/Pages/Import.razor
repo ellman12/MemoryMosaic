@@ -20,8 +20,16 @@
 	
 	<div id="stats">
 		<div>
-			<span>@importItems.Count Items</span>
-			<span>@F.FormatBytes(F.GetFolderSize(S.ImportFolderPath))</span>
+			@if (String.IsNullOrEmpty(searchText))
+			{
+				<span>@importItems.Count Items</span>
+				<span>@F.FormatBytes(F.GetFolderSize(S.ImportFolderPath))</span>
+			}
+			else
+			{
+				<span>@SearchResults.Length Items</span>
+				<span>@F.FormatBytes(CalculateSizeOfItems(SearchResults))</span>
+			}
 		</div>
 
 		<div>
@@ -41,6 +49,8 @@
 	{
 		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@AddItems"/>
 	}
+	
+	<TextInput @bind-Input="@searchText" OnChange="@Rerender" Placeholder="Search"/>
 	
 	<div>
 		@if (SelectedItems.Count > 0)
@@ -83,7 +93,7 @@
 <main>
 	@{
 		int index = 0;
-		foreach (var group in importItems.GroupBy(item => item.DestinationPath))
+		foreach (var group in importItems.Where(item => item.NewFilename.Contains(searchText)).GroupBy(item => item.DestinationPath))
 		{
 			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
 			

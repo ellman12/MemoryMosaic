@@ -1,4 +1,4 @@
-namespace MemoryMosaic.Pages;
+﻿namespace MemoryMosaic.Pages;
 
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
@@ -20,6 +20,8 @@ public sealed partial class Import
 	public int MinYear { get; private set; } = 2000;
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
 
+	private string searchText = "";
+	
 	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
 
 	public FullscreenViewer<Media> fv = null!;
@@ -107,6 +109,8 @@ public sealed partial class Import
 			return content;
 		}
 	}
+	
+	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilename.Contains(searchText)).ToImmutableArray();
 
 	private void ClearSelection()
 	{
@@ -251,4 +255,6 @@ public sealed partial class Import
 		foreach (ImportItem item in importItems.Where(item => SelectedItems.Contains(item.Id)))
 			UpdateItemCollections(item);
 	}
+
+	private long CalculateSizeOfItems(IEnumerable<ImportItem> items) => items.Sum(item => new FileInfo(item.FullPath).Length);
 }

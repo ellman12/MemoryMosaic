@@ -23,6 +23,11 @@ header {
 		left: 440px;
 	}
 	
+	> input[type="text"] {
+		position: absolute;
+		left: 40%;
+	}
+	
 	> div:last-of-type {
 		@include flex-row;
 		gap: 8px;
