@@ -28,7 +28,7 @@ public sealed partial class Import
 
 	private bool displayWarnings = true, onlyDisplayErrors, pageLoading = true;
 
-	private DateTakenSource newDateTakenSource;
+	private DateTakenSource newDateTakenSource = DateTakenSource.None;
 
 	private List<ImportItem> importItems = new();
 
@@ -43,7 +43,7 @@ public sealed partial class Import
 	{
 		L.LogLine("Begin Import Initialization", LogLevel.Info);
 		await RerenderAsync();
-
+		
 		ConcurrentBag<ImportItem> bag = new();
 
 		Task thumbnails = Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
