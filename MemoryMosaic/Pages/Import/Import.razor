@@ -61,9 +61,8 @@
 	<div>
 		@if (SelectedItems.Count > 0)
 		{
-			var items = importItems.Where(item => SelectedItems.Contains(item.Id)).ToImmutableArray();
-			bool canDisplayMetadata = items.All(item => item.MetadataDateTaken != null);
-			bool canDisplayFilename = items.All(item => item.FilenameDateTaken != null);
+			bool canDisplayMetadata = Selected.All(item => item.MetadataDateTaken != null);
+			bool canDisplayFilename = Selected.All(item => item.FilenameDateTaken != null);
 			
 			<select @bind="@newDateTakenSource">
 				@if (canDisplayMetadata) { <option>Metadata</option> }

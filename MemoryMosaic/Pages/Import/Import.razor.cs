@@ -115,6 +115,8 @@ public sealed partial class Import
 			return content;
 		}
 	}
+
+	private IEnumerable<ImportItem> Selected => importItems.Where(item => SelectedItems.Contains(item.Id));
 	
 	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilename.Contains(searchText)).ToImmutableArray();
 
@@ -149,7 +151,7 @@ public sealed partial class Import
 
 	private void UpdateDateTakenSources()
 	{
-		foreach (var importItem in importItems.Where(item => SelectedItems.Contains(item.Id)))
+		foreach (var importItem in Selected)
 			importItem.DateTakenSource = newDateTakenSource;
 
 		Rerender();
@@ -157,10 +159,9 @@ public sealed partial class Import
 
 	private void ToggleStars()
 	{
-		var items = importItems.Where(item => SelectedItems.Contains(item.Id)).ToImmutableArray();
-		bool allStarred = items.All(file => file.Starred);
+		bool allStarred = Selected.All(file => file.Starred);
 
-		foreach (var importItem in items)
+		foreach (var importItem in Selected)
 			importItem.Starred = !allStarred;
 
 		Rerender();
@@ -168,9 +169,7 @@ public sealed partial class Import
 
 	private void DeleteSelected()
 	{
-		var itemsToDelete = importItems.Where(importItem => SelectedItems.Contains(importItem.Id));
-
-		foreach (var importItem in itemsToDelete)
+		foreach (var importItem in Selected)
 			FileSystem.DeleteFile(importItem.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
@@ -210,7 +209,7 @@ public sealed partial class Import
 		if (ErrorAmount > 0 || EditingFilename)
 			return;
 		
-		IEnumerable<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : importItems.Where(item => SelectedItems.Contains(item.Id));
+		IEnumerable<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected;
 
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
 		{
@@ -232,7 +231,7 @@ public sealed partial class Import
 		});
 
 		if (SelectedItems.Count > 0)
-			importItems.RemoveAll(file => SelectedItems.Contains(file.Id));
+			importItems.RemoveAll(item => SelectedItems.Contains(item.Id));
 		else
 			importItems.Clear();
 
@@ -272,7 +271,7 @@ public sealed partial class Import
 
 	private void UpdateSelectedItemsCollections()
 	{
-		foreach (ImportItem item in importItems.Where(item => SelectedItems.Contains(item.Id)))
+		foreach (ImportItem item in Selected)
 			UpdateItemCollections(item);
 	}
 
