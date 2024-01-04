@@ -26,7 +26,7 @@ public sealed partial class Import
 
 	public FullscreenViewer<Media> fv = null!;
 
-	private bool displayWarnings = true, onlyDisplayErrors;
+	private bool displayWarnings = true, onlyDisplayErrors, pageLoading = true;
 
 	private DateTakenSource newDateTakenSource;
 
@@ -37,21 +37,27 @@ public sealed partial class Import
 	private Dropdown moreOptions = null!;
 
 	public void Rerender() => StateHasChanged();
-
-	protected override void OnInitialized()
+	public async Task RerenderAsync() => await InvokeAsync(StateHasChanged);
+	
+	protected override async Task OnInitializedAsync()
 	{
 		L.LogLine("Begin Import Initialization", LogLevel.Info);
+		await RerenderAsync();
 
 		ConcurrentBag<ImportItem> bag = new();
 
-		Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
+		Task thumbnails = Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
 		{
 			bag.Add(new ImportItem(fullPath.Replace('\\', '/')));
-		});
+		}));
+		await thumbnails;
 		
 		importItems = bag.ToList();
 		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
 		SortItems();
+		
+		pageLoading = false;
+		await RerenderAsync();
 
 		L.LogLine("Finish Import Initialization", LogLevel.Info);
 	}

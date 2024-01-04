@@ -5,6 +5,12 @@
 <link href="css/Pages/Import.css" rel="stylesheet"/>
 <link href="css/Components/ItemDisplay.css" rel="stylesheet"/>
 
+@if (pageLoading)
+{
+	<h1>Loading Import...</h1>
+	return;
+}
+
 @if (importItems.Count == 0)
 {
 	<h1>No supported files found in mm_import.</h1>
