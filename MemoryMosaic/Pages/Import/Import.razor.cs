@@ -34,7 +34,7 @@ public sealed partial class Import
 
 	private CollectionSelector cs = null!;
 
-	private Dropdown moreOptions = null!;
+	private ElementVisibility moreSettings = null!;
 
 	public void Rerender() => StateHasChanged();
 	public async Task RerenderAsync() => await InvokeAsync(StateHasChanged);
@@ -42,6 +42,7 @@ public sealed partial class Import
 	protected override async Task OnInitializedAsync()
 	{
 		L.LogLine("Begin Import Initialization", LogLevel.Info);
+		moreSettings = new ElementVisibility(Rerender);
 		await RerenderAsync();
 		
 		ConcurrentBag<ImportItem> bag = new();

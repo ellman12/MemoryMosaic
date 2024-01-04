@@ -34,11 +34,17 @@ header {
 		position: fixed;
 		right: 30px;
 		
-		> .dropdown {
+		> #dropdown {
 			@include flex-col;
+			background-color: black;
+			border: 1px solid white;
 			width: max-content;
 			padding: 8px;
 			gap: 8px;
+			position: fixed;
+			top: 64px;
+			right: 40px;
+			z-index: 99999;
 			
 			> div:first-of-type, div:nth-of-type(2) {
 				@include flex-row;

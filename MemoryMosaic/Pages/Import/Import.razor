@@ -76,9 +76,9 @@
 			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
 		}
 		
-		<IconButton Icon="more_vert" OnClick="@(() => moreOptions.Toggle())"/>
+		<IconButton Icon="more_vert" OnClick="@(() => moreSettings.Toggle())"/>
 		
-		<Dropdown @ref="@moreOptions" Positioning="top: 64px; right: 40px">
+		<div id="dropdown" style="@moreSettings.Style">
 			<div>
 				<span>Min Year</span>
 				<IntInput @bind-Input="@MinYear" HideSpinner="true" Placeholder="Min Year" Style="width: 40px; margin-left: 8px"/>
@@ -91,7 +91,7 @@
 			
 			<Checkbox @bind-Input="@displayWarnings" Label="Display Warnings" Title="Warnings are files with the same name but in a different folder."/>
 			<Checkbox @bind-Input="@onlyDisplayErrors" Label="Only Display Errors" Title="Errors occur when 2 or more import items would end up in the same destination folder, or when there's already a library item with the same name in that folder."/>
-		</Dropdown>
+		</div>
 	</div>
 </header>
 
