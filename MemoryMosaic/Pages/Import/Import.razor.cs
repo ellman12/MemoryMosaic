@@ -30,6 +30,8 @@ public sealed partial class Import
 
 	private DateTakenSource newDateTakenSource = DateTakenSource.None;
 
+	private ImportSortMode sortMode = ImportSortMode.FilenameAsc;
+
 	private List<ImportItem> importItems = new();
 
 	private CollectionSelector cs = null!;
@@ -197,12 +199,15 @@ public sealed partial class Import
 
 		Rerender();
 	}
-
+	
 	private void SortItems()
 	{
-		importItems = importItems.OrderByDescending(item => LibraryCache.Count(libItem => P.GetFileName(libItem.Key).Contains(item.NewFilename)))
-			.ThenBy(item => item.NewFilename)
-			.ToList();
+		Func<ImportItem, int> libraryErrorsSortFunc = item => LibraryCache.Count(libItem => P.GetFileName(libItem.Key).Contains(item.NewFilename));
+		Func<ImportItem, dynamic?> thenByField = (int) sortMode is 1 or 2 ? item => item.NewFilename : item => item.SelectedDateTaken;
+
+		importItems = (int) sortMode % 2 == 0
+			? importItems.OrderBy(libraryErrorsSortFunc).ThenBy(thenByField).ToList()
+			: importItems.OrderByDescending(libraryErrorsSortFunc).ThenByDescending(thenByField).ToList();
 	}
 
 	private async void AddItems()

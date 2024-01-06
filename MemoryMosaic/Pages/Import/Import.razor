@@ -89,6 +89,17 @@
 				<IntInput @bind-Input="@MaxYear" HideSpinner="true" Placeholder="Max Year" Style="width: 40px; margin-left: 8px"/>
 			</div>
 			
+			<div id="sort">
+				<span>Sort By</span>
+				
+				<select @bind="@sortMode" @bind:after="@SortItems">
+					<option value="@ImportSortMode.FilenameAsc">Filename Asc</option>
+					<option value="@ImportSortMode.FilenameDesc">Filename Desc</option>
+					<option value="@ImportSortMode.SelectedDateTakenAsc">Selected DT Asc</option>
+					<option value="@ImportSortMode.SelectedDateTakenDesc">Selected DT Desc</option>
+				</select>
+			</div>
+			
 			<Checkbox @bind-Input="@displayWarnings" Label="Display Warnings" Title="Warnings are files with the same name but in a different folder."/>
 			<Checkbox @bind-Input="@onlyDisplayErrors" Label="Only Display Errors" Title="Errors occur when 2 or more import items would end up in the same destination folder, or when there's already a library item with the same name in that folder."/>
 		</div>

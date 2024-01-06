@@ -53,6 +53,16 @@ header {
 					width: 70px;
 				}
 			}
+			
+			> #sort {
+				@include flex-row;
+				gap: 12px;
+				
+				> select {
+					margin-top: 4px;
+					margin-bottom: 4px;
+				}
+			}
 		}
 	}
 }
