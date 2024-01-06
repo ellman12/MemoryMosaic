@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Pages.Import;
+namespace MemoryMosaic.Pages.Import;
 
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
@@ -30,7 +30,7 @@ public sealed partial class Import
 
 	private DateTakenSource newDateTakenSource = DateTakenSource.None;
 
-	private ImportSortMode sortMode = ImportSortMode.FilenameAsc;
+	private ImportSortMode sortMode = ImportSortMode.SelectedDateTakenAsc;
 
 	private List<ImportItem> importItems = new();
 
@@ -203,11 +203,17 @@ public sealed partial class Import
 	private void SortItems()
 	{
 		Func<ImportItem, int> libraryErrorsSortFunc = item => LibraryCache.Count(libItem => P.GetFileName(libItem.Key).Contains(item.NewFilename));
-		Func<ImportItem, dynamic?> thenByField = (int) sortMode is 1 or 2 ? item => item.NewFilename : item => item.SelectedDateTaken;
 
-		importItems = (int) sortMode % 2 == 0
-			? importItems.OrderBy(libraryErrorsSortFunc).ThenBy(thenByField).ToList()
-			: importItems.OrderByDescending(libraryErrorsSortFunc).ThenByDescending(thenByField).ToList();
+		importItems = sortMode switch
+		{
+			ImportSortMode.FilenameAsc => importItems.OrderBy(libraryErrorsSortFunc).ThenBy(item => item.NewFilename).ToList(),
+			ImportSortMode.FilenameDesc => importItems.OrderByDescending(libraryErrorsSortFunc).ThenByDescending(item => item.NewFilename).ToList(),
+			ImportSortMode.SelectedDateTakenAsc => importItems.OrderBy(libraryErrorsSortFunc).ThenBy(item => item.SelectedDateTaken).ThenBy(item => item.NewFilename).ToList(),
+			ImportSortMode.SelectedDateTakenDesc => importItems.OrderByDescending(libraryErrorsSortFunc).ThenByDescending(item => item.SelectedDateTaken).ThenByDescending(item => item.NewFilename).ToList(),
+			_ => throw new ArgumentOutOfRangeException()
+		};
+
+		LastCheckedIndex = 0;
 	}
 
 	private async void AddItems()
