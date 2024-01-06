@@ -84,5 +84,7 @@ public sealed class ImportItem : Media
 			DateTakenSource = DateTakenSource.None;
 		
 		customDateTaken = SelectedDateTaken;
+		
+		Size = new FileInfo(absolutePath).Length;
 	}
 }

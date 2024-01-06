@@ -17,6 +17,9 @@ public abstract class Media
 	
 	public bool Video { get; protected init; }
 
+	///How many bytes this item is on disk.
+	public long Size { get; protected init; }
+	
 	public abstract string RequestPath { get; }
 	
 	public abstract string FullPath { get; }

@@ -38,6 +38,7 @@ public sealed class LibraryItem : Media
 		DateDeleted = null;
 		Thumbnail = importItem.Thumbnail;
 		Video = F.SupportedVideoExts.Contains(P.GetExtension(Path).ToLower());
+		Size = new FileInfo(FullPath).Length;
 	}
 	
 	public string Filename => P.GetFileName(Path);
