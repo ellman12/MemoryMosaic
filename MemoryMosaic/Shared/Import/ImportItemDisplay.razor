@@ -5,17 +5,16 @@
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
 	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
-	
-	@if (!EditingFilename)
-	{
-		<span @ondblclick="@EnableRename" class="@PathWidth @TextClass">@Item.Path</span>
-	}
 
 	@if (EditingFilename)
 	{
 		<TextInput @bind-Input="@Item.NewFilename" Width="250px"/>
 		<IconButton Icon="save" OnClick="@RenameItem"/>
 		<IconButton Icon="close" OnClick="@CancelRenaming"/>
+	}
+	else
+	{
+		<span @ondblclick="@EnableRename" class="@PathWidth @TextClass">@Item.Path</span>
 	}
 
 	<div class="dateTakenDisplay" @ondblclick="@(() => Item.DateTakenSource = DateTakenSource.Custom)">
@@ -92,10 +91,10 @@
 	<IconButton Icon="@(Item.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(Item.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
 
 	<textarea style="display: @(String.IsNullOrWhiteSpace(Item.Description) ? "none" : "inline")" @bind="@Item.Description" placeholder="Description"></textarea>
-	
+
 	@if (Import.DestinationPathsVisible || TextClass != "none" || Item.OriginalFilename != Item.NewFilename)
 	{
-		<span class="@TextClass" style="font-size: 22px">&rArr;</span>		
+		<span class="@TextClass" style="font-size: 22px">&rArr;</span>
 		<span class="@PathWidth @TextClass">@Item.DestinationPath</span>
 	}
 </div>
@@ -154,7 +153,7 @@
 		EditingFilename = false;
 		Import.Rerender();
 	}
-	
+
 	private void CancelRenaming()
 	{
 		EditingFilename = false;
