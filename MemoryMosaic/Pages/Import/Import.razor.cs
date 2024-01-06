@@ -296,5 +296,5 @@ public sealed partial class Import
 			UpdateItemCollections(item);
 	}
 
-	private static long CalculateSizeOfItems(IEnumerable<ImportItem> items) => items.Sum(item => new FileInfo(item.FullPath).Length);
+	private static long CalculateSizeOfItems(IEnumerable<ImportItem> items) => items.Sum(item => item.Size);
 }
