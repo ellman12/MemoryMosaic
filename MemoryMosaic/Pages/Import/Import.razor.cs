@@ -229,9 +229,12 @@ public sealed partial class Import
 	{
 		if (ErrorAmount > 0 || EditingFilename)
 			return;
-		
-		IEnumerable<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected;
 
+		List<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected.ToList();
+
+		status = $"Adding {items.Count} Items";
+		await RerenderAsync();
+		
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
 		{
 			await C.InsertItem(item);
@@ -256,6 +259,9 @@ public sealed partial class Import
 		else
 			importItems.Clear();
 
+		status = $"Added {items.Count} Items";
+		await RerenderAsync();
+		
 		ClearSelection();
 	}
 
