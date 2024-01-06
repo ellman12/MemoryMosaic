@@ -91,6 +91,11 @@
 	<IconButton Icon="@(Item.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(Item.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
 
 	<textarea style="display: @(String.IsNullOrWhiteSpace(Item.Description) ? "none" : "inline")" @bind="@Item.Description" placeholder="Description"></textarea>
+	
+	@if (Import.DisplayFileSizes)
+	{
+		<span>@F.FormatBytes(Item.Size)</span>
+	}
 
 	@if (Import.DestinationPathsVisible || TextClass != "none" || Item.OriginalFilename != Item.NewFilename)
 	{

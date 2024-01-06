@@ -21,6 +21,8 @@ public sealed class LibraryItem : Media
 		DateDeleted = dateDeleted;
 		Thumbnail = thumbnail;
 		Video = F.SupportedVideoExts.Contains(P.GetExtension(Path).ToLower());
+		
+		Size = new FileInfo(FullPath).Length;
 	}
 
 	///Creates a new LibraryItem from a query of this form: path, id, date_taken, date_added, starred, description, date_deleted, thumbnail
@@ -38,6 +40,7 @@ public sealed class LibraryItem : Media
 		DateDeleted = null;
 		Thumbnail = importItem.Thumbnail;
 		Video = F.SupportedVideoExts.Contains(P.GetExtension(Path).ToLower());
+		
 		Size = new FileInfo(FullPath).Length;
 	}
 	

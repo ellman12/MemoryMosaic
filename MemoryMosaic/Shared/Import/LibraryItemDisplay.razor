@@ -10,6 +10,11 @@
 		<span>DA: @Item.DateAdded</span>
 	</div>
 	
+	@if (Import.DisplayFileSizes)
+	{
+		<span>@F.FormatBytes(Item.Size)</span>
+	}
+	
 	<span>@(Item.DateDeleted != null ? "In Trash" : "")</span>
 	<IconButton Icon="trash" OnClick="@DeleteBtnClick"/>
 </div>

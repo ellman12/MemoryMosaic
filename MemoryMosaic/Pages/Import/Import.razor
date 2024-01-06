@@ -155,5 +155,5 @@
 
 <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent"/>
 
-<KeyboardShortcuts CtrlA="@(() => ChangeRangeState(0, importItems.Count - 1))" AltA="@AddItems" AltS="@TogglePathWidth" AltD="@ToggleDestinationPaths" Del="@DeleteSelected" Esc="@ClearSelection"/>
+<KeyboardShortcuts CtrlA="@(() => ChangeRangeState(0, importItems.Count - 1))" AltA="@AddItems" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" Del="@DeleteSelected" Esc="@ClearSelection"/>
 <ShortcutsReference Shortcuts="@Shortcuts"/>

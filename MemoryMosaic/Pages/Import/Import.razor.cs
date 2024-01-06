@@ -14,6 +14,8 @@ public sealed partial class Import
 	public bool DestinationPathsVisible { get; private set; }
 
 	public bool EditingFilename { get; set; }
+	
+	public bool DisplayFileSizes { get; set; }
 
 	public int LastCheckedIndex { get; set; }
 
@@ -26,7 +28,7 @@ public sealed partial class Import
 
 	public FullscreenViewer<Media> fv = null!;
 
-	private bool displayWarnings = true, onlyDisplayErrors, pageLoading = true;
+	private bool pageLoading = true, displayWarnings = true, onlyDisplayErrors;
 
 	private DateTakenSource newDateTakenSource = DateTakenSource.None;
 
@@ -128,8 +130,9 @@ public sealed partial class Import
 		{"Ctrl A", "Select All"},
 		{"Alt A", "Add Selected, If No Errors"},
 		{"Alt C", "Toggle CollectionSelector"},
-		{"Alt S", "Toggles If Paths Are Condensed or Full Size"},
 		{"Alt D", "Toggles If Destination Paths Are Shown"},
+		{"Alt F", "Toggle Displaying File Sizes"},
+		{"Alt S", "Toggles If Paths Are Condensed or Full Size"},
 		{"Del", "Delete Selected"},
 		{"Esc", "Clear Selection"}
 	};
@@ -137,6 +140,12 @@ public sealed partial class Import
 	private void ClearSelection()
 	{
 		SelectedItems.Clear();
+		Rerender();
+	}
+
+	private void ToggleFileSizes()
+	{
+		DisplayFileSizes = !DisplayFileSizes;
 		Rerender();
 	}
 
