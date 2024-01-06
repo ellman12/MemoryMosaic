@@ -22,7 +22,7 @@ public sealed partial class Import
 	public int MinYear { get; private set; } = 2000;
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
 
-	private string searchText = "";
+	private string searchText = "", status = "";
 	
 	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
 

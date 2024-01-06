@@ -58,6 +58,8 @@
 	
 	<TextInput @bind-Input="@searchText" OnChange="@Rerender" Placeholder="Search"/>
 	
+	<span id="status">@status</span>
+	
 	<div>
 		@if (SelectedItems.Count > 0)
 		{

@@ -28,6 +28,11 @@ header {
 		left: 40%;
 	}
 	
+	#status {
+		position: absolute;
+		left: 60%;
+	}
+	
 	> div:last-of-type {
 		@include flex-row;
 		gap: 8px;
