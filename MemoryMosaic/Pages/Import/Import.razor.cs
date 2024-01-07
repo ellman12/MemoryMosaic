@@ -186,6 +186,7 @@ public sealed partial class Import
 
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
 		status = $"Deleted {SelectedItems.Count} Items";
+		L.LogLine(status, LogLevel.Info);
 
 		ClearSelection();
 		Rerender();
@@ -235,6 +236,7 @@ public sealed partial class Import
 		List<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected.ToList();
 
 		status = $"Adding {items.Count} Items";
+		L.LogLine(status, LogLevel.Info);
 		await RerenderAsync();
 
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
@@ -262,6 +264,7 @@ public sealed partial class Import
 			importItems.Clear();
 
 		status = $"Added {items.Count} Items";
+		L.LogLine(status, LogLevel.Info);
 		await RerenderAsync();
 
 		ClearSelection();
