@@ -10,4 +10,6 @@
 	[Parameter, EditorRequired] public RenderFragment ChildContent { get; set; } = null!;
 
 	[Parameter, EditorRequired] public string Positioning { get; set; } = "";
+
+	protected override bool CanControlScrolling => false;
 }
