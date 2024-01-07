@@ -41,8 +41,8 @@ public static class Connection
 
     #region Library
 
-    /// <summary>For inserting an item into the library table.</summary>
-    /// <param name="item">The item to insert into the library.</param>
+    ///<summary>For inserting an item into the library table.</summary>
+    ///<param name="item">The item to insert into the library.</param>
     public static async Task InsertItem(ImportItem item)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
@@ -188,9 +188,9 @@ public static class Connection
         Close();
     }
     
-    /// <summary>Sets the description of an item.</summary>
-    /// <param name="id">The id of the item.</param>
-    /// <param name="newDescription">The new description of the item.</param>
+    ///<summary>Sets the description of an item.</summary>
+    ///<param name="id">The id of the item.</param>
+    ///<param name="newDescription">The new description of the item.</param>
     public static void UpdateDescription(Guid id, string? newDescription)
     {
         try
@@ -456,7 +456,7 @@ public static class Connection
     }
 
     ///<summary>Given the integer id of a collection represented as a string, return a new <see cref="Collection"/> with the extra details about a Collection, like name, last updated, folder, etc.</summary>
-    /// <param name="collectionID"></param>
+    ///<param name="collectionID"></param>
     public static async Task<Collection?> GetCollectionDetailsAsync(string collectionID)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
