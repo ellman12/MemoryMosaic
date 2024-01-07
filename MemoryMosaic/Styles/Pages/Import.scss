@@ -39,30 +39,20 @@ header {
 		position: fixed;
 		right: 30px;
 		
-		> #dropdown {
-			@include flex-col;
-			background-color: black;
-			border: 1px solid white;
-			width: max-content;
+		> .dropdown {
 			padding: 8px;
 			gap: 8px;
-			position: fixed;
-			top: 64px;
-			right: 40px;
-			z-index: 99999;
-			
+
 			> div:first-of-type, div:nth-of-type(2) {
 				@include flex-row;
-				
-				> span {
-					width: 70px;
-				}
+
+				> span { width: 70px; }
 			}
-			
+
 			> #sort {
 				@include flex-row;
 				gap: 12px;
-				
+
 				> select {
 					margin-top: 4px;
 					margin-bottom: 4px;
