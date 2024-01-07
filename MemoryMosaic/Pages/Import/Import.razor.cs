@@ -303,6 +303,4 @@ public sealed partial class Import
 		foreach (ImportItem item in Selected)
 			UpdateItemCollections(item);
 	}
-
-	private static long CalculateSizeOfItems(IEnumerable<ImportItem> items) => items.Sum(item => item.Size);
 }

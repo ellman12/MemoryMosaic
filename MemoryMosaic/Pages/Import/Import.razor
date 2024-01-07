@@ -34,7 +34,7 @@
 			else
 			{
 				<span>@SearchResults.Length Items</span>
-				<span>@F.FormatBytes(CalculateSizeOfItems(SearchResults))</span>
+				<span>@F.FormatBytes(SearchResults.Sum(item => item.Size))</span>
 			}
 		</div>
 
