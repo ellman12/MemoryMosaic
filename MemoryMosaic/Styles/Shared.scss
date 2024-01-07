@@ -33,6 +33,10 @@ h1 {
 
 input[type="range"] {
 	accent-color: $AccentColor; 
+	
+	&:focus-visible {
+		outline: 1px solid $AccentColor;
+	}
 }
 
 input[type="date"], input[type="datetime-local"] {
@@ -70,11 +74,12 @@ textarea {
 
 select {
 	background-color: black;
-	outline: 1px solid white;
+	border: 1px solid white;
 	border-radius: 4px;
 	
 	&:focus-visible {
-		outline: 2px solid $AccentColor;
+		border: 1px solid $AccentColor;
+		outline: 1px solid $AccentColor;
 	}
 }
 
