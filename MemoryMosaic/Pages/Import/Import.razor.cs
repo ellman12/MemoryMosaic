@@ -15,7 +15,7 @@ public sealed partial class Import
 
 	public bool EditingFilename { get; set; }
 	
-	public bool DisplayFileSizes { get; set; }
+	public bool DisplayFileSizes { get; private set; }
 
 	public int LastCheckedIndex { get; set; }
 
