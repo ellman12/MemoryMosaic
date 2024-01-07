@@ -1,78 +1,94 @@
 @import "../Mixins";
 
 header {
-    @include page-header(1px solid gray, 64px);
-}
-
-header > .iconBtn {
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-header > #statsDiv {
-    position: absolute;
-    left: 180px;
-    display: flex;
-    flex-direction: column;
-}
-
-header > #statsDiv > #errorAmount {
-    color: red;
-}
-
-header > #addBtn {
-    position: absolute;
-    left: 350px;
-}
-
-header > #statusMessage {
-    position: absolute;
-    left: 900px;
-}
-
-header > #yearWarnInputs {
-    position: absolute;
-    right: 300px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-header > #buttons {
-    position: absolute;
-    right: 15px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-header > #buttons > select {
-    background-color: black;
-    border: 1px solid white;
-    border-radius: 4px;
-    outline: none;
-    margin-right: 5px;
-}
-
-header > #buttons > select:focus {
-    outline: 2px solid dodgerblue;
-}
-
-header > #buttons > .iconBtn {
-    margin-left: 5px;
+	@include page-header(1px solid gray, 60px);
+	
+	> #stats {
+		@include flex-row;
+		position: absolute;
+		left: 230px;
+		height: 100%;
+		
+		> div {
+			@include flex-col;
+			height: 44px;
+			justify-content: space-between;
+			margin-left: 12px;
+			margin-right: 12px;
+		}
+	}
+	
+	> .iconTextBtn {
+		position: absolute;
+		left: 440px;
+	}
+	
+	> input[type="text"] {
+		position: absolute;
+		left: 40%;
+	}
+	
+	#status {
+		position: absolute;
+		left: 60%;
+	}
+	
+	> div:last-of-type {
+		@include flex-row;
+		gap: 8px;
+		position: fixed;
+		right: 30px;
+		
+		> #dropdown {
+			@include flex-col;
+			background-color: black;
+			border: 1px solid white;
+			width: max-content;
+			padding: 8px;
+			gap: 8px;
+			position: fixed;
+			top: 64px;
+			right: 40px;
+			z-index: 99999;
+			
+			> div:first-of-type, div:nth-of-type(2) {
+				@include flex-row;
+				
+				> span {
+					width: 70px;
+				}
+			}
+			
+			> #sort {
+				@include flex-row;
+				gap: 12px;
+				
+				> select {
+					margin-top: 4px;
+					margin-bottom: 4px;
+				}
+			}
+		}
+	}
 }
 
 main {
-    @include flex-main(column, 64px);
+	@include flex-main(column, 64px);
+	@include available-width;
+	
+	> .container {
+		border-width: 4px;
+		border-style: solid;
+		border-radius: 4px;
+		margin-top: 4px;
+		margin-bottom: 4px;
+		
+		&.error { border-color: red }
+		&.warning { border-color: yellow }
+		&.none {
+			border-width: 0;
+			margin: 0;
+		}
+	}
 }
 
-main > .itemGroup {
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-main > .itemGroup > .errorDiv {
-}
-
-main > .itemGroup > .warnDiv {
-}

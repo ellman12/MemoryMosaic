@@ -40,7 +40,7 @@ public static class Functions
                 break;
         }
 
-        return $"{Math.Round(compactBytes, 3)} {unit}";
+        return $"{Math.Round(compactBytes)} {unit}";
     }
 
     ///<summary>Given the absolute path to a image/video file, use ffmpeg to generate a compressed thumbnail of the image or the first frame.</summary>
@@ -74,10 +74,10 @@ public static class Functions
     }
         
     ///<summary>
-    ///<para>Return a List&lt;string&gt; of the full paths of all supported file types in rootPath.</para>
-    ///Supported file types are: ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov", and case is ignored.
+    ///<para>Return an IEnumerable&lt;string&gt; of the full paths of all supported file types in rootPath.</para>
+    ///Supported file types are: ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov". Case is ignored.
     ///</summary>
-    public static List<string> GetSupportedFiles(string rootPath)
+    public static IEnumerable<string> GetSupportedFiles(string rootPath)
     {
         string[] allPaths = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories);
         return allPaths.Where(path => SupportedExts.Contains(Path.GetExtension(path).ToLower())).ToList();

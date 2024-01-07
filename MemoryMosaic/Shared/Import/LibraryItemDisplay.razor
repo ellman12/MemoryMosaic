@@ -1,27 +1,31 @@
-﻿@* @using MemoryMosaic.Pages *@
-@* <link href="css/Components/Import/LibraryItemDisplay.css" rel="stylesheet"/> *@
+@inherits ItemDisplay<LibraryItem>
+@using MemoryMosaic.Pages
 
-@* <div class="libraryItem"> *@
-	@* <MaterialIcon Icon="check_circle" Class="checkbox unchecked"/> *@
-	@* <img src="data:image/jpg;base64,@LibraryItem.thumbnail" onclick="window.open('mm_library/@LibraryItem.path', '_blank').focus()" alt="" loading="lazy"/> *@
-	@* <span class="shortPath @(Import.pathWidthClass == "shortWidth" ? "shortWidth" : "fullWidth")">@("Library/" + LibraryItem.path)</span> *@
-	@* <span class="dateTaken">@(LibraryItem.dateTaken == null ? "No Date Taken" : LibraryItem.dateTaken)</span> *@
-	@* <span class="inTrash">@(LibraryItem.dateDeleted != null ? "In Trash" : "")</span> *@
-	@* <IconButton Icon="trash" OnClick="@DeleteBtnClick"/> *@
-@* </div> *@
+<div class="libraryItem">
+	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
+	<span class="@PathWidth @TextClass">@("Library/" + Item.Path)</span>
+	
+	<div class="dateDisplay">
+		<span>DT: @(Item.DateTaken == null ? "No Date Taken" : Item.DateTaken)</span>
+		<span>DA: @Item.DateAdded</span>
+	</div>
+	
+	@if (Import.DisplayFileSizes)
+	{
+		<span>@F.FormatBytes(Item.Size)</span>
+	}
+	
+	<span>@(Item.DateDeleted != null ? "In Trash" : "")</span>
+	<IconButton Icon="trash" OnClick="@DeleteBtnClick"/>
+</div>
 
-@* @code { *@
-
-	@* [Parameter, EditorRequired] public LibraryItem LibraryItem { get; set; } = null!; *@
-
-	@* [Parameter, EditorRequired] public Action Rerender { get; set; } = null!; *@
-
-	@* private void DeleteBtnClick() *@
-	@* { *@
-		@* if (LibraryItem.dateDeleted == null) *@
-			@* C.MoveToTrash(LibraryItem.Id); *@
-		@* C.RemoveFromTrash(LibraryItem.Id); *@
-		@* Import.OrganizeItems(); *@
-		@* Rerender.Invoke(); *@
-	@* } *@
-@* } *@
+@code {
+	private void DeleteBtnClick()
+	{
+		if (Item.DateDeleted == null)
+			C.MoveToTrash(Item.Id);
+		C.RemoveFromTrash(Item);
+		Import.LibraryCache.Remove(Item.Path);
+		Import.Rerender();
+	}
+}

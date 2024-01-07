@@ -42,30 +42,39 @@ public static class Connection
     #region Library
 
     /// <summary>For inserting an item into the library table.</summary>
-    /// <param name="path">The short path to the item, relative to mm_library. Convention is to use '/' as the separator. '/' cannot be the first character.</param>
-    /// <param name="id">The id of this item.</param>
-    /// <param name="dateTaken">When this item was taken.</param>
-    /// <param name="separate">If this item is in a folder.</param>
-    /// <param name="starred">If this item is starred.</param>
-    /// <param name="thumbnail">A compressed base64 string representing the thumbnail.</param>
-    public static async Task InsertItem(string path, Guid id, DateTime? dateTaken, bool separate, bool starred, string thumbnail)
+    /// <param name="item">The item to insert into the library.</param>
+    public static async Task InsertItem(ImportItem item)
     {
         NpgsqlConnection localConn = await CreateLocalConnectionAsync();
 
         try
         {
             await using NpgsqlCommand cmd = new("", localConn);
-            cmd.Parameters.AddWithValue("@path", path);
-            cmd.Parameters.AddWithValue("@id", id);
-            
-            if (dateTaken != null)
-                cmd.Parameters.AddWithValue("@dateTaken", dateTaken);
-            
-            cmd.Parameters.AddWithValue("@separate", separate);
-            cmd.Parameters.AddWithValue("@starred", starred);
-            cmd.Parameters.AddWithValue("@thumbnail", thumbnail);
 
-            cmd.CommandText = $"INSERT INTO library (path, id, {(dateTaken == null ? "" : "date_taken,")} separate, starred, thumbnail) VALUES (@path, @id, {(dateTaken == null ? "" : "@dateTaken, ")} @separate, @starred, @thumbnail) ON CONFLICT(path) DO NOTHING";
+            string columns = "path, id, separate, starred, thumbnail ";
+            string values = "@path, @id, @separate, @starred, @thumbnail ";
+
+            if (item.SelectedDateTaken != null)
+            {
+                columns += ", date_taken";
+                values += ", @dateTaken";
+                cmd.Parameters.AddWithValue("@dateTaken", item.SelectedDateTaken);
+            }
+
+            if (!String.IsNullOrWhiteSpace(item.Description))
+            {
+                columns += ", description";
+                values += ", @description";
+                cmd.Parameters.AddWithValue("@description", item.Description);
+            }
+                
+            cmd.Parameters.AddWithValue("@path", item.DestinationPath);
+            cmd.Parameters.AddWithValue("@id", item.Id);
+            cmd.Parameters.AddWithValue("@separate", item.Collections?.All(collection => collection.Folder) ?? false);
+            cmd.Parameters.AddWithValue("@starred", item.Starred);
+            cmd.Parameters.AddWithValue("@thumbnail", item.Thumbnail);
+
+            cmd.CommandText = $"INSERT INTO library ({columns}) VALUES ({values})";
             await cmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException e)
@@ -165,30 +174,18 @@ public static class Connection
     }
 
     ///<summary>Loads every row in the library table, even if has no DT, in a folder, in the trash, etc. Sorted by date_taken descending (NULL and newest DT first).</summary>
-    ///<returns>List&lt;LibraryItem&gt; of EVERY row in the library table.</returns>
-    public static List<LibraryItem> LoadEntireLibraryTable()
+    ///<returns>IEnumerable&lt;LibraryItem&gt; of EVERY row in the library table.</returns>
+    public static IEnumerable<LibraryItem> GetEntireLibrary()
     {
-        List<LibraryItem> library = new();
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail FROM library ORDER BY date_taken DESC", connection);
-            using NpgsqlDataReader r = cmd.ExecuteReader();
-            
-            while (r.Read())
-                library.Add(new LibraryItem(r));
-            
-            r.Close();
-        }
-        catch (NpgsqlException e)
-        {
-            L.LogException(e);
-        }
-        finally
-        {
-            Close();
-        }
-        return library;
+        Open();
+        using NpgsqlCommand cmd = new("SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail FROM library ORDER BY date_taken DESC", connection);
+        using NpgsqlDataReader r = cmd.ExecuteReader();
+        
+        while (r.Read())
+            yield return new LibraryItem(r);
+        
+        r.Close();
+        Close();
     }
     
     /// <summary>Sets the description of an item.</summary>
@@ -752,12 +749,6 @@ public static class Connection
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<returns>The full date folder path.</returns>
     public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(S.LibFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
-
-    ///<summary>Given a Date Taken and a filename, create the full path to where the item would get moved to in the MM library.</summary>
-    ///<param name="dateTaken">The date taken to use for creating the path.</param>
-    ///<param name="filename">The filename and extension of the item.</param>
-    ///<returns>The full path to where the item would get moved to in the MM library.</returns>
-    public static string CreateFullPath(DateTime? dateTaken, string filename) => Path.Combine(S.LibFolderPath, CreateShortPath(dateTaken, filename));
 
     #endregion
 }

@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <CollectionCreator @ref="@collectionCreator" Collections="@(albums.Concat(folders).ToList())" OnCollectionCreate="@SelectNewCollection"/>
+        <CollectionCreator @ref="@collectionCreator" Collections="@(Albums.Concat(Folders).ToList())" OnCollectionCreate="@SelectNewCollection"/>
 
         <div id="collection-groups">
             <IconButton Icon="history" OnClick="@(() => PreviousSelectionBtnClick(false))" Title="Restore the last selection of collections."/>
@@ -35,38 +35,36 @@
         <div id="collections">
             <span>Albums</span>
             <div>
-                @for (int i = 0; i < albums.Count; i++)
+                @foreach (var album in Albums)
                 {
-                    if (!String.IsNullOrWhiteSpace(searchText) && albums[i].Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
-
-                    int ii = i;
-                    <div class="collection" @onclick="@(() => AlbumClicked(ii))">
+                    if (!String.IsNullOrWhiteSpace(searchText) && album.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
+                    
+                    <div class="collection" @onclick="@(() => AlbumClicked(album.Id))">
                         <div class="cover">
-                            @if (!String.IsNullOrWhiteSpace(albums[i].Cover))
+                            @if (!String.IsNullOrWhiteSpace(album.Cover))
                             {
-                                <img src="mm_library/@albums[i].Cover" alt=""/>
+                                <img src="mm_library/@album.Cover" alt=""/>
                             }
                         </div>
-                        <Checkbox @bind-Input="@checkedAlbums[ii]" Label="@albums[i].Name"/>
+                        <Checkbox Input="@SelectedAlbums.Contains(album.Id)" Label="@album.Name"/>
                     </div>
                 }
             </div>
 
             <span>Folders</span>
             <div>
-                @for (int i = 0; i < folders.Count; i++)
+                @foreach (var folder in Folders)
                 {
-                    if (!String.IsNullOrWhiteSpace(searchText) && folders[i].Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
+                    if (!String.IsNullOrWhiteSpace(searchText) && folder.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
 
-                    int ii = i;
-                    <div class="collection" @onclick="@(() => FolderClicked(ii))">
+                    <div class="collection" @onclick="@(() => FolderClicked(folder.Id))">
                         <div class="cover">
-                            @if (!String.IsNullOrWhiteSpace(folders[i].Cover))
+                            @if (!String.IsNullOrWhiteSpace(folder.Cover))
                             {
-                                <img src="mm_library/@folders[i].Cover" alt=""/>
+                                <img src="mm_library/@folder.Cover" alt=""/>
                             }
                         </div>
-                        <Checkbox @bind-Input="@checkedFolders[ii]" Label="@folders[i].Name"/>
+                        <Checkbox Input="@(SelectedFolderId == folder.Id)" Label="@folder.Name"/>
                     </div>
                 }
             </div>
@@ -77,41 +75,40 @@
 <KeyboardShortcuts AltC="@Toggle"/>
 
 @code {
-    //TODO: I think this stuff wouldn't need to be marked static if we just make an instance of CS and then use that in Import and ImportFile...?
-    public static List<Collection> albums = null!, folders = null!;
-    public static List<bool> checkedAlbums = null!;
-    private static List<bool> checkedFolders = null!;
-    public static int checkedFolderIndex = -1; //Which index in folders is checked (can only have 1 checked (true)).
+    public List<Collection> Albums { get; private set; } = null!;
+    public List<Collection> Folders { get; private set; } = null!;
+
+    public HashSet<int> SelectedAlbums { get; private set; } = new();
+    public int SelectedFolderId { get; private set; } = -1;
 
     private string? searchText;
 
     private CollectionCreator collectionCreator = null!;
 
-    [Parameter, EditorRequired] public HashSet<Guid> SelectedItems { get; set; } = null!;
-    
-    [Parameter] public Action? Rerender { get; set; } //Used to rerender LCV after adding items.
-    
-    [Parameter] public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
+    [Parameter, EditorRequired]
+    public HashSet<Guid> SelectedItems { get; set; } = null!;
 
-    [Parameter] public bool ClearSelectedOnConfirm { get; set; } = true; //Used in Import.
-    
+    [Parameter]
+    public Action? Rerender { get; set; } //Used to rerender LCV after adding items.
+
+    [Parameter]
+    public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
+
     public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
-    
+
     protected override void OnInitialized() => RefreshData();
 
     private void RefreshData()
     {
-        albums = C.GetCollectionsTable(true, false, false);
-        folders = C.GetCollectionsTable(false, true, false);
-        checkedAlbums = (from album in albums select new bool()).ToList();
-        checkedFolders = (from folder in folders select new bool()).ToList();
-        checkedFolderIndex = -1;
+        Albums = C.GetCollectionsTable(true, false, false);
+        Folders = C.GetCollectionsTable(false, true, false);
+        SelectedFolderId = -1;
     }
 
     private void CloseBtnClick()
     {
         Disable();
-        ClearSelectedCollections();
+        ClearCollectionSelection();
     }
 
     private void ClearSelected()
@@ -121,30 +118,27 @@
         Rerender?.Invoke();
     }
 
-    private static void ClearAlbumChecks() => checkedAlbums = checkedAlbums.Select(_ => false).ToList();
-
-    private static void ClearFolderChecks() => checkedFolders = checkedFolders.Select(_ => false).ToList();
-
-    private static void ClearSelectedCollections()
+    private void AlbumClicked(int id)
     {
-        ClearAlbumChecks();
-        ClearFolderChecks();
-    }
-    
-    private void AlbumClicked(int index)
-    {
-        ClearFolderChecks();
-        checkedFolderIndex = -1;
-        checkedAlbums[index] = !checkedAlbums[index];
+        SelectedFolderId = -1;
+
+        if (SelectedAlbums.Contains(id))
+            SelectedAlbums.Remove(id);
+        else
+            SelectedAlbums.Add(id);
     }
 
-    private void FolderClicked(int index)
+    private void ClearCollectionSelection()
     {
-        ClearSelectedCollections();
-        checkedFolderIndex = index;
-        checkedFolders[index] = true;
+        SelectedAlbums.Clear();
     }
-    
+
+    private void FolderClicked(int id)
+    {
+        ClearCollectionSelection();
+        SelectedFolderId = id;
+    }
+
     ///Selects the new collection that was just created.
     private async void SelectNewCollection()
     {
@@ -152,17 +146,15 @@
 
         await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
 
-        int newestAlbumIndex = albums.FindIndex(a => a.Name == collectionCreator.NewCollectionName);
+        int newestAlbumIndex = Albums.FindIndex(a => a.Name == collectionCreator.NewCollectionName);
         if (newestAlbumIndex != -1)
         {
-            checkedAlbums[newestAlbumIndex] = true;
+            SelectedAlbums.Add(Albums[newestAlbumIndex].Id);
         }
         else
         {
-            int newestFolderIndex = folders.FindIndex(f => f.Name == collectionCreator.NewCollectionName);
-            if (newestFolderIndex == -1) return;
-            checkedFolderIndex = newestFolderIndex;
-            checkedFolders[newestFolderIndex] = true;
+            int newestFolderIndex = Folders.FindIndex(f => f.Name == collectionCreator.NewCollectionName);
+            SelectedFolderId = Folders[newestFolderIndex].Id;
         }
     }
 
@@ -175,44 +167,38 @@
         }
         else
         {
-            if (checkedFolderIndex != -1) //If a folder is selected this won't be -1
+            if (SelectedFolderId != -1)
             {
                 if (SelectedItem != Guid.Empty)
                 {
-                    await C.AddToCollectionAsync(folders[checkedFolderIndex].Id, SelectedItem);
+                    await C.AddToCollectionAsync(SelectedFolderId, SelectedItem);
                 }
                 else
                 {
                     foreach (Guid item in SelectedItems)
-                        await C.AddToCollectionAsync(folders[checkedFolderIndex].Id, item);
+                        await C.AddToCollectionAsync(SelectedFolderId, item);
                 }
             }
-            else //Adding to album(s).
+            else
             {
-                for (int c = 0; c < checkedAlbums.Count; c++)
+                foreach (int id in SelectedAlbums)
                 {
-                    if (!checkedAlbums[c]) continue;
-
                     if (SelectedItem != Guid.Empty)
                     {
-                        await C.AddToCollectionAsync(albums[c].Id, SelectedItem);
+                        await C.AddToCollectionAsync(id, SelectedItem);
                     }
                     else
                     {
                         foreach (Guid item in SelectedItems)
-                            await C.AddToCollectionAsync(albums[c].Id, item);
+                            await C.AddToCollectionAsync(id, item);
                     }
                 }
             }
         }
 
-        //Save this selection of albums/folder for next time.
         PreviousSelectionBtnClick(true);
 
         CloseBtnClick();
-
-        if (ClearSelectedOnConfirm)
-            ClearSelected();
     }
 
     private void PreviousSelectionBtnClick(bool save)
@@ -225,70 +211,58 @@
     private void SaveBtnClick(int id, MouseEventArgs mouseEventArgs)
     {
         string filePath = Path.Join(S.FolderPath, $"slot{id}.tmp");
-        if (mouseEventArgs.CtrlKey) //Save/overwrite selection.
+        if (mouseEventArgs.CtrlKey)
         {
-            SaveSelectionToDisk();
+            SaveSelectionToDisk(filePath);
         }
-        else if (File.Exists(filePath)) //Load and apply existing one.
+        else if (File.Exists(filePath))
         {
             bool rewrite = false; //If it encountered an ID that no longer exists in DB and it should rewrite the tmp file to remove it/them.
-            
-            ClearSelectedCollections();
-            
-            string[] input = File.ReadAllLines(filePath);
-            if (input[0] == "F")
+
+            ClearCollectionSelection();
+
+            string[] lines = File.ReadAllLines(filePath);
+            if (lines[0] == "F" && Int32.TryParse(lines[1], out int folderId))
             {
-                checkedFolderIndex = FindIndex(checkedFolders, folders, input[1]);
-                if (checkedFolderIndex == -1) rewrite = true;
-                else checkedFolders[checkedFolderIndex] = true;
+                if (Folders.Any(folder => folder.Id == folderId))
+                    SelectedFolderId = folderId;
+                else
+                    rewrite = true;
             }
-            else if (input[0] == "A")
+            else if (lines[0] == "A")
             {
-                for (int i = 1; i < input.Length; i++)
+                foreach (string line in lines.Skip(1))
                 {
-                    int index = FindIndex(checkedAlbums, albums, input[i]);
-                    if (index == -1)
-                    {
+                    int parsedId = Int32.Parse(line);
+
+                    if (Albums.All(album => album.Id != parsedId))
                         rewrite = true;
-                        continue;
-                    }
-                    checkedAlbums[index] = true;
+                    else
+                        SelectedAlbums.Add(parsedId);
                 }
             }
-            
-            if (rewrite) SaveSelectionToDisk();
+
+            if (rewrite)
+                SaveSelectionToDisk(filePath);
         }
         else
         {
-            ClearSelectedCollections();
-        }
-        StateHasChanged();
-        return;
-
-        void SaveSelectionToDisk()
-        {
-            if (checkedFolders.Any(b => b))
-                File.WriteAllText(filePath, $"F\n{folders[checkedFolderIndex].Id}");
-            else
-            {
-                File.WriteAllText(filePath, "A\n");
-                for (int i = 0; i < checkedAlbums.Count; i++)
-                {
-                    if (checkedAlbums[i])
-                        File.AppendAllText(filePath, $"{albums[i].Id}\n");
-                }
-            }
+            ClearCollectionSelection();
         }
         
-        //From checkedAlbums or checkedFolders, figure out the index for it in checkedAlbums.
-        int FindIndex(List<bool> checkedList, List<Collection> collections, string albumID)
+        StateHasChanged();
+    }
+
+    private void SaveSelectionToDisk(string filePath)
+    {
+        if (SelectedFolderId != -1)
+            File.WriteAllText(filePath, $"F\n{SelectedFolderId}");
+        else
         {
-            int parsedID = Int32.Parse(albumID);
-            for (int i = 0; i < checkedList.Count; i++)
-                if (collections[i].Id == parsedID)
-                    return i;
-            
-            return -1;
+            File.WriteAllText(filePath, "A\n");
+
+            foreach (int albumId in SelectedAlbums)
+                File.AppendAllText(filePath, $"{albumId}\n");
         }
     }
 }

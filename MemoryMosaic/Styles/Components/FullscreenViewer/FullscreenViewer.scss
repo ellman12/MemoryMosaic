@@ -110,7 +110,6 @@
 		> span {
 			margin-top: 12px;
 			margin-bottom: 16px;
-			font-size: 18px;
 		}
 		
 		> .field {
@@ -132,11 +131,8 @@
 
 		> textarea {
 			@include available-width;
-			border: 1px solid white;
 			margin-top: 12px;
 			margin-bottom: 12px;
-			background-color: black;
-			font-size: 16px;
 			min-height: 1.2em;
 			height: 3em;
 			max-height: 10em;
@@ -193,13 +189,9 @@
 
 		> div {
 			@include flex-row;
+			gap: 4px;
 			margin-right: 4px;
 			margin-bottom: 4px;
-
-			> .iconBtn {
-				margin-left: 2px;
-				margin-right: 2px;
-			}
 		}
 	}
 	

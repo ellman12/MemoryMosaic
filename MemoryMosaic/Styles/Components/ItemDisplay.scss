@@ -1,0 +1,80 @@
+﻿@import "../Mixins";
+
+.libraryItem {
+	padding-left: 40px;
+}
+
+.importItem, .libraryItem {
+	@include flex-row;
+	@include available-width;
+	gap: 12px;
+	margin-top: 6px;
+	margin-bottom: 6px;
+	min-height: 60px;
+
+	> img {
+		height: auto;
+		width: 90px;
+		cursor: pointer;
+	}
+
+	> span:first-of-type, span:last-of-type {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+
+		&.short {
+			width: 220px;
+
+			&:hover {
+				min-width: 220px;
+				width: auto;
+			}
+		}
+
+		&.full { width: auto; }
+	}
+
+	> span {
+		&.error { color: red }
+		&.warning { color: yellow }
+		&.none { color: white }
+	}
+
+	.dateDisplay, .dateTakenDisplay {
+		@include flex-col;
+	}
+
+	&:hover {
+		> .checkbox { visibility: visible !important; }
+
+		> select { display: inline; }
+
+		> .starBtn { display: flex !important; }
+
+		> textarea { display: inline !important; }
+	}
+
+	> .collections {
+		@include flex-row;
+		gap: 8px;
+	}
+
+	> select {
+		display: none;
+	}
+
+	> select + span {
+		color: yellow;
+	}
+
+	.starBtn:hover { background: none; }
+
+	> textarea {
+		height: 2.5em;
+		width: 10em;
+		min-height: 2.5em;
+		min-width: 10em;
+		resize: both;
+	}
+}

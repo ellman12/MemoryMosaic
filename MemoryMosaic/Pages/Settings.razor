@@ -256,7 +256,7 @@
         amountUpdated = amountToUpdate = 0;
         thumbnailProgress.Enable();
 
-        List<LibraryItem> allItems = C.LoadEntireLibraryTable();
+        List<LibraryItem> allItems = C.GetEntireLibrary().ToList();
         amountToUpdate = allItems.Count;
 
         await Parallel.ForEachAsync(allItems, async (item, cancellationToken) =>
