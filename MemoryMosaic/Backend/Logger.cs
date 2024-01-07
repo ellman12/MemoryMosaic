@@ -20,7 +20,7 @@ public static class Logger
 
 	public static void LogLine(object value, LogLevel itemImportance)
 	{
-		if (itemImportance == LogLevel.None || itemImportance > S.LogLevel) return;
+		if (itemImportance == LogLevel.None || S.LogLevel > itemImportance) return;
 		SetConsoleColor(itemImportance);
 		Console.WriteLine($"{DateTime.Now} {value}");
 		Console.ResetColor();
