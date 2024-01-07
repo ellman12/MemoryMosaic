@@ -223,8 +223,11 @@ public sealed partial class Import
 		int increment = startIndex < endIndex ? 1 : -1;
 
 		for (int i = startIndex; i != endIndex + increment; i += increment)
-			SelectedItems.Add(importItems[i].Id);
-
+		{
+			if (Content[i] is ImportItem)
+				SelectedItems.Add(Content[i].Id);
+		}
+		
 		Rerender();
 	}
 
