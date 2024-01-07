@@ -100,6 +100,11 @@
 			<span>DT Source: @CurrentIi.DateTakenSource</span>
 		}
 
+		<div class="field" title="File Size">
+			<MaterialIcon Icon="save"/>
+			<span>@F.FormatBytes(Current.Size)</span>
+		</div>
+		
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
 
 		@if (collectionsContaining?.Count > 0)
