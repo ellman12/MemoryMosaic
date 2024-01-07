@@ -4,7 +4,7 @@
 	@include available-width;
 	@include flex-row;
 	justify-content: center;
-	margin-left: -10px; //TODO: I hate this. If (when?) we do the Grid layout, watch out for weird stuff like this.
+	margin-left: -10px;
 	height: 60px;
 	
 	> input[type="text"] {
