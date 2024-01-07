@@ -35,6 +35,8 @@ public sealed class Program
     public const bool Debug = false;
 #endif
 
+    public const string Version = "3.0.0";
+
     public static void Main(string[] args)
     {
         Directory.CreateDirectory(S.FolderPath);
