@@ -5,9 +5,9 @@ public static class Stats
 {
     ///<summary>Returns how many items are in your library (not including the trash).</summary>
     ///<returns>The number of items in your library NOT in the trash. 0 if no items in library. -1 if an error occurred.</returns>
-    public static long GetNumItemsInLibrary()
+    public static int GetNumItemsInLibrary()
     {
-        long rows = 0;
+        int rows = 0;
         try
         {
             C.Open();
@@ -30,9 +30,9 @@ public static class Stats
 
     ///<summary>Returns how many items are in the trash.</summary>
     ///<returns>The number of items in the trash. 0 if no items in trash. -1 if an error occurred.</returns>
-    public static long GetNumItemsInTrash()
+    public static int GetNumItemsInTrash()
     {
-        long rows = 0;
+        int rows = 0;
         try
         {
             C.Open();
@@ -55,9 +55,9 @@ public static class Stats
 
     ///<summary>Returns how many collections you have.</summary>
     ///<returns>The number of collections you have. 0 if none. -1 if error occured.</returns>
-    public static long CountCollections()
+    public static int CountCollections()
     {
-        long rows = 0;
+        int rows = 0;
         try
         {
             C.Open();
