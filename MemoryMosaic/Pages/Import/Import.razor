@@ -111,7 +111,7 @@
 <main>
 	@{
 		int index = 0;
-		foreach (var group in importItems.Where(item => item.NewFilename.Contains(searchText)).GroupBy(item => item.DestinationPath))
+		foreach (var group in SearchResults.GroupBy(item => item.DestinationPath))
 		{
 			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
 			

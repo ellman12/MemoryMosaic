@@ -14,7 +14,7 @@ public sealed partial class Import
 	public bool DestinationPathsVisible { get; private set; }
 
 	public bool EditingFilename { get; set; }
-	
+
 	public bool DisplayFileSizes { get; private set; }
 
 	public int LastCheckedIndex { get; set; }
@@ -23,7 +23,7 @@ public sealed partial class Import
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
 
 	private string searchText = "", status = "";
-	
+
 	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
 
 	public FullscreenViewer<Media> fv = null!;
@@ -42,13 +42,13 @@ public sealed partial class Import
 
 	public void Rerender() => StateHasChanged();
 	public async Task RerenderAsync() => await InvokeAsync(StateHasChanged);
-	
+
 	protected override async Task OnInitializedAsync()
 	{
 		L.LogLine("Begin Import Initialization", LogLevel.Info);
 		moreSettings = new ElementVisibility(Rerender);
 		await RerenderAsync();
-		
+
 		ConcurrentBag<ImportItem> bag = new();
 
 		Task thumbnails = Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
@@ -56,11 +56,11 @@ public sealed partial class Import
 			bag.Add(new ImportItem(fullPath.Replace('\\', '/')));
 		}));
 		await thumbnails;
-		
+
 		importItems = bag.ToList();
 		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
 		SortItems();
-		
+
 		pageLoading = false;
 		await RerenderAsync();
 
@@ -116,14 +116,14 @@ public sealed partial class Import
 				content.AddRange(existingItems);
 				content.AddRange(warnings);
 			}
-			
+
 			return content;
 		}
 	}
 
 	private IEnumerable<ImportItem> Selected => importItems.Where(item => SelectedItems.Contains(item.Id));
-	
-	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilename.Contains(searchText)).ToImmutableArray();
+
+	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1).ToImmutableArray();
 
 	private static readonly Dictionary<string, string> Shortcuts = new()
 	{
@@ -136,7 +136,7 @@ public sealed partial class Import
 		{"Del", "Delete Selected"},
 		{"Esc", "Clear Selection"}
 	};
-	
+
 	private void ClearSelection()
 	{
 		SelectedItems.Clear();
@@ -183,12 +183,12 @@ public sealed partial class Import
 	{
 		foreach (var importItem in Selected)
 			FileSystem.DeleteFile(importItem.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-		
+
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
 		status = $"Deleted {SelectedItems.Count} Items";
-		
+
 		ClearSelection();
-        Rerender();
+		Rerender();
 	}
 
 	private void DeleteCurrent()
@@ -210,7 +210,7 @@ public sealed partial class Import
 
 		Rerender();
 	}
-	
+
 	private void SortItems()
 	{
 		Func<ImportItem, int> libraryErrorsSortFunc = item => LibraryCache.Count(libItem => P.GetFileName(libItem.Key).Contains(item.NewFilename));
@@ -236,7 +236,7 @@ public sealed partial class Import
 
 		status = $"Adding {items.Count} Items";
 		await RerenderAsync();
-		
+
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
 		{
 			await C.InsertItem(item);
@@ -263,7 +263,7 @@ public sealed partial class Import
 
 		status = $"Added {items.Count} Items";
 		await RerenderAsync();
-		
+
 		ClearSelection();
 	}
 
