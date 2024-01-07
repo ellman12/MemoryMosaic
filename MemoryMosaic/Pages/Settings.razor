@@ -108,9 +108,9 @@
 
         @if (statsLoaded)
         {
-            <span>@($"{libraryRowCount} {(libraryRowCount == 1 ? "Item In Library" : "Items In Library")}")</span>
-            <span>@($"{trashRowCount} {(trashRowCount == 1 ? "Item In Trash" : "Items In Trash")}")</span>
-            <span>@($"{collectionsCount} {(collectionsCount == 1 ? "Collection" : "Collections")}")</span>
+            <span>@F.GetPluralized(libraryRowCount, "Item", "In Library")</span>
+            <span>@F.GetPluralized(trashRowCount, "Item", "In Trash")</span>
+            <span>@F.GetPluralized(collectionsCount, "Collection")</span>
             
             <span style="margin-top: 14px">Library Drive Total Size (Usable): @F.FormatBytes(totalUsableDriveSize)</span>
             <span>Library Drive Free Space: @F.FormatBytes(freeDriveSpace)</span>

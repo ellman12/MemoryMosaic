@@ -201,7 +201,7 @@ public sealed partial class Import
 			FileSystem.DeleteFile(importItem.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
-		status = $"Deleted {SelectedItems.Count} Items";
+		status = $"Deleted {F.GetPluralized(SelectedItems, "Items")}";
 		L.LogLine(status, LogLevel.Info);
 
 		ClearSelection();
@@ -251,7 +251,7 @@ public sealed partial class Import
 		
 		List<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected.ToList();
 
-		status = $"Adding {items.Count} Items";
+		status = $"Adding {F.GetPluralized(items, "Items")}";
 		L.LogLine(status, LogLevel.Info);
 		popUp.Enable();
 		await RerenderAsync();
@@ -281,7 +281,7 @@ public sealed partial class Import
 			importItems.Clear();
 
 		popUp.Disable();
-		status = $"Added {items.Count} Items";
+		status = $"Added {F.GetPluralized(items, "Items")}";
 		L.LogLine(status, LogLevel.Info);
 		await RerenderAsync();
 

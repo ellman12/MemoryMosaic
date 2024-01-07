@@ -6,7 +6,7 @@
 <header>
     <IconTextButton Icon="restore" Text="Create Backup" OnClick="@CreateBackup"/>
     <IconTextButton Icon="trash" Text="Delete All Backups" OnClick="@DeleteAllBackups"/>
-    <span>@($"{backups.Count} {(backups.Count == 1 ? "Backup" : "Backups")}")</span>
+    <span>@F.GetPluralized(backups, "Backup")</span>
     
     <div>
         <Checkbox @bind-Input="@updateDatabase" Label="Backup/Restore Database"/>

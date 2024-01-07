@@ -28,12 +28,12 @@
 		<div>
 			@if (String.IsNullOrEmpty(searchText))
 			{
-				<span>@importItems.Count Items</span>
+				<span>@F.GetPluralized(importItems, "Item")</span>
 				<span>@F.FormatBytes(F.GetFolderSize(S.ImportFolderPath))</span>
 			}
 			else
 			{
-				<span>@SearchResults.Length Items</span>
+				<span>@F.GetPluralized(SearchResults, "Item")</span>
 				<span>@F.FormatBytes(SearchResults.Sum(item => item.Size))</span>
 			}
 		</div>
@@ -41,12 +41,12 @@
 		<div>
 			@if (ErrorAmount > 0)
 			{
-				<span style="color: red">@ErrorAmount @(ErrorAmount == 1 ? "Error" : "Errors")</span>
+				<span style="color: red">@F.GetPluralized(ErrorAmount, "Error")</span>
 			}
 	
 			@if (displayWarnings && WarningAmount > 0)
 			{
-				<span style="color: yellow">@WarningAmount @(WarningAmount == 1 ? "Warning" : "Warnings")</span>
+				<span style="color: yellow">@F.GetPluralized(WarningAmount, "Warning")</span>
 			}
 		</div>
 	</div>

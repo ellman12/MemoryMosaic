@@ -88,4 +88,17 @@ public static class Functions
     {
         return new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
     }
+
+    ///Used for formatting things like "Warning"/"Warnings".
+    public static string GetPluralized(int amount, string word, string trailingText = "") => $"{amount} {word}{(amount == 1 ? "" : 's')} {trailingText}";
+
+    ///Used for formatting things like "Warning"/"Warnings".
+    public static string GetPluralized<T>(ICollection<T> items, string word, string trailingText = "") => $"{items.Count} {word}{(items.Count == 1 ? "" : 's')} {trailingText}";
+
+    ///Used for formatting things like "Warning"/"Warnings".
+    public static string GetPluralized<T>(IEnumerable<T> items, string word, string trailingText = "")
+    {
+        int amount = items.Count();
+        return $"{amount} {word}{(amount == 1 ? "" : 's')} {trailingText}";
+    }
 }
