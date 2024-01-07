@@ -304,7 +304,7 @@
 	{
 		fileRename.Disable();
 		filenameError.Disable();
-		newFilename = CurrentLi != null ? CurrentLi.Filename : CurrentIi!.NewFilename;
+		newFilename = CurrentLi != null ? CurrentLi.FilenameWithoutExtension : CurrentIi!.NewFilename;
 	}
 
 	private void MoveLeft()
