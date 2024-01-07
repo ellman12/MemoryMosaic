@@ -22,7 +22,7 @@ public sealed partial class Import
 	public int MinYear { get; private set; } = 2000;
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
 
-	private string searchText = "";
+	private string searchText = "", status = "";
 	
 	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
 
@@ -183,10 +183,12 @@ public sealed partial class Import
 	{
 		foreach (var importItem in Selected)
 			FileSystem.DeleteFile(importItem.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-
+		
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
+		status = $"Deleted {SelectedItems.Count} Items";
+		
 		ClearSelection();
-		Rerender();
+        Rerender();
 	}
 
 	private void DeleteCurrent()
@@ -229,9 +231,12 @@ public sealed partial class Import
 	{
 		if (ErrorAmount > 0 || EditingFilename)
 			return;
-		
-		IEnumerable<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected;
 
+		List<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected.ToList();
+
+		status = $"Adding {items.Count} Items";
+		await RerenderAsync();
+		
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
 		{
 			await C.InsertItem(item);
@@ -256,6 +261,9 @@ public sealed partial class Import
 		else
 			importItems.Clear();
 
+		status = $"Added {items.Count} Items";
+		await RerenderAsync();
+		
 		ClearSelection();
 	}
 
