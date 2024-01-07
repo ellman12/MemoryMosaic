@@ -78,7 +78,16 @@
 					@include flex-row;
 					pointer-events: none;
 
-					span { margin-left: 6px; }
+					span {
+						margin-left: 6px;
+
+						&:nth-of-type(2) {
+							max-width: 370px;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+						}
+					}
 				}
 			}
 		}
