@@ -153,6 +153,8 @@
 	}
 </main>
 
+<ProgressPopUp @ref="@popUp" Message="@PopUpMessage" FontSize="24" Width="320" Height="300"/>
+
 <CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems"/>
 
 <FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent"/>

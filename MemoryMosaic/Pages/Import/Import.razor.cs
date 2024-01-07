@@ -36,6 +36,8 @@ public sealed partial class Import
 
 	private List<ImportItem> importItems = new();
 
+	private ProgressPopUp popUp = null!;
+	
 	private CollectionSelector cs = null!;
 
 	private ElementVisibility moreSettings = null!;
@@ -125,6 +127,20 @@ public sealed partial class Import
 
 	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1).ToImmutableArray();
 
+	private string PopUpMessage
+	{
+		get
+		{
+			if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
+                return "Adding All Items";
+			
+			if (SelectedItems.Count == 1)
+                return "Adding 1 Item";
+		
+			return $"Adding {SelectedItems.Count} Items";
+		}
+	}
+	
 	private static readonly Dictionary<string, string> Shortcuts = new()
 	{
 		{"Ctrl A", "Select All"},
@@ -232,11 +248,12 @@ public sealed partial class Import
 	{
 		if (ErrorAmount > 0 || EditingFilename)
 			return;
-
+		
 		List<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected.ToList();
 
 		status = $"Adding {items.Count} Items";
 		L.LogLine(status, LogLevel.Info);
+		popUp.Enable();
 		await RerenderAsync();
 
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
@@ -263,6 +280,7 @@ public sealed partial class Import
 		else
 			importItems.Clear();
 
+		popUp.Disable();
 		status = $"Added {items.Count} Items";
 		L.LogLine(status, LogLevel.Info);
 		await RerenderAsync();
