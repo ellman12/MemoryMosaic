@@ -50,10 +50,8 @@ main {
 		}
 
 		> span {
+			@include ellipsis;
 			width: 200px;
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
 			margin-top: 7px;
 			margin-left: 5px;
 		}

@@ -19,9 +19,7 @@
 	}
 
 	> span:first-of-type, span:last-of-type {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		@include ellipsis;
 
 		&.short {
 			width: 220px;

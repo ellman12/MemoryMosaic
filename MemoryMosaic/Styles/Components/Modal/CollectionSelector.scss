@@ -82,10 +82,8 @@
 						margin-left: 6px;
 
 						&:nth-of-type(2) {
+							@include ellipsis;
 							max-width: 370px;
-							overflow: hidden;
-							text-overflow: ellipsis;
-							white-space: nowrap;
 						}
 					}
 				}

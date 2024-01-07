@@ -39,6 +39,12 @@
 	width: -moz-available;
 }
 
+@mixin ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 @mixin page-header($border-bottom: 1px solid gray, $height: auto, $left: 145px) {
 	border-bottom: $border-bottom;
 	height: $height;

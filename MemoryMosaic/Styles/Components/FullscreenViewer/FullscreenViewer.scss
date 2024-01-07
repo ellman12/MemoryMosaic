@@ -122,10 +122,8 @@
 			}
 			
 			> span:last-of-type {
+				@include ellipsis;
 				width: 240px;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
 			}
 		}
 
@@ -173,13 +171,11 @@
 							height: 100%;
 						}
 					}
-					
+
 					> span {
+						@include ellipsis;
 						margin-left: 8px;
 						max-width: 260px;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
 					}
 				}
 			}
