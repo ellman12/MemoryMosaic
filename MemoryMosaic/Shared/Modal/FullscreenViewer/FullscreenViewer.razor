@@ -159,7 +159,7 @@
 			<span style="color: red; display: @(filenameError.Visible ? "inline" : "none")">A file with the same Date Taken and/or name already exists.</span>
 			<div>
 				<IconButton Icon="check" OnClick="@RenameFile"/>
-				<IconButton Icon="close" OnClick="@(() => { fileRename.Disable(); filenameError.Disable(); newFilename = ""; })"/>
+				<IconButton Icon="close" OnClick="@CancelRenaming"/>
 			</div>
 		</div>
 	</ModalBackground>
@@ -284,7 +284,8 @@
 
 	private void RenameFile()
 	{
-		if (String.IsNullOrWhiteSpace(newFilename)) return;
+		if (String.IsNullOrWhiteSpace(newFilename))
+			return;
 
 		string? newShortPath = C.RenameFile(Current.Path, newFilename, ext, (Current as LibraryItem)?.DateTaken);
 		if (newShortPath == null)
@@ -298,6 +299,13 @@
 			filenameError.Disable();
 			Current.Path = newShortPath;
 		}
+	}
+
+	private void CancelRenaming()
+	{
+		fileRename.Disable();
+		filenameError.Disable();
+		newFilename = CurrentLi != null ? CurrentLi.Filename : CurrentIi!.NewFilename;
 	}
 
 	private void MoveLeft()
