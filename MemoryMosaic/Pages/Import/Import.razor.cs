@@ -183,10 +183,12 @@ public sealed partial class Import
 	{
 		foreach (var importItem in Selected)
 			FileSystem.DeleteFile(importItem.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-
+		
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
+		status = $"Deleted {SelectedItems.Count} Items";
+		
 		ClearSelection();
-		Rerender();
+        Rerender();
 	}
 
 	private void DeleteCurrent()
