@@ -10,17 +10,17 @@
 			<IconButton Icon="info" OnClick="@infoVisibility.Toggle"/>
 			<IconButton Icon="collections" OnClick="@(() => CollectionSelector.Enable())"/>
 			<IconButton Icon="@(Current.Starred ? "star" : "star_outline")" OnClick="@UpdateStarred"/>
-		
+
 			@if (Collection is {ReadOnly: false} && !Current.Video)
 			{
 				<IconButton Icon="collections_bookmark" OnClick="@(() => C.UpdateCollectionCover(Collection.Id, Current.Path))" Title="Use As Collection Cover"/>
 			}
-			
+
 			@if (PageName == "Trash")
 			{
 				<IconButton Icon="restore" OnClick="@RestoreButtonClick"/>
 			}
-			
+
 			<IconButton Icon="trash" OnClick="@DeleteButtonClick"/>
 		</div>
 
@@ -41,7 +41,7 @@
 			}
 		</div>
 
-		@if (Index < Content.Count)
+		@if (Index < Content.Count - 1 || BottomLoader is {HasMoreRows: true})
 		{
 			<div class="sideButton" id="rightBtn" @onclick="@MoveRight"><IconButton Icon="arrow_forward_ios"/></div>
 		}
