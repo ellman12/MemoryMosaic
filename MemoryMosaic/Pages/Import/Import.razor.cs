@@ -170,6 +170,14 @@ public sealed partial class Import
 		Rerender();
 	}
 
+	private void SelectAll()
+	{
+		foreach (ImportItem item in importItems)
+			SelectedItems.Add(item.Id);
+		
+		Rerender();
+	}
+
 	private void ToggleDestinationPaths()
 	{
 		DestinationPathsVisible = !DestinationPathsVisible;
