@@ -110,7 +110,8 @@
 
 <main>
 	@{
-		int index = 0;
+		int importItemsIndex = 0;
+		int contentIndex = 0;
 		foreach (var group in SearchResults.GroupBy(item => item.DestinationPath))
 		{
 			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
@@ -133,20 +134,21 @@
 			<div class="container @borderClass">
 				@foreach (var importItem in group)
 				{
-					<ImportItemDisplay @key="@importItem" Item="@importItem" Import="@this" Index="index" TextClass="@borderClass"/>
-					index++;
+					<ImportItemDisplay @key="@importItem" Item="@importItem" Import="@this" ImportItemsIndex="importItemsIndex" Index="contentIndex" TextClass="@borderClass"/>
+					importItemsIndex++;
+					contentIndex++;
 				}
 				
 				@foreach (var libraryItem in existingItems)
 				{
-					<LibraryItemDisplay @key="@libraryItem" Item="@libraryItem" Import="@this" Index="index" TextClass="error"/>
-					index++;
+					<LibraryItemDisplay @key="@libraryItem" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="error"/>
+					contentIndex++;
 				}
 				
 				@foreach (var libraryItem in warnings)
 				{
-					<LibraryItemDisplay @key="@libraryItem" Item="@libraryItem" Import="@this" Index="index" TextClass="warning"/> 
-					index++;
+					<LibraryItemDisplay @key="@libraryItem" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="warning"/> 
+					contentIndex++;
 				}
 			</div>
 		}
