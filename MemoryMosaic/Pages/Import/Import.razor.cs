@@ -1,9 +1,9 @@
-namespace MemoryMosaic.Pages.Import;
-
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using Shared.Modal;
-using Shared.Modal.FullscreenViewer;
+using MemoryMosaic.Shared.Modal;
+using MemoryMosaic.Shared.Modal.FullscreenViewer;
+
+namespace MemoryMosaic.Pages.Import;
 
 public sealed partial class Import
 {
