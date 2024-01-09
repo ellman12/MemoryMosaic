@@ -28,7 +28,7 @@ public sealed partial class Import
 
 	public FullscreenViewer<Media> fv = null!;
 
-	private bool pageLoading = true, displayWarnings = true, onlyDisplayErrors;
+	private bool thumbnailsLoading = true, displayWarnings = true, onlyDisplayErrors;
 
 	private DateTakenSource newDateTakenSource = DateTakenSource.None;
 
@@ -52,19 +52,27 @@ public sealed partial class Import
 
 		ConcurrentBag<ImportItem> bag = new();
 
-		Task thumbnails = Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
+		await Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
 		{
 			bag.Add(new ImportItem(fullPath.Replace('\\', '/')));
 		}));
-		await thumbnails;
 
 		importItems = bag.ToList();
 		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
 		SortItems();
 
-		pageLoading = false;
+		thumbnailsLoading = false;
 		await RerenderAsync();
+		
+		L.LogLine("Initializing thumbnails", LogLevel.Debug);
 
+		await Parallel.ForEachAsync(importItems, async (importItem, _) =>
+		{
+			importItem.Thumbnail = await F.GenerateThumbnailAsync(importItem.FullPath);
+			await RerenderAsync();
+		});
+		
+		await RerenderAsync();
 		L.LogLine("Finish Import Initialization", LogLevel.Info);
 	}
 
@@ -131,10 +139,10 @@ public sealed partial class Import
 		get
 		{
 			if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
-                return "Adding All Items";
+				return "Adding All Items";
 			
 			if (SelectedItems.Count == 1)
-                return "Adding 1 Item";
+				return "Adding 1 Item";
 		
 			return $"Adding {SelectedItems.Count} Items";
 		}
