@@ -134,20 +134,20 @@
 			<div class="container @borderClass">
 				@foreach (var importItem in group)
 				{
-					<ImportItemDisplay @key="@importItem" Item="@importItem" Import="@this" ImportItemsIndex="importItemsIndex" Index="contentIndex" TextClass="@borderClass"/>
+					<ImportItemDisplay @key="@importItem.Id" Item="@importItem" Import="@this" ImportItemsIndex="importItemsIndex" Index="contentIndex" TextClass="@borderClass"/>
 					importItemsIndex++;
 					contentIndex++;
 				}
 				
 				@foreach (var libraryItem in existingItems)
 				{
-					<LibraryItemDisplay @key="@libraryItem" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="error"/>
+					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="error"/>
 					contentIndex++;
 				}
 				
 				@foreach (var libraryItem in warnings)
 				{
-					<LibraryItemDisplay @key="@libraryItem" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="warning"/> 
+					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="warning"/> 
 					contentIndex++;
 				}
 			</div>
