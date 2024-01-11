@@ -13,11 +13,11 @@ let seekSliderInterval;
 let hideControlsTimeout;
 
 function cleanupVideo() {
+	clearInterval(seekSliderInterval);
+	
 	video.src = "";
 	video.muted = true;
 	video.disable();
-
-	clearInterval(seekSliderInterval);
 
 	video.onplaying = null;
 	video.onpause = null;
@@ -28,7 +28,7 @@ function cleanupVideo() {
 	video.onkeydown = null;
 	seekSlider.oninput = null;
 	volumeSlider.oninput = null;
-	document.onmousemove = null;
+	document.onmousemove = () => {};
 }
 
 async function initializeVideo() {
@@ -58,7 +58,17 @@ async function initializeVideo() {
 
 function initializeEvents() {
 	clearInterval(seekSliderInterval);
-	seekSliderInterval = setInterval(() => { seekSlider.value = video.currentTime; currentTimeSpan.innerHTML = formatSeconds(video.currentTime); }, 5);
+	
+	seekSliderInterval = setInterval(() => {
+		if (video === null)
+		{
+			clearInterval(seekSliderInterval);
+			return;
+		}
+		
+		seekSlider.value = video.currentTime;
+		currentTimeSpan.innerHTML = formatSeconds(video.currentTime);
+	}, 5);
 	
 	video.onplaying = () => playButtonIcon.innerHTML = "pause";
 	video.onpause = () => playButtonIcon.innerHTML = "play_arrow";
@@ -167,7 +177,9 @@ function formatSeconds(seconds) {
 
 function showControls() {
 	clearTimeout(hideControlsTimeout);
-	controls.style.display = "flex";
+	
+	if (controls !== null)
+		controls.style.display = "flex";
 }
 
 function delayHideControls() {
