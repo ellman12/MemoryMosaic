@@ -52,7 +52,7 @@ public sealed partial class Import
 
 		ConcurrentBag<ImportItem> bag = new();
 
-		await Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
+		await Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath).ToImmutableList(), (fullPath, _) =>
 		{
 			bag.Add(new ImportItem(fullPath.Replace('\\', '/')));
 		}));
@@ -62,10 +62,10 @@ public sealed partial class Import
 		itemsLoading = false;
 		SortItems();
 		await RerenderAsync();
-		
-		L.LogLine("Initializing thumbnails", LogLevel.Debug);
 
-		await Parallel.ForEachAsync(importItems, async (importItem, _) =>
+		L.LogLine("Initializing thumbnails", LogLevel.Debug);
+		
+		await Parallel.ForEachAsync(importItems.ToImmutableList(), async (importItem, _) =>
 		{
 			importItem.Thumbnail = await F.GenerateThumbnailAsync(importItem.FullPath);
 			await RerenderAsync();
