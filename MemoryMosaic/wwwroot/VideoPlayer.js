@@ -33,7 +33,7 @@ function cleanupVideo() {
 
 async function initializeVideo() {
 	await delay(500);
-	
+
 	video = document.querySelector("video");
 	seekSlider = document.querySelector("input[type='range']");
 	controls = document.getElementById("controls");
@@ -45,11 +45,11 @@ async function initializeVideo() {
 	currentTimeSpan = document.getElementById("currentTime");
 	durationSpan = document.getElementById("duration");
 	previousInfoDisplay = "";
-	
+
 	playButtonIcon.innerHTML = "pause";
 
 	seekSlider.max = video.duration;
-	
+
 	currentTimeSpan.innerHTML = formatSeconds(0);
 	durationSpan.innerHTML = formatSeconds(video.duration);
 
@@ -154,6 +154,11 @@ function formatSeconds(seconds) {
 	let minutes = Math.floor(seconds / 60);
 	let remainingSeconds = Math.round(seconds % 60);
 
+	if (remainingSeconds === 60) {
+		minutes += 1;
+		remainingSeconds = 0;
+	}
+
 	let formattedMinutes = String(minutes).padStart(1, '0');
 	let formattedSeconds = String(remainingSeconds).padStart(2, '0');
 
@@ -194,7 +199,7 @@ function setCurrentTime(value) { seekSlider.value = video.currentTime = value; }
 
 function enterFullscreen() {
 	const elem = document.documentElement;
-	
+
 	previousInfoDisplay = info.style.display;
 	info.style.display = "none";
 
@@ -207,7 +212,7 @@ function enterFullscreen() {
 function exitFullscreen() {
 
 	info.style.display = previousInfoDisplay;
-	
+
 	if (document.exitFullscreen) document.exitFullscreen();
 	else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
 	else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
@@ -232,13 +237,13 @@ function setVolumeIcon() {
 
 function toggleMute() {
 	muted = !muted;
-	
+
 	if (muted)
 		video.volume = volumeSlider.value = 0;
 	else if (volume <= 0)
 		video.volume = volume = volumeSlider.value = 1;
 	else
 		video.volume = volumeSlider.value = volume;
-	
+
 	setVolumeIcon();
 }
