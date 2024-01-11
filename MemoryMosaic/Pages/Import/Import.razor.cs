@@ -48,8 +48,12 @@ public sealed partial class Import
 	protected override async Task OnInitializedAsync()
 	{
 		L.LogLine("Begin Import Initialization", LogLevel.Info);
-		await RerenderAsync();
+		await InitializeItems();
+		L.LogLine("Finish Import Initialization", LogLevel.Info);
+	}
 
+	private async Task InitializeItems()
+	{
 		ConcurrentBag<ImportItem> bag = new();
 
 		await Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath).ToImmutableList(), (fullPath, _) =>
@@ -63,7 +67,13 @@ public sealed partial class Import
 		SortItems();
 		await RerenderAsync();
 
-		L.LogLine("Initializing thumbnails", LogLevel.Debug);
+		await InitializeThumbnails();
+	}
+
+	private async Task InitializeThumbnails()
+	{
+		status = "Initializing thumbnails...";
+		L.LogLine(status, LogLevel.Debug);
 		
 		await Parallel.ForEachAsync(importItems.ToImmutableList(), async (importItem, _) =>
 		{
@@ -71,9 +81,12 @@ public sealed partial class Import
 			await RerenderAsync();
 		});
 		thumbnailsLoading = false;
-		
+
+		status = "Thumbnails initialized";
 		await RerenderAsync();
-		L.LogLine("Finish Import Initialization", LogLevel.Info);
+		
+		status = "";
+		await RerenderAsync();
 	}
 
 	private int ErrorAmount
