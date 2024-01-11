@@ -8,39 +8,37 @@
     <IconTextButton Icon="trash" Text="Delete All" OnClick="@DeleteAll"/>
 </header>
 
+@if (untrackedFiles.Count == 0)
+{
+    <h1>No Untracked Items</h1>
+    return;
+}
+
 <main>
-    @{
-        if (untrackedFiles.Count == 0)
-        {
-            <h1>No Untracked Items</h1>
-            return;
-        }
+    @for (int i = 0; i < untrackedFiles.Count; i++)
+    {
+        int ii = i;
+        string path = untrackedFiles[i];
+        string ext = Path.GetExtension(path).ToLower();
+        string name = Path.GetFileName(path);
 
-        for (int i = 0; i < untrackedFiles.Count; i++)
-        {
-            int ii = i;
-            string path = untrackedFiles[i];
-            string ext = Path.GetExtension(path).ToLower();
-            string name = Path.GetFileName(path);
+        string shortPath = path.Replace(S.LibFolderPath, "").Replace('\\', '/');
+        shortPath = Path.GetFileName(S.LibFolderPath) + shortPath;
 
-            string shortPath = path.Replace(S.LibFolderPath, "").Replace('\\', '/');
-            shortPath = Path.GetFileName(S.LibFolderPath) + shortPath;
+        <div>
+            @if (ext is ".jpg" or ".jpeg" or ".png" or ".gif")
+            {
+                <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus()" src="@shortPath" alt="@shortPath" loading="lazy"/>
+            }
+            else if (ext is ".mp4" or ".mkv" or ".mov")
+            {
+                <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus()" src="@("data:image/jpg;base64," + F.GenerateThumbnail(path))" alt="@shortPath" loading="lazy"/>
+            }
 
-            <div>
-                @if (ext is ".jpg" or ".jpeg" or ".png" or ".gif")
-                {
-                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus()" src="@shortPath" alt="@shortPath" loading="lazy"/>
-                }
-                else if (ext is ".mp4" or ".mkv" or ".mov")
-                {
-                    <img title="Click for Full Size Preview" onclick="window.open('@shortPath', '_blank').focus()" src="@("data:image/jpg;base64," + F.GenerateThumbnail(path))" alt="@shortPath" loading="lazy"/>
-                }
-
-                <span title="@name">@name</span>
-                <IconButton Icon="drive_file_move" OnClick="@(() => MoveBtnClick(ii))" Title="Move This Item to Import"/>
-                <IconButton Icon="trash" OnClick="@(() => DeleteBtnClick(ii))" Title="Delete This Item From Server"/>
-            </div>
-        }
+            <span title="@name">@name</span>
+            <IconButton Icon="drive_file_move" OnClick="@(() => MoveBtnClick(ii))" Title="Move This Item to Import"/>
+            <IconButton Icon="trash" OnClick="@(() => DeleteBtnClick(ii))" Title="Delete This Item From Server"/>
+        </div>
     }
 </main>
 
