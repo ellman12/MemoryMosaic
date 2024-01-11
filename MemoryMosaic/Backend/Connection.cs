@@ -600,7 +600,7 @@ public static class Connection
     ///<param name="showReadonly">Should readonly collections be selected?</param>
     ///<param name="mode">How should the data be sorted?</param>
     ///<returns>A List&lt;Collection&gt; of all the albums and/or folders.</returns>
-    public static List<Collection> GetCollectionsTable(bool showAlbums, bool showFolders, bool showReadonly, CollectionsSortMode mode = CollectionsSortMode.Title)
+    public static List<Collection> GetCollections(bool showAlbums, bool showFolders, bool showReadonly, CollectionsSortMode mode = CollectionsSortMode.Title)
     {
         List<Collection> collections = new();
         
@@ -615,7 +615,6 @@ public static class Connection
 
         string where = (showAlbums, showFolders) switch
         {
-            (true, true) => "",
             (true, false) => "WHERE folder = false",
             (false, true) => "WHERE folder = true",
             _ => ""

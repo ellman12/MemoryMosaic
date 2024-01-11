@@ -6,12 +6,12 @@
 
 <header>
     <span id="collectionsText">Collections</span>
-    <CollectionCreator @ref="@collectionCreator" Collections="@collections" OnCollectionCreate="@GetCollectionsTable"/>
+    <CollectionCreator @ref="@collectionCreator" Collections="@collections" OnCollectionCreate="@GetCollections"/>
     
     <div id="checkboxes">
-        <Checkbox @bind-Input="@showAlbums" Label="Show Albums" OnChange="@GetCollectionsTable"/>
-        <Checkbox @bind-Input="@showFolders" Label="Show Folders" OnChange="@GetCollectionsTable"/>
-        <Checkbox @bind-Input="@showReadonly" Label="Show Readonly" OnChange="@GetCollectionsTable"/>
+        <Checkbox @bind-Input="@showAlbums" Label="Show Albums" OnChange="@GetCollections"/>
+        <Checkbox @bind-Input="@showFolders" Label="Show Folders" OnChange="@GetCollections"/>
+        <Checkbox @bind-Input="@showReadonly" Label="Show Readonly" OnChange="@GetCollections"/>
     </div>
 
     <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@(() => dropdown.Toggle())"/>
@@ -52,13 +52,13 @@
 
     protected override void OnInitialized()
     {
-        GetCollectionsTable();
+        GetCollections();
         SetSortBtnText();
     }
 
-    private void GetCollectionsTable()
+    private void GetCollections()
     {
-        collections = C.GetCollectionsTable(showAlbums, showFolders, showReadonly, sortMode);
+        collections = C.GetCollections(showAlbums, showFolders, showReadonly, sortMode);
         StateHasChanged();
     }
 
@@ -77,7 +77,7 @@
     private void ChangeOrder(CollectionsSortMode newMode)
     {
         sortMode = newMode;
-        GetCollectionsTable();
+        GetCollections();
         SetSortBtnText();
         dropdown.Disable();
     }

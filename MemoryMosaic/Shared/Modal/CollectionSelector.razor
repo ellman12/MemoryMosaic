@@ -100,8 +100,8 @@
 
     private void RefreshData()
     {
-        Albums = C.GetCollectionsTable(true, false, false);
-        Folders = C.GetCollectionsTable(false, true, false);
+        Albums = C.GetCollections(true, false, false);
+        Folders = C.GetCollections(false, true, false);
         SelectedFolderId = -1;
     }
 
