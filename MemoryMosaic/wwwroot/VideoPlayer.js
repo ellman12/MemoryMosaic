@@ -172,6 +172,7 @@ function delayHideControls() {
 function play() {
 	video.play();
 	playButtonIcon.innerHTML = "pause"
+	seekSliderInterval = setInterval(() => { seekSlider.value = video.currentTime; currentTimeSpan.innerHTML = formatSeconds(video.currentTime); }, 5);
 	delayHideControls();
 }
 
