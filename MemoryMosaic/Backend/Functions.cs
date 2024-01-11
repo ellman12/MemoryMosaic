@@ -73,6 +73,36 @@ public static class Functions
         return Convert.ToBase64String(bytes);
     }
         
+    ///<summary>Given the absolute path to a image/video file, use ffmpeg to generate a compressed thumbnail of the image or the first frame.</summary>
+    ///<param name="filePath">The absolute path to where the file is.</param>
+    ///<returns>A base64 string representing the thumbnail.</returns>
+    public static async Task<string> GenerateThumbnailAsync(string filePath)
+    {
+        string thumbnailFullPath = Path.Join(S.TmpFolderPath, Guid.NewGuid() + ".jpg");
+        ProcessStartInfo ffmpegInfo = new()
+        {
+            CreateNoWindow = true,
+            FileName = "ffmpeg",
+            Arguments = $"-i \"{filePath}\" -loglevel quiet "
+        };
+            
+        string ext = Path.GetExtension(filePath).ToLower();
+        if (ext == ".png")
+            ffmpegInfo.Arguments += $"-compression_level 100 \"{thumbnailFullPath}\""; //0-100 for quality. 100 is lowest.
+        else
+            ffmpegInfo.Arguments += $"{(SupportedVideoExts.Contains(ext) ? "-vf \"select=eq(n\\,0)\"" : "")} -vf scale=320:-2 -q:v {S.ThumbnailQuality} \"{thumbnailFullPath}\"";
+
+        Process ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
+        await ffmpegProcess.WaitForExitAsync();
+
+        byte[] bytes = await File.ReadAllBytesAsync(thumbnailFullPath);
+            
+        try { File.Delete(thumbnailFullPath); }
+        catch (Exception e) { L.LogException(e); }
+            
+        return Convert.ToBase64String(bytes);
+    }
+        
     ///<summary>
     ///<para>Return an IEnumerable&lt;string&gt; of the full paths of all supported file types in rootPath.</para>
     ///Supported file types are: ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mkv", ".mov". Case is ignored.

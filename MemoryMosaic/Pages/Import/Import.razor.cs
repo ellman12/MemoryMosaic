@@ -1,9 +1,9 @@
-namespace MemoryMosaic.Pages.Import;
-
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using Shared.Modal;
-using Shared.Modal.FullscreenViewer;
+using MemoryMosaic.Shared.Modal;
+using MemoryMosaic.Shared.Modal.FullscreenViewer;
+
+namespace MemoryMosaic.Pages.Import;
 
 public sealed partial class Import
 {
@@ -28,7 +28,7 @@ public sealed partial class Import
 
 	public FullscreenViewer<Media> fv = null!;
 
-	private bool pageLoading = true, displayWarnings = true, onlyDisplayErrors;
+	private bool itemsLoading = true, thumbnailsLoading = true, displayWarnings = true, onlyDisplayErrors;
 
 	private DateTakenSource newDateTakenSource = DateTakenSource.None;
 
@@ -52,19 +52,27 @@ public sealed partial class Import
 
 		ConcurrentBag<ImportItem> bag = new();
 
-		Task thumbnails = Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
+		await Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath).ToImmutableList(), (fullPath, _) =>
 		{
 			bag.Add(new ImportItem(fullPath.Replace('\\', '/')));
 		}));
-		await thumbnails;
 
 		importItems = bag.ToList();
 		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
+		itemsLoading = false;
 		SortItems();
-
-		pageLoading = false;
 		await RerenderAsync();
 
+		L.LogLine("Initializing thumbnails", LogLevel.Debug);
+		
+		await Parallel.ForEachAsync(importItems.ToImmutableList(), async (importItem, _) =>
+		{
+			importItem.Thumbnail = await F.GenerateThumbnailAsync(importItem.FullPath);
+			await RerenderAsync();
+		});
+		thumbnailsLoading = false;
+		
+		await RerenderAsync();
 		L.LogLine("Finish Import Initialization", LogLevel.Info);
 	}
 
@@ -124,17 +132,17 @@ public sealed partial class Import
 
 	private IEnumerable<ImportItem> Selected => importItems.Where(item => SelectedItems.Contains(item.Id));
 
-	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilename.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1).ToImmutableArray();
+	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilenameWithExtension.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1).ToImmutableArray();
 
 	private string PopUpMessage
 	{
 		get
 		{
 			if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
-                return "Adding All Items";
+				return "Adding All Items";
 			
 			if (SelectedItems.Count == 1)
-                return "Adding 1 Item";
+				return "Adding 1 Item";
 		
 			return $"Adding {SelectedItems.Count} Items";
 		}
@@ -167,6 +175,14 @@ public sealed partial class Import
 	private void TogglePathWidth()
 	{
 		PathWidth = PathWidth == "short" ? "full" : "short";
+		Rerender();
+	}
+
+	private void SelectAll()
+	{
+		foreach (ImportItem item in importItems)
+			SelectedItems.Add(item.Id);
+		
 		Rerender();
 	}
 
@@ -223,8 +239,7 @@ public sealed partial class Import
 
 		for (int i = startIndex; i != endIndex + increment; i += increment)
 		{
-			if (Content[i] is ImportItem)
-				SelectedItems.Add(Content[i].Id);
+			SelectedItems.Add(importItems[i].Id);
 		}
 		
 		Rerender();

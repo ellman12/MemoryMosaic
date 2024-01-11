@@ -105,6 +105,9 @@
 </div>
 
 @code {
+	[Parameter, EditorRequired]
+	public int ImportItemsIndex { get; set; }
+	
 	private bool editingFilename;
 	private bool EditingFilename
 	{
@@ -123,7 +126,7 @@
 	private void CheckClicked(MouseEventArgs e)
 	{
 		if (e.ShiftKey)
-			Import.ChangeRangeState(Import.LastCheckedIndex, Index);
+			Import.ChangeRangeState(Import.LastCheckedIndex, ImportItemsIndex);
 		else
 			ToggleSelected();
 
@@ -138,7 +141,7 @@
 		else
 			Import.SelectedItems.Add(Item.Id);
 
-		Import.LastCheckedIndex = Index;
+		Import.LastCheckedIndex = ImportItemsIndex;
 	}
 
 	private void ToggleStarred()

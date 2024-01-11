@@ -5,9 +5,9 @@
 <link href="css/Pages/Import.css" rel="stylesheet"/>
 <link href="css/Components/ItemDisplay.css" rel="stylesheet"/>
 
-@if (pageLoading)
+@if (itemsLoading)
 {
-	<h1>Loading Import...</h1>
+	<h1>Loading Import</h1>
 	return;
 }
 
@@ -51,7 +51,7 @@
 		</div>
 	</div>
 
-	@if (ErrorAmount == 0 && !EditingFilename)
+	@if (!thumbnailsLoading && ErrorAmount == 0 && !EditingFilename)
 	{
 		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@AddItems"/>
 	}
@@ -110,7 +110,8 @@
 
 <main>
 	@{
-		int index = 0;
+		int importItemsIndex = 0;
+		int contentIndex = 0;
 		foreach (var group in SearchResults.GroupBy(item => item.DestinationPath))
 		{
 			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
@@ -133,20 +134,21 @@
 			<div class="container @borderClass">
 				@foreach (var importItem in group)
 				{
-					<ImportItemDisplay @key="@importItem" Item="@importItem" Import="@this" Index="index" TextClass="@borderClass"/>
-					index++;
+					<ImportItemDisplay @key="@importItem.Id" Item="@importItem" Import="@this" ImportItemsIndex="importItemsIndex" Index="contentIndex" TextClass="@borderClass"/>
+					importItemsIndex++;
+					contentIndex++;
 				}
 				
 				@foreach (var libraryItem in existingItems)
 				{
-					<LibraryItemDisplay @key="@libraryItem" Item="@libraryItem" Import="@this" Index="index" TextClass="error"/>
-					index++;
+					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="error"/>
+					contentIndex++;
 				}
 				
 				@foreach (var libraryItem in warnings)
 				{
-					<LibraryItemDisplay @key="@libraryItem" Item="@libraryItem" Import="@this" Index="index" TextClass="warning"/> 
-					index++;
+					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="warning"/> 
+					contentIndex++;
 				}
 			</div>
 		}
@@ -155,9 +157,12 @@
 
 <ProgressPopUp @ref="@popUp" Message="@PopUpMessage" FontSize="24" Width="320" Height="300"/>
 
-<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems"/>
-
-<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent"/>
-
-<KeyboardShortcuts CtrlA="@(() => ChangeRangeState(0, Content.Count - 1))" AltA="@AddItems" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" Del="@DeleteSelected" Esc="@ClearSelection"/>
-<ShortcutsReference Shortcuts="@Shortcuts"/>
+@if (importItems.Count > 0)
+{
+	<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems"/>
+	
+	<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent"/>
+	
+	<KeyboardShortcuts AltA="@AddItems" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection"/>
+	<ShortcutsReference Shortcuts="@Shortcuts"/>
+}
