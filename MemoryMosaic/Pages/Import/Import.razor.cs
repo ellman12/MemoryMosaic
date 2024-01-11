@@ -28,7 +28,7 @@ public sealed partial class Import
 
 	public FullscreenViewer<Media> fv = null!;
 
-	private bool thumbnailsLoading = true, displayWarnings = true, onlyDisplayErrors;
+	private bool itemsLoading = true, thumbnailsLoading = true, displayWarnings = true, onlyDisplayErrors;
 
 	private DateTakenSource newDateTakenSource = DateTakenSource.None;
 
@@ -59,9 +59,8 @@ public sealed partial class Import
 
 		importItems = bag.ToList();
 		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
+		itemsLoading = false;
 		SortItems();
-
-		thumbnailsLoading = false;
 		await RerenderAsync();
 		
 		L.LogLine("Initializing thumbnails", LogLevel.Debug);
@@ -71,6 +70,7 @@ public sealed partial class Import
 			importItem.Thumbnail = await F.GenerateThumbnailAsync(importItem.FullPath);
 			await RerenderAsync();
 		});
+		thumbnailsLoading = false;
 		
 		await RerenderAsync();
 		L.LogLine("Finish Import Initialization", LogLevel.Info);

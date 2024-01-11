@@ -5,6 +5,12 @@
 <link href="css/Pages/Import.css" rel="stylesheet"/>
 <link href="css/Components/ItemDisplay.css" rel="stylesheet"/>
 
+@if (itemsLoading)
+{
+	<h1>Loading Import</h1>
+	return;
+}
+
 @if (importItems.Count == 0)
 {
 	<h1>No supported files found in mm_import.</h1>
@@ -151,9 +157,12 @@
 
 <ProgressPopUp @ref="@popUp" Message="@PopUpMessage" FontSize="24" Width="320" Height="300"/>
 
-<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems"/>
-
-<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent"/>
-
-<KeyboardShortcuts AltA="@AddItems" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection"/>
-<ShortcutsReference Shortcuts="@Shortcuts"/>
+@if (importItems.Count > 0)
+{
+	<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems"/>
+	
+	<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent"/>
+	
+	<KeyboardShortcuts AltA="@AddItems" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection"/>
+	<ShortcutsReference Shortcuts="@Shortcuts"/>
+}
