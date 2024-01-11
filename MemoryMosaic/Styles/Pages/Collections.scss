@@ -26,14 +26,20 @@ header {
 }
 
 main {
-	@include flex-main(row, 90px);
-	flex-wrap: wrap;
-	justify-content: flex-start;
+	@include main(90px, 165px);
+	@include available-width;
+	display: grid;
+	grid-gap: 20px;
+	
+	@media screen and (min-width: 600px) { grid-template-columns: repeat(2, 1fr); }
+	@media screen and (min-width: 850px) { grid-template-columns: repeat(3, 1fr); }
+	@media screen and (min-width: 1100px) { grid-template-columns: repeat(4, 1fr); }
+	@media screen and (min-width: 1300px) { grid-template-columns: repeat(5, 1fr); }
+	@media screen and (min-width: 1500px) { grid-template-columns: repeat(6, 1fr); }
 
 	> a {
+		@include available-width;
 		position: relative;
-		margin-bottom: 45px;
-		margin-left: 25px;
 		display: flex;
 		flex-direction: column;
 
@@ -52,8 +58,7 @@ main {
 		> span {
 			@include ellipsis;
 			width: 200px;
-			margin-top: 7px;
-			margin-left: 5px;
+			margin-top: 8px;
 		}
 	}
 }
