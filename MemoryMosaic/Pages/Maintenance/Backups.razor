@@ -53,7 +53,7 @@
                 backups.Add(new ValueTuple<string, DateTime, long>
                 {
                     Item1 = backupFolder,
-                    Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("MM Backup", null).Replace(".zip", null).Replace(';', ':')),
+                    Item2 = DateTime.Parse(P.GetFileName(backupFolder).Replace("MM Backup", null).Replace(".zip", null).Replace(';', ':')),
                     Item3 = F.GetFolderSize(backupFolder)
                 });
             }
@@ -81,7 +81,7 @@
         await Task.Delay(0);
         await Task.Delay(1);
 
-        string backupFolder = Path.Combine(S.BackupFolderPath, $"MM Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
+        string backupFolder = P.Combine(S.BackupFolderPath, $"MM Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
         Directory.CreateDirectory(backupFolder);
 
         if (updateDatabase)
@@ -93,7 +93,7 @@
         backups.Insert(0, new ValueTuple<string, DateTime, long>
         {
             Item1 = backupFolder,
-            Item2 = DateTime.Parse(Path.GetFileName(backupFolder).Replace("MM Backup", null).Replace(';', ':')),
+            Item2 = DateTime.Parse(P.GetFileName(backupFolder).Replace("MM Backup", null).Replace(';', ':')),
             Item3 = F.GetFolderSize(backupFolder)
         });
         
@@ -117,7 +117,7 @@
             RedirectStandardOutput = false,
             WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
             FileName = "cmd.exe",
-            Arguments = $"/C pg_dump.exe \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\" > \"{Path.Combine(backupFolder, "Database.bak")}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+            Arguments = $"/C pg_dump.exe \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\" > \"{P.Combine(backupFolder, "Database.bak")}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
         };
         process.Start();
         await process.WaitForExitAsync();
@@ -131,9 +131,9 @@
 
         Parallel.ForEach(C.GetEntireLibrary(), row =>
         {
-            string dtFolderPath = Path.Combine(backupFolder, Path.GetDirectoryName(row.Path)!);
+            string dtFolderPath = P.Combine(backupFolder, P.GetDirectoryName(row.Path)!);
             Directory.CreateDirectory(dtFolderPath);
-            string destFilePath = Path.Join(backupFolder, row.Path);
+            string destFilePath = P.Join(backupFolder, row.Path);
             File.Copy(row.FullPath, destFilePath);
         });
         
@@ -184,7 +184,7 @@
             WindowStyle = ProcessWindowStyle.Hidden,
             WorkingDirectory = S.BackupFolderPath,
             FileName = "cmd.exe",
-            Arguments = $"/C type \"{Path.Combine(backupFullPath, "Database.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\""
+            Arguments = $"/C type \"{P.Combine(backupFullPath, "Database.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\""
         };
         process.Start();
         await process.WaitForExitAsync();
@@ -200,7 +200,7 @@
         
         L.LogLine("mm_library cleared, copying files to mm_library", LogLevel.Info);
         FileSystem.CopyDirectory(backupFullPath, S.LibFolderPath);
-        File.Delete(Path.Combine(S.LibFolderPath, "Database.bak"));
+        File.Delete(P.Combine(S.LibFolderPath, "Database.bak"));
         L.LogLine("Finish copying files", LogLevel.Info);
     }
     #endregion

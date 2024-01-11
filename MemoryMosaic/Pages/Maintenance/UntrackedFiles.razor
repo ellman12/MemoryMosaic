@@ -19,11 +19,11 @@
     {
         int ii = i;
         string path = untrackedFiles[i];
-        string ext = Path.GetExtension(path).ToLower();
-        string name = Path.GetFileName(path);
+        string ext = P.GetExtension(path).ToLower();
+        string name = P.GetFileName(path);
 
         string shortPath = path.Replace(S.LibFolderPath, "").Replace('\\', '/');
-        shortPath = Path.GetFileName(S.LibFolderPath) + shortPath;
+        shortPath = P.GetFileName(S.LibFolderPath) + shortPath;
 
         <div>
             @if (ext is ".jpg" or ".jpeg" or ".png" or ".gif")
@@ -49,7 +49,7 @@
     private void MoveBtnClick(int index)
     {
         string path = untrackedFiles[index];
-        File.Move(path, Path.Combine(S.ImportFolderPath, Path.GetFileName(path)));
+        File.Move(path, P.Combine(S.ImportFolderPath, P.GetFileName(path)));
         untrackedFiles.RemoveAt(index);
     }
 
@@ -57,7 +57,7 @@
     private void MoveAll()
     {
         foreach (string path in untrackedFiles)
-            File.Move(path, Path.Combine(S.ImportFolderPath, Path.GetFileName(path)));
+            File.Move(path, P.Combine(S.ImportFolderPath, P.GetFileName(path)));
         untrackedFiles.Clear();
     }
 

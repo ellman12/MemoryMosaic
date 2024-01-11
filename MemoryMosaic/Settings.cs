@@ -28,11 +28,11 @@ public sealed class Settings
     public const int POSTGRES_VERSION = 15;
 
 #if DEBUG
-    public static readonly string FolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaicTest");
-    public static readonly string FilePath = Path.Combine(FolderPath, "mm_debug_settings.json");
+    public static readonly string FolderPath = P.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaicTest");
+    public static readonly string FilePath = P.Combine(FolderPath, "mm_debug_settings.json");
 #else
-    public static readonly string FolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaic");
-    public static readonly string FilePath = Path.Combine(FolderPath, "mm_settings.json");
+    public static readonly string FolderPath = P.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaic");
+    public static readonly string FilePath = P.Combine(FolderPath, "mm_settings.json");
 #endif
 
     public static void WriteSettings() => File.WriteAllText(FilePath, JsonConvert.SerializeObject(new Settings())); //https://stackoverflow.com/a/16921677

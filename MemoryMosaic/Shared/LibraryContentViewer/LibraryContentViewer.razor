@@ -505,20 +505,20 @@ Items can be selected, and depending on the page, different options may be appli
 		await Task.Delay(0);
 		await Task.Delay(1);
 
-		string zipFolderPath = Path.Combine(S.TmpFolderPath, $"Download {Guid.NewGuid()}");
+		string zipFolderPath = P.Combine(S.TmpFolderPath, $"Download {Guid.NewGuid()}");
 		Directory.CreateDirectory(zipFolderPath);
 
 		foreach (LibraryItem item in Content)
 		{
 			if (!SelectedItems.Contains(item.Id)) continue;
-			string destPath = Path.Combine(zipFolderPath, item.Filename);
+			string destPath = P.Combine(zipFolderPath, item.Filename);
 			File.Copy(item.FullPath, destPath);
 		}
 
 		ClearChecks();
 
 		string zipFilename = $"MM Download {DateTime.Now:M-d-yyyy h;mm;ss tt}.zip";
-		string zipFilePath = Path.Combine(S.TmpFolderPath, zipFilename);
+		string zipFilePath = P.Combine(S.TmpFolderPath, zipFilename);
 		ZipFile.CreateFromDirectory(zipFolderPath, zipFilePath, CompressionLevel.Fastest, false);
 
 		downloadPopUp.Disable();

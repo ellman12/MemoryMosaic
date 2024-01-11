@@ -29,7 +29,7 @@ public static class Maintenance
     }
 
     ///Returns a List&lt;LibraryItem&gt; of all rows and columns from the library table that don't have existing files in mm_library.
-    public static List<LibraryItem> GetMissingFiles() => C.GetEntireLibrary().Where(item => !File.Exists(Path.Combine(S.LibFolderPath, item.Path))).ToList();
+    public static List<LibraryItem> GetMissingFiles() => C.GetEntireLibrary().Where(item => !File.Exists(P.Combine(S.LibFolderPath, item.Path))).ToList();
 
     ///<summary>Delete these items FROM library table that are in the DB but don't exist as files.</summary>
     ///<param name="rows">List&lt;LibraryItem&gt; retrieved with GetMissingFiles()</param>

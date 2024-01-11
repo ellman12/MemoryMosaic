@@ -48,7 +48,7 @@ public static class Functions
     ///<returns>A base64 string representing the thumbnail.</returns>
     public static string GenerateThumbnail(string filePath)
     {
-        string thumbnailFullPath = Path.Join(S.TmpFolderPath, Guid.NewGuid() + ".jpg");
+        string thumbnailFullPath = P.Join(S.TmpFolderPath, Guid.NewGuid() + ".jpg");
         ProcessStartInfo ffmpegInfo = new()
         {
             CreateNoWindow = true,
@@ -56,7 +56,7 @@ public static class Functions
             Arguments = $"-i \"{filePath}\" -loglevel quiet "
         };
             
-        string ext = Path.GetExtension(filePath).ToLower();
+        string ext = P.GetExtension(filePath).ToLower();
         if (ext == ".png")
             ffmpegInfo.Arguments += $"-compression_level 100 \"{thumbnailFullPath}\""; //0-100 for quality. 100 is lowest.
         else
@@ -78,7 +78,7 @@ public static class Functions
     ///<returns>A base64 string representing the thumbnail.</returns>
     public static async Task<string> GenerateThumbnailAsync(string filePath)
     {
-        string thumbnailFullPath = Path.Join(S.TmpFolderPath, Guid.NewGuid() + ".jpg");
+        string thumbnailFullPath = P.Join(S.TmpFolderPath, Guid.NewGuid() + ".jpg");
         ProcessStartInfo ffmpegInfo = new()
         {
             CreateNoWindow = true,
@@ -86,7 +86,7 @@ public static class Functions
             Arguments = $"-i \"{filePath}\" -loglevel quiet "
         };
             
-        string ext = Path.GetExtension(filePath).ToLower();
+        string ext = P.GetExtension(filePath).ToLower();
         if (ext == ".png")
             ffmpegInfo.Arguments += $"-compression_level 100 \"{thumbnailFullPath}\""; //0-100 for quality. 100 is lowest.
         else
@@ -110,7 +110,7 @@ public static class Functions
     public static IEnumerable<string> GetSupportedFiles(string rootPath)
     {
         string[] allPaths = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories);
-        return allPaths.Where(path => SupportedExts.Contains(Path.GetExtension(path).ToLower())).ToList();
+        return allPaths.Where(path => SupportedExts.Contains(P.GetExtension(path).ToLower())).ToList();
     }
         
     ///<summary>Returns the size of a folder in bytes.</summary>

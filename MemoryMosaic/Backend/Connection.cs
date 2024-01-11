@@ -95,12 +95,12 @@ public static class Connection
     {
         try
         {
-            string filename = Path.GetFileName(shortPath);
-            string originalFullPath = Path.Combine(S.LibFolderPath, shortPath);
+            string filename = P.GetFileName(shortPath);
+            string originalFullPath = P.Combine(S.LibFolderPath, shortPath);
             
             string newShortPath = CreateShortPath(newDateTaken, filename);
             string newDTFolderPath = CreateFullDateFolderPath(newDateTaken);
-            string newFullPath = Path.Combine(newDTFolderPath, filename);
+            string newFullPath = P.Combine(newDTFolderPath, filename);
             
             //Move item to new path on server. This is how the user input is validated. If this fails, user needs to pick a new DT and/or filename.
             Directory.CreateDirectory(newDTFolderPath); //Create in case it doesn't exist.
@@ -146,9 +146,9 @@ public static class Connection
     {
         try
         {
-            string originalFullPath = Path.Combine(S.LibFolderPath, oldShortPath);
+            string originalFullPath = P.Combine(S.LibFolderPath, oldShortPath);
             string newShortPath = CreateShortPath(dateTaken, newFilename + ext);
-            string newFullPath = Path.Combine(S.LibFolderPath, newShortPath);
+            string newFullPath = P.Combine(S.LibFolderPath, newShortPath);
 
             if (File.Exists(newFullPath))
                 return null;
@@ -299,7 +299,7 @@ public static class Connection
 
             while (r.Read())
             {
-                try { FileSystem.DeleteFile(Path.Combine(S.LibFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
+                try { FileSystem.DeleteFile(P.Combine(S.LibFolderPath, r.GetString(0)), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
                 catch (IOException e) { L.LogException(e); }
             }
 
@@ -748,7 +748,7 @@ public static class Connection
     ///<summary>Create the full folder path to where an item with this date taken would get moved to in the MM library.</summary>
     ///<param name="dateTaken">The date taken to use for creating the path.</param>
     ///<returns>The full date folder path.</returns>
-    public static string CreateFullDateFolderPath(DateTime? dateTaken) => Path.Combine(S.LibFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
+    public static string CreateFullDateFolderPath(DateTime? dateTaken) => P.Combine(S.LibFolderPath, dateTaken == null ? "Unknown" : $"{dateTaken.Value.Year}/{dateTaken.Value.Month}");
 
     #endregion
 }

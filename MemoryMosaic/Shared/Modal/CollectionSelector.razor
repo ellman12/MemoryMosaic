@@ -210,7 +210,7 @@
     ///Handles saving and restoring of groups of saved Collections.
     private void SaveBtnClick(int id, MouseEventArgs mouseEventArgs)
     {
-        string filePath = Path.Join(S.FolderPath, $"slot{id}.tmp");
+        string filePath = P.Join(S.FolderPath, $"slot{id}.tmp");
         if (mouseEventArgs.CtrlKey)
         {
             SaveSelectionToDisk(filePath);
