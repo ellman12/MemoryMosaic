@@ -129,15 +129,16 @@
             SelectedAlbums.Add(id);
     }
 
-    private void ClearCollectionSelection()
-    {
-        SelectedAlbums.Clear();
-    }
-
     private void FolderClicked(int id)
     {
         ClearCollectionSelection();
         SelectedFolderId = id;
+    }
+
+    private void ClearCollectionSelection()
+    {
+        SelectedAlbums.Clear();
+        SelectedFolderId = -1;
     }
 
     ///Selects the new collection that was just created.
