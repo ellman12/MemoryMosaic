@@ -120,15 +120,11 @@ public static class Functions
     }
 
     ///Used for formatting things like "Warning"/"Warnings".
-    public static string GetPluralized(int amount, string word, string trailingText = "") => $"{amount} {word}{(amount == 1 ? "" : 's')} {trailingText}";
+    public static string GetPluralized(int amount, string word, string trailingText = "") => $"{(amount == 0 ? "No" : amount)} {word}{(amount == 1 ? "" : 's')} {trailingText}";
 
     ///Used for formatting things like "Warning"/"Warnings".
-    public static string GetPluralized<T>(ICollection<T> items, string word, string trailingText = "") => $"{items.Count} {word}{(items.Count == 1 ? "" : 's')} {trailingText}";
+    public static string GetPluralized<T>(ICollection<T> items, string word, string trailingText = "") => GetPluralized(items.Count, word, trailingText);
 
     ///Used for formatting things like "Warning"/"Warnings".
-    public static string GetPluralized<T>(IEnumerable<T> items, string word, string trailingText = "")
-    {
-        int amount = items.Count();
-        return $"{amount} {word}{(amount == 1 ? "" : 's')} {trailingText}";
-    }
+    public static string GetPluralized<T>(IEnumerable<T> items, string word, string trailingText = "") => GetPluralized(items.Count(), word, trailingText);
 }
