@@ -6,5 +6,9 @@ public enum CollectionsSortMode
 	Title,
 	TitleReversed,
 	LastModified,
-	LastModifiedReversed
+	LastModifiedReversed,
+	HighestCount,
+	LowestCount,
+	NewestItemFirst,
+	OldestItemFirst
 }

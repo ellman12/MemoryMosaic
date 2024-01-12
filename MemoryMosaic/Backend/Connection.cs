@@ -610,6 +610,10 @@ public static class Connection
             CollectionsSortMode.TitleReversed => "name DESC",
             CollectionsSortMode.LastModified => "last_modified DESC",
             CollectionsSortMode.LastModifiedReversed => "last_modified ASC",
+            CollectionsSortMode.HighestCount => "count DESC",
+            CollectionsSortMode.LowestCount => "count ASC",
+            CollectionsSortMode.NewestItemFirst => "max_date_taken DESC NULLS LAST",
+            CollectionsSortMode.OldestItemFirst => "min_date_taken ASC NULLS LAST",
             _ => "name ASC"
         };
 
