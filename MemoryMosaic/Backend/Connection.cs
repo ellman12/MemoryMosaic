@@ -455,6 +455,31 @@ public static class Connection
         }
     }
 
+    public static void UpdateCollectionDescription(Collection collection)
+    {
+        bool clear = String.IsNullOrWhiteSpace(collection.Description);
+        
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new($"UPDATE collections SET description = {(clear ? "NULL" : "@description")} WHERE id = @collectionID", connection);
+            
+            if (!clear)
+                cmd.Parameters.AddWithValue("@description", collection.Description!);
+            
+            cmd.Parameters.AddWithValue("@collectionID", collection.Id);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            L.LogException(e);
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
     ///<summary>Given the integer id of a collection represented as a string, return a new <see cref="Collection"/> with the extra details about a Collection, like name, last updated, folder, etc.</summary>
     ///<param name="collectionID"></param>
     public static async Task<Collection?> GetCollectionDetailsAsync(string collectionID)
@@ -463,13 +488,13 @@ public static class Connection
         
         try
         {
-            await using NpgsqlCommand cmd = new($"SELECT name, folder, readonly, last_modified FROM collections WHERE id = {collectionID}", localConn);
+            await using NpgsqlCommand cmd = new($"SELECT name, description, folder, readonly, last_modified FROM collections WHERE id = {collectionID}", localConn);
             await using NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 
             if (!r.HasRows) return null;
             
             await r.ReadAsync();
-            return new Collection(Int32.Parse(collectionID), r.GetString(0), r.GetBoolean(1), r.GetBoolean(2), r.GetDateTime(3));
+            return new Collection(Int32.Parse(collectionID), r.GetString(0), r.TryGetString(1), r.GetBoolean(2), r.GetBoolean(3), r.GetDateTime(4));
         }
         catch (NpgsqlException e)
         {
@@ -630,7 +655,7 @@ public static class Connection
 
         //LEFT JOIN includes empty collections.
         string query = $"""
-            SELECT c.id, c.name, c.cover, c.last_modified, COUNT(ce.item_id) AS count, MIN(l.date_taken) AS min_date_taken, MAX(l.date_taken) AS max_date_taken
+            SELECT c.id, c.name, c.cover, c.description, c.last_modified, COUNT(ce.item_id) AS count, MIN(l.date_taken) AS min_date_taken, MAX(l.date_taken) AS max_date_taken
             FROM collections c
             LEFT JOIN collection_entries ce ON c.id = ce.collection_id
             LEFT JOIN library l ON ce.item_id = l.id
@@ -646,7 +671,7 @@ public static class Connection
             using NpgsqlDataReader r = cmd.ExecuteReader();
             
             while (r.Read())
-                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.GetDateTime(3), r.GetInt32(4), r.TryGetDateTime(5), r.TryGetDateTime(6))); 
+                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.TryGetString(3), r.GetDateTime(4), r.GetInt32(5), r.TryGetDateTime(6), r.TryGetDateTime(7))); 
             
             r.Close();
         }
