@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Models;
+namespace MemoryMosaic.Models;
 
 ///Represents a row from the Collections table.
 public sealed class Collection
@@ -9,6 +9,7 @@ public sealed class Collection
 	public bool Folder { get; set; }
 	public bool ReadOnly { get; set; }
 	public DateTime LastModified { get; set; }
+	public int Count { get; set; }
 
 	public Collection(int id, string name, string? cover)
 	{
@@ -17,12 +18,13 @@ public sealed class Collection
 		Cover = cover;
 	}
             
-	public Collection(int id, string name, string? cover, DateTime lastModified)
+	public Collection(int id, string name, string? cover, DateTime lastModified, int count)
 	{
 		Id = id;
 		Name = name;
 		Cover = cover;
 		LastModified = lastModified;
+		Count = count;
 	}
 
 	public Collection(int id, string name, bool folder, bool readOnly, DateTime lastModified)

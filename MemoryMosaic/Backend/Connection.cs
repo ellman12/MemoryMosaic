@@ -615,22 +615,32 @@ public static class Connection
 
         string where = (showAlbums, showFolders) switch
         {
-            (true, false) => "WHERE folder = false",
-            (false, true) => "WHERE folder = true",
+            (true, false) => "folder = false",
+            (false, true) => "folder = true",
             _ => ""
         };
         
         if (where != "" && !showReadonly)
             where += " AND readonly = false";
 
+        //LEFT JOIN includes empty collections.
+        string query = $"""
+           SELECT c.id, c.name, c.cover, c.last_modified, COUNT(ce.item_id) AS count
+           FROM collections c
+           LEFT JOIN collection_entries ce ON c.id = ce.collection_id
+           WHERE {where}
+           GROUP BY c.id, c.name, c.cover, c.last_modified
+           ORDER BY {orderBy};
+        """;
+
         try
         {
             Open();
-            using NpgsqlCommand cmd = new($"SELECT id, name, cover, last_modified FROM collections {where} ORDER BY {orderBy}", connection);
+            using NpgsqlCommand cmd = new(query, connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             
             while (r.Read())
-                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.GetDateTime(3))); //https://stackoverflow.com/a/38930847
+                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.GetDateTime(3), r.GetInt32(4))); 
             
             r.Close();
         }
