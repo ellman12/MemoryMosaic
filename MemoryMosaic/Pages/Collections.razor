@@ -32,7 +32,7 @@
 <main>
     @foreach (Collection collection in collections)
     {
-        <a href="/collection-view/@collection.Id">
+        <a href="/collection/@collection.Id">
             <div>
                 @if (!String.IsNullOrWhiteSpace(collection.Cover))
                 {
