@@ -615,8 +615,9 @@ public static class Connection
 
         string where = (showAlbums, showFolders) switch
         {
-            (true, false) => "folder = false",
-            (false, true) => "folder = true",
+            (false, false) => "WHERE folder is null",
+            (true, false) => "WHERE folder = false",
+            (false, true) => "WHERE folder = true",
             _ => ""
         };
         
@@ -628,7 +629,7 @@ public static class Connection
            SELECT c.id, c.name, c.cover, c.last_modified, COUNT(ce.item_id) AS count
            FROM collections c
            LEFT JOIN collection_entries ce ON c.id = ce.collection_id
-           WHERE {where}
+           {where}
            GROUP BY c.id, c.name, c.cover, c.last_modified
            ORDER BY {orderBy};
         """;
