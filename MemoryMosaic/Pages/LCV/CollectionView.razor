@@ -44,8 +44,8 @@
 		<textarea @bind="@newDescription" placeholder="Describe This Collection"></textarea>
 
 		<div>
-			<IconButton Icon="check"/>
-			<IconButton Icon="close"/>
+			<IconButton Icon="check" OnClick="@ChangeDescription"/>
+			<IconButton Icon="close" OnClick="@description.Disable"/>
 		</div>
 	</div>
 </ModalBackground>
@@ -70,7 +70,7 @@
 	private LibraryContentViewer lcv = null!;
 	private TwoChoiceInput delPrompt = null!;
 	private Dropdown moreOptions = null!;
-	private readonly ElementVisibility buttons = new(), description = new();
+	private ElementVisibility buttons = null!, description = null!;
 	
 	private string Columns => $"l.path, l.id, l.date_taken, {((int) sortMode >= 4 ? "ce.date_added_to_collection" : "l.date_added")}, l.starred, l.description, l.date_deleted, l.thumbnail";
 
@@ -83,7 +83,8 @@
 	};
 
 	private CVSortMode sortMode;
-	private string newDescription = "", newCollectionName = "";
+	private string? newDescription = "";
+	private string newCollectionName = "";
 	private string NewCollectionName
 	{
 		get => newCollectionName;
@@ -109,8 +110,12 @@
 			navigationManager.NavigateTo("/collections");
 			return;
 		}
+
+		buttons = new ElementVisibility(StateHasChanged);
+		description = new ElementVisibility(StateHasChanged);
 		
 		sortMode = CVSortMode.NewestDateTaken;
+		newDescription = collection.Description;
 		newCollectionName = collection.Name;
 		buttons.Rerender = StateHasChanged;
 	}
@@ -184,5 +189,12 @@
 		}
 		else
 			NewCollectionName = "Please enter a name";
+	}
+
+	private void ChangeDescription()
+	{
+		collection!.Description = newDescription;
+		C.UpdateCollectionDescription(collection);
+		description.Disable();
 	}
 }

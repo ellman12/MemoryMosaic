@@ -33,9 +33,10 @@ public sealed class Collection
 		RangeEnd = rangeEnd;
 	}
 
-	public Collection(int id, string name, bool folder, bool readOnly, DateTime lastModified)
+	public Collection(int id, string name, string? description, bool folder, bool readOnly, DateTime lastModified)
 	{
 		Id = id;
+		Description = description;
 		Name = name;
 		Folder = folder;
 		ReadOnly = readOnly;
