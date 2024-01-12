@@ -626,12 +626,13 @@ public static class Connection
 
         //LEFT JOIN includes empty collections.
         string query = $"""
-           SELECT c.id, c.name, c.cover, c.last_modified, COUNT(ce.item_id) AS count
-           FROM collections c
-           LEFT JOIN collection_entries ce ON c.id = ce.collection_id
-           {where}
-           GROUP BY c.id, c.name, c.cover, c.last_modified
-           ORDER BY {orderBy};
+            SELECT c.id, c.name, c.cover, c.last_modified, COUNT(ce.item_id) AS count, MIN(l.date_taken) AS min_date_taken, MAX(l.date_taken) AS max_date_taken
+            FROM collections c
+            LEFT JOIN collection_entries ce ON c.id = ce.collection_id
+            LEFT JOIN library l ON ce.item_id = l.id
+            {where}
+            GROUP BY c.id, c.name, c.cover, c.last_modified
+            ORDER BY {orderBy};
         """;
 
         try
@@ -641,7 +642,7 @@ public static class Connection
             using NpgsqlDataReader r = cmd.ExecuteReader();
             
             while (r.Read())
-                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.GetDateTime(3), r.GetInt32(4))); 
+                collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.GetDateTime(3), r.GetInt32(4), r.TryGetDateTime(5), r.TryGetDateTime(6))); 
             
             r.Close();
         }

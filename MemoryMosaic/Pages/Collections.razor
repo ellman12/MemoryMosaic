@@ -12,6 +12,7 @@
         <Checkbox @bind-Input="@showAlbums" Label="Show Albums" OnChange="@GetCollections"/>
         <Checkbox @bind-Input="@showFolders" Label="Show Folders" OnChange="@GetCollections"/>
         <Checkbox @bind-Input="@showReadonly" Label="Show Readonly" OnChange="@GetCollections"/>
+        <Checkbox @bind-Input="@showDateRanges" Label="Show Date Ranges" OnChange="@StateHasChanged"/>
     </div>
 
     <IconTextButton ID="sortBtn" Icon="sort" Text="@sortBtnText" OnClick="@(() => dropdown.Toggle())"/>
@@ -34,8 +35,16 @@
                     <img src="mm_library/@collection.Cover" alt=""/>
                 }
             </div>
+            
             <span>@collection.Name</span>
-            <span>@F.GetPluralized(collection.Count, "item")</span>
+            
+            <span>
+                @F.GetPluralized(collection.Count, "item")
+                @if (showDateRanges)
+                {
+                    @((MarkupString) collection.FormatDateRange())
+                }
+            </span>
         </a>
     }
 </main>
@@ -49,7 +58,7 @@
     
     private string sortBtnText = "";
     private static CollectionsSortMode sortMode = CollectionsSortMode.LastModified;
-    private static bool showAlbums = true, showFolders, showReadonly = true;
+    private static bool showAlbums = true, showFolders, showReadonly = true, showDateRanges = true;
 
     protected override void OnInitialized()
     {
