@@ -28,12 +28,27 @@
 
 	<DropdownButton Icon="@(collection.ReadOnly ? "lock_open" : "lock")" Text="@($"{(collection.ReadOnly ? "Remove" : "Make")} Readonly")" OnClick="@ToggleReadonly"/>
 
+	<DropdownButton Icon="description" Text="Edit Description" OnClick="@(() => { description.Toggle(); StateHasChanged(); })"/>
+	
 	@if (!collection.ReadOnly)
 	{
 		<DropdownButton Icon="@(collection.Folder ? "collections" : "perm_media")" Text="@(collection.Folder ? "Change to Album" : "Change to Folder")" OnClick="@ChangeCollectionType"/>
 		<DropdownButton Icon="trash" Text="@(collection.Folder ? "Delete Folder" : "Delete Album")" OnClick="@DeleteCollectionBtnClick"/>
 	}
 </Dropdown>
+
+<ModalBackground Visibility="@description">
+	<div id="description">
+		<span>Edit Description</span>
+		
+		<textarea @bind="@newDescription" placeholder="Describe This Collection"></textarea>
+
+		<div>
+			<IconButton Icon="check"/>
+			<IconButton Icon="close"/>
+		</div>
+	</div>
+</ModalBackground>
 
 <LibraryContentViewer @ref="@lcv" Columns="@Columns" Join="collection_entries AS ce ON l.id=ce.item_id" Where="@($"collection_id={collection.Id} AND separate={collection.Folder}")" OrderByFields="@OrderBy" SortDesc="@((int) sortMode % 2 == 0)" NoItemsText="@($"{(collection.Folder ? "Folder" : "Album")} is Empty")" PersistentHeader="true" Collection="@collection">
 	<AdditionalButtons>
@@ -55,7 +70,7 @@
 	private LibraryContentViewer lcv = null!;
 	private TwoChoiceInput delPrompt = null!;
 	private Dropdown moreOptions = null!;
-	private readonly ElementVisibility buttons = new();
+	private readonly ElementVisibility buttons = new(), description = new();
 	
 	private string Columns => $"l.path, l.id, l.date_taken, {((int) sortMode >= 4 ? "ce.date_added_to_collection" : "l.date_added")}, l.starred, l.description, l.date_deleted, l.thumbnail";
 
@@ -68,7 +83,7 @@
 	};
 
 	private CVSortMode sortMode;
-	private string newCollectionName = "";
+	private string newDescription = "", newCollectionName = "";
 	private string NewCollectionName
 	{
 		get => newCollectionName;

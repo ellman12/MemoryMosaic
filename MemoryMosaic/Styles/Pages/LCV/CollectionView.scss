@@ -29,3 +29,26 @@
 
 	> button { margin-left: 3px; }
 }
+
+#description {
+	@include flex-col;
+	width: 400px;
+	height: 300px;
+	gap: 12px;
+	padding: 12px;
+	border: 1px solid white;
+	
+	> span { font-size: 20px; }
+	
+	> textarea {
+		@include available-width;
+		height: 300px;
+		resize: none;
+	}
+	
+	> div {
+		@include flex-row;
+		gap: 4px;
+		align-self: flex-end;
+	}
+}
