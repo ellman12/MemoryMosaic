@@ -6,6 +6,7 @@ public sealed class Collection
 	public int Id { get; init; }
 	public string Name { get; set; }
 	public string? Cover { get; set; }
+	public string? Description { get; set; }
 	public bool Folder { get; set; }
 	public bool ReadOnly { get; set; }
 	public DateTime LastModified { get; set; }
@@ -20,11 +21,12 @@ public sealed class Collection
 		Cover = cover;
 	}
 
-	public Collection(int id, string name, string? cover, DateTime lastModified, int count, DateTime? rangeStart, DateTime? rangeEnd)
+	public Collection(int id, string name, string? cover, string? description, DateTime lastModified, int count, DateTime? rangeStart, DateTime? rangeEnd)
 	{
 		Id = id;
 		Name = name;
 		Cover = cover;
+		Description = description;
 		LastModified = lastModified;
 		Count = count;
 		RangeStart = rangeStart;
