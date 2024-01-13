@@ -288,7 +288,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private CollectionSelector cs = null!;
 
-	private FullscreenViewer<LibraryItem> fv = new();
+	public FullscreenViewer<LibraryItem> fv { get; private set; } = new();
 	
 	private TwoChoiceInput starPrompt = null!, deletePrompt = null!, restorePrompt = null!;
 	

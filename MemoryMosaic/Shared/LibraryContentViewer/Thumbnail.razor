@@ -1,7 +1,7 @@
 @inherits Component
 @namespace MemoryMosaic.Shared.LibraryContentViewer
 
-<div class="thumbnail" @onmousedown="@ThumbnailClick" @onclick:stopPropagation="true"> @* https://stackoverflow.com/a/64724214 *@
+<div class="thumbnail" @onmouseenter="@(() => LCV.fv.Preload(Index))" @onmousedown="@ThumbnailClick" @onclick:stopPropagation="true"> @* https://stackoverflow.com/a/64724214 *@
 	@if (Item.Starred) { <MaterialIcon Icon="star" Class="star-icon"/> }
 	@if (Item.Video) { <MaterialIcon Icon="play_circle_outline" Class="video-icon"/> }
 	@if (!String.IsNullOrWhiteSpace(Item.Description)) { <MaterialIcon Icon="notes" Class="description-icon"/> }

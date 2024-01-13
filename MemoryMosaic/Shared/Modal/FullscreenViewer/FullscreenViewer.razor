@@ -228,6 +228,15 @@
 		}
 	}
 
+	public void Preload(int newIndex)
+	{
+		if (newIndex < 0 || newIndex >= Content.Count)
+			return;
+			
+		index = newIndex;
+		StateHasChanged();
+	}
+
 	protected override void OnInitialized()
 	{
 		infoVisibility.Rerender = StateHasChanged;
