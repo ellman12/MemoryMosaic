@@ -186,6 +186,9 @@ Items can be selected, and depending on the page, different options may be appli
 	[Parameter]
 	public bool SortDesc { get; set; } = true;
 	
+	public bool HoveringThumbnail { get; set; }
+	public DateTime HoverStartTime { get; set; }
+	
 	public List<LibraryItem> Content { get; private set; } = new(600);
 	
 	public CtrlGInput CtrlGInput { get; private set; } = new();
