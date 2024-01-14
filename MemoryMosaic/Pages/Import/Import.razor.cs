@@ -77,7 +77,7 @@ public sealed partial class Import
 		
 		await Parallel.ForEachAsync(importItems.ToImmutableList(), async (importItem, _) =>
 		{
-			importItem.Thumbnail = await F.GenerateThumbnailAsync(importItem.FullPath);
+			importItem.Thumbnail = await FF.GenerateThumbnailAsync(importItem.FullPath);
 			await RerenderAsync();
 		});
 		thumbnailsLoading = false;

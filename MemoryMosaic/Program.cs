@@ -16,6 +16,7 @@ global using Microsoft.VisualBasic.FileIO;
 global using C = MemoryMosaic.Backend.Connection;
 global using D = DateTakenExtractor.DateTakenExtractor;
 global using F = MemoryMosaic.Backend.Functions;
+global using FF = MemoryMosaic.Backend.FFmpeg;
 global using L = MemoryMosaic.Backend.Logger;
 global using M = MemoryMosaic.Backend.Maintenance;
 global using P = System.IO.Path;

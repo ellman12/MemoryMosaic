@@ -266,7 +266,7 @@
         {
             await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
             await using NpgsqlCommand cmd = new("UPDATE library SET thumbnail = @newThumbnail WHERE path = @path", localConn);
-            cmd.Parameters.AddWithValue("@newThumbnail", F.GenerateThumbnail(item.FullPath));
+            cmd.Parameters.AddWithValue("@newThumbnail", await FF.GenerateThumbnailAsync(item.FullPath));
             cmd.Parameters.AddWithValue("@path", item.Path);
             await cmd.ExecuteNonQueryAsync(cancellationToken);
             amountUpdated++;
