@@ -126,6 +126,14 @@
 				width: 240px;
 			}
 		}
+		
+		#compression {
+			@include flex-col;
+			
+			> select {
+				width: fit-content;
+			}			
+		}
 
 		> textarea {
 			@include available-width;

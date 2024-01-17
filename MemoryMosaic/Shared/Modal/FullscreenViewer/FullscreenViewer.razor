@@ -100,10 +100,25 @@
 			<span>DT Source: @CurrentIi.DateTakenSource</span>
 		}
 
-		<div class="field" title="File Size">
+		<div class="field" title="File Size" @ondblclick="@ShowCompressionElements">
 			<MaterialIcon Icon="save"/>
 			<span>@F.FormatBytes(Current.Size)</span>
 		</div>
+		
+		@if (Current.CompressionParameters != null)
+		{
+			<div id="compression">
+				<span>@Current.CompressionParameters.Width x @Current.CompressionParameters.Height</span>
+				<span>@Current.CompressionParameters.AspectRatio</span>
+				
+				<select @bind="@Current.CompressionParameters.NewResolution">
+					@foreach (var resolution in Resolutions)
+					{
+						<option value="@resolution.Key">@resolution.Value</option>
+					}
+				</select>
+			</div>
+		}
 		
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
 
@@ -204,7 +219,16 @@
 
 	private string? newFilename;
 	private string ext = "";
-	
+
+	@* ReSharper disable once StaticMemberInGenericType *@
+	private static readonly Dictionary<Resolution, string> Resolutions = new()
+	{
+		{Resolution.UHD_4K, "4K"},
+		{Resolution.WQHD_1440p, "1440p"},
+		{Resolution.FHD_1080p, "1080p"},
+		{Resolution.HD_720p, "720p"}
+	};
+
 	private int index;
 	public int Index
 	{
@@ -348,6 +372,12 @@
 	{
 		C.UpdateStarred(Current.Id, !Current.Starred);
 		Current.Starred = !Current.Starred;
+		StateHasChanged();
+	}
+
+	private void ShowCompressionElements()
+	{
+		Current.CompressionParameters = new CompressionParameters(Current);
 		StateHasChanged();
 	}
 }
