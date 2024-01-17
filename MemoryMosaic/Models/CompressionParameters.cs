@@ -74,7 +74,7 @@ public sealed class CompressionParameters
 	{
 		if (NewResolution == Resolution)
 			return "";
-
+		
 		(uint width, uint height) = NewDimensions;
 		return $"-vf \"scale={width}:{height}\"";
 	}
@@ -94,8 +94,10 @@ public sealed class CompressionParameters
 			Arguments = $"-y -v error -i \"{originalFilePath}\" {GetNewScale()} {(LowerFrameRate ? "-r 30" : "")} {(Media.Video ? VolumeParameter : "")} -q:v 1 \"{compressedFilePath}\""
 		};
 
-		Process ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
+		var ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
 		await ffmpegProcess.WaitForExitAsync();
+
+		await CopyMetadata(originalFilePath, compressedFilePath);
 		
 		string folderPath = P.Combine(S.TmpFolderPath, "Before Compression", P.GetDirectoryName(Media.Path)!);
 		Directory.CreateDirectory(folderPath);
@@ -108,5 +110,23 @@ public sealed class CompressionParameters
 		File.Move(compressedFilePath, originalFilePath);
 		
 		L.LogLine($"Finish compressing {Media.Path}", LogLevel.Debug);
+	}
+
+	///Uses Exiftool to copy the metadata from the original file to the new compressed one.
+	private static async Task CopyMetadata(string originalFilePath, string compressedFilePath)
+	{
+		L.LogLine($"Begin copying metadata for {compressedFilePath}", LogLevel.Debug);
+
+		ProcessStartInfo exiftoolInfo = new()
+		{
+			CreateNoWindow = true,
+			FileName = "exiftool",
+			Arguments = $"-TagsFromFile \"{originalFilePath}\" -All:All \"{compressedFilePath}\""
+		};
+
+		var exiftoolProcess = Process.Start(exiftoolInfo) ?? throw new InvalidOperationException();
+		await exiftoolProcess.WaitForExitAsync();
+		
+		L.LogLine($"Finish copying metadata for {compressedFilePath}", LogLevel.Debug);
 	}
 }
