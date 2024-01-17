@@ -20,6 +20,8 @@ public abstract class Media
 	///How many bytes this item is on disk.
 	public long Size { get; protected init; }
 	
+	public CompressionParameters? CompressionParameters { get; set; }
+	
 	public abstract string RequestPath { get; }
 	
 	public abstract string FullPath { get; }

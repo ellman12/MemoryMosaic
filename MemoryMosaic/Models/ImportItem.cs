@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace MemoryMosaic.Models;
 
@@ -77,6 +77,7 @@ public sealed class ImportItem : Media
 		D.GetDateTakenFromBoth(absolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;
 		FilenameDateTaken = filenameDT;
+		
 		if (MetadataDateTaken != null)
 			DateTakenSource = DateTakenSource.Metadata;
 		else if (FilenameDateTaken != null)
@@ -87,5 +88,7 @@ public sealed class ImportItem : Media
 		customDateTaken = SelectedDateTaken;
 		
 		Size = new FileInfo(absolutePath).Length;
+		
+		CompressionParameters = new CompressionParameters(this);
 	}
 }
