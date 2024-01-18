@@ -1,3 +1,6 @@
+using System.Threading;
+using ThreadState=System.Threading.ThreadState;
+
 namespace MemoryMosaic.Backend;
 
 ///Manages automatically compressing <see cref="Media"/> in the background.
@@ -9,22 +12,31 @@ public static class Compressor
 
 	public static bool Compressing { get; private set; }
 
+	private static readonly Thread compressionThread;
+
+	static Compressor()
+	{
+		compressionThread = new Thread(CompressItems)
+		{
+			IsBackground = true,
+			Priority = ThreadPriority.Lowest
+		};
+	}
+
 	public static void Enqueue(Media item)
 	{
 		Items.Enqueue(item, item.Video);
-		StartCompressing();
+
+		if (compressionThread.ThreadState != ThreadState.Running)
+			compressionThread.Start();
 	}
 
-	public static void Enqueue(IEnumerable<Media> items)
-	{
-		foreach (Media item in items)
-			Enqueue(item);
-	}
-
-	private static void StartCompressing()
+	private static void CompressItems()
 	{
 		if (Compressing)
 			return;
+
+		L.LogLine($"Begin {nameof(CompressItems)}", LogLevel.Debug);
 
 		Compressing = true;
 
@@ -35,6 +47,8 @@ public static class Compressor
 		}
 
 		Compressing = false;
+
+		L.LogLine($"Finish {nameof(CompressItems)}", LogLevel.Debug);
 	}
 
 	///Lightly compresses an item using FFmpeg's "-q:v 1" parameter. Uses Exiftool to copy the metadata from the original to the new item, then moves the original item to mm_tmp/Before Compression/.
@@ -45,7 +59,7 @@ public static class Compressor
 		string originalFilePath = item.FullPath;
 		string ext = P.GetExtension(originalFilePath);
 		string compressedFilePath = originalFilePath.Replace(ext, $"_compressed{ext}");
-		
+
 		ProcessStartInfo ffmpegInfo = new()
 		{
 			CreateNoWindow = true,
@@ -55,7 +69,7 @@ public static class Compressor
 		var ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
 		ffmpegProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
 		ffmpegProcess.WaitForExit();
-		
+
 		CopyMetadata(originalFilePath, compressedFilePath);
 
 		string folderPath = P.Combine(S.TmpFolderPath, "Before Compression", P.GetDirectoryName(item.Path)!);
@@ -68,9 +82,9 @@ public static class Compressor
 		File.Move(originalFilePath, uncompressedNewPath);
 		File.Move(compressedFilePath, originalFilePath);
 
-		L.LogLine($"Finish compressing {item.Path}\n", LogLevel.Debug);
+		L.LogLine($"Finish compressing {item.Path}", LogLevel.Debug);
 	}
-	
+
 	///Uses Exiftool to copy the metadata from the original file to the new compressed one.
 	private static void CopyMetadata(string originalFilePath, string compressedFilePath)
 	{
@@ -85,7 +99,7 @@ public static class Compressor
 
 		var exiftoolProcess = Process.Start(exiftoolInfo) ?? throw new InvalidOperationException();
 		exiftoolProcess.WaitForExit();
-		
+
 		L.LogLine($"Finish copying metadata for {compressedFilePath}", LogLevel.Debug);
 	}
 }
