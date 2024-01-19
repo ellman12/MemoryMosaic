@@ -9,7 +9,7 @@ header {
 }
 
 main {
-	@include flex-main(70px, column);
+	@include flex-main(column, 70px);
 
 	> div {
 		@include flex-row;
