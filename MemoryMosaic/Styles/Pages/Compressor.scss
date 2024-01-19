@@ -1,0 +1,12 @@
+@import "../Mixins";
+
+header {
+	@include page-header(1px solid gray, 60px);
+	font-size: 18px;
+	margin: 0;
+}
+
+main {
+	@include flex-main(column, 70px);
+	@include available-width;
+}

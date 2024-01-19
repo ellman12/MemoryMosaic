@@ -13,6 +13,7 @@ global using MemoryMosaic.Enums;
 global using MemoryMosaic.Models;
 global using MemoryMosaic.Extensions;
 global using Microsoft.VisualBasic.FileIO;
+global using C = MemoryMosaic.Backend.Compressor;
 global using D = MemoryMosaic.Backend.Database;
 global using DTE = DateTakenExtractor.DateTakenExtractor;
 global using F = MemoryMosaic.Backend.Functions;

@@ -1,0 +1,17 @@
+﻿@import "../Mixins";
+
+.compressorItem {
+	@include flex-row;
+	@include available-width;
+	margin-bottom: 10px;
+
+	> img { width: 4%; }
+
+	> span {
+		@include ellipsis;
+		margin-left: 16px;
+		min-width: 400px;
+	}
+
+	> .iconBtn { margin-left: 4px; }
+}

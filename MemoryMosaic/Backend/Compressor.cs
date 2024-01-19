@@ -1,12 +1,12 @@
 using System.Threading;
-using ThreadState=System.Threading.ThreadState;
+using ThreadState = System.Threading.ThreadState;
 
 namespace MemoryMosaic.Backend;
 
 ///Manages automatically compressing <see cref="Media"/> in the background.
 public static class Compressor
 {
-	public static Media? Current { get; private set; }
+	public static Media? Current { get; set; } //TODO: set this back to private set;
 
 	public static PriorityQueue<Media, bool> Items { get; } = new();
 

@@ -1,0 +1,35 @@
+﻿@page "/compressor"
+@using System.Collections.Immutable
+
+<title>Compressor - MM</title>
+<link href="css/Pages/Compressor.css" rel="stylesheet"/>
+<link href="css/Components/CompressorItem.css" rel="stylesheet"/>
+
+<header>Compressing @F.GetPluralized(C.Items.Count + (C.Current != null ? 1 : 0), "Item")</header>
+
+<main>
+	@if (C.Current != null)
+	{
+		<CompressorItem Item="@C.Current"/>
+	}
+
+	@foreach (Media item in C.Items.UnorderedItems.Select(media => media.Element))
+	{
+		<CompressorItem Item="@item"/>
+	}
+</main>
+
+@code {
+	protected override void OnInitialized()
+	{
+		var items = D.GetEntireLibrary().ToImmutableArray();
+		C.Items.Clear();
+		C.Current = null;
+		C.Current = items.Last();
+		
+		C.Items.Enqueue(items.First(), items.First().Video);
+
+		foreach (int i in Enumerable.Range(1, 20))
+			C.Items.Enqueue(items.Skip(i).First(), items.Skip(i).First().Video);
+	}
+}

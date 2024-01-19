@@ -1,0 +1,10 @@
+﻿<div class="compressorItem">
+	<img src="@("data:image/jpg;base64," + Item.Thumbnail)" alt="@Item.Path" loading="lazy"/>
+
+	<span style="@(Item == C.Current ? "color: #0080ff" : "")" title="@Item.Path">@Item.Path</span>
+</div>
+
+@code {
+	[Parameter, EditorRequired]
+	public required Media Item { get; set; }
+}
