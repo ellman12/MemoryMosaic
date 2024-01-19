@@ -51,7 +51,7 @@ public static class Compressor
 		L.LogLine($"Finish {nameof(CompressItems)}", LogLevel.Debug);
 	}
 
-	///Lightly compresses an item using FFmpeg's "-q:v 1" parameter. Uses Exiftool to copy the metadata from the original to the new item, then moves the original item to mm_tmp/Before Compression/.
+	///Lightly compresses an item using FFmpeg's "-q:v 1" parameter. Uses ExifTool to copy the metadata from the original to the new item, then moves the original item to mm_tmp/Before Compression/.
 	private static void Compress(Media item)
 	{
 		L.LogLine($"Begin compressing {item.Path}", LogLevel.Debug);
@@ -85,7 +85,7 @@ public static class Compressor
 		L.LogLine($"Finish compressing {item.Path}", LogLevel.Debug);
 	}
 
-	///Uses Exiftool to copy the metadata from the original file to the new compressed one.
+	///Uses ExifTool to copy the metadata from the original file to the new compressed one.
 	private static void CopyMetadata(string originalFilePath, string compressedFilePath)
 	{
 		L.LogLine($"Begin copying metadata for {compressedFilePath}", LogLevel.Debug);
