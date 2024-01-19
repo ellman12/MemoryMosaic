@@ -23,8 +23,8 @@
 	private void DeleteBtnClick()
 	{
 		if (Item.DateDeleted == null)
-			C.MoveToTrash(Item.Id);
-		C.RemoveFromTrash(Item);
+			D.MoveToTrash(Item.Id);
+		D.RemoveFromTrash(Item);
 		Import.LibraryCache.Remove(Item.Path);
 		Import.Rerender();
 	}

@@ -62,7 +62,7 @@ public sealed partial class Import
 		}));
 
 		importItems = bag.ToList();
-		LibraryCache = C.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
+		LibraryCache = D.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
 		itemsLoading = false;
 		SortItems();
 		await RerenderAsync();
@@ -288,19 +288,19 @@ public sealed partial class Import
 
 		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
 		{
-			await C.InsertItem(item);
+			await D.InsertItem(item);
 
 			if (item.Collections != null)
 			{
 				foreach (var collection in item.Collections)
-					await C.AddToCollectionAsync(collection.Id, item.Id);
+					await D.AddToCollectionAsync(collection.Id, item.Id);
 			}
 
 			await Task.Run(() =>
 			{
-				Directory.CreateDirectory(C.CreateFullDateFolderPath(item.SelectedDateTaken));
+				Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
 				File.Move(item.FullPath, item.AbsoluteDestinationPath);
-				D.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
+				DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
 				LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
 			}, cancellationToken);
 		});

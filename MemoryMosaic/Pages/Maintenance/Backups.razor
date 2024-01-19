@@ -129,7 +129,7 @@
     {
         L.LogLine("Begin copying mm_library", LogLevel.Info);
 
-        Parallel.ForEach(C.GetEntireLibrary(), row =>
+        Parallel.ForEach(D.GetEntireLibrary(), row =>
         {
             string dtFolderPath = P.Combine(backupFolder, P.GetDirectoryName(row.Path)!);
             Directory.CreateDirectory(dtFolderPath);
@@ -171,10 +171,10 @@
     {
         L.LogLine("Begin clearing database", LogLevel.Info);
         
-        C.Open();
-        await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS library CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE", C.connection);
+        D.Open();
+        await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS library CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE", D.connection);
         cmd.ExecuteNonQuery();
-        C.Close();
+        D.Close();
         
         L.LogLine("Database cleared, restoring database", LogLevel.Info);
         

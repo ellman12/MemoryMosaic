@@ -60,7 +60,7 @@
 	</AdditionalButtons>
 </LibraryContentViewer>
 
-<TwoChoiceInput @ref="@delPrompt" Message=@($"PERMANENTLY Delete {(collection.Folder ? "Folder" : "Album")} \"{collection.Name}\"?") YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); C.DeleteCollection(collection.Id); })" NoBtnClick="@(() => delPrompt.Disable())"/>
+<TwoChoiceInput @ref="@delPrompt" Message=@($"PERMANENTLY Delete {(collection.Folder ? "Folder" : "Album")} \"{collection.Name}\"?") YesBtnClick="@(() => { navigationManager.NavigateTo("/collections"); D.DeleteCollection(collection.Id); })" NoBtnClick="@(() => delPrompt.Disable())"/>
 
 @code {
 	[Parameter]
@@ -103,7 +103,7 @@
 @functions {
 	protected override async Task OnInitializedAsync()
 	{
-		collection = await C.GetCollectionDetailsAsync(CollectionID);
+		collection = await D.GetCollectionDetailsAsync(CollectionID);
 
 		if (collection == null)
 		{
@@ -131,7 +131,7 @@
 
 	private async void ToggleReadonly()
 	{
-		await C.ToggleReadonlyAsync(collection ?? throw new InvalidOperationException());
+		await D.ToggleReadonlyAsync(collection ?? throw new InvalidOperationException());
 		collection.ReadOnly = !collection.ReadOnly;
 		NewCollectionName = collection.Name;
 		await InvokeAsync(StateHasChanged);
@@ -139,7 +139,7 @@
 
 	private void ChangeCollectionType()
 	{
-		C.ChangeCollectionType(collection!.Id, !collection.Folder);
+		D.ChangeCollectionType(collection!.Id, !collection.Folder);
 		collection.Folder = !collection.Folder;
 		StateHasChanged();
 	}
@@ -148,7 +148,7 @@
 	private void RemoveBtnClick()
 	{
 		foreach (Guid id in lcv.SelectedItems)
-			C.RemoveFromCollection(id, collection!.Id);
+			D.RemoveFromCollection(id, collection!.Id);
 		
 		lcv.Reset();
 		StateHasChanged();
@@ -167,7 +167,7 @@
 
 	private void DeleteCollection()
 	{
-		C.DeleteCollection(collection!.Id);
+		D.DeleteCollection(collection!.Id);
 		navigationManager.NavigateTo("/collections");
 	}
 
@@ -183,7 +183,7 @@
 	{
 		if (!String.IsNullOrWhiteSpace(NewCollectionName))
 		{
-			C.RenameCollection(NewCollectionName, collection!.Id);
+			D.RenameCollection(NewCollectionName, collection!.Id);
 			collection.Name = NewCollectionName;
 			buttons.Disable();
 		}
@@ -194,7 +194,7 @@
 	private void ChangeDescription()
 	{
 		collection!.Description = newDescription;
-		C.UpdateCollectionDescription(collection);
+		D.UpdateCollectionDescription(collection);
 		description.Disable();
 	}
 }
