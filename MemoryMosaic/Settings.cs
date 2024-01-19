@@ -24,7 +24,22 @@ public sealed class Settings
 
     ///Controls what items are printed out by the Logger.
     [JsonProperty] public static LogLevel LogLevel { get; set; } = LogLevel.Info;
+
+    [JsonProperty]
+    public static Dictionary<string, bool> CompressibleExtensions = new();
         
+    [JsonIgnore]
+    private static readonly Dictionary<string, bool> ExtensionsDefaults = new()
+    {
+        {".jpg", true},
+        {".jpeg", true},
+        {".png", false},
+        {".gif", false},
+        {".mp4", true},
+        {".mov", true},
+        {".mkv", true}
+    };
+    
     public const int POSTGRES_VERSION = 15;
 
 #if DEBUG
@@ -60,6 +75,8 @@ public sealed class Settings
         TmpFolderPath = $"{root}/mm_tmp";
         ThumbnailQuality = 7;
         LogLevel = LogLevel.Error;
+        CompressibleExtensions = ExtensionsDefaults;
+        
         File.WriteAllText(FilePath, JsonConvert.SerializeObject(new Settings()));
     }
 }

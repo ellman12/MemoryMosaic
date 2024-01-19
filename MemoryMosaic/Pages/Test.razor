@@ -3,3 +3,10 @@
 
 <title>Test - MM</title>
 
+@code
+{
+	protected override void OnInitialized()
+	{
+		Compressor.Enqueue(new ImportItem("C:/Users/Elliott/Pictures/MemoryMosaic_Debug/mm_import/VID_20200622_125513.mp4"));
+	}
+}

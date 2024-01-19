@@ -27,6 +27,17 @@
         </div>
 
         <Checkbox @bind-Input="@ShowPrompts" Label="Show Prompts?"/>
+        
+        <div id="import-compression">
+            <span>Automatically Compress These Files in Import</span>
+            
+            <div>
+                @foreach (var extension in CompressibleExtensions)
+                {
+                    <Checkbox @bind-Input="@CompressibleExtensions[extension.Key]" Label="@extension.Key"/>
+                }
+            </div>
+        </div>
 
         @{
             string color = LogLevel switch
@@ -168,6 +179,7 @@
     private string TmpFolderPath = S.TmpFolderPath;
     private int ThumbnailQuality = S.ThumbnailQuality;
     private LogLevel LogLevel = S.LogLevel;
+    public static Dictionary<string, bool> CompressibleExtensions = S.CompressibleExtensions;
 
     //Updating thumbnails
     private int amountToUpdate, amountUpdated;
@@ -224,6 +236,7 @@
         S.TmpFolderPath = TmpFolderPath;
         S.ThumbnailQuality = ThumbnailQuality;
         S.LogLevel = LogLevel;
+        S.CompressibleExtensions = CompressibleExtensions;
         S.WriteSettings();
     }
 
@@ -237,6 +250,7 @@
         TmpFolderPath = S.TmpFolderPath;
         ThumbnailQuality = S.ThumbnailQuality;
         LogLevel = S.LogLevel;
+        CompressibleExtensions = S.CompressibleExtensions;
     }
 
     ///Reset settings to default values.

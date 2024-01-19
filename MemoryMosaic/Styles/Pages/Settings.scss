@@ -33,7 +33,7 @@
 
 			> span {
 				display: block;
-				margin-bottom: 7px;
+				margin-bottom: 8px;
 				padding: 0;
 			}
 		}
@@ -41,6 +41,20 @@
 		> .checkbox {
 			margin-right: 4px;
 			margin-bottom: 4px;
+		}
+		
+		#import-compression {
+			@include flex-col;
+			column-count: 2;
+			margin-top: 12px;
+			margin-bottom: 16px;
+			
+			> span { margin-bottom: 4px; }
+			
+			> div {
+				@include flex-row;
+				gap: 8px;
+			}
 		}
 
 		> .dropdown-setting {
