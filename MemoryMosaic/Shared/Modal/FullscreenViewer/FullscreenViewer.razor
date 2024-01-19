@@ -13,7 +13,7 @@
 
 			@if (Collection is {ReadOnly: false} && !Current.Video)
 			{
-				<IconButton Icon="collections_bookmark" OnClick="@(() => C.UpdateCollectionCover(Collection.Id, Current.Path))" Title="Use As Collection Cover"/>
+				<IconButton Icon="collections_bookmark" OnClick="@(() => D.UpdateCollectionCover(Collection.Id, Current.Path))" Title="Use As Collection Cover"/>
 			}
 
 			@if (PageName == "Trash")
@@ -139,7 +139,7 @@
 				@if (CurrentLi != null)
 				{
 					<input type="datetime-local" @bind="@newDateTaken" step="1"/>
-					<IconButton Icon="check" OnClick="@(() => { CurrentLi.DateTaken = newDateTaken; dtPickerVis.Disable(); C.UpdateDateTaken(Current.Path, newDateTaken); })"/>
+					<IconButton Icon="check" OnClick="@(() => { CurrentLi.DateTaken = newDateTaken; dtPickerVis.Disable(); D.UpdateDateTaken(Current.Path, newDateTaken); })"/>
 				}
 				else if (CurrentIi != null)
 				{
@@ -213,7 +213,7 @@
 		{
 			if (value < 0 || value >= Content.Count) return;
 			index = value;
-			collectionsContaining = C.GetCollectionsContaining(Current.Id);
+			collectionsContaining = D.GetCollectionsContaining(Current.Id);
 
 			if (Current is LibraryItem li)
 				newDateTaken = li.DateTaken;
@@ -288,14 +288,14 @@
 @functions {
 	private static string FormatDateTaken(DateTime? dateTaken) => dateTaken == null ? "No Date Taken" : dateTaken.Value.ToString("ddd, MMM d, yyyy hh:mm:ss tt");
 
-	private void UpdateDescription() => C.UpdateDescription(Current.Id, Current.Description);
+	private void UpdateDescription() => D.UpdateDescription(Current.Id, Current.Description);
 
 	private void RenameFile()
 	{
 		if (String.IsNullOrWhiteSpace(newFilename))
 			return;
 
-		string? newShortPath = C.RenameFile(Current.Path, newFilename, ext, (Current as LibraryItem)?.DateTaken);
+		string? newShortPath = D.RenameFile(Current.Path, newFilename, ext, (Current as LibraryItem)?.DateTaken);
 		if (newShortPath == null)
 		{
 			fileRename.Enable();
@@ -346,7 +346,7 @@
 
 	private void UpdateStarred()
 	{
-		C.UpdateStarred(Current.Id, !Current.Starred);
+		D.UpdateStarred(Current.Id, !Current.Starred);
 		Current.Starred = !Current.Starred;
 		StateHasChanged();
 	}

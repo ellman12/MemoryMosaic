@@ -10,8 +10,8 @@ public static class Stats
         int rows = 0;
         try
         {
-            C.Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE date_deleted IS NULL", C.connection);
+            D.Open();
+            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE date_deleted IS NULL", D.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read())
                 rows++;
@@ -24,7 +24,7 @@ public static class Stats
         }
         finally
         {
-            C.Close();
+            D.Close();
         }
     }
 
@@ -35,8 +35,8 @@ public static class Stats
         int rows = 0;
         try
         {
-            C.Open();
-            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE date_deleted IS NOT NULL", C.connection);
+            D.Open();
+            using NpgsqlCommand cmd = new("SELECT path FROM library WHERE date_deleted IS NOT NULL", D.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read())
                 rows++;
@@ -49,7 +49,7 @@ public static class Stats
         }
         finally
         {
-            C.Close();
+            D.Close();
         }
     }
 
@@ -60,8 +60,8 @@ public static class Stats
         int rows = 0;
         try
         {
-            C.Open();
-            using NpgsqlCommand cmd = new("SELECT id FROM collections", C.connection);
+            D.Open();
+            using NpgsqlCommand cmd = new("SELECT id FROM collections", D.connection);
             using NpgsqlDataReader r = cmd.ExecuteReader();
             while (r.Read())
                 rows++;
@@ -74,7 +74,7 @@ public static class Stats
         }
         finally
         {
-            C.Close();
+            D.Close();
         }
     }
 
@@ -84,7 +84,7 @@ public static class Stats
         
         try
         {
-            await using NpgsqlConnection conn = await C.CreateLocalConnectionAsync();
+            await using NpgsqlConnection conn = await D.CreateLocalConnectionAsync();
             NpgsqlCommand cmd = new($"SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail thumbnail FROM library {filter}", conn);
             NpgsqlDataReader r = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 

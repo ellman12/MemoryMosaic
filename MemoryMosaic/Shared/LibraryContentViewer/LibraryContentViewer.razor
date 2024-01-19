@@ -393,7 +393,7 @@ Items can be selected, and depending on the page, different options may be appli
 
 	private void UpdateStars(bool starred)
 	{
-		C.UpdateStarred(SelectedItems, starred);
+		D.UpdateStarred(SelectedItems, starred);
 		starPrompt.Disable();
 		
 		foreach (LibraryItem item in Content.Where(item => SelectedItems.Contains(item.Id)))
@@ -414,7 +414,7 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		if (fv.Visible)
 		{
-			C.RestoreItem(fv.Current.Id);
+			D.RestoreItem(fv.Current.Id);
 			Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
 			
 			if (fv.Index == Content.Count)
@@ -422,13 +422,13 @@ Items can be selected, and depending on the page, different options may be appli
 		}
 		else if (SelectedItems.Count == 0)
 		{
-			C.RestoreTrash();
+			D.RestoreTrash();
 			Content.Clear();
 			topLoader.HasMoreRows = bottomLoader.HasMoreRows = false;
 		}
 		else
 		{
-			C.RestoreItems(SelectedItems);
+			D.RestoreItems(SelectedItems);
 			Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 		}
 
@@ -455,7 +455,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			if (fv.Visible)
 			{
-				C.RemoveFromTrash(fv.Current);
+				D.RemoveFromTrash(fv.Current);
 				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
 				
 				if (fv.Index == Content.Count)
@@ -463,13 +463,13 @@ Items can be selected, and depending on the page, different options may be appli
 			}
 			else if (SelectedItems.Count == 0)
 			{
-				C.EmptyTrash();
+				D.EmptyTrash();
 				Content.Clear();
 				topLoader.HasMoreRows = bottomLoader.HasMoreRows = false;
 			}
 			else
 			{
-				C.RemoveFromTrash(Content.Where(item => SelectedItems.Contains(item.Id)));
+				D.RemoveFromTrash(Content.Where(item => SelectedItems.Contains(item.Id)));
 				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 			}
 		}
@@ -477,7 +477,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			if (fv.Visible)
 			{
-				C.MoveToTrash(fv.Current.Id);
+				D.MoveToTrash(fv.Current.Id);
 				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
 				
 				if (fv.Index == Content.Count)
@@ -485,7 +485,7 @@ Items can be selected, and depending on the page, different options may be appli
 			}
 			else
 			{
-				C.MoveToTrash(SelectedItems);
+				D.MoveToTrash(SelectedItems);
 				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 			}
 		}

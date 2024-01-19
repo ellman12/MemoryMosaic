@@ -100,8 +100,8 @@
 
     private void RefreshData()
     {
-        Albums = C.GetCollections(true, false, false);
-        Folders = C.GetCollections(false, true, false);
+        Albums = D.GetCollections(true, false, false);
+        Folders = D.GetCollections(false, true, false);
         SelectedFolderId = -1;
     }
 
@@ -173,12 +173,12 @@
             {
                 if (SelectedItem != Guid.Empty)
                 {
-                    await C.AddToCollectionAsync(SelectedFolderId, SelectedItem);
+                    await D.AddToCollectionAsync(SelectedFolderId, SelectedItem);
                 }
                 else
                 {
                     foreach (Guid item in SelectedItems)
-                        await C.AddToCollectionAsync(SelectedFolderId, item);
+                        await D.AddToCollectionAsync(SelectedFolderId, item);
                 }
             }
             else
@@ -187,12 +187,12 @@
                 {
                     if (SelectedItem != Guid.Empty)
                     {
-                        await C.AddToCollectionAsync(id, SelectedItem);
+                        await D.AddToCollectionAsync(id, SelectedItem);
                     }
                     else
                     {
                         foreach (Guid item in SelectedItems)
-                            await C.AddToCollectionAsync(id, item);
+                            await D.AddToCollectionAsync(id, item);
                     }
                 }
             }

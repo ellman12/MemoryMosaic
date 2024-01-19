@@ -47,7 +47,7 @@ public sealed class ContentLoader : IDisposable, IAsyncDisposable
 
 		if (!initializer) return;
 		
-		conn = C.CreateLocalConnection();
+		conn = D.CreateLocalConnection();
 		using NpgsqlCommand cmd = new(Query, conn);
 		reader = cmd.ExecuteReader();
 		AddContent();

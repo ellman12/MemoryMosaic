@@ -54,7 +54,7 @@ public sealed class ImportItem : Media
 	}
 
 	[JsonIgnore]
-	public string DestinationPath => C.CreateShortPath(SelectedDateTaken, NewFilename + Extension);
+	public string DestinationPath => D.CreateShortPath(SelectedDateTaken, NewFilename + Extension);
 
 	[JsonIgnore]
 	public string AbsoluteDestinationPath => $"{P.Combine(S.LibFolderPath, DestinationPath)}";
@@ -72,9 +72,9 @@ public sealed class ImportItem : Media
 		Path = absolutePath.Replace(S.ImportFolderPath, "").Substring(1);
 		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(absolutePath);
 		Extension = P.GetExtension(absolutePath);
-		Video = D.IsVideoExt(Extension);
+		Video = DTE.IsVideoExt(Extension);
 
-		D.GetDateTakenFromBoth(absolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
+		DTE.GetDateTakenFromBoth(absolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;
 		FilenameDateTaken = filenameDT;
 		if (MetadataDateTaken != null)

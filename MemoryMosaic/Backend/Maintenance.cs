@@ -15,7 +15,7 @@ public static class Maintenance
     public static List<string> GetUntrackedFiles()
     {
         List<string> untrackedPaths = new(); //Tracks items in mm_library but not in database
-        HashSet<string> libraryPaths = C.GetEntireLibrary().Select(item => item.Path).ToHashSet();
+        HashSet<string> libraryPaths = D.GetEntireLibrary().Select(item => item.Path).ToHashSet();
 
         foreach (string fullPath in Directory.GetFiles(S.LibFolderPath, "*", SearchOption.AllDirectories))
         {
@@ -29,7 +29,7 @@ public static class Maintenance
     }
 
     ///Returns a List&lt;LibraryItem&gt; of all rows and columns from the library table that don't have existing files in mm_library.
-    public static List<LibraryItem> GetMissingFiles() => C.GetEntireLibrary().Where(item => !File.Exists(P.Combine(S.LibFolderPath, item.Path))).ToList();
+    public static List<LibraryItem> GetMissingFiles() => D.GetEntireLibrary().Where(item => !File.Exists(P.Combine(S.LibFolderPath, item.Path))).ToList();
 
     ///<summary>Delete these items FROM library table that are in the DB but don't exist as files.</summary>
     ///<param name="rows">List&lt;LibraryItem&gt; retrieved with GetMissingFiles()</param>
@@ -37,10 +37,10 @@ public static class Maintenance
     {
         try
         {
-            C.Open();
+            D.Open();
             foreach (LibraryItem row in rows)
             {
-                using NpgsqlCommand cmd = new("DELETE FROM library WHERE path = @path", C.connection);
+                using NpgsqlCommand cmd = new("DELETE FROM library WHERE path = @path", D.connection);
                 cmd.Parameters.AddWithValue("@path", row.Path);
                 cmd.ExecuteNonQuery();
             }
@@ -51,7 +51,7 @@ public static class Maintenance
         }
         finally
         {
-            C.Close();
+            D.Close();
         }
     }
 }

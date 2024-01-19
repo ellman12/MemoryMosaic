@@ -211,7 +211,7 @@
     {
         ClearTmpFolder();
         EmptyFoldersBtnClick();
-        C.EmptyTrash();
+        D.EmptyTrash();
     }
 
     ///Update settings.
@@ -259,12 +259,12 @@
         amountUpdated = amountToUpdate = 0;
         thumbnailProgress.Enable();
 
-        List<LibraryItem> allItems = C.GetEntireLibrary().ToList();
+        List<LibraryItem> allItems = D.GetEntireLibrary().ToList();
         amountToUpdate = allItems.Count;
 
         await Parallel.ForEachAsync(allItems, async (item, cancellationToken) =>
         {
-            await using NpgsqlConnection localConn = await C.CreateLocalConnectionAsync();
+            await using NpgsqlConnection localConn = await D.CreateLocalConnectionAsync();
             await using NpgsqlCommand cmd = new("UPDATE library SET thumbnail = @newThumbnail WHERE path = @path", localConn);
             cmd.Parameters.AddWithValue("@newThumbnail", await FF.GenerateThumbnailAsync(item.FullPath));
             cmd.Parameters.AddWithValue("@path", item.Path);
@@ -326,8 +326,8 @@
     {
         try
         {
-            C.Open();
-            NpgsqlCommand cmd = new(debugQuery, C.connection);
+            D.Open();
+            NpgsqlCommand cmd = new(debugQuery, D.connection);
             cmd.ExecuteNonQuery();
         }
         catch (NpgsqlException e)
@@ -336,7 +336,7 @@
         }
         finally
         {
-            C.Close();
+            D.Close();
         }
     }
 }
