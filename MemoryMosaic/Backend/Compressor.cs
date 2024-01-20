@@ -59,32 +59,26 @@ public static class Compressor
 	private static void Compress(ImportItem item)
 	{
 		L.LogLine($"Begin compressing {item.Path}", LogLevel.Debug);
+		
+		//Move the original, uncompressed file to mm_tmp.
+		string folderPath = P.Combine(S.TmpFolderPath, "Before Compression", P.GetDirectoryName(item.Path)!);
+		Directory.CreateDirectory(folderPath);
+		string uncompressedFileNewPath = P.Combine(folderPath, item.NewFilenameWithExtension);
+		File.Move(item.AbsoluteDestinationPath, uncompressedFileNewPath);
 
-		string originalFilePath = item.AbsoluteDestinationPath;
-		string ext = P.GetExtension(originalFilePath);
-		string compressedFilePath = originalFilePath.Replace(ext, $"_compressed{ext}");
+		string compressedFilePath = item.AbsoluteDestinationPath;
 
 		ProcessStartInfo ffmpegInfo = new()
 		{
 			CreateNoWindow = true,
 			FileName = "ffmpeg",
-			Arguments = $"-y -v error -noautorotate -i \"{originalFilePath}\" -q:v 1 \"{compressedFilePath}\""
+			Arguments = $"-y -v error -noautorotate -i \"{uncompressedFileNewPath}\" -q:v 1 \"{compressedFilePath}\""
 		};
 		var ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
 		ffmpegProcess.WaitForExit();
 
-		CopyMetadata(originalFilePath, compressedFilePath);
-
-		string folderPath = P.Combine(S.TmpFolderPath, "Before Compression", P.GetDirectoryName(item.Path)!);
-		Directory.CreateDirectory(folderPath);
-
-		string uncompressedNewPath = P.Combine(folderPath, P.GetFileName(item.Path));
-		if (File.Exists(uncompressedNewPath))
-			File.Delete(uncompressedNewPath);
-
-		File.Move(originalFilePath, uncompressedNewPath);
-		File.Move(compressedFilePath, originalFilePath);
-
+		CopyMetadata(uncompressedFileNewPath, compressedFilePath);
+		
 		L.LogLine($"Finish compressing {item.Path}", LogLevel.Debug);
 	}
 
