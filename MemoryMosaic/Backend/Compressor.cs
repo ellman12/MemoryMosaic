@@ -12,9 +12,16 @@ public static class Compressor
 
 	public static bool Compressing { get; private set; }
 
-	private static Thread compressionThread;
+	public static event EventHandler? ItemEnqueued, ItemDequeued;
+
+	private static Thread compressionThread = null!;
 
 	static Compressor()
+	{
+		InitializeThread();
+	}
+
+	private static void InitializeThread()
 	{
 		compressionThread = new Thread(CompressItems)
 		{
@@ -26,19 +33,20 @@ public static class Compressor
 	public static void Enqueue(ImportItem item)
 	{
 		Items.Enqueue(item);
+		ItemEnqueued?.Invoke(null, EventArgs.Empty);
+	}
 
-		if (!Compressing)
-		{
-			compressionThread = new Thread(CompressItems);
-			compressionThread.Start();
-		}
+	public static void BeginCompression()
+	{
+		if (Compressing || Items.Count == 0)
+			return;
+		
+		InitializeThread();
+		compressionThread.Start();
 	}
 
 	private static void CompressItems()
 	{
-		if (Compressing)
-			return;
-
 		L.LogLine($"Begin {nameof(CompressItems)}", LogLevel.Debug);
 
 		Compressing = true;
@@ -46,6 +54,7 @@ public static class Compressor
 		while (Items.TryDequeue(out ImportItem? item))
 		{
 			Current = item;
+			ItemDequeued?.Invoke(null, EventArgs.Empty);
 			Compress(item);
 		}
 

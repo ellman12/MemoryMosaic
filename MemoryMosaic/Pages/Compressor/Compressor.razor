@@ -29,6 +29,9 @@
 @code {
 	protected override void OnInitialized()
 	{
+		C.ItemEnqueued += (_, _) => InvokeAsync(StateHasChanged);
+		C.ItemDequeued += (_, _) => InvokeAsync(StateHasChanged);
+	}
 
 	private static string HeaderText
 	{
