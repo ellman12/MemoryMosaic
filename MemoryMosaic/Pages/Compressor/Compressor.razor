@@ -5,7 +5,14 @@
 <link href="css/Pages/Compressor.css" rel="stylesheet"/>
 <link href="css/Components/CompressorItem.css" rel="stylesheet"/>
 
-<header>Compressing @F.GetPluralized(C.Items.Count + (C.Current != null ? 1 : 0), "Item")</header>
+<header>
+	<span>@HeaderText</span>
+	
+	@if (!C.Compressing)
+	{
+		<IconTextButton Icon="compress" Text="Begin Compressing" OnClick="@C.BeginCompression"/>
+	}
+</header>
 
 <main>
 	@if (C.Current != null)
@@ -22,5 +29,20 @@
 @code {
 	protected override void OnInitialized()
 	{
+
+	private static string HeaderText
+	{
+		get
+		{
+			string pluralized = F.GetPluralized(C.Items.Count + (C.Current != null ? 1 : 0), "Item");
+			
+			if (C.Compressing)
+				return $"Compressing {pluralized}";
+
+			if (!C.Compressing && C.Items.Count > 0)
+				return $"Click to Begin Compressing {pluralized}";
+
+			return "No Items to Compress";
+		}
 	}
 }

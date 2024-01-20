@@ -2,8 +2,13 @@
 
 header {
 	@include page-header(1px solid gray, 60px);
-	font-size: 18px;
-	margin: 0;
+	justify-content: space-between;
+	padding-right: 30px;
+
+	> span {
+		font-size: 18px;
+		margin: 0;
+	}
 }
 
 main {
