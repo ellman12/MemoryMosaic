@@ -3,12 +3,12 @@ using ThreadState = System.Threading.ThreadState;
 
 namespace MemoryMosaic.Backend;
 
-///Manages automatically compressing <see cref="Media"/> in the background.
+///Manages automatically compressing <see cref="ImportItem"/> in the background.
 public static class Compressor
 {
-	public static Media? Current { get; set; } //TODO: set this back to private set;
+	public static ImportItem? Current { get; set; } //TODO: set this back to private set;
 
-	public static PriorityQueue<Media, bool> Items { get; } = new();
+	public static PriorityQueue<ImportItem, bool> Items { get; } = new();
 
 	public static bool Compressing { get; private set; }
 
@@ -23,7 +23,7 @@ public static class Compressor
 		};
 	}
 
-	public static void Enqueue(Media item)
+	public static void Enqueue(ImportItem item)
 	{
 		Items.Enqueue(item, item.Video);
 
@@ -40,7 +40,7 @@ public static class Compressor
 
 		Compressing = true;
 
-		while (Items.TryDequeue(out Media? item, out _))
+		while (Items.TryDequeue(out ImportItem? item, out _))
 		{
 			Current = item;
 			Compress(item);
@@ -52,11 +52,11 @@ public static class Compressor
 	}
 
 	///Lightly compresses an item using FFmpeg's "-q:v 1" parameter. Uses ExifTool to copy the metadata from the original to the new item, then moves the original item to mm_tmp/Before Compression/.
-	private static void Compress(Media item)
+	private static void Compress(ImportItem item)
 	{
 		L.LogLine($"Begin compressing {item.Path}", LogLevel.Debug);
 
-		string originalFilePath = item.FullPath;
+		string originalFilePath = item.AbsoluteDestinationPath;
 		string ext = P.GetExtension(originalFilePath);
 		string compressedFilePath = originalFilePath.Replace(ext, $"_compressed{ext}");
 

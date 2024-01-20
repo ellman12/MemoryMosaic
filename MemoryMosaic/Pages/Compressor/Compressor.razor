@@ -13,7 +13,7 @@
 		<CompressorItem Item="@C.Current"/>
 	}
 
-	@foreach (Media item in C.Items.UnorderedItems.Select(media => media.Element))
+	@foreach (ImportItem item in C.Items.UnorderedItems.Select(media => media.Element))
 	{
 		<CompressorItem Item="@item"/>
 	}
