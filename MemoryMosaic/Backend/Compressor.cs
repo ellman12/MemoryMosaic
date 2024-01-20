@@ -1,5 +1,4 @@
 using System.Threading;
-using ThreadState = System.Threading.ThreadState;
 
 namespace MemoryMosaic.Backend;
 
@@ -12,7 +11,7 @@ public static class Compressor
 
 	public static bool Compressing { get; private set; }
 
-	private static readonly Thread compressionThread;
+	private static Thread compressionThread;
 
 	static Compressor()
 	{
@@ -27,8 +26,11 @@ public static class Compressor
 	{
 		Items.Enqueue(item, item.Video);
 
-		if (compressionThread.ThreadState != ThreadState.Running)
+		if (!Compressing)
+		{
+			compressionThread = new Thread(CompressItems);
 			compressionThread.Start();
+		}
 	}
 
 	private static void CompressItems()
@@ -46,6 +48,7 @@ public static class Compressor
 			Compress(item);
 		}
 
+		Current = null;
 		Compressing = false;
 
 		L.LogLine($"Finish {nameof(CompressItems)}", LogLevel.Debug);

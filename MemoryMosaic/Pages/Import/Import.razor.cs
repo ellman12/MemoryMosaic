@@ -300,7 +300,12 @@ public sealed partial class Import
 			{
 				Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
 				File.Move(item.FullPath, item.AbsoluteDestinationPath);
+				
 				DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
+				
+				if (S.CompressibleExtensions[item.Extension.ToLower()])
+					C.Enqueue(item);
+				
 				LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
 			}, cancellationToken);
 		});

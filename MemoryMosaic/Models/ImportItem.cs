@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace MemoryMosaic.Models;
 
@@ -13,7 +13,7 @@ public sealed class ImportItem : Media
 
 	public string NewFilenameWithExtension => NewFilename + Extension;
 
-	private string Extension { get; }
+	public string Extension { get; }
 
 	public DateTime? MetadataDateTaken { get; }
 

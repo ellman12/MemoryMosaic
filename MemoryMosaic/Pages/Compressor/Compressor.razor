@@ -1,5 +1,4 @@
 ﻿@page "/compressor"
-@using System.Collections.Immutable
 
 <title>Compressor - MM</title>
 <link href="css/Pages/Compressor.css" rel="stylesheet"/>
@@ -22,14 +21,5 @@
 @code {
 	protected override void OnInitialized()
 	{
-		var items = D.GetEntireLibrary().ToImmutableArray();
-		C.Items.Clear();
-		C.Current = null;
-		C.Current = items.Last();
-		
-		C.Items.Enqueue(items.First(), items.First().Video);
-
-		foreach (int i in Enumerable.Range(1, 20))
-			C.Items.Enqueue(items.Skip(i).First(), items.Skip(i).First().Video);
 	}
 }
