@@ -81,7 +81,7 @@ public static class Compressor
 		{
 			CreateNoWindow = true,
 			FileName = "ffmpeg",
-			Arguments = $"-y -v error -noautorotate -i \"{uncompressedFileNewPath}\" -q:v 1 \"{compressedFilePath}\""
+			Arguments = $"-y -v error -i \"{uncompressedFileNewPath}\" -q:v 1 \"{compressedFilePath}\""
 		};
 		var ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
 		ffmpegProcess.WaitForExit();
