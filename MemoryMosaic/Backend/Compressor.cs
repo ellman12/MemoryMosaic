@@ -67,10 +67,9 @@ public static class Compressor
 		{
 			CreateNoWindow = true,
 			FileName = "ffmpeg",
-			Arguments = $"-y -v error -i \"{originalFilePath}\" -q:v 1 \"{compressedFilePath}\""
+			Arguments = $"-y -v error -noautorotate -i \"{originalFilePath}\" -q:v 1 \"{compressedFilePath}\""
 		};
 		var ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
-		ffmpegProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
 		ffmpegProcess.WaitForExit();
 
 		CopyMetadata(originalFilePath, compressedFilePath);
