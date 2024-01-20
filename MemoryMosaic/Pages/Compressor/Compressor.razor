@@ -1,4 +1,5 @@
-﻿@page "/compressor"
+@page "/compressor"
+@using System.Collections.Immutable
 
 <title>Compressor - MM</title>
 <link href="css/Pages/Compressor.css" rel="stylesheet"/>
@@ -12,7 +13,7 @@
 		<CompressorItem Item="@C.Current"/>
 	}
 
-	@foreach (ImportItem item in C.Items.UnorderedItems.Select(media => media.Element))
+	@foreach (ImportItem item in C.Items.ToImmutableArray())
 	{
 		<CompressorItem Item="@item"/>
 	}

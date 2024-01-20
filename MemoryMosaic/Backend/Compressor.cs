@@ -1,13 +1,14 @@
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace MemoryMosaic.Backend;
 
 ///Manages automatically compressing <see cref="ImportItem"/> in the background.
 public static class Compressor
 {
-	public static ImportItem? Current { get; set; } //TODO: set this back to private set;
+	public static ImportItem? Current { get; private set; }
 
-	public static PriorityQueue<ImportItem, bool> Items { get; } = new();
+	public static ConcurrentQueue<ImportItem> Items { get; } = new();
 
 	public static bool Compressing { get; private set; }
 
@@ -24,7 +25,7 @@ public static class Compressor
 
 	public static void Enqueue(ImportItem item)
 	{
-		Items.Enqueue(item, item.Video);
+		Items.Enqueue(item);
 
 		if (!Compressing)
 		{
@@ -42,7 +43,7 @@ public static class Compressor
 
 		Compressing = true;
 
-		while (Items.TryDequeue(out ImportItem? item, out _))
+		while (Items.TryDequeue(out ImportItem? item))
 		{
 			Current = item;
 			Compress(item);
