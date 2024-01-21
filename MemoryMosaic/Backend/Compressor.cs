@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 namespace MemoryMosaic.Backend;
 
 ///Manages automatically compressing <see cref="ImportItem"/> in the background.
-public static class Compressor
+public static class Compressor 
 {
 	public static ImportItem? Current { get; private set; }
 
