@@ -279,7 +279,7 @@ public sealed partial class Import
 		if (ErrorAmount > 0 || EditingFilename)
 			return;
 		
-		List<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems : Selected.ToList();
+		ImmutableArray<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems.ToImmutableArray() : Selected.ToImmutableArray();
 
 		status = $"Adding {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
@@ -310,11 +310,11 @@ public sealed partial class Import
 		else
 			importItems.Clear();
 
-		popUp.Disable();
 		status = $"Added {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
+		popUp.Disable();
 		await RerenderAsync();
-
+		
 		ClearSelection();
 	}
 
