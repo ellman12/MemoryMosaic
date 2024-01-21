@@ -58,8 +58,9 @@ public static class Compressor
 			Compress(item);
 		}
 
-		Current = null;
 		Compressing = false;
+		Current = null;
+		ItemDequeued?.Invoke(null, EventArgs.Empty);
 
 		L.LogLine($"Finish {nameof(CompressItems)}", LogLevel.Debug);
 	}
@@ -81,14 +82,14 @@ public static class Compressor
 		{
 			CreateNoWindow = true,
 			FileName = "ffmpeg",
-			Arguments = $"-y -v error -i \"{uncompressedFileNewPath}\" -q:v 1 \"{compressedFilePath}\""
+			Arguments = $"-y -v error -noautorotate -i \"{uncompressedFileNewPath}\" -q:v 1 -c:a copy \"{compressedFilePath}\""
 		};
 		var ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
 		ffmpegProcess.WaitForExit();
 
 		CopyMetadata(uncompressedFileNewPath, compressedFilePath);
 		
-		L.LogLine($"Finish compressing {item.Path}", LogLevel.Debug);
+		L.LogLine($"Finish compressing {item.Path}\n", LogLevel.Debug);
 	}
 
 	///Uses ExifTool to copy the metadata from the original file to the new compressed one.
