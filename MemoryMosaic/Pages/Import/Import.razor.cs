@@ -163,8 +163,6 @@ public sealed partial class Import
 	
 	private static readonly Dictionary<string, string> Shortcuts = new()
 	{
-		{"Ctrl Click", "Select Item"},
-		{"Shift Click", "Select Range of Items"},
 		{"Ctrl A", "Select All"},
 		{"Alt A", "Add Selected, If No Errors"},
 		{"Alt C", "Toggle CollectionSelector"},
@@ -172,7 +170,10 @@ public sealed partial class Import
 		{"Alt F", "Toggle Displaying File Sizes"},
 		{"Alt S", "Toggles If Paths Are Condensed or Full Size"},
 		{"Del", "Delete Selected"},
-		{"Esc", "Clear Selection"}
+		{"Esc", "Clear Selection"},
+		{"Ctrl Click", "Always Select Item"},
+		{"Alt Click", "Always Fullscreen Item"},
+		{"Shift Click", "Select Range of Items"}
 	};
 
 	private void ClearSelection()

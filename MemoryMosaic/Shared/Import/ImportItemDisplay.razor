@@ -1,7 +1,7 @@
 @inherits ItemDisplay<ImportItem>
 @using MemoryMosaic.Pages
 
-<div class="importItem" @onclick="@(mouseArgs => { if (mouseArgs.CtrlKey) CheckClicked(mouseArgs); })">
+<div class="importItem" @onclick="@ItemClicked">
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
 	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
@@ -123,6 +123,14 @@
 }
 
 @functions {
+	private void ItemClicked(MouseEventArgs e)
+	{
+		if (e.CtrlKey)
+			CheckClicked(e);
+		else if (e.AltKey)
+			ThumbnailClicked();
+	}
+
 	private void CheckClicked(MouseEventArgs e)
 	{
 		if (e.ShiftKey)
