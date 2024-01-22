@@ -108,8 +108,8 @@
 
         @if (statsLoaded)
         {
-            <span>@F.GetPluralized(libraryRowCount, "Item", "In Library")</span>
-            <span>@F.GetPluralized(trashRowCount, "Item", "In Trash")</span>
+            <span>@F.GetPluralized(libraryRowCount, "Item", " In Library")</span>
+            <span>@F.GetPluralized(trashRowCount, "Item", " In Trash")</span>
             <span>@F.GetPluralized(collectionsCount, "Collection")</span>
             
             <span style="margin-top: 14px">Library Drive Total Size (Usable): @F.FormatBytes(totalUsableDriveSize)</span>
