@@ -163,6 +163,8 @@ public sealed partial class Import
 	
 	private static readonly Dictionary<string, string> Shortcuts = new()
 	{
+		{"Ctrl Click", "Select Item"},
+		{"Shift Click", "Select Range of Items"},
 		{"Ctrl A", "Select All"},
 		{"Alt A", "Add Selected, If No Errors"},
 		{"Alt C", "Toggle CollectionSelector"},
