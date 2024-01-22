@@ -18,6 +18,12 @@
 
 		<None Remove="*.map"/>
 		<Content Remove="wwwroot\css\**\*.map"/>
+		
+		<None Remove="sasscompiler.json"/>
+		<Content Remove="sasscompiler.json"/>
+
+		<None Remove="appsettings.Development.json"/>
+		<Content Remove="appsettings.Development.json"/>
 	</ItemGroup>
 
 	<ItemGroup>
