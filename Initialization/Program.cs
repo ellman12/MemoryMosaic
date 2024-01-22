@@ -36,13 +36,8 @@ VerifyPathAndCreateFolder(ref testTmpPath, "mm_tmp");
 string testBackupPath = Input.GetFolderPath("Enter path to mm_backup, where backups should be stored: ");
 VerifyPathAndCreateFolder(ref testBackupPath, "mm_backup");
 
-#if DEBUG
-	string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaicTest");
-	string filePath = Path.Combine(folderPath, "mm_debug_settings.json");
-#else
-	string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaic");
-	string filePath = Path.Combine(folderPath, "mm_settings.json");
-#endif
+string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"MemoryMosaic{(debug ? "_Debug" : "")}");
+string filePath = Path.Combine(folderPath, $"mm_debug{(debug ? "_settings" : "")}.json");
 
 string settingsJson = $"{{\"importFolderPath\":\"{testImportPath}\",\"libFolderPath\":\"{testLibPath}\",\"backupFolderPath\":\"{testBackupPath}\",\"tmpFolderPath\":\"{testTmpPath}\",\"showPrompts\":true,\"thumbnailQuality\":7,\"logLevel\":4}}";
 Directory.CreateDirectory(folderPath);
