@@ -10,6 +10,6 @@ projects=("MemoryMosaic" "Initialization")
 
 for project in "${projects[@]}"
 do
-    dotnet publish -c Release -r win10-x64 -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -p:IncludeNativeLibrariesForSelfExtract=true --version-suffix "3.0.0" -o "$1/$project" $project
+    dotnet publish -c Release -r win10-x64 -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:DebugSymbols=false --version-suffix "3.0.0" -o "$1/$project" $project
     echo
 done
