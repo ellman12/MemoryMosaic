@@ -5,6 +5,13 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <Content Include="Create Tables.sql">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+   
     <ItemGroup>
         <PackageReference Include="Npgsql" Version="6.0.2"/>
     </ItemGroup>
