@@ -45,6 +45,10 @@ File.WriteAllText(filePath, settingsJson);
 
 Output.WriteLine("MemoryMosaic is now ready to use.", ConsoleColor.Green);
 
+#if !DEBUG
+Console.ReadLine();
+#endif
+
 return;
 
 void VerifyPathAndCreateFolder(ref string path, string mmFolder)
