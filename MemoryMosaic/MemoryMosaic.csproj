@@ -15,6 +15,10 @@
 
 		<None Include="wwwroot\MM.js"/>
 		<None Include="wwwroot\VideoPlayer.js"/>
+		
+		<Content Include="Properties\launchSettings.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 
 		<None Remove="*.map"/>
 		<Content Remove="wwwroot\css\**\*.map"/>
