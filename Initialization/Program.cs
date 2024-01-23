@@ -8,7 +8,7 @@ if (!File.Exists(Constants.PsqlPath))
 }
 
 bool debug = Input.GetYN("Is this a debugging and testing instance of MemoryMosaic?", false);
-string name = debug ? "MemoryMosaicTest" : "MemoryMosaic";
+string name = debug ? "MemoryMosaic_Debug" : "MemoryMosaic";
 
 if (Database.Exists(name) && Input.GetYN("Database exists. Overwrite?", true) && Input.GetYN("Are you sure?", true))
 {
@@ -37,7 +37,7 @@ string testBackupPath = Input.GetFolderPath("Enter path to mm_backup, where back
 VerifyPathAndCreateFolder(ref testBackupPath, "mm_backup");
 
 string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"MemoryMosaic{(debug ? "_Debug" : "")}");
-string filePath = Path.Combine(folderPath, $"mm_debug{(debug ? "_settings" : "")}.json");
+string filePath = Path.Combine(folderPath, $"mm_settings{(debug ? "_debug" : "")}.json");
 
 string settingsJson = $"{{\"importFolderPath\":\"{testImportPath}\",\"libFolderPath\":\"{testLibPath}\",\"backupFolderPath\":\"{testBackupPath}\",\"tmpFolderPath\":\"{testTmpPath}\",\"showPrompts\":true,\"thumbnailQuality\":7,\"logLevel\":4}}";
 Directory.CreateDirectory(folderPath);
