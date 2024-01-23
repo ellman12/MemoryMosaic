@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using System.Threading;
 using MemoryMosaic.Shared.Modal;
 using MemoryMosaic.Shared.Modal.FullscreenViewer;
 
@@ -289,7 +290,7 @@ public sealed partial class Import
 		popUp.Enable();
 		await RerenderAsync();
 
-		await Parallel.ForEachAsync(items, async (item, cancellationToken) =>
+		await Parallel.ForEachAsync(items, async (item, _) =>
 		{
 			await D.InsertItem(item);
 
@@ -299,13 +300,13 @@ public sealed partial class Import
 					await D.AddToCollectionAsync(collection.Id, item.Id);
 			}
 
-			await Task.Run(() =>
+			ThreadPool.QueueUserWorkItem(_ =>
 			{
 				Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
 				File.Move(item.FullPath, item.AbsoluteDestinationPath);
 				DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
 				LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
-			}, cancellationToken);
+			});
 		});
 
 		if (SelectedItems.Count > 0)
