@@ -278,6 +278,7 @@ public sealed partial class Import
 		LastCheckedIndex = 0;
 	}
 
+	///Adds items to the library.
 	private async void AddItems()
 	{
 		if (ErrorAmount > 0 || EditingFilename)
@@ -290,29 +291,7 @@ public sealed partial class Import
 		popUp.Enable();
 		await RerenderAsync();
 
-		await Parallel.ForEachAsync(items, async (item, _) =>
-		{
-			await D.InsertItem(item);
-
-			if (item.Collections != null)
-			{
-				foreach (var collection in item.Collections)
-					await D.AddToCollectionAsync(collection.Id, item.Id);
-			}
-
-			ThreadPool.QueueUserWorkItem(_ =>
-			{
-				Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
-				File.Move(item.FullPath, item.AbsoluteDestinationPath);
-				DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
-				LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
-			});
-		});
-
-		if (SelectedItems.Count > 0)
-			importItems.RemoveAll(item => SelectedItems.Contains(item.Id));
-		else
-			importItems.Clear();
+		await Parallel.ForEachAsync(items, async (item, _) => await AddItem(item));
 
 		status = $"Added {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
@@ -320,6 +299,29 @@ public sealed partial class Import
 		await RerenderAsync();
 		
 		ClearSelection();
+	}
+
+	///Adds a single item to the library.
+	public async Task AddItem(ImportItem item)
+	{
+		await D.InsertItem(item);
+
+		if (item.Collections != null)
+		{
+			foreach (var collection in item.Collections)
+				await D.AddToCollectionAsync(collection.Id, item.Id);
+		}
+
+		ThreadPool.QueueUserWorkItem(_ =>
+		{
+			Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
+			File.Move(item.FullPath, item.AbsoluteDestinationPath);
+			DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
+			LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
+		});
+		
+		importItems.RemoveAll(i => i.Id == item.Id);
+		StateHasChanged();
 	}
 
 	private void UpdateCollections()

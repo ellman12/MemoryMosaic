@@ -20,7 +20,12 @@
 			{
 				<IconButton Icon="restore" OnClick="@RestoreButtonClick"/>
 			}
-
+			
+			@if (Import != null)
+			{
+				<IconButton Icon="library_add" OnClick="@(() => Import.AddItem(CurrentIi))" Title="Add Current to Library"/>
+			}
+			
 			<IconButton Icon="trash" OnClick="@DeleteButtonClick"/>
 		</div>
 
@@ -191,6 +196,7 @@
 	[Parameter] public bool DisplayItemType { get; set; }
 	
 	[Parameter] public Collection? Collection { get; set; }
+	[Parameter] public MemoryMosaic.Pages.Import.Import? Import { get; set; }
 	
 	public T Current => Content[Index];
 	public LibraryItem? CurrentLi => Current as LibraryItem;
