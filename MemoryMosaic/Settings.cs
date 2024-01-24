@@ -28,7 +28,7 @@ public sealed class Settings
     public const int POSTGRES_VERSION = 15;
 
 #if DEBUG
-    public static readonly string FolderPath = P.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaicTest");
+    public static readonly string FolderPath = P.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaic_Debug");
     public static readonly string FilePath = P.Combine(FolderPath, "mm_debug_settings.json");
 #else
     public static readonly string FolderPath = P.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoryMosaic");
