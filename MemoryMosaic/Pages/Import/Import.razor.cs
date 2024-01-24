@@ -321,7 +321,7 @@ public sealed partial class Import
 		});
 		
 		importItems.RemoveAll(i => i.Id == item.Id);
-		StateHasChanged();
+		await RerenderAsync();
 	}
 
 	private void UpdateCollections()
