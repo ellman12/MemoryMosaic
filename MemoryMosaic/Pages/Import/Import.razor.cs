@@ -29,7 +29,7 @@ public sealed partial class Import
 
 	public FullscreenViewer<Media> fv = null!;
 
-	private bool itemsLoading = true, thumbnailsLoading = true, displayWarnings = true, onlyDisplayErrors;
+	private bool itemsLoading = true, thumbnailsLoading = true, addingItems, displayWarnings = true, onlyDisplayErrors;
 
 	private DateTakenSource newDateTakenSource = DateTakenSource.None;
 
@@ -94,19 +94,17 @@ public sealed partial class Import
 	{
 		get
 		{
+			if (addingItems)
+				return 0;
+			
 			int total = 0;
-
 			total += importItems.GroupBy(item => item.DestinationPath).Count(group => group.Count() > 1);
-
 			total += LibraryCache.Values.Count(libraryItem => importItems.Any(importItem => importItem.DestinationPath == libraryItem.Path));
-
 			return total;
 		}
 	}
 
-	private int WarningAmount => importItems
-		.GroupBy(importItem => importItem.DestinationPath)
-		.Count(group => LibraryCache.Values.Any(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension)));
+	private int WarningAmount => addingItems ? 0 : importItems.GroupBy(importItem => importItem.DestinationPath).Count(group => LibraryCache.Values.Any(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension)));
 
 	private string AddBtnText
 	{
@@ -286,6 +284,7 @@ public sealed partial class Import
 		
 		ImmutableArray<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems.ToImmutableArray() : Selected.ToImmutableArray();
 
+		addingItems = true;
 		status = $"Adding {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
 		popUp.Enable();
@@ -293,6 +292,7 @@ public sealed partial class Import
 
 		await Parallel.ForEachAsync(items, async (item, _) => await AddItem(item));
 
+		addingItems = false;
 		status = $"Added {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
 		popUp.Disable();
