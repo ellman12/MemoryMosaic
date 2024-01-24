@@ -225,20 +225,23 @@ public sealed partial class Import
 		Rerender();
 	}
 
-	private void DeleteSelected()
+	private async void DeleteSelected()
 	{
 		if (fv.Visible)
 			return;
 		
-		foreach (var importItem in Selected)
+		var itemsToDelete = Selected.ToImmutableArray();
+		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
+		ClearSelection();
+		await RerenderAsync();
+
+		foreach (var importItem in itemsToDelete)
 			DeleteFile(importItem.FullPath);
 
-		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
-		status = $"Deleted {F.GetPluralized(SelectedItems, "Item")}";
+		status = $"Deleted {F.GetPluralized(itemsToDelete, "Item")}";
 		L.LogLine(status, LogLevel.Info);
 
-		ClearSelection();
-		Rerender();
+		await RerenderAsync();
 	}
 
 	private void DeleteCurrent()
