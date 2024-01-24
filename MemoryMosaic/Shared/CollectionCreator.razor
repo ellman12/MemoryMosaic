@@ -78,7 +78,7 @@
             return;
         }
 
-        D.CreateCollection(NewCollectionName, folder);
+        D.CreateCollection(NewCollectionName.Trim(), folder);
         OnCollectionCreate?.Invoke();
         AcceptingInput = folder = false;
         StateHasChanged();
