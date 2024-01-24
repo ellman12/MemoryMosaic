@@ -228,7 +228,7 @@ public sealed partial class Import
 	private void DeleteSelected()
 	{
 		foreach (var importItem in Selected)
-			FileSystem.DeleteFile(importItem.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+			DeleteFile(importItem.FullPath);
 
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
 		status = $"Deleted {F.GetPluralized(SelectedItems, "Item")}";
@@ -240,12 +240,21 @@ public sealed partial class Import
 
 	private void DeleteCurrent()
 	{
-		importItems.RemoveAll(importItem => fv.Current.Id == importItem.Id);
-		FileSystem.DeleteFile(fv.Current.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-		Rerender();
-
 		if (fv.Index == importItems.Count)
 			fv.Index--;
+		
+		importItems.RemoveAll(importItem => fv.Current.Id == importItem.Id);
+		DeleteFile(fv.Current.FullPath);
+		Rerender();
+	}
+
+	private static void DeleteFile(string path)
+	{
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+
+		try { File.Delete(path); }
+		catch (IOException e) { L.LogException(e); }
 	}
 
 	public void ChangeRangeState(int startIndex, int endIndex)
