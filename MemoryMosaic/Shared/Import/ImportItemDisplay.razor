@@ -126,20 +126,24 @@
 	private void ItemClicked(MouseEventArgs e)
 	{
 		if (e.CtrlKey)
+		{
+			e.CtrlKey = false;
 			CheckClicked(e);
+		}
 		else if (e.AltKey)
+		{
 			ThumbnailClicked();
+		}
 	}
 
 	private void CheckClicked(MouseEventArgs e)
 	{
+		if (e.CtrlKey)
+			return;
 		if (e.ShiftKey)
 			Import.ChangeRangeState(Import.LastCheckedIndex, ImportItemsIndex);
 		else
 			ToggleSelected();
-
-		Import.Rerender();
-		StateHasChanged();
 	}
 
 	private void ToggleSelected()
@@ -150,6 +154,9 @@
 			Import.SelectedItems.Add(Item.Id);
 
 		Import.LastCheckedIndex = ImportItemsIndex;
+		
+		Import.Rerender();
+		StateHasChanged();
 	}
 
 	private void ToggleStarred()
