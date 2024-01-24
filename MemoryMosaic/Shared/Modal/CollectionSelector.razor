@@ -8,7 +8,7 @@
         <div>
             <span>Add to</span>
             <div>
-                <IconButton Icon="close" OnClick="@CloseBtnClick"/>
+                <IconButton Icon="close" OnClick="@Disable"/>
                 <IconButton Icon="check" OnClick="@ConfirmBtnClick"/>
             </div>
         </div>
@@ -92,7 +92,10 @@
     public Action? Rerender { get; set; } //Used to rerender LCV after adding items.
 
     [Parameter]
-    public Action? OnCheckClicked { get; set; } //Used in Import for overriding the default behavior.
+    public Action? OnCheckClicked { get; set; } //Used in Import.
+
+    [Parameter]
+    public bool ClearSelectionOnConfirm { get; set; } = true;
 
     public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
 
@@ -103,13 +106,6 @@
         Albums = D.GetCollections(true, false, false);
         Folders = D.GetCollections(false, true, false);
         SelectedFolderId = -1;
-    }
-
-    private void CloseBtnClick()
-    {
-        Disable();
-        ClearSelected();
-        ClearCollectionSelection();
     }
 
     private void ClearSelected()
@@ -200,7 +196,12 @@
 
         PreviousSelectionBtnClick(true);
 
-        CloseBtnClick();
+        if (ClearSelectionOnConfirm)
+            ClearSelected();
+            
+        ClearCollectionSelection();
+
+        Disable();
     }
 
     private void PreviousSelectionBtnClick(bool save)

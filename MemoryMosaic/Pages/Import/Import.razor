@@ -159,7 +159,7 @@
 
 @if (importItems.Count > 0)
 {
-	<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems"/>
+	<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems" ClearSelectionOnConfirm="false"/>
 	
 	<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent"/>
 	
