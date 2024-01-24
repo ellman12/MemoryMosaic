@@ -77,10 +77,11 @@ public sealed class ImportItem : Media
 		DTE.GetDateTakenFromBoth(absolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;
 		FilenameDateTaken = filenameDT;
-		if (MetadataDateTaken != null)
-			DateTakenSource = DateTakenSource.Metadata;
-		else if (FilenameDateTaken != null)
+		
+		if (FilenameDateTaken != null)
 			DateTakenSource = DateTakenSource.Filename;
+		else if (MetadataDateTaken != null)
+			DateTakenSource = DateTakenSource.Metadata;
 		else
 			DateTakenSource = DateTakenSource.None;
 		
