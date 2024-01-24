@@ -227,6 +227,9 @@ public sealed partial class Import
 
 	private void DeleteSelected()
 	{
+		if (fv.Visible)
+			return;
+		
 		foreach (var importItem in Selected)
 			DeleteFile(importItem.FullPath);
 
