@@ -102,8 +102,10 @@ public static class Database
 			string newDTFolderPath = CreateFullDateFolderPath(newDateTaken);
 			string newFullPath = P.Combine(newDTFolderPath, filename);
 
-			//Move item to new path on server. This is how the user input is validated. If this fails, user needs to pick a new DT and/or filename.
-			Directory.CreateDirectory(newDTFolderPath);//Create in case it doesn't exist.
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+			
+			Directory.CreateDirectory(newDTFolderPath);
 			File.Move(originalFullPath, newFullPath);
 			DTE.UpdateDateTaken(newFullPath, newDateTaken);
 
