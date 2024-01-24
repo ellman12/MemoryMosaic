@@ -14,7 +14,7 @@
 	}
 	else
 	{
-		<span @ondblclick="@EnableRename" class="@PathWidth @TextClass">@Item.Path</span>
+		<span @onclick="@PathClick" @ondblclick="@EnableRename" class="@PathWidth @TextClass">@Item.Path</span>
 	}
 
 	<div class="dateTakenDisplay" @ondblclick="@(() => Item.DateTakenSource = DateTakenSource.Custom)">
@@ -163,6 +163,17 @@
 	{
 		Item.Starred = !Item.Starred;
 		StateHasChanged();
+	}
+
+	private void PathClick(MouseEventArgs e)
+	{
+		if (e.CtrlKey)
+			return;
+		
+		if (Import.SelectedItems.Count > 0)
+			ToggleSelected();
+		else if (e.ShiftKey)
+			Import.ChangeRangeState(Import.LastCheckedIndex, ImportItemsIndex);
 	}
 
 	private void EnableRename()
