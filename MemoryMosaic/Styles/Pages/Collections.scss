@@ -2,9 +2,7 @@
 @import "../Mixins";
 
 header {
-	@include page-header(1px solid gray, auto, 164px);
-	padding-top: 12px;
-	padding-bottom: 12px;
+	@include page-header(1px solid gray, 60px, 164px);
 
 	> #collectionsText {
 		font-size: 20px;
