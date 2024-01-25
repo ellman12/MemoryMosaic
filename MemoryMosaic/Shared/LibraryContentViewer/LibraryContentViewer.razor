@@ -387,8 +387,11 @@ Items can be selected, and depending on the page, different options may be appli
 	
 	private void ClearChecks()
 	{
-		SelectedItems.Clear();
-		StateHasChanged();
+		if (!fv.Visible)
+		{
+			SelectedItems.Clear();
+			StateHasChanged();
+		}
 	}
 
 	private void UpdateStars(bool starred)

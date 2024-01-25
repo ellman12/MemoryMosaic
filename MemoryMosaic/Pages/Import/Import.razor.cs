@@ -180,8 +180,11 @@ public sealed partial class Import
 
 	private void ClearSelection()
 	{
-		SelectedItems.Clear();
-		Rerender();
+		if (!fv.Visible)
+		{
+			SelectedItems.Clear();
+			Rerender();
+		}
 	}
 
 	private void ToggleFileSizes()
