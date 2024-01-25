@@ -104,7 +104,18 @@
 				<IconButton Icon="edit" OnClick="@dtPickerVis.Enable"/>
 			</div>
 			
-			<span>DT Source: @CurrentIi.DateTakenSource</span>
+			<select @bind="@CurrentIi.DateTakenSource" style="width: fit-content">
+				@if (CurrentIi.MetadataDateTaken != null)
+				{
+					<option>Metadata</option>
+				}
+				@if (CurrentIi.FilenameDateTaken != null)
+				{
+					<option>Filename</option>
+				}
+				<option>None</option>
+				<option>Custom</option>
+			</select>
 		}
 
 		<div class="field" title="File Size">
