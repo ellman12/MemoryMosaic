@@ -236,7 +236,7 @@ public sealed partial class Import
 		await RerenderAsync();
 
 		foreach (var importItem in itemsToDelete)
-			DeleteFile(importItem.FullPath);
+			await DeleteFile(importItem.FullPath);
 
 		status = $"Deleted {F.GetPluralized(itemsToDelete, "Item")}";
 		L.LogLine(status, LogLevel.Info);
@@ -244,23 +244,32 @@ public sealed partial class Import
 		await RerenderAsync();
 	}
 
-	private void DeleteCurrent()
+	private async void DeleteCurrent()
 	{
 		if (fv.Index == importItems.Count)
 			fv.Index--;
 		
 		importItems.RemoveAll(importItem => fv.Current.Id == importItem.Id);
-		DeleteFile(fv.Current.FullPath);
-		Rerender();
+		await RerenderAsync();
+		await Task.Delay(0);
+		await Task.Delay(1);
+		await DeleteFile(fv.Current.FullPath);
 	}
 
-	private static void DeleteFile(string path)
+	private static async Task DeleteFile(string path)
 	{
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
 
-		try { File.Delete(path); }
-		catch (IOException e) { L.LogException(e); }
+		try
+		{
+			await Task.Delay(2000);
+			File.Delete(path);
+		}
+		catch (IOException e)
+		{
+			L.LogException(e);
+		}
 	}
 
 	public void ChangeRangeState(int startIndex, int endIndex)
