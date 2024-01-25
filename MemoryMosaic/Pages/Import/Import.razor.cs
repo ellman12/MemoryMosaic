@@ -43,6 +43,9 @@ public sealed partial class Import
 
 	private Dropdown moreSettings = null!;
 
+	public bool HoveringThumbnail { get; set; }
+	public DateTime HoverStartTime { get; set; }
+	
 	public void Rerender() => StateHasChanged();
 	public async Task RerenderAsync() => await InvokeAsync(StateHasChanged);
 

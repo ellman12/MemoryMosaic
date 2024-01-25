@@ -1,7 +1,7 @@
 @inherits ItemDisplay<ImportItem>
 @using MemoryMosaic.Pages
 
-<div class="importItem" @onclick="@ItemClicked">
+<div class="importItem" @onclick="@ItemClicked" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseOut">
 	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
 
 	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
@@ -118,7 +118,7 @@
 			Import.Rerender();
 		}
 	}
-
+	
 	private bool Checked => Import.SelectedItems.Contains(Item.Id);
 }
 

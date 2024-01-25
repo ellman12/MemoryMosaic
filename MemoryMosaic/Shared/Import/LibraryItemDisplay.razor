@@ -1,7 +1,7 @@
 @inherits ItemDisplay<LibraryItem>
 @using MemoryMosaic.Pages
 
-<div class="libraryItem" @onclick="@(e => { if (e.AltKey) ThumbnailClicked(); })">
+<div class="libraryItem" @onclick="@(e => { if (e.AltKey) ThumbnailClicked(); })" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseOut">
 	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
 	<span class="@PathWidth @TextClass">@("Library/" + Item.Path)</span>
 	
