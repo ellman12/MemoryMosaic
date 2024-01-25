@@ -283,6 +283,7 @@
         emptyFolders!.Reverse(); //Start at deepest folder and work up (to avoid dir not found errors).
         foreach (string path in emptyFolders) Directory.Delete(path);
         emptyFolders.Clear();
+        StateHasChanged();
     }
 
     private void RunMaintenanceCheck()
