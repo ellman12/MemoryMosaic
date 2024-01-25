@@ -276,10 +276,9 @@ public sealed partial class Import
 	{
 		int increment = startIndex < endIndex ? 1 : -1;
 
+		var items = SearchResults.ToImmutableArray();
 		for (int i = startIndex; i != endIndex + increment; i += increment)
-		{
-			SelectedItems.Add(importItems[i].Id);
-		}
+			SelectedItems.Add(items[i].Id);
 		
 		Rerender();
 	}

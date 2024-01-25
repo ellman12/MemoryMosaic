@@ -138,7 +138,7 @@
 
 	private void CheckClicked(MouseEventArgs e)
 	{
-		if (e.CtrlKey)
+		if (e.CtrlKey && !e.ShiftKey)
 			return;
 		if (e.ShiftKey)
 			Import.ChangeRangeState(Import.LastCheckedIndex, ImportItemsIndex);
