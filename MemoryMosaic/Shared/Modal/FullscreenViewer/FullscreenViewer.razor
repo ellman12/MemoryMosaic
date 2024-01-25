@@ -21,9 +21,9 @@
 				<IconButton Icon="restore" OnClick="@RestoreButtonClick"/>
 			}
 			
-			@if (Import != null)
+			@if (Import != null && CurrentIi != null)
 			{
-				<IconButton Icon="library_add" OnClick="@(() => Import.AddItem(CurrentIi))" Title="Add Current to Library"/>
+				<IconButton Icon="library_add" OnClick="@(async () => await Import.AddItem(CurrentIi))" Title="Add Current to Library"/>
 			}
 			
 			<IconButton Icon="trash" OnClick="@DeleteButtonClick"/>
