@@ -125,7 +125,7 @@ public sealed partial class Import
 		{
 			List<Media> content = new();
 
-			foreach (var group in importItems.GroupBy(item => item.DestinationPath))
+			foreach (var group in SearchResults.GroupBy(item => item.DestinationPath))
 			{
 				var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
 
