@@ -22,7 +22,7 @@
 @code {
 	private async void DeleteBtnClick()
 	{
-		Import.LibraryCache.Remove(Item.Path);
+		Import.LibraryCache.Remove(Item.Path, out _);
 		await Import.RerenderAsync();
 		
 		if (Item.DateDeleted == null)

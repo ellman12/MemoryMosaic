@@ -25,7 +25,7 @@ public sealed partial class Import
 
 	private string searchText = "", status = "";
 
-	public Dictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
+	public ConcurrentDictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
 
 	public FullscreenViewer<Media> fv = null!;
 
@@ -66,7 +66,7 @@ public sealed partial class Import
 		}));
 
 		importItems = bag.ToList();
-		LibraryCache = D.GetEntireLibrary().ToDictionary(key => key.Path, value => value);
+		LibraryCache = new ConcurrentDictionary<string, LibraryItem>(D.GetEntireLibrary().ToDictionary(key => key.Path, value => value));
 		itemsLoading = false;
 		SortItems();
 		await RerenderAsync();
@@ -359,7 +359,7 @@ public sealed partial class Import
 				await D.AddToCollectionAsync(collection.Id, item.Id);
 		}
 
-		LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
+		LibraryCache.TryAdd(item.DestinationPath, new LibraryItem(item));
 		importItems.RemoveAll(i => i.Id == item.Id);
 		
 		ThreadPool.QueueUserWorkItem(_ =>
