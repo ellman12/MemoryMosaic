@@ -202,7 +202,7 @@ public sealed partial class Import
 
 	private void SelectAll()
 	{
-		foreach (ImportItem item in importItems)
+		foreach (ImportItem item in SearchResults)
 			SelectedItems.Add(item.Id);
 
 		Rerender();
