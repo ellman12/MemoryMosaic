@@ -1,4 +1,4 @@
-﻿namespace MemoryMosaic.Models;
+namespace MemoryMosaic.Models;
 
 ///Represents a row in the library table.
 public sealed class LibraryItem : Media
@@ -40,8 +40,7 @@ public sealed class LibraryItem : Media
 		DateDeleted = null;
 		Thumbnail = importItem.Thumbnail;
 		Video = F.SupportedVideoExts.Contains(P.GetExtension(Path).ToLower());
-		
-		Size = new FileInfo(FullPath).Length;
+		Size = importItem.Size;
 	}
 	
 	public string Filename => P.GetFileName(Path);
