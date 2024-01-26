@@ -359,12 +359,15 @@ public sealed partial class Import
 				await D.AddToCollectionAsync(collection.Id, item.Id);
 		}
 
-		Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
-		File.Move(item.FullPath, item.AbsoluteDestinationPath);
-		DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
 		LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
-		
 		importItems.RemoveAll(i => i.Id == item.Id);
+		
+		ThreadPool.QueueUserWorkItem(_ =>
+		{
+			Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
+			File.Move(item.FullPath, item.AbsoluteDestinationPath);
+			DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
+		});
 	}
 
 	private void UpdateCollections()
