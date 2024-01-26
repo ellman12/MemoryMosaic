@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using System.Threading;
 using MemoryMosaic.Shared.Modal;
 using MemoryMosaic.Shared.Modal.FullscreenViewer;
 
@@ -268,7 +269,7 @@ public sealed partial class Import
 		await RerenderAsync();
 
 		foreach (var importItem in itemsToDelete)
-			await DeleteFile(importItem.FullPath);
+			DeleteFile(importItem.FullPath);
 
 		status = $"Deleted {F.GetPluralized(itemsToDelete, "Item")}";
 		L.LogLine(status, LogLevel.Info);
@@ -281,27 +282,18 @@ public sealed partial class Import
 		if (fv.Index == importItems.Count)
 			fv.Index--;
 
+		string fileToDelete = fv.Current.FullPath;
 		importItems.RemoveAll(importItem => fv.Current.Id == importItem.Id);
 		await RerenderAsync();
 		await Task.Delay(0);
 		await Task.Delay(1);
-		await DeleteFile(fv.Current.FullPath);
+		DeleteFile(fileToDelete);
 	}
 
-	private static async Task DeleteFile(string path)
+	private static void DeleteFile(string path)
 	{
-		GC.Collect();
-		GC.WaitForPendingFinalizers();
-
-		try
-		{
-			await Task.Delay(2000);
-			File.Delete(path);
-		}
-		catch (IOException e)
-		{
-			L.LogException(e);
-		}
+		try { ThreadPool.QueueUserWorkItem(_ => File.Delete(path)); }
+		catch (IOException e) { L.LogException(e); }
 	}
 
 	public void ChangeRangeState(int startIndex, int endIndex)
