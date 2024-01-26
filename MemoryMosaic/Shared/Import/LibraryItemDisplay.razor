@@ -20,12 +20,13 @@
 </div>
 
 @code {
-	private void DeleteBtnClick()
+	private async void DeleteBtnClick()
 	{
+		Import.LibraryCache.Remove(Item.Path);
+		await Import.RerenderAsync();
+		
 		if (Item.DateDeleted == null)
 			D.MoveToTrash(Item.Id);
 		D.RemoveFromTrash(Item);
-		Import.LibraryCache.Remove(Item.Path);
-		Import.Rerender();
 	}
 }
