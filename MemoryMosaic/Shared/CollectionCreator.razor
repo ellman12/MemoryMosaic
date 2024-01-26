@@ -62,8 +62,12 @@
         }
     }
 
-    private void NewCollectionBtnClick() => AcceptingInput = !AcceptingInput;
-    
+    private void NewCollectionBtnClick()
+    {
+        NewCollectionName = NewCollectionName.Trim();
+        AcceptingInput = !AcceptingInput;
+    }
+
     public void ConfirmBtnClick()
     {
         if (String.IsNullOrWhiteSpace(NewCollectionName))
@@ -78,7 +82,7 @@
             return;
         }
 
-        D.CreateCollection(NewCollectionName.Trim(), folder);
+        D.CreateCollection(NewCollectionName, folder);
         OnCollectionCreate?.Invoke();
         AcceptingInput = folder = false;
         StateHasChanged();
