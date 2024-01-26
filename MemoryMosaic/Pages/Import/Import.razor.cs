@@ -148,7 +148,7 @@ public sealed partial class Import
 
 	private IEnumerable<ImportItem> Selected => importItems.Where(item => SelectedItems.Contains(item.Id));
 
-	private ImmutableArray<ImportItem> SearchResults => importItems.Where(item => item.NewFilenameWithExtension.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1).ToImmutableArray();
+	private IEnumerable<ImportItem> SearchResults => importItems.Where(item => item.NewFilenameWithExtension.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1);
 
 	private string PopUpMessage
 	{
