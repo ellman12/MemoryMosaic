@@ -127,7 +127,7 @@ public sealed partial class Import
 		{
 			List<Media> content = new();
 
-			foreach (var group in SearchResults.GroupBy(item => item.DestinationPath))
+			foreach (var group in CurrentItems.GroupBy(item => item.DestinationPath))
 			{
 				var existingItems = addingItems
 					? ImmutableArray<LibraryItem>.Empty
@@ -149,6 +149,31 @@ public sealed partial class Import
 	private IEnumerable<ImportItem> Selected => importItems.Where(item => SelectedItems.Contains(item.Id));
 
 	private IEnumerable<ImportItem> SearchResults => importItems.Where(item => item.NewFilenameWithExtension.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1);
+
+	private IEnumerable<ImportItem> Errors
+	{
+		get
+		{
+			return SearchResults
+				.GroupBy(item => item.DestinationPath)
+				.Where(group => group.Count() + LibraryCache.Values.Count(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)) > 1)
+				.SelectMany(item => item);
+		}
+	}
+
+	private IEnumerable<ImportItem> CurrentItems
+	{
+		get
+		{
+			if (onlyDisplayErrors)
+				return Errors;
+
+			if (!String.IsNullOrWhiteSpace(searchText))
+				return SearchResults;
+
+			return importItems;
+		}
+	}
 
 	private string PopUpMessage
 	{
@@ -202,7 +227,7 @@ public sealed partial class Import
 
 	private void SelectAll()
 	{
-		foreach (ImportItem item in SearchResults)
+		foreach (ImportItem item in CurrentItems)
 			SelectedItems.Add(item.Id);
 
 		Rerender();
@@ -283,7 +308,7 @@ public sealed partial class Import
 	{
 		int increment = startIndex < endIndex ? 1 : -1;
 
-		var items = SearchResults.ToImmutableArray();
+		var items = CurrentItems.ToImmutableArray();
 		for (int i = startIndex; i != endIndex + increment; i += increment)
 			SelectedItems.Add(items[i].Id);
 

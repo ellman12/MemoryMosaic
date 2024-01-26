@@ -33,8 +33,8 @@
 			}
 			else
 			{
-				<span>@F.GetPluralized(SearchResults, "Item")</span>
-				<span>@F.FormatBytes(SearchResults.Sum(item => item.Size))</span>
+				<span>@F.GetPluralized(CurrentItems, "Item")</span>
+				<span>@F.FormatBytes(CurrentItems.Sum(item => item.Size))</span>
 			}
 		</div>
 
@@ -112,7 +112,7 @@
 	@{
 		int importItemsIndex = 0;
 		int contentIndex = 0;
-		foreach (var group in SearchResults.GroupBy(item => item.DestinationPath))
+		foreach (var group in CurrentItems.GroupBy(item => item.DestinationPath))
 		{
 			var existingItems = addingItems
 				? ImmutableArray<LibraryItem>.Empty
