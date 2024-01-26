@@ -114,12 +114,14 @@
 		int contentIndex = 0;
 		foreach (var group in SearchResults.GroupBy(item => item.DestinationPath))
 		{
-			var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
-			
+			var existingItems = addingItems
+				? ImmutableArray<LibraryItem>.Empty
+				: LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+
 			if (onlyDisplayErrors && group.Count() + existingItems.Length == 1)
 				continue;
-			
-			var warnings = displayWarnings
+
+			var warnings = displayWarnings && !addingItems
 				? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension && !existingItems.Contains(libraryItem))).ToImmutableArray()
 				: ImmutableArray<LibraryItem>.Empty;
 
@@ -138,16 +140,16 @@
 					importItemsIndex++;
 					contentIndex++;
 				}
-				
+
 				@foreach (var libraryItem in existingItems)
 				{
 					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="error"/>
 					contentIndex++;
 				}
-				
+
 				@foreach (var libraryItem in warnings)
 				{
-					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="warning"/> 
+					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="warning"/>
 					contentIndex++;
 				}
 			</div>

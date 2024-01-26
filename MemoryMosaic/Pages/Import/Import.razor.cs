@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using System.Threading;
 using MemoryMosaic.Shared.Modal;
 using MemoryMosaic.Shared.Modal.FullscreenViewer;
 
@@ -38,14 +37,14 @@ public sealed partial class Import
 	private List<ImportItem> importItems = new();
 
 	private ProgressPopUp popUp = null!;
-	
+
 	private CollectionSelector cs = null!;
 
 	private Dropdown moreSettings = null!;
 
 	public bool HoveringThumbnail { get; set; }
 	public DateTime HoverStartTime { get; set; }
-	
+
 	public void Rerender() => StateHasChanged();
 	public async Task RerenderAsync() => await InvokeAsync(StateHasChanged);
 
@@ -78,7 +77,7 @@ public sealed partial class Import
 	{
 		status = "Initializing thumbnails...";
 		L.LogLine(status, LogLevel.Debug);
-		
+
 		await Parallel.ForEachAsync(importItems.ToImmutableList(), async (importItem, _) =>
 		{
 			importItem.Thumbnail = await FF.GenerateThumbnailAsync(importItem.FullPath);
@@ -88,7 +87,7 @@ public sealed partial class Import
 
 		status = "Thumbnails initialized";
 		await RerenderAsync();
-		
+
 		status = "";
 		await RerenderAsync();
 	}
@@ -99,7 +98,7 @@ public sealed partial class Import
 		{
 			if (addingItems)
 				return 0;
-			
+
 			int total = 0;
 			total += importItems.GroupBy(item => item.DestinationPath).Count(group => group.Count() > 1);
 			total += LibraryCache.Values.Count(libraryItem => importItems.Any(importItem => importItem.DestinationPath == libraryItem.Path));
@@ -130,12 +129,14 @@ public sealed partial class Import
 
 			foreach (var group in SearchResults.GroupBy(item => item.DestinationPath))
 			{
-				var existingItems = LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
-
-				var warnings = displayWarnings
+				var existingItems = addingItems
+					? ImmutableArray<LibraryItem>.Empty
+					: LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+	
+				var warnings = displayWarnings && !addingItems
 					? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension && !existingItems.Contains(libraryItem))).ToImmutableArray()
 					: ImmutableArray<LibraryItem>.Empty;
-
+				
 				content.AddRange(group);
 				content.AddRange(existingItems);
 				content.AddRange(warnings);
@@ -155,14 +156,14 @@ public sealed partial class Import
 		{
 			if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
 				return "Adding All Items";
-			
+
 			if (SelectedItems.Count == 1)
 				return "Adding 1 Item";
-		
+
 			return $"Adding {SelectedItems.Count} Items";
 		}
 	}
-	
+
 	private static readonly Dictionary<string, string> Shortcuts = new()
 	{
 		{"Ctrl A", "Select All"},
@@ -203,7 +204,7 @@ public sealed partial class Import
 	{
 		foreach (ImportItem item in importItems)
 			SelectedItems.Add(item.Id);
-		
+
 		Rerender();
 	}
 
@@ -235,7 +236,7 @@ public sealed partial class Import
 	{
 		if (fv.Visible)
 			return;
-		
+
 		var itemsToDelete = Selected.ToImmutableArray();
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
 		ClearSelection();
@@ -254,7 +255,7 @@ public sealed partial class Import
 	{
 		if (fv.Index == importItems.Count)
 			fv.Index--;
-		
+
 		importItems.RemoveAll(importItem => fv.Current.Id == importItem.Id);
 		await RerenderAsync();
 		await Task.Delay(0);
@@ -285,7 +286,7 @@ public sealed partial class Import
 		var items = SearchResults.ToImmutableArray();
 		for (int i = startIndex; i != endIndex + increment; i += increment)
 			SelectedItems.Add(items[i].Id);
-		
+
 		Rerender();
 	}
 
@@ -310,23 +311,23 @@ public sealed partial class Import
 	{
 		if (ErrorAmount > 0 || EditingFilename)
 			return;
-		
+
 		ImmutableArray<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems.ToImmutableArray() : Selected.ToImmutableArray();
 
-		addingItems = true;
 		status = $"Adding {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
 		popUp.Enable();
 		await RerenderAsync();
 
+		addingItems = true;
 		await Parallel.ForEachAsync(items, async (item, _) => await AddItem(item));
-
 		addingItems = false;
+
 		status = $"Added {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
 		popUp.Disable();
 		await RerenderAsync();
-		
+
 		ClearSelection();
 	}
 
@@ -341,16 +342,12 @@ public sealed partial class Import
 				await D.AddToCollectionAsync(collection.Id, item.Id);
 		}
 
-		ThreadPool.QueueUserWorkItem(_ =>
-		{
-			Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
-			File.Move(item.FullPath, item.AbsoluteDestinationPath);
-			DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
-			LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
-		});
+		Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
+		File.Move(item.FullPath, item.AbsoluteDestinationPath);
+		DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
+		LibraryCache.Add(item.DestinationPath, new LibraryItem(item));
 		
 		importItems.RemoveAll(i => i.Id == item.Id);
-		await RerenderAsync();
 	}
 
 	private void UpdateCollections()
