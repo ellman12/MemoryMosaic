@@ -21,7 +21,7 @@ header {
 }
 
 main {
-	@include flex-main(row, 60px);
+	@include flex-main(row, 70px);
 	flex-wrap: wrap;
 
 	> .load-div {
