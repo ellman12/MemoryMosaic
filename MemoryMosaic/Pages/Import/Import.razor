@@ -26,7 +26,12 @@
 	
 	<div id="stats">
 		<div>
-			@if (String.IsNullOrEmpty(searchText))
+			@if (SelectedItems.Count > 0)
+			{
+				<span>@F.GetPluralized(SelectedItems, "Selected Item")</span>
+				<span>@F.FormatBytes(Selected.Sum(item => item.Size))</span>
+			}
+			else if (String.IsNullOrEmpty(searchText))
 			{
 				<span>@F.GetPluralized(importItems, "Item")</span>
 				<span>@F.FormatBytes(F.GetFolderSize(S.ImportFolderPath))</span>
