@@ -147,7 +147,7 @@ public sealed partial class Import
 		}
 	}
 
-	private IEnumerable<ImportItem> Selected => importItems.Where(item => SelectedItems.Contains(item.Id));
+	private ImmutableArray<ImportItem> Selected => importItems.Where(item => SelectedItems.Contains(item.Id)).ToImmutableArray();
 
 	private IEnumerable<ImportItem> SearchResults => importItems.Where(item => item.NewFilenameWithExtension.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1);
 
@@ -263,7 +263,8 @@ public sealed partial class Import
 		if (fv.Visible)
 			return;
 
-		var itemsToDelete = Selected.ToImmutableArray();
+		fv.Index = 0;
+		var itemsToDelete = Selected;
 		importItems.RemoveAll(importItem => SelectedItems.Contains(importItem.Id));
 		ClearSelection();
 		await RerenderAsync();
@@ -283,16 +284,21 @@ public sealed partial class Import
 			fv.Index--;
 
 		string fileToDelete = fv.Current.FullPath;
-		importItems.RemoveAll(importItem => fv.Current.Id == importItem.Id);
+		importItems.RemoveAt(fv.Index);
+		await fv.RerenderAsync();
 		await RerenderAsync();
 		await Task.Delay(0);
 		await Task.Delay(1);
+		await Task.Delay(2000);
 		DeleteFile(fileToDelete);
 	}
 
 	private static void DeleteFile(string path)
 	{
-		try { ThreadPool.QueueUserWorkItem(_ => File.Delete(path)); }
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+		
+		try { FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
 		catch (IOException e) { L.LogException(e); }
 	}
 
@@ -329,7 +335,8 @@ public sealed partial class Import
 		if (ErrorAmount > 0 || EditingFilename)
 			return;
 
-		ImmutableArray<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems.ToImmutableArray() : Selected.ToImmutableArray();
+		fv.Index = 0;
+		ImmutableArray<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems.ToImmutableArray() : Selected;
 
 		status = $"Adding {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
@@ -351,16 +358,13 @@ public sealed partial class Import
 	///Adds a single item to the library.
 	public async Task AddItem(ImportItem item)
 	{
-		await D.InsertItem(item);
-
-		if (item.Collections != null)
-		{
-			foreach (var collection in item.Collections)
-				await D.AddToCollectionAsync(collection.Id, item.Id);
-		}
-
-		LibraryCache.TryAdd(item.DestinationPath, new LibraryItem(item));
 		importItems.RemoveAll(i => i.Id == item.Id);
+		await fv.RerenderAsync();
+		await RerenderAsync();
+		await Task.Delay(2000);
+		
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
 		
 		ThreadPool.QueueUserWorkItem(_ =>
 		{
@@ -368,6 +372,16 @@ public sealed partial class Import
 			File.Move(item.FullPath, item.AbsoluteDestinationPath);
 			DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
 		});
+
+		await D.InsertItem(item);
+    
+    	if (item.Collections != null)
+    	{
+    		foreach (var collection in item.Collections)
+    			await D.AddToCollectionAsync(collection.Id, item.Id);
+    	}
+		
+		LibraryCache.TryAdd(item.DestinationPath, new LibraryItem(item));
 	}
 
 	private void UpdateCollections()

@@ -2,8 +2,6 @@
 @inherits ToggleableComponent
 @typeparam T where T : Media
 
-@if (Index > Content.Count - 1) { return; }
-
 <div id="fullscreen-viewer" style="@Visibility.Style">
 	<div id="content">
 		<IconButton ID="backButton" Icon="arrow_back" OnClick="@Disable"/>
@@ -246,6 +244,9 @@
 			JSRuntime.InvokeVoidAsync(Current.Video ? "initializeVideo" : "cleanupVideo");
 		}
 	}
+
+	public void Rerender() => StateHasChanged();
+	public async Task RerenderAsync() => await InvokeAsync(StateHasChanged);
 
 	public void Preload(int newIndex)
 	{

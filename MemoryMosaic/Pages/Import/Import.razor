@@ -103,7 +103,7 @@
 			</div>
 			
 			<Checkbox @bind-Input="@displayWarnings" Label="Display Warnings" Title="Warnings are files with the same name but in a different folder."/>
-			<Checkbox @bind-Input="@onlyDisplayErrors" Label="Only Display Errors" Title="Errors occur when 2 or more import items would end up in the same destination folder, or when there's already a library item with the same name in that folder."/>
+			<Checkbox @bind-Input="@onlyDisplayErrors" OnChange="@(() => fv.Index = 0)" Label="Only Display Errors" Title="Errors occur when 2 or more import items would end up in the same destination folder, or when there's already a library item with the same name in that folder."/>
 		</Dropdown>
 	</div>
 </header>
