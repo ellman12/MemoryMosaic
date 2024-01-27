@@ -60,7 +60,7 @@ public sealed partial class Import
 	{
 		ConcurrentBag<ImportItem> bag = new();
 
-		await Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath).ToImmutableList(), (fullPath, _) =>
+		await Task.Run(() => Parallel.ForEach(F.GetSupportedFiles(S.ImportFolderPath), (fullPath, _) =>
 		{
 			bag.Add(new ImportItem(fullPath.Replace('\\', '/')));
 		}));
@@ -358,7 +358,7 @@ public sealed partial class Import
 	///Adds a single item to the library.
 	public async Task AddItem(ImportItem item)
 	{
-		importItems.RemoveAll(i => i.Id == item.Id);
+		await InvokeAsync(() => importItems.RemoveAll(i => i.Id == item.Id));
 		await fv.RerenderAsync();
 		await RerenderAsync();
 		await Task.Delay(2000);
