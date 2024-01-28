@@ -285,16 +285,20 @@ public sealed partial class Import
 
 		await fv.CleanupVideo();
 
-		string fileToDelete = fv.Current.FullPath;
-		importItems.RemoveAt(fv.Index);
+		await DeleteItem(fv.CurrentIi!, fv.Index);
+	}
+
+	public async Task DeleteItem(ImportItem item, int index)
+	{
+		importItems.RemoveAt(index);
 		await fv.RerenderAsync();
 		await RerenderAsync();
 		await Task.Delay(0);
 		await Task.Delay(1);
 		await Task.Delay(2000);
-		DeleteFile(fileToDelete);
+		DeleteFile(item.FullPath);
 	}
-
+	
 	private static void DeleteFile(string path)
 	{
 		GC.Collect();

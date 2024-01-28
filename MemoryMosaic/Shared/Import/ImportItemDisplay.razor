@@ -91,6 +91,8 @@
 	<IconButton Icon="@(Item.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(Item.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
 	
 	<IconButton Icon="library_add" Class="addBtn" Style="display: none" OnClick="@(async () => await Import.AddItem(Item))"/>
+	
+	<IconButton Icon="trash" Class="deleteBtn" Style="display: none" OnClick="@(async () => await Import.DeleteItem(Item, Index))"/>
 
 	<textarea style="display: @(String.IsNullOrWhiteSpace(Item.Description) ? "none" : "inline")" @bind="@Item.Description" placeholder="Description"></textarea>
 	
