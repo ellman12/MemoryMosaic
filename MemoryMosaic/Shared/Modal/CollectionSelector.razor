@@ -167,28 +167,28 @@
         {
             if (SelectedFolderId != -1)
             {
-                if (SelectedItem != Guid.Empty)
-                {
-                    await D.AddToCollectionAsync(SelectedFolderId, SelectedItem);
-                }
-                else
+                if (SelectedItems.Count > 0)
                 {
                     foreach (Guid item in SelectedItems)
                         await D.AddToCollectionAsync(SelectedFolderId, item);
+                }
+                else if (SelectedItem != Guid.Empty)
+                {
+                    await D.AddToCollectionAsync(SelectedFolderId, SelectedItem);
                 }
             }
             else
             {
                 foreach (int id in SelectedAlbums)
                 {
-                    if (SelectedItem != Guid.Empty)
-                    {
-                        await D.AddToCollectionAsync(id, SelectedItem);
-                    }
-                    else
+                    if (SelectedItems.Count > 0)
                     {
                         foreach (Guid item in SelectedItems)
                             await D.AddToCollectionAsync(id, item);
+                    }
+                    else if (SelectedItem != Guid.Empty)
+                    {
+                        await D.AddToCollectionAsync(id, SelectedItem);
                     }
                 }
             }
