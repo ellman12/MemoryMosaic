@@ -61,7 +61,7 @@
 		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@(async () => await AddItems())"/>
 	}
 	
-	<TextInput @bind-Input="@searchText" OnChange="@Rerender" Placeholder="Search"/>
+	<TextInput @bind-Input="@searchText" OnChange="@(() => { fv.Index = 0; Rerender(); })" Placeholder="Search"/>
 	
 	<span id="status">@status</span>
 	

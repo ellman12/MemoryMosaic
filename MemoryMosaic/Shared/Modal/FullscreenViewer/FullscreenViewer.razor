@@ -2,6 +2,9 @@
 @inherits ToggleableComponent
 @typeparam T where T : Media
 
+@if (Content.Count == 0) { return; }
+@if (Index > Content.Count - 1) { Index = Content.Count - 1; }
+
 <div id="fullscreen-viewer" style="@Visibility.Style">
 	<div id="content">
 		<IconButton ID="backButton" Icon="arrow_back" OnClick="@Disable"/>
