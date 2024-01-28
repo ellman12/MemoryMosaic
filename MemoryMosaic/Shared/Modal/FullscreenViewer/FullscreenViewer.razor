@@ -230,7 +230,8 @@
 		{
 			if (value < 0 || value >= Content.Count) return;
 			index = value;
-			collectionsContaining = D.GetCollectionsContaining(Current.Id);
+			
+			collectionsContaining = CurrentLi != null ? D.GetCollectionsContaining(Current.Id) : CurrentIi!.Collections;
 
 			if (Current is LibraryItem li)
 				newDateTaken = li.DateTaken;
