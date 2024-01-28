@@ -9,14 +9,15 @@ public static class FFmpeg
 	public static string GenerateThumbnail(string filePath)
 	{
 		string thumbnailFullPath = P.Join(S.TmpFolderPath, Guid.NewGuid() + ".jpg");
+		
 		ProcessStartInfo ffmpegInfo = new()
 		{
 			CreateNoWindow = true,
 			FileName = "ffmpeg",
 			Arguments = $"-i \"{filePath}\" -loglevel quiet -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v {S.ThumbnailQuality} \"{thumbnailFullPath}\""
 		};
-
-		Process ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
+		
+		using Process ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
 		ffmpegProcess.WaitForExit();
 
 		byte[] bytes = File.ReadAllBytes(thumbnailFullPath);
@@ -33,6 +34,7 @@ public static class FFmpeg
 	public static async Task<string> GenerateThumbnailAsync(string filePath)
 	{
 		string thumbnailFullPath = P.Join(S.TmpFolderPath, Guid.NewGuid() + ".jpg");
+		
 		ProcessStartInfo ffmpegInfo = new()
 		{
 			CreateNoWindow = true,
@@ -40,7 +42,7 @@ public static class FFmpeg
 			Arguments = $"-i \"{filePath}\" -loglevel quiet -vf \"select=eq(n\\,0)\" -vf scale=320:-2 -q:v {S.ThumbnailQuality} \"{thumbnailFullPath}\""
 		};
 
-		Process ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
+		using Process ffmpegProcess = Process.Start(ffmpegInfo) ?? throw new InvalidOperationException();
 		await ffmpegProcess.WaitForExitAsync();
 
 		byte[] bytes = await File.ReadAllBytesAsync(thumbnailFullPath);
