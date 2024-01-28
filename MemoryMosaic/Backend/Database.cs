@@ -690,11 +690,11 @@ public static class Database
 		return collections;
 	}
 
-	///<summary>Returns a List&lt;Collection&gt; of all the Collections this id is in.</summary>
+	///<summary>Returns a HashSet&lt;Collection&gt; of all the Collections this id is in.</summary>
 	///<param name="id">ID of the item.</param>
-	public static List<Collection> GetCollectionsContaining(Guid id)
+	public static HashSet<Collection> GetCollectionsContaining(Guid id)
 	{
-		List<Collection> collections = new();
+		HashSet<Collection> collections = new();
 
 		try
 		{

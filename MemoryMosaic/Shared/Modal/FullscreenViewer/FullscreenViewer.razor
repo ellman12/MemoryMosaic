@@ -213,7 +213,7 @@
 	public LibraryItem? CurrentLi => Current as LibraryItem;
 	public ImportItem? CurrentIi => Current as ImportItem;
 
-	private List<Collection>? collectionsContaining;
+	private HashSet<Collection>? collectionsContaining;
 
 	private ElementVisibility infoVisibility = new(), dtPickerVis = new(), fileRename = new(), filenameError = new();
 
