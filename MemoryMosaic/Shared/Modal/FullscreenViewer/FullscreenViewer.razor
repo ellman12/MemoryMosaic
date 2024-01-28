@@ -251,6 +251,7 @@
 
 	public void Rerender() => StateHasChanged();
 	public async Task RerenderAsync() => await InvokeAsync(StateHasChanged);
+	public async Task CleanupVideo() => await JSRuntime.InvokeVoidAsync("cleanupVideo");
 
 	public void Preload(int newIndex)
 	{

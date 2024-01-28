@@ -283,6 +283,8 @@ public sealed partial class Import
 		if (fv.Index == importItems.Count)
 			fv.Index--;
 
+		await fv.CleanupVideo();
+
 		string fileToDelete = fv.Current.FullPath;
 		importItems.RemoveAt(fv.Index);
 		await fv.RerenderAsync();

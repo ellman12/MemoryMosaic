@@ -17,7 +17,7 @@ function cleanupVideo() {
 	
 	video.src = "";
 	video.muted = true;
-	video.disable();
+	video.pause();
 
 	video.onplaying = null;
 	video.onpause = null;
