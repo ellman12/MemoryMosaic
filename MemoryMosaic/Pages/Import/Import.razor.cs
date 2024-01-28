@@ -329,8 +329,16 @@ public sealed partial class Import
 		LastCheckedIndex = 0;
 	}
 
+	private async void AltAFired()
+	{
+		if (fv.Visible)
+			await AddItem(fv.CurrentIi!);
+		else
+			await AddItems();
+	}
+
 	///Adds items to the library.
-	private async void AddItems()
+	private async Task AddItems()
 	{
 		if (ErrorAmount > 0 || EditingFilename)
 			return;

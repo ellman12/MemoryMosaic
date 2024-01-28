@@ -58,7 +58,7 @@
 
 	@if (!thumbnailsLoading && ErrorAmount == 0 && !EditingFilename)
 	{
-		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@AddItems"/>
+		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@(async () => await AddItems())"/>
 	}
 	
 	<TextInput @bind-Input="@searchText" OnChange="@Rerender" Placeholder="Search"/>
@@ -170,6 +170,6 @@
 	
 	<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent" Import="@this"/>
 	
-	<KeyboardShortcuts AltA="@AddItems" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection"/>
+	<KeyboardShortcuts AltA="@AltAFired" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection"/>
 	<ShortcutsReference Shortcuts="@Shortcuts"/>
 }
