@@ -350,7 +350,14 @@ public sealed partial class Import
 			return;
 
 		fv.Index = 0;
-		ImmutableArray<ImportItem> items = SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count ? importItems.ToImmutableArray() : Selected;
+		
+		ImmutableArray<ImportItem> items;
+		if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
+			items = importItems.ToImmutableArray();
+		else if (SelectedItems.Count > 0)
+			items = Selected;
+		else
+			items = importItems.ToImmutableArray();
 
 		status = $"Adding {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
