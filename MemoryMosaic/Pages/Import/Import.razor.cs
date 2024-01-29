@@ -291,6 +291,7 @@ public sealed partial class Import
 	public async Task DeleteItem(ImportItem item, int index)
 	{
 		importItems.RemoveAt(index);
+		SelectedItems.Remove(item.Id);
 		await fv.RerenderAsync();
 		await RerenderAsync();
 		await Task.Delay(0);
@@ -379,7 +380,7 @@ public sealed partial class Import
 	///Adds a single item to the library.
 	public async Task AddItem(ImportItem item)
 	{
-		await InvokeAsync(() => importItems.RemoveAll(i => i.Id == item.Id));
+		await InvokeAsync(() => { importItems.RemoveAll(i => i.Id == item.Id); SelectedItems.Remove(item.Id); });
 		await fv.RerenderAsync();
 		await RerenderAsync();
 		await Task.Delay(2000);
