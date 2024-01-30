@@ -35,10 +35,8 @@
         <div id="collections">
             <span>Albums</span>
             <div>
-                @foreach (var album in Albums)
+                @foreach (Collection album in Albums.Where(album => album.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1))
                 {
-                    if (album.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
-                    
                     <div class="collection" @onclick="@(() => AlbumClicked(album.Id))">
                         <div class="cover">
                             @if (!String.IsNullOrWhiteSpace(album.Cover))
@@ -53,10 +51,8 @@
 
             <span>Folders</span>
             <div>
-                @foreach (var folder in Folders)
+                @foreach (Collection folder in Folders.Where(folder => folder.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1))
                 {
-                    if (folder.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
-
                     <div class="collection" @onclick="@(() => FolderClicked(folder.Id))">
                         <div class="cover">
                             @if (!String.IsNullOrWhiteSpace(folder.Cover))
