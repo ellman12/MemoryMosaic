@@ -288,12 +288,12 @@ public sealed partial class Import
 
 		await fv.CleanupVideo();
 
-		await DeleteItem(fv.CurrentIi!, fv.Index);
+		await DeleteItem(fv.CurrentIi!);
 	}
 
-	public async Task DeleteItem(ImportItem item, int index)
+	public async Task DeleteItem(ImportItem item)
 	{
-		importItems.RemoveAt(index);
+		importItems.RemoveAll(i => i.Id == item.Id);
 		SelectedItems.Remove(item.Id);
 		await fv.RerenderAsync();
 		await RerenderAsync();
@@ -309,7 +309,7 @@ public sealed partial class Import
 		GC.WaitForPendingFinalizers();
 		
 		try { FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin); }
-		catch (IOException e) { L.LogException(e); }
+		catch (Exception e) { L.LogException(e); }
 	}
 
 	public void ChangeRangeState(int startIndex, int endIndex)
@@ -367,6 +367,7 @@ public sealed partial class Import
 		L.LogLine(status, LogLevel.Info);
 		popUp.Enable();
 		await RerenderAsync();
+		await Task.Delay(1);
 
 		addingItems = true;
 		await Parallel.ForEachAsync(items, async (item, _) => await AddItem(item));
@@ -375,6 +376,7 @@ public sealed partial class Import
 		status = $"Added {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
 		popUp.Disable();
+		await Task.Delay(1);
 		await RerenderAsync();
 
 		ClearSelection();
@@ -391,10 +393,15 @@ public sealed partial class Import
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
 		
+		await Task.Delay(2000);
+		
 		ThreadPool.QueueUserWorkItem(_ =>
 		{
 			Directory.CreateDirectory(D.CreateFullDateFolderPath(item.SelectedDateTaken));
-			File.Move(item.FullPath, item.AbsoluteDestinationPath);
+			
+			try { File.Move(item.FullPath, item.AbsoluteDestinationPath); }
+			catch (Exception e) { L.LogException(e); }
+			
 			DTE.UpdateDateTaken(item.AbsoluteDestinationPath, item.SelectedDateTaken);
 		});
 

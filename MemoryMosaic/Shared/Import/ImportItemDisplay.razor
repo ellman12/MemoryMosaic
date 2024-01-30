@@ -92,7 +92,7 @@
 	
 	<IconButton Icon="library_add" Class="addBtn" Style="display: none" OnClick="@(async () => await Import.AddItem(Item))"/>
 	
-	<IconButton Icon="trash" Class="deleteBtn" Style="display: none" OnClick="@(async () => await Import.DeleteItem(Item, Index))"/>
+	<IconButton Icon="trash" Class="deleteBtn" Style="display: none" OnClick="@(async () => await Import.DeleteItem(Item))"/>
 
 	<textarea style="display: @(String.IsNullOrWhiteSpace(Item.Description) ? "none" : "inline")" @bind="@Item.Description" placeholder="Description"></textarea>
 	

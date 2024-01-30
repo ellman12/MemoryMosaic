@@ -15,6 +15,9 @@ let hideControlsTimeout;
 function cleanupVideo() {
 	clearInterval(seekSliderInterval);
 	
+	if (video == null)
+		return;
+	
 	video.src = "";
 	video.muted = true;
 	video.pause();
