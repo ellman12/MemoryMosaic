@@ -16,13 +16,13 @@
         <CollectionCreator @ref="@collectionCreator" Collections="@(Albums.Concat(Folders).ToList())" OnCollectionCreate="@SelectNewCollection"/>
 
         <div id="collection-groups">
-            <IconButton Icon="history" OnClick="@(() => PreviousSelectionBtnClick(false))" Title="Restore the last selection of collections."/>
+            <IconButton Icon="history" OnClick="@(() => PreviousSelectionBtnClick(false))" Title="@String.Join("\n", SavedCollections[0].Select(c => c.Name))"/>
 
             <div class="hidden-buttons">
                 @for (int i = 1; i < 6; i++)
                 {
                     int ii = i;
-                    <IconButton Icon="save" EventArgsOnClick="@(mouseEventArgs => SaveBtnClick(ii, mouseEventArgs))" Title="Ctrl click to save; click to apply."/>
+                    <IconButton Icon="save" EventArgsOnClick="@(mouseEventArgs => SaveBtnClick(ii, mouseEventArgs))" Title="@String.Join("\n", SavedCollections[i].Select(c => c.Name))"/>
                 }
             </div>
         </div>
@@ -104,7 +104,11 @@
         Albums = D.GetCollections(true, false, false);
         Folders = D.GetCollections(false, true, false);
         SelectedFolderId = -1;
+        RefreshSavedCollections();
+    }
 
+    private void RefreshSavedCollections()
+    {
         for (int i = 0; i < 6; i++)
         {
             string filePath = P.Combine(S.FolderPath, $"slot{i}.tmp");
@@ -257,5 +261,7 @@
             File.WriteAllText(filePath, SelectedFolderId.ToString());
         else
             File.WriteAllLines(filePath, SelectedAlbums.Select(a => a.ToString()));
+
+        RefreshSavedCollections();
     }
 }
