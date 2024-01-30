@@ -126,27 +126,31 @@
 		
 		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
 
-		@if (collectionsContaining?.Count > 0)
-		{
-			<div id="collectionsContaining">
-				<span>Collections Containing</span>
-				
-				<div>
-					@foreach (Collection c in collectionsContaining)
-					{
-						<a href="/collection/@c.Id">
-							<div class="cover">
-								@if (!String.IsNullOrWhiteSpace(c.Cover))
-								{
-									<img src="mm_library/@c.Cover" alt=""/>
-								}
-							</div>
-
-							<span>@c.Name</span>
-						</a>
-					}
+		@{
+			var collectionsContaining = CurrentLi != null ? D.GetCollectionsContaining(Current.Id) : CurrentIi!.Collections;
+			
+			if (collectionsContaining?.Count > 0)
+			{
+				<div id="collectionsContaining">
+					<span>Collections Containing</span>
+					
+					<div>
+						@foreach (Collection c in collectionsContaining)
+						{
+							<a href="/collection/@c.Id">
+								<div class="cover">
+									@if (!String.IsNullOrWhiteSpace(c.Cover))
+									{
+										<img src="mm_library/@c.Cover" alt=""/>
+									}
+								</div>
+	
+								<span>@c.Name</span>
+							</a>
+						}
+					</div>
 				</div>
-			</div>
+		}
 		}
 	</div>
 	
@@ -216,8 +220,6 @@
 	public LibraryItem? CurrentLi => Current as LibraryItem;
 	public ImportItem? CurrentIi => Current as ImportItem;
 
-	private HashSet<Collection>? collectionsContaining;
-
 	private ElementVisibility infoVisibility = new(), dtPickerVis = new(), fileRename = new(), filenameError = new();
 
 	private DateTime? newDateTaken;
@@ -233,8 +235,6 @@
 		{
 			if (value < 0 || value >= Content.Count) return;
 			index = value;
-			
-			collectionsContaining = CurrentLi != null ? D.GetCollectionsContaining(Current.Id) : CurrentIi!.Collections;
 
 			if (Current is LibraryItem li)
 				newDateTaken = li.DateTaken;
