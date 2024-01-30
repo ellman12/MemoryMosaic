@@ -74,6 +74,8 @@
     public List<Collection> Albums { get; private set; } = null!;
     public List<Collection> Folders { get; private set; } = null!;
 
+    private List<Collection>[] SavedCollections = new List<Collection>[6];
+
     public HashSet<int> SelectedAlbums { get; private set; } = new();
     public int SelectedFolderId { get; private set; } = -1;
 
@@ -102,6 +104,23 @@
         Albums = D.GetCollections(true, false, false);
         Folders = D.GetCollections(false, true, false);
         SelectedFolderId = -1;
+
+        for (int i = 0; i < 6; i++)
+        {
+            string filePath = P.Combine(S.FolderPath, $"slot{i}.tmp");
+            if (File.Exists(filePath))
+            {
+                var ids = File.ReadAllLines(filePath).Select(Int32.Parse).ToHashSet();
+
+                var folder = ids.Count == 1 ? Folders.Find(f => f.Id == ids.First()) : null;
+                if (folder != null)
+                    SavedCollections[i] = new List<Collection> {folder};
+                else if (ids.Count > 0)
+                    SavedCollections[i] = Albums.Where(album => ids.Contains(album.Id)).ToList();
+            }
+            else
+                SavedCollections[i] = new List<Collection>();
+        }
     }
 
     private void ClearSelected()
@@ -214,35 +233,15 @@
         {
             SaveSelectionToDisk(filePath);
         }
-        else if (File.Exists(filePath))
+        else if (SavedCollections[id].Count > 0)
         {
-            bool rewrite = false; //If it encountered an ID that no longer exists in DB and it should rewrite the tmp file to remove it/them.
+            var current = SavedCollections[id];
 
-            ClearCollectionSelection();
-
-            string[] lines = File.ReadAllLines(filePath);
-            if (lines[0] == "F" && Int32.TryParse(lines[1], out int folderId))
-            {
-                if (Folders.Any(folder => folder.Id == folderId))
-                    SelectedFolderId = folderId;
-                else
-                    rewrite = true;
-            }
-            else if (lines[0] == "A")
-            {
-                foreach (string line in lines.Skip(1))
-                {
-                    int parsedId = Int32.Parse(line);
-
-                    if (Albums.All(album => album.Id != parsedId))
-                        rewrite = true;
-                    else
-                        SelectedAlbums.Add(parsedId);
-                }
-            }
-
-            if (rewrite)
-                SaveSelectionToDisk(filePath);
+            var folder = Folders.Find(f => f.Id == current.First().Id);
+            if (folder != null)
+                SelectedFolderId = folder.Id;
+            else
+                SelectedAlbums = current.Select(a => a.Id).ToHashSet();
         }
         else
         {
@@ -255,13 +254,8 @@
     private void SaveSelectionToDisk(string filePath)
     {
         if (SelectedFolderId != -1)
-            File.WriteAllText(filePath, $"F\n{SelectedFolderId}");
+            File.WriteAllText(filePath, SelectedFolderId.ToString());
         else
-        {
-            File.WriteAllText(filePath, "A\n");
-
-            foreach (int albumId in SelectedAlbums)
-                File.AppendAllText(filePath, $"{albumId}\n");
-        }
+            File.WriteAllLines(filePath, SelectedAlbums.Select(a => a.ToString()));
     }
 }
