@@ -31,9 +31,9 @@
 				<span>@F.GetPluralized(SelectedItems, "Selected Item")</span>
 				<span>@F.FormatBytes(Selected.Sum(item => item.Size))</span>
 			}
-			else if (String.IsNullOrEmpty(searchText))
+			else if (!String.IsNullOrEmpty(searchText))
 			{
-				<span>@F.GetPluralized(importItems, "Item")</span>
+				<span>@F.GetPluralized(importItems, "Result")</span>
 				<span>@F.FormatBytes(F.GetFolderSize(S.ImportFolderPath))</span>
 			}
 			else
