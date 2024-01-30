@@ -61,7 +61,7 @@
 		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@(async () => await AddItems())"/>
 	}
 	
-	<TextInput @bind-Input="@searchText" OnChange="@(() => { fv.Index = 0; Rerender(); })" Placeholder="Search"/>
+	<TextInput @ref="@searchInput" @bind-Input="@searchText" OnChange="@(() => { fv.Index = 0; Rerender(); })" Placeholder="Search"/>
 	
 	<span id="status">@status</span>
 	
@@ -170,6 +170,6 @@
 	
 	<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent" Import="@this"/>
 	
-	<KeyboardShortcuts AltA="@AltAFired" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection"/>
+	<KeyboardShortcuts AltA="@AltAFired" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection" Slash="@(() => searchInput.Focus())"/>
 	<ShortcutsReference Shortcuts="@Shortcuts"/>
 }

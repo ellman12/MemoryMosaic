@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using MemoryMosaic.Shared.Modal;
 using MemoryMosaic.Shared.Modal.FullscreenViewer;
+using MemoryMosaic.Shared.Input;
 
 namespace MemoryMosaic.Pages.Import;
 
@@ -23,6 +24,8 @@ public sealed partial class Import
 	public int MinYear { get; private set; } = 2000;
 	public int MaxYear { get; private set; } = DateTime.Now.Year;
 
+	private TextInput searchInput = null!;
+	
 	private string searchText = "", status = "";
 
 	public ConcurrentDictionary<string, LibraryItem> LibraryCache { get; private set; } = null!;
