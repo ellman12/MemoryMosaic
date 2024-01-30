@@ -37,7 +37,7 @@
             <div>
                 @foreach (var album in Albums)
                 {
-                    if (!String.IsNullOrWhiteSpace(searchText) && album.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
+                    if (album.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
                     
                     <div class="collection" @onclick="@(() => AlbumClicked(album.Id))">
                         <div class="cover">
@@ -55,7 +55,7 @@
             <div>
                 @foreach (var folder in Folders)
                 {
-                    if (!String.IsNullOrWhiteSpace(searchText) && folder.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
+                    if (folder.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) == -1) continue;
 
                     <div class="collection" @onclick="@(() => FolderClicked(folder.Id))">
                         <div class="cover">
@@ -81,7 +81,7 @@
     public HashSet<int> SelectedAlbums { get; private set; } = new();
     public int SelectedFolderId { get; private set; } = -1;
 
-    private string? searchText;
+    private string searchText = "";
 
     private CollectionCreator collectionCreator = null!;
 
