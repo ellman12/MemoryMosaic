@@ -351,9 +351,13 @@ public sealed partial class Import
 
 		popUp.Message = status = $"Adding {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
-		popUp.Enable();
-		await RerenderAsync();
-		await Task.Delay(1);
+
+		if (items.Length > 1)
+		{
+			popUp.Enable();
+			await RerenderAsync();
+			await Task.Delay(1);
+		}
 
 		addingItems = true;
 		await Parallel.ForEachAsync(items, async (item, _) => await AddItem(item));
