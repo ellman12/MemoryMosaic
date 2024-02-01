@@ -65,6 +65,8 @@ Items can be selected, and depending on the page, different options may be appli
 					<Thumbnail @key="@item" Item="@item" LCV="@this" Index="@index"/>
 					index++;
 				}
+			
+				<div class="extra-spacing"></div>
 			</div>
 		}
 		else
@@ -93,12 +95,15 @@ Items can be selected, and depending on the page, different options may be appli
 					{
 						<span>@date</span>
 					}
+					
 					<div class="thumbnails">
 						@foreach (LibraryItem item in group)
 						{
 							<Thumbnail @key="@item" Item="@item" LCV="@this" Index="@index"/>
 							index++;
 						}
+						
+						<div class="extra-spacing"></div>
 					</div>
 				</div>
 			}
@@ -376,7 +381,7 @@ Items can be selected, and depending on the page, different options may be appli
 		bottomLoader.AddContent(Int32.MaxValue);
 		SelectAllLoadedItems();
 	}
-	
+
 	public void SetFullscreenItem(int index)
 	{
 		fv.Index = index;
@@ -384,7 +389,7 @@ Items can be selected, and depending on the page, different options may be appli
 		cs.SelectedItem = fv.Current.Id;
 		StateHasChanged();
 	}
-	
+
 	private void ClearChecks()
 	{
 		if (!fv.Visible)
@@ -398,7 +403,7 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		D.UpdateStarred(SelectedItems, starred);
 		starPrompt.Disable();
-		
+
 		foreach (LibraryItem item in Content.Where(item => SelectedItems.Contains(item.Id)))
 			item.Starred = starred;
 
@@ -419,7 +424,7 @@ Items can be selected, and depending on the page, different options may be appli
 		{
 			D.RestoreItem(fv.Current.Id);
 			Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
-			
+
 			if (fv.Index == Content.Count)
 				fv.Index--;
 		}
@@ -437,10 +442,10 @@ Items can be selected, and depending on the page, different options may be appli
 
 		SelectedItems.Clear();
 		restorePrompt.Disable();
-		
+
 		topLoader.AddContent();
 		bottomLoader.AddContent();
-		
+
 		StateHasChanged();
 	}
 
@@ -460,7 +465,7 @@ Items can be selected, and depending on the page, different options may be appli
 			{
 				D.RemoveFromTrash(fv.Current);
 				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
-				
+
 				if (fv.Index == Content.Count)
 					fv.Index--;
 			}
@@ -482,7 +487,7 @@ Items can be selected, and depending on the page, different options may be appli
 			{
 				D.MoveToTrash(fv.Current.Id);
 				Content.RemoveAt(Content.FindIndex(item => item.Id == fv.Current.Id));
-				
+
 				if (fv.Index == Content.Count)
 					fv.Index--;
 			}
@@ -492,13 +497,13 @@ Items can be selected, and depending on the page, different options may be appli
 				Content.RemoveAll(item => SelectedItems.Contains(item.Id));
 			}
 		}
-		
+
 		SelectedItems.Clear();
-        deletePrompt.Disable();
-        		
-        topLoader.AddContent();
-        bottomLoader.AddContent();
-		
+		deletePrompt.Disable();
+
+		topLoader.AddContent();
+		bottomLoader.AddContent();
+
 		StateHasChanged();
 	}
 

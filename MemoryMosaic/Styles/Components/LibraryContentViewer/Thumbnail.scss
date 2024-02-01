@@ -44,6 +44,4 @@ div .thumbnail {
 		object-fit: cover;
 		vertical-align: bottom;
 	}
-
-	&:nth-last-of-type(-n+10) { flex-grow: 0; } //I hate this, but it works, mostly.
 }
