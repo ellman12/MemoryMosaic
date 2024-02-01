@@ -38,6 +38,8 @@ async function initializeVideo() {
 	await delay(800);
 
 	video = document.querySelector("video");
+	video.focus();
+	
 	seekSlider = document.querySelector("input[type='range']");
 	controls = document.getElementById("controls");
 	playButtonIcon = controls.firstElementChild.firstElementChild;
