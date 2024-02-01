@@ -179,20 +179,6 @@ public sealed partial class Import
 		}
 	}
 
-	private string PopUpMessage
-	{
-		get
-		{
-			if (SelectedItems.Count == 0 || SelectedItems.Count == importItems.Count)
-				return "Adding All Items";
-
-			if (SelectedItems.Count == 1)
-				return "Adding 1 Item";
-
-			return $"Adding {SelectedItems.Count} Items";
-		}
-	}
-
 	private static readonly Dictionary<string, string> Shortcuts = new()
 	{
 		{"Ctrl A", "Select All"},
@@ -363,7 +349,7 @@ public sealed partial class Import
 		else
 			items = importItems.ToImmutableArray();
 
-		status = $"Adding {F.GetPluralized(items, "Item")}";
+		popUp.Message = status = $"Adding {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
 		popUp.Enable();
 		await RerenderAsync();
@@ -373,7 +359,7 @@ public sealed partial class Import
 		await Parallel.ForEachAsync(items, async (item, _) => await AddItem(item));
 		addingItems = false;
 
-		status = $"Added {F.GetPluralized(items, "Item")}";
+		popUp.Message = status = $"Added {F.GetPluralized(items, "Item")}";
 		L.LogLine(status, LogLevel.Info);
 		popUp.Disable();
 		await Task.Delay(1);
