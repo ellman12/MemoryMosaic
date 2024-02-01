@@ -14,7 +14,7 @@ let hideControlsTimeout;
 
 function cleanupVideo() {
 	clearInterval(seekSliderInterval);
-	
+
 	if (video == null)
 		return;
 	
@@ -35,7 +35,7 @@ function cleanupVideo() {
 }
 
 async function initializeVideo() {
-	await delay(500);
+	await delay(800);
 
 	video = document.querySelector("video");
 	seekSlider = document.querySelector("input[type='range']");
