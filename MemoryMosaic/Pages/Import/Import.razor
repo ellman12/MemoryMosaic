@@ -171,5 +171,9 @@
 	<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent" Import="@this"/>
 	
 	<KeyboardShortcuts AltA="@AltAFired" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection" Slash="@(() => searchInput.Focus())"/>
-	<ShortcutsReference Shortcuts="@Shortcuts"/>
+
+	if (fv is {Visible: false})
+	{
+		<ShortcutsReference Shortcuts="@Shortcuts"/>
+	}
 }
