@@ -97,9 +97,17 @@ function initializeEvents() {
 			case "k":
 				togglePlaying();
 				break;
+			
+			case ",":
+				setCurrentTime(video.currentTime -= 1);
+				break;
 
 			case "ArrowLeft":
 				setCurrentTime(video.currentTime -= 5);
+				break;
+
+			case ".":
+				setCurrentTime(video.currentTime += 1);
 				break;
 
 			case "ArrowRight":
