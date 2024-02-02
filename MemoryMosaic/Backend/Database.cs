@@ -653,8 +653,15 @@ public static class Database
 			_ => ""
 		};
 
-		if (where != "" && !showReadonly)
-			where += " AND readonly = false";
+		if (where == "")
+			where = "WHERE ";
+		else
+			where += " AND ";
+
+		if (showReadonly)
+			where += "readonly is not null";
+		else
+			where += "readonly = false";
 
 		//LEFT JOIN includes empty collections.
 		string query = $"""
