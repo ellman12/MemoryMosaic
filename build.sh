@@ -2,7 +2,7 @@
 # https://stackoverflow.com/a/65170521
 
 if [ "$#" -ne 1 ]; then
-    echo "Usage: Build outputDirectory"
+    echo "Usage: build outputDirectory"
     exit 1
 fi
 
