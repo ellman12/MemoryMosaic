@@ -1,0 +1,10 @@
+@inherits IconTextButton
+
+<a id="@ID" class="iconTextBtn @Class" style="@Style" href="@Href" @onclick="@HandleClick" title="@Title">
+	<MaterialIcon Icon="@Icon" IconStyle="@IconStyle"/>
+	<span style="@TextStyle">@Text</span>
+</a>
+
+@code {
+	[Parameter, EditorRequired] public string Href { get; set; } = "";
+}

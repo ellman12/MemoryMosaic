@@ -1,0 +1,108 @@
+@import "../Mixins";
+
+#body {
+	@include flex-col;
+	justify-content: center;
+	align-items: center;
+	padding-top: 50px;
+
+	> div {
+		width: 40%;
+		border: 3px solid white;
+		border-radius: 20px;
+		padding-top: 15px;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-bottom: 25px;
+
+		> span:first-of-type {
+			display: block;
+			text-align: center;
+			margin-bottom: 10px;
+			font-size: 24px;
+		}
+
+		> .iconTextBtn {
+			margin-right: 5px;
+			margin-bottom: 15px;
+		}
+
+		> .text-setting {
+			margin-top: 4px;
+			margin-bottom: 10px;
+
+			> span {
+				display: block;
+				margin-bottom: 7px;
+				padding: 0;
+			}
+		}
+
+		> .checkbox {
+			margin-right: 4px;
+			margin-bottom: 4px;
+		}
+
+		> .dropdown-setting {
+			@include flex-row;
+			margin-top: 12px;
+			margin-bottom: 14px;
+
+			> span { margin-right: 6px; }
+		}
+
+		> #thumbnail-settings {
+			margin-top: 12px;
+			margin-bottom: 14px;
+
+			> #thumbnail-slider {
+				@include flex-col;
+				margin-right: 8px;
+				margin-bottom: 4px;
+
+				> input[type="range"] {
+					width: 180px;
+					margin-bottom: 7px;
+				}
+			}
+
+			> #thumbnail-updating {
+				@include flex-row;
+
+				> span { margin-left: 8px; }
+
+				> progress {
+					margin-left: 2px;
+					width: 180px;
+				}
+			}
+		}
+
+		&:last-of-type > div {
+			@include flex-row;
+			margin-bottom: 10px;
+		}
+
+	}
+
+	> #stats {
+		> #drivePercentage {
+			@include flex-row;
+			margin-bottom: 7px;
+
+			> progress { margin-right: 10px; }
+		}
+
+		> span, > a {
+			display: block;
+			margin-bottom: 7px;
+			padding: 0;
+		}
+
+		> a {
+			color: $AccentColor;
+			text-decoration: underline;
+			text-underline: cadetblue;
+		}
+	}
+}

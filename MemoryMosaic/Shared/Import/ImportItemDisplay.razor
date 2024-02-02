@@ -1,0 +1,200 @@
+@inherits ItemDisplay<ImportItem>
+@using MemoryMosaic.Pages
+
+<div class="importItem" @onclick="@ItemClicked" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseOut">
+	<Checkbox Input="@Checked" EventArgsOnClick="@CheckClicked" Style="@($"visibility: {(Checked ? "visible" : "hidden")}")"/>
+
+	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
+
+	@if (EditingFilename)
+	{
+		<TextInput @bind-Input="@Item.NewFilename" Width="250px"/>
+		<IconButton Icon="save" OnClick="@RenameItem"/>
+		<IconButton Icon="close" OnClick="@CancelRenaming"/>
+	}
+	else
+	{
+		<span @onclick="@PathClick" @ondblclick="@EnableRename" class="@PathWidth @TextClass">@Item.Path</span>
+	}
+
+	<div class="dateTakenDisplay" @ondblclick="@(() => Item.DateTakenSource = DateTakenSource.Custom)">
+		@if (Item.DateTakenSource == DateTakenSource.Custom)
+		{
+			<span>C: @(Item.CustomDateTaken == null ? "No Date Taken" : Item.CustomDateTaken)</span>
+		}
+		else if (Item.MetadataDateTaken == null && Item.FilenameDateTaken == null || Item.DateTakenSource == DateTakenSource.None)
+		{
+			<span>No Date Taken</span>
+		}
+		else if (Item.MetadataDateTaken == Item.FilenameDateTaken)
+		{
+			<span>M & F: @Item.MetadataDateTaken</span>
+		}
+		else
+		{
+			if (Item.MetadataDateTaken != null)
+			{
+				<span style="@(Item is {DateTakenSource: DateTakenSource.Metadata, FilenameDateTaken: not null} ? "color: #0080ff" : "")">M: @Item.MetadataDateTaken</span>
+			}
+			if (Item.FilenameDateTaken != null)
+			{
+				<span style="@(Item is {DateTakenSource: DateTakenSource.Filename, MetadataDateTaken: not null} ? "color: #0080ff" : "")">F: @Item.FilenameDateTaken</span>
+			}
+		}
+	</div>
+
+	@if (Item.Collections != null)
+	{
+		<div class="collections">
+			@foreach (Collection collection in Item.Collections)
+			{
+				<span title="@collection.Id" @onclick="@(() => Item.Collections.RemoveWhere(c => c.Id == collection.Id))">@collection.Name</span>
+			}
+		</div>
+	}
+
+	<select @bind="@Item.DateTakenSource" @bind:after="@Import.Rerender">
+		@if (Item.MetadataDateTaken != null)
+		{
+			<option>Metadata</option>
+		}
+		@if (Item.FilenameDateTaken != null)
+		{
+			<option>Filename</option>
+		}
+		<option>None</option>
+		<option>Custom</option>
+	</select>
+
+	@if (Item.DateTakenSource == DateTakenSource.Custom)
+	{
+		<input type="datetime-local" @bind="@Item.CustomDateTaken" @bind:after="@Import.Rerender" step="1"/>
+	}
+
+	@if (Item.DateTakenSource == DateTakenSource.Metadata && Item.MetadataDateTaken?.Year < Import.MinYear)
+	{
+		<span>M Year is less than the min year</span>
+	}
+	@if (Item.DateTakenSource == DateTakenSource.Filename && Item.FilenameDateTaken?.Year < Import.MinYear)
+	{
+		<span>F Year is less than the min year</span>
+	}
+	@if (Item.DateTakenSource == DateTakenSource.Metadata && Item.MetadataDateTaken?.Year > Import.MaxYear)
+	{
+		<span>M Year is greater than the max year</span>
+	}
+	@if (Item.DateTakenSource == DateTakenSource.Filename && Item.FilenameDateTaken?.Year > Import.MaxYear)
+	{
+		<span>F Year is greater than the max year</span>
+	}
+
+	<IconButton Icon="@(Item.Starred ? "star" : "star_outline")" Class="starBtn" Style="@($"display: {(Item.Starred ? "flex" : "none")}")" OnClick="@ToggleStarred"/>
+	
+	<IconButton Icon="library_add" Class="addBtn" Style="display: none" OnClick="@(async () => await Import.AddItem(Item))"/>
+	
+	<IconButton Icon="trash" Class="deleteBtn" Style="display: none" OnClick="@(async () => await Import.DeleteItem(Item))"/>
+
+	<textarea style="display: @(String.IsNullOrWhiteSpace(Item.Description) ? "none" : "inline")" @bind="@Item.Description" placeholder="Description"></textarea>
+	
+	@if (Import.DisplayFileSizes)
+	{
+		<span>@F.FormatBytes(Item.Size)</span>
+	}
+
+	@if (Import.DestinationPathsVisible || TextClass != "none" || Item.OriginalFilename != Item.NewFilename)
+	{
+		<span class="@TextClass" style="font-size: 22px">&rArr;</span>
+		<span class="@PathWidth @TextClass">@Item.DestinationPath</span>
+	}
+</div>
+
+@code {
+	[Parameter, EditorRequired]
+	public int ImportItemsIndex { get; set; }
+	
+	private bool editingFilename;
+	private bool EditingFilename
+	{
+		get => editingFilename;
+		set
+		{
+			Import.EditingFilename = editingFilename = value;
+			Import.Rerender();
+		}
+	}
+	
+	private bool Checked => Import.SelectedItems.Contains(Item.Id);
+}
+
+@functions {
+	private void ItemClicked(MouseEventArgs e)
+	{
+		if (e.CtrlKey)
+		{
+			e.CtrlKey = false;
+			CheckClicked(e);
+		}
+		else if (e.AltKey)
+		{
+			ThumbnailClicked();
+		}
+	}
+
+	private void CheckClicked(MouseEventArgs e)
+	{
+		if (e.CtrlKey && !e.ShiftKey)
+			return;
+		if (e.ShiftKey)
+			Import.ChangeRangeState(Import.LastCheckedIndex, ImportItemsIndex);
+		else
+			ToggleSelected();
+	}
+
+	private void ToggleSelected()
+	{
+		if (Import.SelectedItems.Contains(Item.Id))
+			Import.SelectedItems.Remove(Item.Id);
+		else
+			Import.SelectedItems.Add(Item.Id);
+
+		Import.LastCheckedIndex = ImportItemsIndex;
+		
+		Import.Rerender();
+		StateHasChanged();
+	}
+
+	private void ToggleStarred()
+	{
+		Item.Starred = !Item.Starred;
+		StateHasChanged();
+	}
+
+	private void PathClick(MouseEventArgs e)
+	{
+		if (e.CtrlKey)
+			return;
+		
+		if (Import.SelectedItems.Count > 0)
+			ToggleSelected();
+		else if (e.ShiftKey)
+			Import.ChangeRangeState(Import.LastCheckedIndex, ImportItemsIndex);
+	}
+
+	private void EnableRename()
+	{
+		EditingFilename = true;
+		Import.Rerender();
+	}
+
+	private void RenameItem()
+	{
+		EditingFilename = false;
+		Import.Rerender();
+	}
+
+	private void CancelRenaming()
+	{
+		EditingFilename = false;
+		Item.NewFilename = Item.OriginalFilename;
+	}
+}

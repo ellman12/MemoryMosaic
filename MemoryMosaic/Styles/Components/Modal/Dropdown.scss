@@ -1,0 +1,9 @@
+@import "../../Mixins";
+
+.dropdown {
+	@include flex-col;
+	position: fixed;
+	background-color: black;
+	border: 1px solid white;
+	z-index: 99999;
+}

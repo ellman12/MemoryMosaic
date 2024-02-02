@@ -1,0 +1,80 @@
+/* Main collections page where user clicks collection thumbnail they want to view items of */
+@import "../Mixins";
+
+header {
+	@include page-header(1px solid gray, 60px, 164px);
+
+	> #collectionsText {
+		font-size: 20px;
+		margin-left: 10px;
+		margin-right: 40px;
+	}
+
+	> #checkboxes {
+		@include flex-row;
+		gap: 16px;
+		position: absolute;
+		right: 350px;
+	}
+
+	> #sortBtn {
+		position: absolute;
+		right: 100px;
+	}
+}
+
+//https://stackoverflow.com/a/67327241
+main {
+	@include main(90px, 165px);
+	@include available-width;
+	margin-right: 24px;
+
+	display: grid;
+	grid-auto-flow: row;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	grid-template-rows: repeat(auto-fill, 1fr);
+	column-gap: 20px;
+	row-gap: 35px;
+
+	> a {
+		@include flex-col;
+
+		> div {
+			@include flex-justify-center;
+			position: relative;
+			overflow: hidden;
+			min-width: 200px;
+			min-height: 200px;
+			max-width: 225px;
+			max-height: 225px;
+			aspect-ratio: 1/1;
+
+			background-color: $CoverBackground;
+			border-radius: 4px;
+			
+			> .material-icons-outlined { position: absolute; }
+			
+			> .folder {
+				top: 8px;
+				left: 8px;
+			}
+
+			> .lock {
+				bottom: 8px;
+				left: 8px;
+			}
+		}
+
+		> span:first-of-type {
+			@include ellipsis;
+			width: 200px;
+			margin-top: 8px;
+			margin-bottom: 4px;
+		}
+
+		> span:nth-of-type(2) {
+			color: gray;
+			font-size: 14px;
+		}
+	}
+}

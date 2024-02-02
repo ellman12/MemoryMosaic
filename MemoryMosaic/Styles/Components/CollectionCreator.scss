@@ -1,0 +1,17 @@
+﻿#collectionCreator {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	> input[type="text"] {
+		margin-left: 6px;
+		margin-right: 6px;
+	}
+
+	> #error {
+		color: red;
+		margin-right: 6px;
+	}
+
+	> .checkbox { margin-left: 2px; }
+}

@@ -1,0 +1,15 @@
+@inherits ToggleableComponent
+
+<link href="css/Components/Modal/Dropdown.css" rel="stylesheet"/>
+
+<div id="@ID" class="dropdown @Class" style="@Visibility.Style; @Positioning; @Style" title="@Title">
+	@ChildContent
+</div>
+
+@code {
+	[Parameter, EditorRequired] public RenderFragment ChildContent { get; set; } = null!;
+
+	[Parameter, EditorRequired] public string Positioning { get; set; } = "";
+
+	protected override bool CanControlScrolling => false;
+}

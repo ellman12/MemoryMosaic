@@ -1,0 +1,23 @@
+@import "../../Constants";
+
+input[type="number"] {
+	background-color: black;
+	font-size: 16px;
+	border: none;
+	outline: 1px solid white;
+	padding: 4px;
+	border-radius: 4px;
+
+	&:focus-visible {
+		outline: 2px solid $AccentColor;
+	}
+}
+
+.hide-number-buttons {
+	-moz-appearance: textfield;
+}
+
+.hide-number-buttons::-webkit-inner-spin-button, .hide-number-buttons::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}

@@ -1,0 +1,267 @@
+@* Reusable component that allows user to choose album(s) or a folder to add selected item(s) to. *@
+@inherits ToggleableComponent
+
+<link href="css/Components/Modal/CollectionSelector.css" rel="stylesheet"/>
+
+<ModalBackground Visibility="@Visibility">
+    <div id="collection-selector">
+        <div>
+            <span>Add to</span>
+            <div>
+                <IconButton Icon="close" OnClick="@Disable"/>
+                <IconButton Icon="check" OnClick="@ConfirmBtnClick"/>
+            </div>
+        </div>
+
+        <CollectionCreator @ref="@collectionCreator" Collections="@(Albums.Concat(Folders).ToList())" OnCollectionCreate="@SelectNewCollection"/>
+
+        <div id="collection-groups">
+            <IconButton Icon="history" OnClick="@(() => PreviousSelectionBtnClick(false))" Title="@String.Join("\n", SavedCollections[0].Select(c => c.Name))"/>
+
+            <div class="hidden-buttons">
+                @for (int i = 1; i < 6; i++)
+                {
+                    int ii = i;
+                    <IconButton Icon="save" EventArgsOnClick="@(mouseEventArgs => SaveBtnClick(ii, mouseEventArgs))" Title="@String.Join("\n", SavedCollections[i].Select(c => c.Name))"/>
+                }
+            </div>
+        </div>
+        
+        <div id="collections-search">
+            <TextInput @bind-Input="@searchText" Placeholder="Search Collections"/>
+            <IconButton Icon="clear" OnClick="@(() => { searchText = ""; StateHasChanged(); })"/>
+        </div>
+
+        <div id="collections">
+            <span>Albums</span>
+            <div>
+                @foreach (Collection album in Albums.Where(album => album.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1))
+                {
+                    <div class="collection" @onclick="@(() => AlbumClicked(album.Id))">
+                        <div class="cover">
+                            @if (!String.IsNullOrWhiteSpace(album.Cover))
+                            {
+                                <img src="mm_library/@album.Cover" alt=""/>
+                            }
+                        </div>
+                        <Checkbox Input="@SelectedAlbums.Contains(album.Id)" Label="@album.Name"/>
+                    </div>
+                }
+            </div>
+
+            <span>Folders</span>
+            <div>
+                @foreach (Collection folder in Folders.Where(folder => folder.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) != -1))
+                {
+                    <div class="collection" @onclick="@(() => FolderClicked(folder.Id))">
+                        <div class="cover">
+                            @if (!String.IsNullOrWhiteSpace(folder.Cover))
+                            {
+                                <img src="mm_library/@folder.Cover" alt=""/>
+                            }
+                        </div>
+                        <Checkbox Input="@(SelectedFolderId == folder.Id)" Label="@folder.Name"/>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</ModalBackground>
+
+<KeyboardShortcuts AltC="@Toggle"/>
+
+@code {
+    public List<Collection> Albums { get; private set; } = null!;
+    public List<Collection> Folders { get; private set; } = null!;
+
+    private List<Collection>[] SavedCollections = new List<Collection>[6];
+
+    public HashSet<int> SelectedAlbums { get; private set; } = new();
+    public int SelectedFolderId { get; private set; } = -1;
+
+    private string searchText = "";
+
+    private CollectionCreator collectionCreator = null!;
+
+    [Parameter, EditorRequired]
+    public HashSet<Guid> SelectedItems { get; set; } = null!;
+
+    [Parameter]
+    public Action? Rerender { get; set; } //Used to rerender LCV after adding items.
+
+    [Parameter]
+    public Action? OnCheckClicked { get; set; } //Used in Import.
+
+    [Parameter]
+    public bool ClearSelectionOnConfirm { get; set; } = true;
+
+    public Guid SelectedItem { get; set; } = Guid.Empty; //Used in LCV when viewing a single item.
+
+    protected override void OnInitialized() => RefreshData();
+
+    private void RefreshData()
+    {
+        Albums = D.GetCollections(true, false, false);
+        Folders = D.GetCollections(false, true, false);
+        SelectedFolderId = -1;
+        RefreshSavedCollections();
+    }
+
+    private void RefreshSavedCollections()
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            string filePath = P.Combine(S.FolderPath, $"slot{i}.tmp");
+            if (File.Exists(filePath))
+            {
+                var ids = File.ReadAllLines(filePath).Select(Int32.Parse).ToHashSet();
+
+                var folder = ids.Count == 1 ? Folders.Find(f => f.Id == ids.First()) : null;
+                if (folder != null)
+                    SavedCollections[i] = new List<Collection> {folder};
+                else if (ids.Count > 0)
+                    SavedCollections[i] = Albums.Where(album => ids.Contains(album.Id)).ToList();
+            }
+            else
+                SavedCollections[i] = new List<Collection>();
+        }
+    }
+
+    private void ClearSelected()
+    {
+        SelectedItems.Clear();
+        Disable();
+        Rerender?.Invoke();
+    }
+
+    private void AlbumClicked(int id)
+    {
+        SelectedFolderId = -1;
+
+        if (SelectedAlbums.Contains(id))
+            SelectedAlbums.Remove(id);
+        else
+            SelectedAlbums.Add(id);
+    }
+
+    private void FolderClicked(int id)
+    {
+        ClearCollectionSelection();
+        SelectedFolderId = id;
+    }
+
+    private void ClearCollectionSelection()
+    {
+        SelectedAlbums.Clear();
+        SelectedFolderId = -1;
+    }
+
+    ///Selects the new collection that was just created.
+    private async void SelectNewCollection()
+    {
+        RefreshData();
+
+        await InvokeAsync(StateHasChanged); //https://stackoverflow.com/questions/56477829/how-to-fix-the-current-thread-is-not-associated-with-the-renderers-synchroniza
+
+        int newestAlbumIndex = Albums.FindIndex(a => a.Name == collectionCreator.NewCollectionName);
+        if (newestAlbumIndex != -1)
+        {
+            SelectedAlbums.Add(Albums[newestAlbumIndex].Id);
+        }
+        else
+        {
+            int newestFolderIndex = Folders.FindIndex(f => f.Name == collectionCreator.NewCollectionName);
+            SelectedFolderId = Folders[newestFolderIndex].Id;
+        }
+    }
+
+    ///Add item(s) to album(s) or folder selected.
+    private async void ConfirmBtnClick()
+    {
+        if (OnCheckClicked != null)
+        {
+            OnCheckClicked.Invoke();
+        }
+        else
+        {
+            if (SelectedFolderId != -1)
+            {
+                if (SelectedItems.Count > 0)
+                {
+                    foreach (Guid item in SelectedItems)
+                        await D.AddToCollectionAsync(SelectedFolderId, item);
+                }
+                else if (SelectedItem != Guid.Empty)
+                {
+                    await D.AddToCollectionAsync(SelectedFolderId, SelectedItem);
+                }
+            }
+            else
+            {
+                foreach (int id in SelectedAlbums)
+                {
+                    if (SelectedItems.Count > 0)
+                    {
+                        foreach (Guid item in SelectedItems)
+                            await D.AddToCollectionAsync(id, item);
+                    }
+                    else if (SelectedItem != Guid.Empty)
+                    {
+                        await D.AddToCollectionAsync(id, SelectedItem);
+                    }
+                }
+            }
+        }
+
+        PreviousSelectionBtnClick(true);
+
+        if (ClearSelectionOnConfirm)
+            ClearSelected();
+            
+        ClearCollectionSelection();
+
+        Disable();
+    }
+
+    private void PreviousSelectionBtnClick(bool save)
+    {
+        MouseEventArgs mouseEventArgs = new() {CtrlKey = save};
+        SaveBtnClick(0, mouseEventArgs);
+    }
+
+    ///Handles saving and restoring of groups of saved Collections.
+    private void SaveBtnClick(int id, MouseEventArgs mouseEventArgs)
+    {
+        string filePath = P.Join(S.FolderPath, $"slot{id}.tmp");
+        if (mouseEventArgs.CtrlKey)
+        {
+            SaveSelectionToDisk(filePath);
+        }
+        else if (SavedCollections[id].Count > 0)
+        {
+            var current = SavedCollections[id];
+
+            var folder = Folders.Find(f => f.Id == current.First().Id);
+            if (folder != null)
+                SelectedFolderId = folder.Id;
+            else
+                SelectedAlbums = current.Select(a => a.Id).ToHashSet();
+        }
+        else
+        {
+            ClearCollectionSelection();
+        }
+        
+        StateHasChanged();
+    }
+
+    private void SaveSelectionToDisk(string filePath)
+    {
+        if (SelectedFolderId != -1)
+            File.WriteAllText(filePath, SelectedFolderId.ToString());
+        else
+            File.WriteAllLines(filePath, SelectedAlbums.Select(a => a.ToString()));
+
+        RefreshSavedCollections();
+    }
+}

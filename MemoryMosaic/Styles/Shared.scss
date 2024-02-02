@@ -1,0 +1,91 @@
+/* This stuff is shared throughout the project */
+/* Product Sans is the font throughout the project, and .material-icons is used for every icon I get from Google's fonts/icons website. */
+@import "Constants";
+
+/*This is probably illegal. Source: https://codepen.io/bennettfeely/pen/meymwg*/
+@font-face {
+	font-family: "Product Sans";
+	font-style: normal;
+	font-weight: 400;
+	src: local("Open Sans"), local("OpenSans"), url(https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2) format("woff2");
+}
+
+:root {	color-scheme: dark; }
+
+* {
+	font-family: Product Sans, sans-serif;
+	color: white;
+	user-select: none;
+	font-weight: normal;
+	scrollbar-width: none !important;
+
+	&::selection { background-color: $AccentColor; }
+}
+
+h1 {
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	text-align: center;
+}
+
+input[type="range"] {
+	accent-color: $AccentColor; 
+	
+	&:focus-visible { outline: 1px solid $AccentColor; }
+}
+
+input[type="date"], input[type="datetime-local"] {
+	background-color: black;
+	border: 1px solid white;
+	padding: 2px;
+	border-radius: 4px;
+	width: fit-content;
+
+	&:focus-visible {
+		border: 1px solid $AccentColor;
+		outline: 1px solid $AccentColor;
+	}
+
+	&::-webkit-datetime-edit-day-field:focus { background-color: $AccentColor; }
+	&::-webkit-datetime-edit-month-field:focus { background-color: $AccentColor; }
+	&::-webkit-datetime-edit-year-field:focus { background-color: $AccentColor; }
+	&::-webkit-datetime-edit-hour-field:focus { background-color: $AccentColor; }
+	&::-webkit-datetime-edit-minute-field:focus { background-color: $AccentColor; }
+	&::-webkit-datetime-edit-second-field:focus { background-color: $AccentColor; }
+	&::-webkit-datetime-edit-ampm-field:focus { background-color: $AccentColor; }
+
+	&::-webkit-calendar-picker-indicator {
+		margin-left: -20px;
+		font-size: 16px;
+		
+		&:focus { background-color: $AccentColor; }
+	}
+}
+
+textarea {
+	border: 1px solid white;
+	background-color: black;
+	font-size: 16px;
+	padding: 4px;
+
+	&:focus {
+		border: 1px solid $AccentColor;
+		outline: 1px solid $AccentColor;
+	}
+}
+
+select {
+	background-color: black;
+	border: 1px solid white;
+	border-radius: 4px;
+	
+	&:focus-visible {
+		border: 1px solid $AccentColor;
+		outline: 1px solid $AccentColor;
+	}
+}
+
+progress { accent-color: $AccentColor; }

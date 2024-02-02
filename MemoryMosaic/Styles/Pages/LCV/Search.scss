@@ -1,0 +1,13 @@
+﻿@import "../../Mixins";
+
+#searchInput {
+	@include available-width;
+	@include flex-row;
+	justify-content: center;
+	margin-left: -10px;
+	height: 60px;
+	
+	> input[type="text"] {
+		z-index: 9999;
+	}
+}

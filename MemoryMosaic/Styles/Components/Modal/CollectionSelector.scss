@@ -1,0 +1,93 @@
+@import "../../Mixins";
+
+#collection-selector {
+	@include flex-col;
+	width: 490px;
+	height: 92vh;
+	z-index: 999999;
+	border: 1px solid white;
+	padding-left: 8px;
+	padding-right: 8px;
+
+	> div { margin-bottom: 4px; }
+
+	> div:first-of-type {
+		@include flex-row;
+		height: 50px;
+		padding-top: 4px;
+
+		div {
+			@include flex-row;
+			position: absolute;
+			right: 2px;
+
+			.iconBtn {
+				margin-left: 4px;
+				margin-right: 4px;
+			}
+		}
+	}
+
+	#collection-groups {
+		@include flex-row;
+
+		.iconBtn { margin-right: 4px; }
+
+		.hidden-buttons {
+			@include flex-row;
+			opacity: 0;
+			transition: 0.25s;
+		}
+
+		&:hover > .hidden-buttons { opacity: 1; }
+	}
+
+	#collections-search {
+		@include flex-row;
+
+		.iconBtn { margin-left: 8px; }
+	}
+
+	#collections {
+		@include flex-col;
+		flex: 1 1 auto;
+
+		> span { margin-bottom: 4px; }
+
+		> div {
+			@include flex-col;
+			border: 1px solid white;
+			margin-bottom: 8px;
+			flex: 1 1 20vh;
+			overflow-y: scroll;
+
+			.collection {
+				@include flex-row;
+				flex-wrap: nowrap;
+
+				&:hover { @include hover; }
+
+				.cover {
+					@include flex-justify-center;
+					width: 60px;
+					height: 60px;
+					overflow: hidden;
+				}
+
+				.checkbox {
+					@include flex-row;
+					pointer-events: none;
+
+					span {
+						margin-left: 6px;
+
+						&:nth-of-type(2) {
+							@include ellipsis;
+							max-width: 370px;
+						}
+					}
+				}
+			}
+		}
+	}
+}

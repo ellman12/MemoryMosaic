@@ -1,0 +1,15 @@
+@* Button with an icon and text. *@
+@inherits IconButton
+
+<button id="@ID" class="iconTextBtn @Class" style="@Style" @onclick="@HandleClick" title="@Title">
+	<MaterialIcon Icon="@Icon" IconStyle="@IconStyle"/>
+	<span style="color: @TextColor; @TextStyle">@Text</span>
+</button>
+
+@code {
+	[Parameter, EditorRequired] public string Text { get; set; } = "";
+
+	[Parameter] public string TextColor { get; set; } = "white";
+
+	[Parameter] public string? TextStyle { get; set; }
+}

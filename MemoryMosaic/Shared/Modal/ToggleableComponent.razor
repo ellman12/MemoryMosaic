@@ -1,0 +1,24 @@
+@inherits Component
+@inject IJSRuntime JSRuntime
+
+@code {
+	public ElementVisibility Visibility { get; } = new();
+	
+	public void Toggle() => UpdateState(!Visibility.Visible);
+	public void Disable() => UpdateState(false);
+	public void Enable() => UpdateState(true);
+
+	public bool Visible => Visibility.Visible;
+	
+	protected virtual bool CanControlScrolling => true;
+	
+	private void UpdateState(bool newState)
+	{
+		Visibility.Visible = newState;
+		
+		if (CanControlScrolling)
+			JSRuntime.InvokeVoidAsync($"{(Visibility.Visible ? "disable" : "enable")}BackgroundScrolling");
+		
+		StateHasChanged();
+	}
+}

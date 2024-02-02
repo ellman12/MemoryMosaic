@@ -1,0 +1,36 @@
+@page "/maintenance/missing-files"
+
+<title>Missing Files — Maintenance - MM</title>
+<link href="css/Pages/Maintenance/MissingFiles.css" rel="stylesheet"/>
+
+<header>
+    <IconTextButton Icon="trash" Text="Delete All Paths From DB" OnClick="@DeleteMissingPaths"/>
+</header>
+
+<main>
+    @foreach (LibraryItem item in missingItems)
+    {
+        <div class="missingItem">
+            <div class="thumbnail"><img src="data:image/jpg;base64,@item.Thumbnail" alt=""></div>
+            <div class="info">
+                <span>@item.Path</span>
+                <span>DT: @item.DateTaken</span>
+                <span>DA: @item.DateAdded</span>
+                <span>Star: @item.Starred</span>
+                <span>@item.Id</span>
+                <span>Description: @item.Description</span>
+            </div>
+        </div>
+    }
+</main>
+
+@code {
+    private readonly List<LibraryItem> missingItems = M.GetMissingFiles();
+
+    private void DeleteMissingPaths()
+    {
+        M.RemoveMissingFiles(missingItems);
+        missingItems.Clear();
+        StateHasChanged();
+    }
+}

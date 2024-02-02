@@ -1,0 +1,39 @@
+@* Reusable component that allows user to choose between two options. *@
+@inherits ToggleableComponent
+@using MemoryMosaic.Backend
+
+<link href="css/Components/Modal/TwoChoiceInput.css" rel="stylesheet"/>
+
+<ModalBackground Visibility="@Visibility">
+    <div id="inputDiv" class="@Class" style="@Style" title="@Title">
+        <span id="message">@Message</span>
+        <div id="buttons">
+            <IconTextButton Icon="@NoBtnIcon" Text="@NoBtnText" OnClick="@NoBtnClick"/>
+            <IconTextButton Icon="@YesBtnIcon" Text="@YesBtnText" OnClick="@YesBtnClick"/>
+        </div>
+    </div>
+</ModalBackground>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Message { get; set; } = "";
+
+    [Parameter, EditorRequired]
+    public Action NoBtnClick { get; set; } = null!;
+    
+    [Parameter, EditorRequired]
+    public Action YesBtnClick { get; set; } = null!;
+
+    //Optional parameters ↓
+    [Parameter]
+    public string YesBtnText { get; set; } = "Yes";
+
+    [Parameter]
+    public string NoBtnText { get; set; } = "No";
+    
+    [Parameter]
+    public string YesBtnIcon { get; set; } = "check";
+    
+    [Parameter]
+    public string NoBtnIcon { get; set; } = "close";
+}

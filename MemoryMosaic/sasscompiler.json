@@ -1,0 +1,12 @@
+{
+  "SourceFolder": "Styles",
+  "TargetFolder": "wwwroot/css",
+  "GenerateScopedCss": true,
+  "ScopedCssFolders": [],
+  "IncludePaths": [],
+  "Configurations": {
+    "Debug": {
+      "Arguments": "--style=expanded"
+    }
+  }
+}

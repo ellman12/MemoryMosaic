@@ -1,0 +1,32 @@
+@inherits ItemDisplay<LibraryItem>
+@using MemoryMosaic.Pages
+
+<div class="libraryItem" @onclick="@(e => { if (e.AltKey) ThumbnailClicked(); })" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseOut">
+	<img src="data:image/jpg;base64,@Item.Thumbnail" alt="" @onclick="@ThumbnailClicked" loading="lazy"/>
+	<span class="@PathWidth @TextClass">@("Library/" + Item.Path)</span>
+	
+	<div class="dateDisplay">
+		<span>DT: @(Item.DateTaken == null ? "No Date Taken" : Item.DateTaken)</span>
+		<span>DA: @Item.DateAdded</span>
+	</div>
+	
+	@if (Import.DisplayFileSizes)
+	{
+		<span>@F.FormatBytes(Item.Size)</span>
+	}
+	
+	<span>@(Item.DateDeleted != null ? "In Trash" : "")</span>
+	<IconButton Icon="trash" OnClick="@DeleteBtnClick"/>
+</div>
+
+@code {
+	private async void DeleteBtnClick()
+	{
+		Import.LibraryCache.Remove(Item.Path, out _);
+		await Import.RerenderAsync();
+		
+		if (Item.DateDeleted == null)
+			D.MoveToTrash(Item.Id);
+		D.RemoveFromTrash(Item);
+	}
+}

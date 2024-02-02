@@ -1,0 +1,24 @@
+@* This deliberately doesn't inherit from ToggleableComponent. Makes it easier in the children of ToggleableComponent/ModalBackground as we can just pass in their Visibility field without making an ElementVisibility or something for ModalBackground. *@
+@inherits Component
+
+<link href="css/Components/Modal/ModalBackground.css" rel="stylesheet"/>
+
+@if (Visibility.Visible)
+{
+	<div class="modalBackground" style="background-color: @Background">
+		@ChildContent
+	</div>
+}
+
+@code {
+
+	[Parameter, EditorRequired]
+	public RenderFragment ChildContent { get; set; } = null!;
+
+	[Parameter, EditorRequired]
+	public ElementVisibility Visibility { get; set; } = null!;
+	
+	[Parameter] 
+	public string Background { get; set; } = "rgba(211, 211, 211, 0.25)";
+
+}

@@ -1,0 +1,54 @@
+@import "../../Mixins";
+
+#header {
+	@include flex-row;
+	position: fixed;
+	width: auto;
+	height: 50px;
+	left: 450px;
+	top: 6px;
+	z-index: 9999;
+
+	> .material-icons-outlined { margin-left: 20px; }
+
+	> input[type="text"] {
+		outline: none;
+		border-bottom: 2px solid black;
+		border-radius: 0;
+
+		&:hover {
+			@include transition(all, 0.3s);
+			border-bottom: 2px solid white;
+		}
+
+		&:focus-visible {
+			@include transition(all, 0.3s);
+			border-bottom: 2px solid $AccentColor;
+		}
+	}
+
+	> button { margin-left: 3px; }
+}
+
+#description {
+	@include flex-col;
+	width: 400px;
+	height: 300px;
+	gap: 12px;
+	padding: 12px;
+	border: 1px solid white;
+	
+	> span { font-size: 20px; }
+	
+	> textarea {
+		@include available-width;
+		height: 300px;
+		resize: none;
+	}
+	
+	> div {
+		@include flex-row;
+		gap: 4px;
+		align-self: flex-end;
+	}
+}

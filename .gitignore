@@ -520,8 +520,8 @@ $RECYCLE.BIN/
 
 _NCrunch*
 
-PSS/PSS/pss_settings.json
-PSS/PSS/wwwroot/pss_backup
-PSS/PSS/wwwroot/pss_library
-PSS/PSS/wwwroot/pss_tmp
-PSS/PSS/wwwroot/pss_upload
+# MemoryMosaic-specific ignores.
+MemoryMosaic/mm_settings.json
+MemoryMosaic/mm_debug_settings.json
+
+MemoryMosaic/wwwroot/css/

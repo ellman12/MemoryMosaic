@@ -1,0 +1,15 @@
+@import "../../Mixins";
+
+.modalBackground {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 9999999;
+
+	> div {
+		@include center-align;
+		background-color: black;
+	}
+}

@@ -1,0 +1,29 @@
+@* Overlay thing for showing all the shortcuts in MM *@
+@inherits ToggleableComponent
+<link href="css/Components/Modal/ShortcutsReference.css" rel="stylesheet"/>
+
+<ModalBackground Visibility="@Visibility">
+	<div id="shortcutsReference" class="@Class" title="@Title">
+		<span>Keyboard Shortcuts</span>
+
+		<div>
+			<code>Ctrl /</code>
+			<span>Toggles This</span>
+		</div>
+
+		@foreach (var shortcut in Shortcuts)
+		{
+			<div>
+				<code>@shortcut.Key</code>
+				<span>@shortcut.Value</span>
+			</div>
+		}
+	</div>
+</ModalBackground>
+
+<KeyboardShortcuts CtrlSlash="@Toggle"/>
+
+@code {
+	[Parameter, EditorRequired]
+	public required Dictionary<string, string> Shortcuts { get; set; }
+}

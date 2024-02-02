@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<RootNamespace>MemoryMosaic</RootNamespace>
+		<ApplicationIcon>wwwroot/MM Icon.ico</ApplicationIcon>
+		<Nullable>enable</Nullable>
+		<NoWarn>BL0005</NoWarn> <!-- warning BL0005: Component parameter should not be set outside of its component. -->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Server\**"/>
+		<Content Remove="Server\**"/>
+		<EmbeddedResource Remove="Server\**"/>
+		<None Remove="Server\**"/>
+
+		<None Include="wwwroot\MM.js"/>
+		<None Include="wwwroot\VideoPlayer.js"/>
+		
+		<Content Include="Properties\launchSettings.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
+		<None Remove="*.map"/>
+		<Content Remove="wwwroot\css\**\*.map"/>
+		
+		<None Remove="sasscompiler.json"/>
+		<Content Remove="sasscompiler.json"/>
+
+		<None Remove="appsettings.Development.json"/>
+		<Content Remove="appsettings.Development.json"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AspNetCore.SassCompiler" Version="1.66.0"/>
+		<PackageReference Include="DateTakenExtractor" Version="1.2.0"/>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+		<PackageReference Include="Npgsql" Version="6.0.2"/>
+		<PackageReference Include="Toolbelt.Blazor.HotKeys" Version="12.0.1"/>
+	</ItemGroup>
+</Project>

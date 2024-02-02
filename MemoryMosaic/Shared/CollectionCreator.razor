@@ -1,0 +1,90 @@
+@* Reusable component for a simple interface to create new albums and folders. *@
+@inherits Component
+
+<link href="css/Components/CollectionCreator.css" rel="stylesheet"/>
+
+<div id="collectionCreator" class="@Class" style="@Style" title="@Title">
+    <IconButton Icon="@newCollectionBtnIcon" OnClick="@NewCollectionBtnClick" Title="@newCollectionBtnTitle"/>
+    
+    @if (acceptingInput)
+    {
+        <TextInput @bind-Input="@NewCollectionName" Placeholder="@($"Enter new {(folder ? "folder" : "album")} name")"/>
+
+        if (!String.IsNullOrWhiteSpace(ErrorIconTitle))
+        {
+            <MaterialIcon ID="error" Icon="error_outline" Title="@ErrorIconTitle"/>
+        }
+        
+        <IconButton Icon="check" OnClick="@ConfirmBtnClick"/>
+        
+        <Checkbox @bind-Input="@folder" Label="Folder"/>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<Collection> Collections { get; set; } = null!;
+    
+    [Parameter]
+    public Action? OnCollectionCreate { get; set; }
+
+    private string newCollectionBtnTitle = "New Collection", errorIconTitle = "", newCollectionBtnIcon = "library_add";
+    private string ErrorIconTitle
+    {
+        get => errorIconTitle;
+        set
+        {
+            errorIconTitle = value;
+            StateHasChanged();
+        }
+    }
+
+    public string NewCollectionName { get; private set; } = "";
+    private bool acceptingInput, folder;
+    private bool AcceptingInput
+    {
+        get => acceptingInput;
+        set
+        {
+            acceptingInput = value;
+            if (acceptingInput)
+            {
+                newCollectionBtnTitle = "Cancel";
+                newCollectionBtnIcon = "close";
+            }
+            else
+            {
+                newCollectionBtnTitle = "New Collection";
+                newCollectionBtnIcon = "library_add";
+                NewCollectionName = ErrorIconTitle = "";
+            }
+            StateHasChanged();
+        }
+    }
+
+    private void NewCollectionBtnClick()
+    {
+        NewCollectionName = NewCollectionName.Trim();
+        AcceptingInput = !AcceptingInput;
+    }
+
+    public void ConfirmBtnClick()
+    {
+        if (String.IsNullOrWhiteSpace(NewCollectionName))
+        {
+            ErrorIconTitle = "Provide Name for Collection";
+            return;
+        }
+        
+        if (Collections.Select(c => c.Name).Contains(NewCollectionName))
+        {
+            ErrorIconTitle = "Collection Name in Use";
+            return;
+        }
+
+        D.CreateCollection(NewCollectionName, folder);
+        OnCollectionCreate?.Invoke();
+        AcceptingInput = folder = false;
+        StateHasChanged();
+    }
+}

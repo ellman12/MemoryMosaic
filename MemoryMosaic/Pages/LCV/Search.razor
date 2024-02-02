@@ -1,0 +1,34 @@
+@page "/search"
+
+<title>Search - MM</title>
+<link href="css/Pages/LCV/Search.css" rel="stylesheet"/>
+
+<div id="searchInput">
+	<TextInput @ref="@searchInput" @bind-Input="@searchText" OnKeyDown="@(e => { if (e.Code is "Enter" or "NumpadEnter") SearchLibrary(); })" OnFocusOut="@SearchLibrary" Placeholder="Search filenames"/>
+</div>
+
+<KeyboardShortcuts Slash="@(() => searchInput.Focus())"/>
+
+<LibraryContentViewer @ref="@lcv" NoItemsText="@(firstLoad ? "Search Your Library" : "No Items Found")" Where="@($"path ILIKE '{(String.IsNullOrWhiteSpace(searchText) ? "" : $"%{searchText}%")}'")" PersistentHeader="true"/>
+
+@code {
+	private LibraryContentViewer lcv = null!;
+	private TextInput searchInput = null!;
+	private string searchText = "";
+	private bool firstLoad = true;
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+			searchInput.Focus();
+	}
+
+	private void SearchLibrary()
+	{
+		if (String.IsNullOrEmpty(searchText)) return;
+		
+		StateHasChanged();
+		lcv.Reset();
+		firstLoad = false;
+	}
+}

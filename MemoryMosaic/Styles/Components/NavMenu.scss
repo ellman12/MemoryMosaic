@@ -1,0 +1,43 @@
+@import "../Mixins";
+
+* { text-decoration: none; }
+
+nav {
+	left: 0;
+	top: 0;
+	position: fixed;
+	overflow-y: scroll;
+	scrollbar-width: none;
+	width: 132px;
+
+	&::-webkit-scrollbar { display: none; }
+
+	> .navLink {
+		@include flex-row;
+		padding-left: 10px;
+		height: 50px;
+		border: none;
+		border-radius: 4px;
+		white-space: nowrap;
+
+		&:hover { @include hover; }
+		
+		&:focus-visible {
+			border: none;
+			outline: 2px solid $AccentColor;
+		}
+
+		> * + span { padding-left: 10px; }
+	}
+
+	> .active {
+		background-color: rgb(0, 72, 255, 0.06);
+
+		&:hover { background-color: rgb(0, 72, 255, 0.09); }
+
+		> * {
+			color: $AccentColor;
+			fill: $AccentColor;
+		}
+	}
+}

@@ -1,0 +1,233 @@
+@page "/maintenance/backups"
+
+<title>Backups — Maintenance - MemoryMosaic</title>
+<link href="css/Pages/Maintenance/Backups.css" rel="stylesheet"/>
+
+<header>
+    <IconTextButton Icon="restore" Text="Create Backup" OnClick="@CreateBackup"/>
+    <IconTextButton Icon="trash" Text="Delete All Backups" OnClick="@DeleteAllBackups"/>
+    <span>@F.GetPluralized(backups, "Backup")</span>
+    
+    <div>
+        <Checkbox @bind-Input="@updateDatabase" Label="Backup/Restore Database"/>
+        <Checkbox @bind-Input="@updateFiles" Label="Backup/Restore Files"/>
+    </div>
+</header>
+
+<ProgressPopUp @ref="@backupPopUp" Width="320" Height="300" Message="Creating Backup. Do not navigate away from this page."/>
+<ProgressPopUp @ref="@restorePopUp" Width="320" Height="300" Message="Restoring Backup. Do not navigate away from this page."/>
+<ProgressPopUp @ref="@deletePopUp" Width="320" Height="300" Message="Deleting all backups. Do not navigate away from this page."/>
+
+@if (backups.Count == 0)
+{
+    <h1>No MemoryMosaic Backups</h1>
+    return;
+}
+
+<main>
+    @foreach ((string, DateTime, long) backup in backups)
+    {
+        <div class="backup">
+            <span>@backup.Item2</span>
+            <span>@F.FormatBytes(backup.Item3)</span>
+            <IconButton Icon="restore" OnClick="@(() => RestoreBackup(backup.Item1))" Title="Restore This Backup"/>
+            <IconButton Icon="trash" OnClick="@(() => DeleteBackup(backup.Item1))" Title="Delete This Backup"/>
+        </div>
+    }
+</main>
+
+@code {
+    private ProgressPopUp backupPopUp = null!, restorePopUp = null!, deletePopUp = null!;
+    
+    ///Stores each backup's full path, date and time it was made, and its size in bytes.
+    private List<(string, DateTime, long)> backups = new();
+
+    private bool updateDatabase = true, updateFiles = true;
+
+    protected override void OnInitialized()
+    {
+        foreach (string backupFolder in Directory.GetDirectories(S.BackupFolderPath, "MM Backup*", SearchOption.TopDirectoryOnly))
+        {
+            try
+            {
+                backups.Add(new ValueTuple<string, DateTime, long>
+                {
+                    Item1 = backupFolder,
+                    Item2 = DateTime.Parse(P.GetFileName(backupFolder).Replace("MM Backup", null).Replace(".zip", null).Replace(';', ':')),
+                    Item3 = F.GetFolderSize(backupFolder)
+                });
+            }
+            catch (FormatException){}
+        }
+
+        backups = backups.OrderByDescending(x => x.Item2).ToList(); //Sort it so newer backups appear first in the List.
+    }
+}
+
+@functions {
+    #region Create
+    private async void CreateBackup()
+    {
+        if (!updateDatabase && !updateFiles)
+        {
+            L.LogLine("Neither option selected, aborting backup", LogLevel.Info);
+            return;
+        }
+        
+        L.LogLine("Backup Started", LogLevel.Info);
+        
+        backupPopUp.Enable();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(0);
+        await Task.Delay(1);
+
+        string backupFolder = P.Combine(S.BackupFolderPath, $"MM Backup {DateTime.Now:MM-dd-yyyy hh;mm;ss tt}");
+        Directory.CreateDirectory(backupFolder);
+
+        if (updateDatabase)
+            await BackupDatabase(backupFolder);
+            
+        if (updateFiles)
+            BackupFiles(backupFolder);
+        
+        backups.Insert(0, new ValueTuple<string, DateTime, long>
+        {
+            Item1 = backupFolder,
+            Item2 = DateTime.Parse(P.GetFileName(backupFolder).Replace("MM Backup", null).Replace(';', ':')),
+            Item3 = F.GetFolderSize(backupFolder)
+        });
+        
+        backupPopUp.Disable();
+        await InvokeAsync(StateHasChanged);
+
+        L.LogLine("Backup Finished", LogLevel.Info);
+    }
+
+    private static async Task BackupDatabase(string backupFolder)
+    {
+        L.LogLine("Starting psql process", LogLevel.Info);
+
+        using Process process = new Process();
+        process.StartInfo = new ProcessStartInfo
+        {
+            WindowStyle = ProcessWindowStyle.Hidden,
+            CreateNoWindow = true,
+            RedirectStandardError = false,
+            RedirectStandardInput = false,
+            RedirectStandardOutput = false,
+            WorkingDirectory = $"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/",
+            FileName = "cmd.exe",
+            Arguments = $"/C pg_dump.exe \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\" > \"{P.Combine(backupFolder, "Database.bak")}\"", //https://www.postgresqltutorial.com/postgresql-backup-database/   How to run this cmd without a password prompt: https://stackoverflow.com/a/62417775
+        };
+        process.Start();
+        await process.WaitForExitAsync();
+        
+        L.LogLine("Psql process finished", LogLevel.Info);
+    }
+
+    private static void BackupFiles(string backupFolder)
+    {
+        L.LogLine("Begin copying mm_library", LogLevel.Info);
+
+        Parallel.ForEach(D.GetEntireLibrary(), row =>
+        {
+            string dtFolderPath = P.Combine(backupFolder, P.GetDirectoryName(row.Path)!);
+            Directory.CreateDirectory(dtFolderPath);
+            string destFilePath = P.Join(backupFolder, row.Path);
+            File.Copy(row.FullPath, destFilePath);
+        });
+        
+        L.LogLine("Finish copying mm_library", LogLevel.Info);
+    }
+    #endregion
+
+    #region Restore
+    private async void RestoreBackup(string backupFullPath)
+    {
+        if (!updateDatabase && !updateFiles)
+        {
+            L.LogLine("Neither option selected, aborting restore", LogLevel.Info);
+            return;
+        }
+        
+        L.LogLine("Restore started", LogLevel.Info);
+
+        restorePopUp.Enable();
+        await InvokeAsync(StateHasChanged);
+
+        if (updateDatabase)
+            await RestoreDatabase(backupFullPath);
+        
+        if (updateFiles)
+            RestoreFiles(backupFullPath);
+        
+        restorePopUp.Disable();
+        await InvokeAsync(StateHasChanged);
+
+        L.LogLine("Restoration finished", LogLevel.Info);
+    }
+
+    private static async Task RestoreDatabase(string backupFullPath)
+    {
+        L.LogLine("Begin clearing database", LogLevel.Info);
+        
+        D.Open();
+        await using NpgsqlCommand cmd = new("DROP TABLE IF EXISTS library CASCADE; DROP TABLE IF EXISTS collections CASCADE; DROP TABLE IF EXISTS collection_entries CASCADE", D.connection);
+        cmd.ExecuteNonQuery();
+        D.Close();
+        
+        L.LogLine("Database cleared, restoring database", LogLevel.Info);
+        
+        using Process process = new();
+        process.StartInfo = new ProcessStartInfo
+        {
+            WindowStyle = ProcessWindowStyle.Hidden,
+            WorkingDirectory = S.BackupFolderPath,
+            FileName = "cmd.exe",
+            Arguments = $"/C type \"{P.Combine(backupFullPath, "Database.bak")}\" | \"C:/Program Files/PostgreSQL/{S.POSTGRES_VERSION}/bin/psql.exe\" \"host=localhost port=5432 dbname=MemoryMosaic user=postgres password=Ph0t0s_Server\""
+        };
+        process.Start();
+        await process.WaitForExitAsync();
+        
+        L.LogLine("Database restored", LogLevel.Info);
+    }
+
+    private static void RestoreFiles(string backupFullPath)
+    {
+        L.LogLine("Restoring mm_library, clearing mm_library", LogLevel.Info); 
+        if (Directory.Exists(S.LibFolderPath))
+            Directory.Delete(S.LibFolderPath, true);
+        
+        L.LogLine("mm_library cleared, copying files to mm_library", LogLevel.Info);
+        FileSystem.CopyDirectory(backupFullPath, S.LibFolderPath);
+        File.Delete(P.Combine(S.LibFolderPath, "Database.bak"));
+        L.LogLine("Finish copying files", LogLevel.Info);
+    }
+    #endregion
+
+    private async void DeleteBackup(string backupFullPath)
+    {
+        backups.RemoveAll(b => b.Item1 == backupFullPath);
+        await InvokeAsync(StateHasChanged);
+        Directory.Delete(backupFullPath, true);
+    }
+
+    private async void DeleteAllBackups()
+    {
+        L.LogLine("Deletion started", LogLevel.Info);
+        
+        deletePopUp.Enable();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(0);
+        await Task.Delay(1);
+        
+        Directory.Delete(S.BackupFolderPath, true);
+        Directory.CreateDirectory(S.BackupFolderPath);
+        backups.Clear();
+        
+        deletePopUp.Disable();
+        await InvokeAsync(StateHasChanged);
+        
+        L.LogLine("Deletion finished", LogLevel.Info);
+    }
+}

@@ -1,0 +1,36 @@
+@import "../../Mixins";
+
+header {
+	@include page-header(0, 60px);
+
+	button {
+		margin-right: 12px;
+	}
+}
+
+main {
+	@include flex-main(column, 70px);
+
+	> div {
+		@include flex-row;
+		@include available-width;
+		margin-bottom: 10px;
+
+		> img {
+			width: 4%;
+
+			&:hover { /*https://stackoverflow.com/a/25036868*/
+				transform: scale(1.9);
+				cursor: pointer;
+			}
+		}
+
+		> span {
+			@include ellipsis;
+			margin-left: 10px;
+			width: 300px;
+		}
+
+		> .iconBtn { margin-left: 4px; }
+	}
+}

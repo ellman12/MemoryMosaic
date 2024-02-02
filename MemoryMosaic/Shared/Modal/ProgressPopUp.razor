@@ -1,0 +1,23 @@
+@* Reusable component for a simple popup for long-running processes to prevent user from navigating away from page. *@
+@inherits ToggleableComponent
+<link href="css/Components/Modal/ProgressPopUp.css" rel="stylesheet"/>
+
+<ModalBackground Visibility="@Visibility">
+    <div id="@ID" class="progressPopUp @Class" style="width: @(Width + "px"); height: @(Height + "px"); @Style">
+        <span style="font-size: @(FontSize + "px")">@Message</span>
+    </div>
+</ModalBackground>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Message { get; set; } = "";
+
+    [Parameter]
+    public int Width { get; set; } = 200;
+
+    [Parameter]
+    public int Height { get; set; } = 200;
+
+    [Parameter]
+    public int FontSize { get; set; } = 20;
+}

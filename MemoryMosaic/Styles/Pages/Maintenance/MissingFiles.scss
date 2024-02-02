@@ -1,0 +1,41 @@
+﻿@import "../../Mixins";
+
+header {
+	@include page-header(0, 60px);
+}
+
+main {
+	@include main(65px);
+	position: absolute;
+
+	> .missingItem {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin-bottom: 10px;
+
+		> .thumbnail {
+			margin: 0;
+			padding: 0;
+			display: flex;
+			width: 60px;
+			height: 60px;
+			background-color: $CoverBackground;
+			border-radius: 4px;
+
+			> img {
+				object-fit: cover;
+				width: 60px;
+				height: 60px;
+			}
+		}
+
+		> .info {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			> span { margin-left: 10px; }
+		}
+	}
+}

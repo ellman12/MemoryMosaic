@@ -1,0 +1,96 @@
+@* Show all collections and allow user to sort them and make new ones *@
+@page "/collections"
+
+<title>Collections - MemoryMosaic</title>
+<link href="css/Pages/Collections.css" rel="stylesheet"/>
+
+<header>
+    <span id="collectionsText">Collections</span>
+    <CollectionCreator @ref="@collectionCreator" Collections="@collections" OnCollectionCreate="@GetCollections"/>
+    
+    <div id="checkboxes">
+        <Checkbox @bind-Input="@showAlbums" Label="Show Albums" OnChange="@GetCollections"/>
+        <Checkbox @bind-Input="@showFolders" Label="Show Folders" OnChange="@GetCollections"/>
+        <Checkbox @bind-Input="@showReadonly" Label="Show Readonly" OnChange="@GetCollections"/>
+        <Checkbox @bind-Input="@showDateRanges" Label="Show Date Ranges" OnChange="@StateHasChanged"/>
+    </div>
+
+    <IconTextButton ID="sortBtn" Icon="sort" Text="@SortBtnText" OnClick="@(() => dropdown.Toggle())"/>
+</header>
+
+<Dropdown @ref="@dropdown" Positioning="top: 64px; right: 100px">
+    <DropdownButton Icon="check" Text="Collection Title" OnClick="@(() => ChangeOrder(CollectionsSortMode.Title))" IconStyle="@(sortMode == CollectionsSortMode.Title ? "color: #0080ff" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.Title ? "#0080ff" : "white")"/>
+    <DropdownButton Icon="check" Text="Title Reversed" OnClick="@(() => ChangeOrder(CollectionsSortMode.TitleReversed))" IconStyle="@(sortMode == CollectionsSortMode.TitleReversed ? "color: #0080ff" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.TitleReversed ? "#0080ff" : "white")"/>
+    <DropdownButton Icon="check" Text="Last Modified" OnClick="@(() => ChangeOrder(CollectionsSortMode.LastModified))" IconStyle="@(sortMode == CollectionsSortMode.LastModified ? "color: #0080ff" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.LastModified ? "#0080ff" : "white")"/>
+    <DropdownButton Icon="check" Text="Last Modified Reversed" OnClick="@(() => ChangeOrder(CollectionsSortMode.LastModifiedReversed))" IconStyle="@(sortMode == CollectionsSortMode.LastModifiedReversed ? "color: #0080ff" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.LastModifiedReversed ? "#0080ff" : "white")"/>
+    <DropdownButton Icon="check" Text="Highest Count" OnClick="@(() => ChangeOrder(CollectionsSortMode.HighestCount))" IconStyle="@(sortMode == CollectionsSortMode.HighestCount ? "color: #0080ff" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.HighestCount ? "#0080ff" : "white")"/>
+    <DropdownButton Icon="check" Text="Lowest Count" OnClick="@(() => ChangeOrder(CollectionsSortMode.LowestCount))" IconStyle="@(sortMode == CollectionsSortMode.LowestCount ? "color: #0080ff" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.LowestCount ? "#0080ff" : "white")"/>
+    <DropdownButton Icon="check" Text="Newest Item First" OnClick="@(() => ChangeOrder(CollectionsSortMode.NewestItemFirst))" IconStyle="@(sortMode == CollectionsSortMode.NewestItemFirst ? "color: #0080ff" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.NewestItemFirst ? "#0080ff" : "white")"/>
+    <DropdownButton Icon="check" Text="Oldest Item First" OnClick="@(() => ChangeOrder(CollectionsSortMode.OldestItemFirst))" IconStyle="@(sortMode == CollectionsSortMode.OldestItemFirst ? "color: #0080ff" : "visibility: hidden")" TextColor="@(sortMode == CollectionsSortMode.OldestItemFirst ? "#0080ff" : "white")"/>
+</Dropdown>
+
+<main>
+    @foreach (Collection collection in collections)
+    {
+        <a href="/collection/@collection.Id">
+            <div>
+                @if (collection.ReadOnly) { <MaterialIcon Icon="lock" Class="lock"/> }
+                @if (showAlbums && collection.Folder) { <MaterialIcon Icon="folder" Class="folder"/> }
+
+                @if (!String.IsNullOrWhiteSpace(collection.Cover))
+                {
+                    <img src="mm_library/@collection.Cover" alt="" loading="lazy"/>
+                }
+            </div>
+            
+            <span>@collection.Name</span>
+            
+            <span>
+                @F.GetPluralized(collection.Count, "item")
+                @if (showDateRanges)
+                {
+                    @((MarkupString) collection.FormatDateRange())
+                }
+            </span>
+        </a>
+    }
+</main>
+
+@code {
+    private List<Collection> collections = null!;
+
+    private CollectionCreator collectionCreator = null!;
+
+    private Dropdown dropdown = null!;
+    
+    private static CollectionsSortMode sortMode = CollectionsSortMode.LastModified;
+    private static bool showAlbums = true, showFolders, showReadonly = true, showDateRanges = true;
+
+    protected override void OnInitialized() => GetCollections();
+
+    private void GetCollections()
+    {
+        collections = D.GetCollections(showAlbums, showFolders, showReadonly, sortMode);
+        StateHasChanged();
+    }
+
+    private static string SortBtnText => sortMode switch
+    {
+        CollectionsSortMode.Title => "Collection Title",
+        CollectionsSortMode.TitleReversed => "Title Reversed",
+        CollectionsSortMode.LastModified => "Last Modified",
+        CollectionsSortMode.LastModifiedReversed => "Last Modified Reversed",
+        CollectionsSortMode.HighestCount => "Highest Count",
+        CollectionsSortMode.LowestCount => "Lowest Count",
+        CollectionsSortMode.NewestItemFirst => "Newest Item First",
+        CollectionsSortMode.OldestItemFirst => "Oldest Item First",
+        _ => "Collection Title"
+    };
+
+    private void ChangeOrder(CollectionsSortMode newMode)
+    {
+        sortMode = newMode;
+        GetCollections();
+        dropdown.Disable();
+    }
+}

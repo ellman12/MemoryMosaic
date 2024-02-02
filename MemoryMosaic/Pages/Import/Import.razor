@@ -1,0 +1,179 @@
+@page "/import"
+@using System.Collections.Immutable
+
+<title>Import - MemoryMosaic</title>
+<link href="css/Pages/Import.css" rel="stylesheet"/>
+<link href="css/Components/ItemDisplay.css" rel="stylesheet"/>
+
+@if (itemsLoading)
+{
+	<h1>Loading Import</h1>
+	return;
+}
+
+@if (importItems.Count == 0)
+{
+	<h1>No supported files found in mm_import.</h1>
+	return;
+}
+
+<header>
+	@if (SelectedItems.Count > 0)
+	{
+		<IconButton Icon="close" OnClick="@ClearSelection"/>
+		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
+	}
+	
+	<div id="stats">
+		<div>
+			@if (SelectedItems.Count > 0)
+			{
+				<span>@F.GetPluralized(SelectedItems, "Selected Item")</span>
+				<span>@F.FormatBytes(Selected.Sum(item => item.Size))</span>
+			}
+			else if (!String.IsNullOrEmpty(searchText))
+			{
+				<span>@F.GetPluralized(importItems, "Result")</span>
+				<span>@F.FormatBytes(F.GetFolderSize(S.ImportFolderPath))</span>
+			}
+			else
+			{
+				<span>@F.GetPluralized(CurrentItems, "Item")</span>
+				<span>@F.FormatBytes(CurrentItems.Sum(item => item.Size))</span>
+			}
+		</div>
+
+		<div>
+			@if (ErrorAmount > 0)
+			{
+				<span style="color: red">@F.GetPluralized(ErrorAmount, "Error")</span>
+			}
+	
+			@if (displayWarnings && WarningAmount > 0)
+			{
+				<span style="color: yellow">@F.GetPluralized(WarningAmount, "Warning")</span>
+			}
+		</div>
+	</div>
+
+	@if (!thumbnailsLoading && ErrorAmount == 0 && !EditingFilename)
+	{
+		<IconTextButton Icon="library_add" Text="@AddBtnText" OnClick="@(async () => await AddItems())"/>
+	}
+	
+	<TextInput @ref="@searchInput" @bind-Input="@searchText" OnChange="@(() => { fv.Index = 0; Rerender(); })" Placeholder="Search"/>
+	
+	<span id="status">@status</span>
+	
+	<div>
+		@if (SelectedItems.Count > 0)
+		{
+			bool canDisplayMetadata = Selected.All(item => item.MetadataDateTaken != null);
+			bool canDisplayFilename = Selected.All(item => item.FilenameDateTaken != null);
+			
+			<select @bind="@newDateTakenSource">
+				@if (canDisplayMetadata) { <option>Metadata</option> }
+				@if (canDisplayFilename) { <option>Filename</option> }
+				<option>None</option>
+				<option>Custom</option>
+			</select>
+			
+			<IconButton Icon="save" OnClick="@UpdateDateTakenSources"/>
+			<IconButton Icon="star" OnClick="@ToggleStars"/>
+			<IconButton Icon="trash" OnClick="@DeleteSelected" Title="Delete Selected From mm_import"/>
+		}
+		
+		<IconButton Icon="more_vert" OnClick="@(() => moreSettings.Toggle())"/>
+		
+		<Dropdown @ref="@moreSettings" Positioning="top: 64px; right: 40px">
+			<div>
+				<span>Min Year</span>
+				<IntInput @bind-Input="@MinYear" HideSpinner="true" Placeholder="Min Year" Style="width: 40px; margin-left: 8px"/>
+			</div>
+			
+			<div>
+				<span>Max Year</span>
+				<IntInput @bind-Input="@MaxYear" HideSpinner="true" Placeholder="Max Year" Style="width: 40px; margin-left: 8px"/>
+			</div>
+			
+			<div id="sort">
+				<span>Sort By</span>
+				
+				<select @bind="@sortMode" @bind:after="@SortItems">
+					<option value="@ImportSortMode.FilenameAsc">Filename Asc</option>
+					<option value="@ImportSortMode.FilenameDesc">Filename Desc</option>
+					<option value="@ImportSortMode.SelectedDateTakenAsc">Selected DT Asc</option>
+					<option value="@ImportSortMode.SelectedDateTakenDesc">Selected DT Desc</option>
+				</select>
+			</div>
+			
+			<Checkbox @bind-Input="@displayWarnings" Label="Display Warnings" Title="Warnings are files with the same name but in a different folder."/>
+			<Checkbox @bind-Input="@onlyDisplayErrors" OnChange="@(() => fv.Index = 0)" Label="Only Display Errors" Title="Errors occur when 2 or more import items would end up in the same destination folder, or when there's already a library item with the same name in that folder."/>
+		</Dropdown>
+	</div>
+</header>
+
+<main>
+	@{
+		int importItemsIndex = 0;
+		int contentIndex = 0;
+		foreach (var group in CurrentItems.GroupBy(item => item.DestinationPath))
+		{
+			var existingItems = addingItems
+				? ImmutableArray<LibraryItem>.Empty
+				: LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.DestinationPath == libraryItem.Path)).ToImmutableArray();
+
+			if (onlyDisplayErrors && group.Count() + existingItems.Length == 1)
+				continue;
+
+			var warnings = displayWarnings && !addingItems
+				? LibraryCache.Values.Where(libraryItem => group.Any(importItem => importItem.NewFilename == libraryItem.FilenameWithoutExtension && !existingItems.Contains(libraryItem))).ToImmutableArray()
+				: ImmutableArray<LibraryItem>.Empty;
+
+			string borderClass;
+			if (group.Count() > 1 || existingItems.Length > 0)
+				borderClass = "error";
+			else if (warnings.Length > 0)
+				borderClass = "warning";
+			else
+				borderClass = "none";
+
+			<div class="container @borderClass">
+				@foreach (var importItem in group)
+				{
+					<ImportItemDisplay @key="@importItem.Id" Item="@importItem" Import="@this" ImportItemsIndex="importItemsIndex" Index="contentIndex" TextClass="@borderClass"/>
+					importItemsIndex++;
+					contentIndex++;
+				}
+
+				@foreach (var libraryItem in existingItems)
+				{
+					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="error"/>
+					contentIndex++;
+				}
+
+				@foreach (var libraryItem in warnings)
+				{
+					<LibraryItemDisplay @key="@libraryItem.Id" Item="@libraryItem" Import="@this" Index="contentIndex" TextClass="warning"/>
+					contentIndex++;
+				}
+			</div>
+		}
+	}
+</main>
+
+<ProgressPopUp @ref="@popUp" Message="" FontSize="24" Width="320" Height="300"/>
+
+@if (importItems.Count > 0)
+{
+	<CollectionSelector @ref="@cs" OnCheckClicked="@UpdateCollections" SelectedItems="@SelectedItems" ClearSelectionOnConfirm="false"/>
+	
+	<FullscreenViewer @ref="@fv" T="@Media" CollectionSelector="@cs" RerenderParent="@Rerender" Content="@Content" DisplayItemType="true" DeleteButtonClick="@DeleteCurrent" Import="@this"/>
+	
+	<KeyboardShortcuts AltA="@AltAFired" AltD="@ToggleDestinationPaths" AltF="@ToggleFileSizes" AltS="@TogglePathWidth" CtrlA="@SelectAll" Del="@DeleteSelected" Esc="@ClearSelection" Slash="@(() => searchInput.Focus())"/>
+
+	if (fv is {Visible: false})
+	{
+		<ShortcutsReference Shortcuts="@Shortcuts"/>
+	}
+}
