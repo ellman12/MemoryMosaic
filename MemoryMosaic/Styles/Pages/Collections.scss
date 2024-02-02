@@ -41,6 +41,7 @@ main {
 
 		> div {
 			@include flex-justify-center;
+			position: relative;
 			overflow: hidden;
 			min-width: 200px;
 			min-height: 200px;
@@ -50,6 +51,18 @@ main {
 
 			background-color: $CoverBackground;
 			border-radius: 4px;
+			
+			> .material-icons-outlined { position: absolute; }
+			
+			> .folder {
+				top: 8px;
+				left: 8px;
+			}
+
+			> .lock {
+				bottom: 8px;
+				left: 8px;
+			}
 		}
 
 		> span:first-of-type {

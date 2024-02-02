@@ -34,6 +34,9 @@
     {
         <a href="/collection/@collection.Id">
             <div>
+                @if (collection.ReadOnly) { <MaterialIcon Icon="lock" Class="lock"/> }
+                @if (showAlbums && collection.Folder) { <MaterialIcon Icon="folder" Class="folder"/> }
+
                 @if (!String.IsNullOrWhiteSpace(collection.Cover))
                 {
                     <img src="mm_library/@collection.Cover" alt="" loading="lazy"/>

@@ -21,12 +21,14 @@ public sealed class Collection
 		Cover = cover;
 	}
 
-	public Collection(int id, string name, string? cover, string? description, DateTime lastModified, int count, DateTime? rangeStart, DateTime? rangeEnd)
+	public Collection(int id, string name, string? cover, string? description, bool folder, bool readOnly, DateTime lastModified, int count, DateTime? rangeStart, DateTime? rangeEnd)
 	{
 		Id = id;
 		Name = name;
 		Cover = cover;
 		Description = description;
+		Folder = folder;
+		ReadOnly = readOnly;
 		LastModified = lastModified;
 		Count = count;
 		RangeStart = rangeStart;

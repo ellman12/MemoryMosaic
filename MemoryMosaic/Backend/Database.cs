@@ -665,7 +665,7 @@ public static class Database
 
 		//LEFT JOIN includes empty collections.
 		string query = $"""
-						    SELECT c.id, c.name, c.cover, c.description, c.last_modified, COUNT(ce.item_id) AS count, MIN(l.date_taken) AS min_date_taken, MAX(l.date_taken) AS max_date_taken
+						    SELECT c.id, c.name, c.cover, c.description, c.folder, c.readonly, c.last_modified, COUNT(ce.item_id) AS count, MIN(l.date_taken) AS min_date_taken, MAX(l.date_taken) AS max_date_taken
 						    FROM collections c
 						    LEFT JOIN collection_entries ce ON c.id = ce.collection_id
 						    LEFT JOIN library l ON ce.item_id = l.id
@@ -681,7 +681,7 @@ public static class Database
 			using NpgsqlDataReader r = cmd.ExecuteReader();
 
 			while (r.Read())
-				collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.TryGetString(3), r.GetDateTime(4), r.GetInt32(5), r.TryGetDateTime(6), r.TryGetDateTime(7)));
+				collections.Add(new Collection(r.GetInt32(0), r.GetString(1), r.TryGetString(2), r.TryGetString(3), r.GetBoolean(4), r.GetBoolean(5), r.GetDateTime(6), r.GetInt32(7), r.TryGetDateTime(8), r.TryGetDateTime(9)));
 
 			r.Close();
 		}
