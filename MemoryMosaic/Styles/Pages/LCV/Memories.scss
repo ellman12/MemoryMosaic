@@ -13,4 +13,9 @@
 	}
 }
 
-main > .group > .checkbox > span:last-of-type { font-size: 24px !important; }
+main > .group {
+	> .checkbox > span:last-of-type,
+	> span {
+		font-size: 24px !important;
+	}
+}
