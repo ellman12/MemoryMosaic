@@ -27,6 +27,8 @@ Items can be selected, and depending on the page, different options may be appli
 	{
 		<IconButton Icon="close" OnClick="@ClearChecks"/>
 		<span>@SelectedItems.Count&nbsp;&nbsp;Selected</span>
+
+		<span>@F.FormatBytes(Content.Where(item => SelectedItems.Contains(item.Id)).Sum(item => item.Size))</span>
 	}
 
 	<div id="buttons">
