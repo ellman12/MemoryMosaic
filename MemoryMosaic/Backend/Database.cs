@@ -443,7 +443,7 @@ public static class Database
 		try
 		{
 			Open();
-			using NpgsqlCommand cmd = new("UPDATE collections SET cover = @path WHERE id = @collectionID", connection);
+			using NpgsqlCommand cmd = new("UPDATE collections SET cover = @path WHERE id = @collectionID; UPDATE collections SET last_modified = now() WHERE id = @collectionID", connection);
 			cmd.Parameters.AddWithValue("@path", path);
 			cmd.Parameters.AddWithValue("@collectionID", collectionID);
 			cmd.ExecuteNonQuery();
