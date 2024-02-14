@@ -5,7 +5,7 @@
 ![Memories](https://github.com/ellman12/MemoryMosaic/assets/56001219/7627ddaf-610c-4f7f-8d8c-1d4a22b1ba07)
 ![Import](https://github.com/ellman12/MemoryMosaic/assets/56001219/050aa952-cd9c-4835-be60-9163e288701e)
 
-# The Ultimate Way to Store and Organize a Lifetime of Photos and Videos
+# The Ultimate Way to Store and Organize a Lifetime of Memories
 MemoryMosaic (MM) is a free and open source replacement for Google Photos, powered by Blazor Server and PostgreSQL, intended to be used by a single person either on your computer, or on a server on the local network.
 
 # Installation
