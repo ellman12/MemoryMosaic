@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS public.library
 	separate boolean NOT NULL DEFAULT false, -- Is this item in a folder?
 	starred boolean NOT NULL DEFAULT false,
 	description text DEFAULT NULL,
+    latitude double precision DEFAULT NULL,
+    longitude double precision DEFAULT NULL,
 	date_deleted timestamp without time zone DEFAULT NULL, -- If this has a value, it's in the Trash.
 	thumbnail text NOT NULL, -- Compressed base64 string representing thumbnail.
 	PRIMARY KEY (path, id)
