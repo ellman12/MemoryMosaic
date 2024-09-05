@@ -106,14 +106,8 @@
 			</div>
 			
 			<select @bind="@CurrentIi.DateTakenSource" style="width: fit-content">
-				@if (CurrentIi.MetadataDateTaken != null)
-				{
-					<option>Metadata</option>
-				}
-				@if (CurrentIi.FilenameDateTaken != null)
-				{
-					<option>Filename</option>
-				}
+				@if (CurrentIi.MetadataDateTaken != null) { <option>Metadata</option> }
+				@if (CurrentIi.FilenameDateTaken != null) { <option>Filename</option> }
 				<option>None</option>
 				<option>Custom</option>
 			</select>
@@ -123,35 +117,37 @@
 			<MaterialIcon Icon="save"/>
 			<span>@F.FormatBytes(Current.Size)</span>
 		</div>
-		
-		<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
 
-		@{
-			var collectionsContaining = CurrentLi != null ? D.GetCollectionsContaining(Current.Id) : CurrentIi!.Collections;
-			
-			if (collectionsContaining?.Count > 0)
-			{
-				<div id="collectionsContaining">
-					<span>Collections Containing</span>
-					
-					<div>
-						@foreach (Collection c in collectionsContaining)
-						{
-							<a href="/collection/@c.Id">
-								<div class="cover">
-									@if (!String.IsNullOrWhiteSpace(c.Cover))
-									{
-										<img src="mm_library/@c.Cover" alt=""/>
-									}
-								</div>
-	
-								<span>@c.Name</span>
-							</a>
-						}
+		<div id="extraData">
+			<textarea autocomplete="off" autocorrect="on" spellcheck="true" placeholder="Add a description" @onfocusout="@UpdateDescription" @bind="@Current.Description">@Current.Description</textarea>
+
+			@{
+				var collectionsContaining = CurrentLi != null ? D.GetCollectionsContaining(Current.Id) : CurrentIi!.Collections;
+
+				if (collectionsContaining?.Count > 0)
+				{
+					<div id="collectionsContaining">
+						<span>Collections Containing</span>
+
+						<div>
+							@foreach (Collection c in collectionsContaining)
+							{
+								<a href="/collection/@c.Id">
+									<div class="cover">
+										@if (!String.IsNullOrWhiteSpace(c.Cover))
+										{
+											<img src="mm_library/@c.Cover" alt=""/>
+										}
+									</div>
+
+									<span>@c.Name</span>
+								</a>
+							}
+						</div>
 					</div>
-				</div>
-		}
-		}
+				}
+			}
+		</div>
 	</div>
 	
 	<ModalBackground Visibility="@dtPickerVis">

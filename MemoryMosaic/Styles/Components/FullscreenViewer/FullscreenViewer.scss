@@ -14,7 +14,7 @@
 		@include available-width;
 		position: relative;
 		height: 100%;
-		
+
 		> #backButton {
 			@include transition(opacity, 0.2s);
 			position: absolute;
@@ -22,10 +22,10 @@
 			top: 4px;
 			left: 10px;
 			z-index: 99999;
-			
+
 			&:hover { opacity: 1; }
 		}
-		
+
 		> #buttons {
 			@include flex-row;
 			position: absolute;
@@ -34,7 +34,7 @@
 			gap: 4px;
 			z-index: 99999;
 		}
-		
+
 		> .sideButton {
 			position: absolute;
 			width: 20%;
@@ -111,7 +111,7 @@
 			margin-top: 12px;
 			margin-bottom: 16px;
 		}
-		
+
 		> .dataDisplay {
 			@include flex-row;
 			height: 50px;
@@ -120,68 +120,72 @@
 			> * {
 				margin-right: 12px;
 			}
-			
+
 			> span:last-of-type {
 				@include ellipsis;
 				width: 240px;
 			}
 		}
 
-		> textarea {
-			@include available-width;
-			margin-top: 12px;
-			margin-bottom: 12px;
-			min-height: 1.2em;
-			height: 3em;
-			max-height: 10em;
-			resize: vertical;
-
-			&:focus {
-				border: 1px solid $AccentColor;
-				outline: 1px solid $AccentColor;
-			}
-		}
-		
-		> #collectionsContaining {
+		> #extraData {
 			@include flex-col;
-			margin-top: 24px;
+			flex-grow: 2;
+			margin-top: 16px;
+			margin-bottom: 16px;
+			gap: 16px;
 			
-			> span { margin-bottom: 8px; }
-			
-			> div {
+			> textarea {
+				@include available-width;
+				min-height: 3em;
+				max-height: 10em;
+				resize: vertical;
+
+				&:focus {
+					border: 1px solid $AccentColor;
+					outline: 1px solid $AccentColor;
+				}
+			}
+
+			> #collectionsContaining {
 				@include flex-col;
-				border: 1px solid white;
-				gap: 12px;
-				padding: 6px 0 6px 6px;
-				max-height: 220px;
-				overflow-y: scroll;
 
-				> a {
-					@include flex-row;
-					
-					> .cover {
-						@include flex-justify-center;
-						width: 60px;
-						height: 60px;
-						overflow: hidden;
-						background-color: $CoverBackground;
-						
-						> img {
-							width: 100%;
-							height: 100%;
+				> span { margin-bottom: 8px; }
+
+				> div {
+					@include flex-col;
+					border: 1px solid white;
+					gap: 12px;
+					padding: 6px 0 6px 6px;
+					max-height: 220px;
+					overflow-y: scroll;
+
+					> a {
+						@include flex-row;
+
+						> .cover {
+							@include flex-justify-center;
+							width: 60px;
+							height: 60px;
+							overflow: hidden;
+							background-color: $CoverBackground;
+
+							> img {
+								width: 100%;
+								height: 100%;
+							}
 						}
-					}
 
-					> span {
-						@include ellipsis;
-						margin-left: 8px;
-						max-width: 260px;
+						> span {
+							@include ellipsis;
+							margin-left: 8px;
+							max-width: 260px;
+						}
 					}
 				}
 			}
 		}
 	}
-	
+
 	> .modalBackground > #dt-picker {
 		@include flex-col;
 		border: 2px solid white;
@@ -196,7 +200,7 @@
 			margin-bottom: 4px;
 		}
 	}
-	
+
 	> .modalBackground > #fileRename {
 		@include flex-col;
 		border: 2px solid white;
@@ -204,12 +208,12 @@
 		padding: 8px;
 		width: 250px;
 		height: auto;
-		
+
 		> input[type="text"] {
 			margin-top: 8px;
 			margin-bottom: 8px;
 		}
-		
+
 		> div {
 			@include flex-row;
 			align-self: flex-end;
