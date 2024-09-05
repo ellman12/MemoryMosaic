@@ -65,26 +65,26 @@
 		
 		@if (CurrentLi != null)
 		{
-			<div title="@CurrentLi.Filename">
+			<div class="dataDisplay" title="@CurrentLi.Filename">
 				<MaterialIcon Icon="image"/>
 				<span>@CurrentLi.Filename</span>
 				<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
 			</div>
 			
-			<div title="Date Taken">
+			<div class="dataDisplay" title="Date Taken">
 				<MaterialIcon Icon="photo_camera"/>
 				<span>@FormatDateTaken(CurrentLi.DateTaken)</span>
 				<IconButton Icon="edit" OnClick="@dtPickerVis.Enable"/>
 			</div>
 
-			<div title="Date Added">
+			<div class="dataDisplay" title="Date Added">
 				<MaterialIcon Icon="cloud_upload"/>
 				<span>@FormatDateTaken(CurrentLi.DateAdded)</span>
 			</div>
 			
 			if (CurrentLi.DateDeleted != null)
 			{
-				<div title="Date Deleted">
+				<div class="dataDisplay" title="Date Deleted">
 					<MaterialIcon Icon="trash"/>
 					<span>@FormatDateTaken(CurrentLi.DateDeleted)</span>
 				</div>
@@ -93,13 +93,13 @@
 
 		@if (CurrentIi != null)
 		{
-			<div title="@CurrentIi.NewFilename">
+			<div class="dataDisplay" title="@CurrentIi.NewFilename">
 				<MaterialIcon Icon="image"/>
 				<span>@CurrentIi.NewFilename</span>
 				<IconButton Icon="edit" OnClick="@fileRename.Enable"/>
 			</div>
 					
-			<div title="Selected Date Taken">
+			<div class="dataDisplay" title="Selected Date Taken">
 				<MaterialIcon Icon="photo_camera"/>
 				<span>@FormatDateTaken(CurrentIi.SelectedDateTaken)</span>
 				<IconButton Icon="edit" OnClick="@dtPickerVis.Enable"/>
@@ -119,7 +119,7 @@
 			</select>
 		}
 
-		<div title="File Size">
+		<div class="dataDisplay" title="File Size">
 			<MaterialIcon Icon="save"/>
 			<span>@F.FormatBytes(Current.Size)</span>
 		</div>

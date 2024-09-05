@@ -112,7 +112,7 @@
 			margin-bottom: 16px;
 		}
 		
-		> div:not(#collectionsContaining) {
+		> .dataDisplay {
 			@include flex-row;
 			height: 50px;
 			margin-bottom: 4px;
