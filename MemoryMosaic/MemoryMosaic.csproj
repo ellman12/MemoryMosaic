@@ -35,6 +35,7 @@
 		<PackageReference Include="DateTakenExtractor" Version="1.2.0"/>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
 		<PackageReference Include="Npgsql" Version="6.0.2"/>
+		<PackageReference Include="OpenLayers.Blazor" Version="2.2.2" />
 		<PackageReference Include="Toolbelt.Blazor.HotKeys" Version="12.0.1"/>
 	</ItemGroup>
 </Project>
