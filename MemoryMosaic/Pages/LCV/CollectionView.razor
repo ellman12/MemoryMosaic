@@ -72,7 +72,7 @@
 	private Dropdown moreOptions = null!;
 	private ElementVisibility buttons = null!, description = null!;
 	
-	private string Columns => $"l.path, l.id, l.date_taken, {((int) sortMode >= 4 ? "ce.date_added_to_collection" : "l.date_added")}, l.starred, l.description, l.date_deleted, l.thumbnail";
+	private string Columns => $"l.path, l.id, l.date_taken, {((int) sortMode >= 4 ? "ce.date_added_to_collection" : "l.date_added")}, l.starred, l.description, l.latitude, l.longitude, l.date_deleted, l.thumbnail";
 
 	private string[] OrderBy => sortMode switch
 	{

@@ -174,9 +174,9 @@ Items can be selected, and depending on the page, different options may be appli
 
 @* Loading content *@
 @code {
-	///Must resemble this order: path, id, date_taken, date_added, starred, description, date_deleted, thumbnail
+	///Must resemble this order: path, id, date_taken, date_added, starred, description, latitude, longitude, date_deleted, date_deleted, thumbnail
 	[Parameter]
-	public required string Columns { get; set; } = "l.path, l.id, l.date_taken, l.date_added, l.starred, l.description, l.date_deleted, l.thumbnail";
+	public required string Columns { get; set; } = "l.path, l.id, l.date_taken, l.date_added, l.starred, l.description, l.latitude, l.longitude, l.date_deleted, l.thumbnail";
 
 	[Parameter]
 	public required string Table { get; set; } = "library AS l";
