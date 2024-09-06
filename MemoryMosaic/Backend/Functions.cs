@@ -44,6 +44,17 @@ public static class Functions
 
 		return $"{Math.Round(compactBytes)} {unit}";
 	}
+	
+	public static string FormatDateRange(DateTime? rangeStart, DateTime? rangeEnd)
+	{
+		if (rangeStart == null || rangeEnd == null)
+			return "";
+		
+		if (rangeStart.Value.Date == rangeEnd.Value.Date)
+			return rangeStart.Value.ToString("M/d/yyyy");
+
+		return $"{rangeStart.Value:M/d/yyyy} – {rangeEnd.Value:M/d/yyyy}";
+	}
 
 	///<summary>
 	///<para>Return an IEnumerable&lt;string&gt; of the full paths of all supported file types in rootPath.</para>

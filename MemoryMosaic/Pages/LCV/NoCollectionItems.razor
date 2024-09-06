@@ -1,0 +1,5 @@
+@page "/no-collection-items"
+
+<title>Collection-less Items - MemoryMosaic</title>
+
+<LibraryContentViewer NoItemsText="Items not in a collection appear here" Where="id NOT IN (SELECT item_id FROM collection_entries)"/>

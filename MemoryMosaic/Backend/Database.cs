@@ -784,6 +784,62 @@ public static class Database
 		return isFolder;
 	}
 
+	public static int CountItemsNotInAnyCollection()
+	{
+		int count = 0;
+		
+		try
+		{
+			Open();
+			using NpgsqlCommand cmd = new("SELECT id FROM library WHERE id NOT IN (SELECT item_id FROM collection_entries)", connection);
+			using NpgsqlDataReader r = cmd.ExecuteReader();
+
+			while (r.Read())
+				count++;
+
+			r.Close();
+		}
+		catch (NpgsqlException e)
+		{
+			L.LogException(e);
+		}
+		finally
+		{
+			Close();
+		}
+
+		return count;
+	}
+
+	public static string GetDateRangeOfItemsNotInAnyCollection()
+	{
+		string dateRange = "";
+		
+		try
+		{
+			Open();
+			using NpgsqlCommand cmd = new("SELECT id, date_taken, MIN(date_taken) AS min_date_taken, MAX(date_taken) AS max_date_taken FROM library WHERE id NOT IN (SELECT item_id FROM collection_entries) GROUP BY id, date_taken", connection);
+			using NpgsqlDataReader r = cmd.ExecuteReader(CommandBehavior.SingleRow);
+
+			if (r.HasRows)
+			{
+				r.Read();
+				dateRange = F.FormatDateRange(r.TryGetDateTime(1), r.TryGetDateTime(2));
+			}
+
+			r.Close();
+		}
+		catch (NpgsqlException e)
+		{
+			L.LogException(e);
+		}
+		finally
+		{
+			Close();
+		}
+
+		return dateRange;
+	}
 	#endregion
 
 	#region Utilities

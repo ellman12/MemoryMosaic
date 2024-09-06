@@ -30,6 +30,22 @@
 </Dropdown>
 
 <main>
+    <a href="/no-collection-items">
+        <div>
+            <img src="mm_library/" alt="" loading="lazy"/>
+        </div>
+
+        <span>Not In a Collection</span>
+        <span>
+            @F.GetPluralized(D.CountItemsNotInAnyCollection(), "item")
+            
+            @if (showDateRanges)
+            {
+                @((MarkupString) $"&nbsp;&nbsp;&#x2022;&nbsp; {D.GetDateRangeOfItemsNotInAnyCollection()}");
+            }
+        </span>
+    </a>
+    
     @foreach (Collection collection in collections)
     {
         <a href="/collection/@collection.Id">
@@ -42,9 +58,9 @@
                     <img src="mm_library/@collection.Cover" alt="" loading="lazy"/>
                 }
             </div>
-            
+
             <span>@collection.Name</span>
-            
+
             <span>
                 @F.GetPluralized(collection.Count, "item")
                 @if (showDateRanges)

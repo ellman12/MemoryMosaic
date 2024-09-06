@@ -45,16 +45,5 @@ public sealed class Collection
 		LastModified = lastModified;
 	}
 
-	public string FormatDateRange()
-	{
-		const string dot = "&nbsp;&#x2022;&nbsp;";
-		
-		if (RangeStart == null || RangeEnd == null)
-			return "";
-		
-		if (RangeStart.Value.Date == RangeEnd.Value.Date)
-			return $"{dot} {RangeStart.Value:M/d/yyyy}";
-
-		return $"{dot} {RangeStart.Value:M/d/yyyy} – {RangeEnd.Value:M/d/yyyy}";
-	}
+	public string FormatDateRange() => $"&nbsp;&nbsp;&#x2022;&nbsp; {F.FormatDateRange(RangeStart, RangeEnd)}";
 }
