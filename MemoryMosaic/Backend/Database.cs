@@ -180,7 +180,7 @@ public static class Database
 	public static IEnumerable<LibraryItem> GetEntireLibrary()
 	{
 		Open();
-		using NpgsqlCommand cmd = new("SELECT path, id, date_taken, date_added, starred, description, date_deleted, thumbnail FROM library ORDER BY date_taken DESC", connection);
+		using NpgsqlCommand cmd = new("SELECT path, id, date_taken, date_added, starred, description, latitude, longitude, date_deleted, thumbnail FROM library ORDER BY date_taken DESC", connection);
 		using NpgsqlDataReader r = cmd.ExecuteReader();
 
 		while (r.Read())
