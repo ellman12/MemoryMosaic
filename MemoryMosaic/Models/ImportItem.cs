@@ -73,6 +73,10 @@ public sealed class ImportItem : Media
 		OriginalFilename = NewFilename = P.GetFileNameWithoutExtension(absolutePath);
 		Extension = P.GetExtension(absolutePath);
 		Video = DTE.IsVideoExt(Extension);
+		
+		var coords = CoordinateExtractor.ReadCoordinates(absolutePath);
+		Latitude = coords?.Item1;
+		Longitude = coords?.Item2;
 
 		DTE.GetDateTakenFromBoth(absolutePath, out DateTime? metadataDT, out DateTime? filenameDT);
 		MetadataDateTaken = metadataDT;
